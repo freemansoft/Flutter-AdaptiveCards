@@ -60,16 +60,27 @@ mkdir -p "$LOG"
 # 48000 characters, about 16k tokens even at the 2.99 chars/token the Qwen
 # tokenizers showed, which leaves room inside 32768 under any reading.
 typeset -A PARAMS=(
-  "nemotron-3-nano:4b"          "65536 28000"
-  "qwen3.5:9b"                  "65536 28000"
-  "qwen2.5-coder:7b"            "32768 12000"
-  "qwen3-coder:30b"             "65536 28000"
-  "nemotron-3-nano:30b"         "65536 28000"
-  "nemotron-3.5-lightning:30b"  "65536 28000"
+  "nemotron-3-nano:4b"          "65536 42000"
+  "qwen3.5:9b"                  "65536 42000"
+  # Capped at a 32768 trained window, so it cannot take the 42000 the
+  # others do. 20000 tokens plus the card system prompt fills roughly
+  # three quarters of what it is allocated, which is as full as this
+  # model can be driven.
+  "qwen2.5-coder:7b"            "32768 20000"
+  "qwen3-coder:30b"             "65536 42000"
+  "nemotron-3-nano:30b"         "65536 42000"
+  "nemotron-3.5-lightning:30b"  "65536 42000"
+  # The two nvfp4 builds did not drop the filler, they overflowed: both
+  # evaluated about 6,700 tokens more than the 35851 they were allocated,
+  # so their fixed-filler scores measure overflow rather than capacity.
+  # Same treatment as the droppers, for the same reason.
+  "qwen3.8:27b-nvfp4"           "65536 42000"
+  "qwen3.6:27b-coding-nvfp4"    "65536 42000"
 )
 # Smallest first, so a partial run still says something.
 MODELS=(
   "nemotron-3-nano:4b" "qwen3.5:9b" "qwen2.5-coder:7b"
+  "qwen3.8:27b-nvfp4" "qwen3.6:27b-coding-nvfp4"
   "qwen3-coder:30b" "nemotron-3-nano:30b" "nemotron-3.5-lightning:30b"
 )
 [[ $# -gt 0 ]] && MODELS=("$@")
@@ -107,6 +118,11 @@ for M in $MODELS; do
   mkdir -p "$RES/$S"
   echo "##### MODEL $M num_ctx=$CTX fill-tokens=$FILL $(date +%T) #####"
   wait_for_idle
+  # Calibrated, so --fill-tokens means what it says on every tokenizer.
+  # The first version of this control ran before calibration existed: it
+  # asked for 28000 tokens and delivered 42426 to 46287 on the denser
+  # tokenizers, which is why the targets below state the level actually
+  # wanted rather than a number that happened to land there.
   fvm dart run tool/model_probes/context_fill_probe.dart \
     --model "$M" --fill-tokens "$FILL" --num-ctx "$CTX" --json "$OUT" \
     >"$LOG/$(slug $M).log" 2>&1

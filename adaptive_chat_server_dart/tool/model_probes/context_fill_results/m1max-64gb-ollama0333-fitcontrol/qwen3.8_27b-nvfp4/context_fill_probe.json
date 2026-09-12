@@ -1,6 +1,6 @@
 {
   "probe": "context_fill_probe",
-  "model": "qwen3-coder:30b",
+  "model": "qwen3.8:27b-nvfp4",
   "measuredAt": "2026-09-12",
   "machine": "Apple M1 Max / 64 GB",
   "ollama": "0.33.3",
@@ -10,18 +10,18 @@
     "seed_card.json": "4ac746114475"
   },
   "summary": {
-    "pass": 20,
+    "pass": 16,
     "total": 25,
     "fillTokensTarget": 42000,
-    "systemPromptTokensEstimate": 4883,
-    "charsPerTokenUsed": 3.0762373193974795,
+    "systemPromptTokensEstimate": 4887,
+    "charsPerTokenUsed": 3.0734029484029484,
     "charsPerTokenMeasured": true,
     "numCtx": 65536,
     "runnerContextLength": 65536,
     "runnerContextClamped": false,
-    "runnerSizeVram": 25175722556,
-    "promptEvalCountMin": 48459,
-    "promptEvalCountMax": 48474
+    "runnerSizeVram": 20470683332,
+    "promptEvalCountMin": 48539,
+    "promptEvalCountMax": 48554
   },
   "notes": "Filler sized via fillerCharsPerToken=4.0; see each call's tokens=… for the actual prompt_eval_count. runnerContextLength is what /api/ps reported the runner allocated, against numCtx as requested.",
   "calls": [
@@ -30,175 +30,175 @@
       "sample": 0,
       "pass": false,
       "label": "broken: timeout (180s)",
-      "ms": 180027
+      "ms": 180039
     },
     {
       "case": "time",
       "sample": 0,
       "pass": false,
-      "label": "no-input: got {TextBlock} want {Input.Time} tokens=48463",
-      "ms": 140841
+      "label": "broken: timeout (180s)",
+      "ms": 180019
     },
     {
       "case": "toggle",
       "sample": 0,
-      "pass": true,
-      "label": "Input.Toggle tokens=48461",
-      "ms": 1366
+      "pass": false,
+      "label": "broken: timeout (180s)",
+      "ms": 180020
     },
     {
       "case": "text",
       "sample": 0,
       "pass": false,
-      "label": "no-input: got {TextBlock} want {Input.Text} tokens=48464",
-      "ms": 1731
+      "label": "broken: timeout (180s)",
+      "ms": 180016
     },
     {
       "case": "number",
       "sample": 0,
       "pass": true,
-      "label": "Input.Number tokens=48463",
-      "ms": 1846
+      "label": "Input.Number, TextBlock tokens=48543",
+      "ms": 28526
     },
     {
       "case": "choice1",
       "sample": 0,
       "pass": true,
-      "label": "Input.ChoiceSet, TextBlock tokens=48460",
-      "ms": 4073
+      "label": "Input.ChoiceSet tokens=48540",
+      "ms": 7505
     },
     {
       "case": "choice2",
       "sample": 0,
-      "pass": true,
-      "label": "Input.ChoiceSet tokens=48460",
-      "ms": 4723
+      "pass": false,
+      "label": "broken: invalid JSON: FormatException: Unexpected character (at line 2, character 1)\n</think>\n^\n tokens=48540",
+      "ms": 12474
     },
     {
       "case": "choice3",
       "sample": 0,
       "pass": true,
-      "label": "Input.ChoiceSet, TextBlock tokens=48460",
-      "ms": 4095
+      "label": "Input.ChoiceSet tokens=48540",
+      "ms": 6372
     },
     {
       "case": "choice4",
       "sample": 0,
       "pass": true,
-      "label": "Input.ChoiceSet, TextBlock tokens=48460",
-      "ms": 5360
+      "label": "Input.ChoiceSet tokens=48540",
+      "ms": 6317
     },
     {
       "case": "choice5",
       "sample": 0,
       "pass": true,
-      "label": "Input.ChoiceSet, TextBlock tokens=48459",
-      "ms": 6179
+      "label": "Input.ChoiceSet tokens=48539",
+      "ms": 6619
     },
     {
       "case": "choice6",
       "sample": 0,
-      "pass": true,
-      "label": "Input.ChoiceSet tokens=48461",
-      "ms": 2941
+      "pass": false,
+      "label": "prose tokens=48541",
+      "ms": 14585
     },
     {
       "case": "pie",
       "sample": 0,
       "pass": true,
-      "label": "Chart.Pie tokens=48470",
-      "ms": 4500
+      "label": "Chart.Pie tokens=48550",
+      "ms": 7283
     },
     {
       "case": "bar",
       "sample": 0,
       "pass": true,
-      "label": "Chart.VerticalBar tokens=48465",
-      "ms": 4858
+      "label": "Chart.VerticalBar tokens=48545",
+      "ms": 7380
     },
     {
       "case": "line",
       "sample": 0,
       "pass": true,
-      "label": "Chart.Line tokens=48464",
-      "ms": 6361
+      "label": "Chart.Line tokens=48544",
+      "ms": 7744
     },
     {
       "case": "gauge",
       "sample": 0,
       "pass": true,
-      "label": "Chart.Gauge tokens=48471",
-      "ms": 4229
+      "label": "Chart.Gauge, TextBlock tokens=48551",
+      "ms": 6462
     },
     {
       "case": "rating_show",
       "sample": 0,
-      "pass": true,
-      "label": "Rating tokens=48472",
-      "ms": 1361
+      "pass": false,
+      "label": "broken: invalid JSON: FormatException: Unexpected character (at line 2, character 1)\n</think>\n^\n tokens=48552",
+      "ms": 3123
     },
     {
       "case": "rating_ask",
       "sample": 0,
-      "pass": true,
-      "label": "Input.Rating tokens=48467",
-      "ms": 2438
+      "pass": false,
+      "label": "broken: invalid JSON: FormatException: Unexpected character (at line 2, character 1)\n</think>\n^\n tokens=48547",
+      "ms": 4101
     },
     {
       "case": "carousel",
       "sample": 0,
-      "pass": false,
-      "label": "wrong-shape: got {Input.ChoiceSet, TextBlock} want {Carousel} tokens=48471",
-      "ms": 13885
+      "pass": true,
+      "label": "Carousel, CarouselPage, TextBlock tokens=48551",
+      "ms": 26486
     },
     {
       "case": "table",
       "sample": 0,
-      "pass": true,
-      "label": "Table, TableCell, TableRow, TextBlock tokens=48465",
-      "ms": 42802
+      "pass": false,
+      "label": "prose tokens=48545",
+      "ms": 1844
     },
     {
       "case": "facts",
       "sample": 0,
       "pass": true,
-      "label": "FactSet, TextBlock tokens=48467",
-      "ms": 16604
+      "label": "FactSet, TextBlock tokens=48547",
+      "ms": 19471
     },
     {
       "case": "columnset",
       "sample": 0,
       "pass": true,
-      "label": "Column, ColumnSet, TextBlock tokens=48462",
-      "ms": 4839
+      "label": "Column, ColumnSet, TextBlock tokens=48542",
+      "ms": 13566
     },
     {
       "case": "codeblock",
       "sample": 0,
       "pass": true,
-      "label": "CodeBlock, TextBlock tokens=48474",
-      "ms": 12720
+      "label": "CodeBlock, TextBlock tokens=48554",
+      "ms": 12397
     },
     {
       "case": "progress",
       "sample": 0,
       "pass": true,
-      "label": "ProgressRing tokens=48464",
-      "ms": 1533
+      "label": "ProgressBar tokens=48544",
+      "ms": 1777
     },
     {
       "case": "badge",
       "sample": 0,
       "pass": true,
-      "label": "Badge tokens=48464",
-      "ms": 1347
+      "label": "Badge tokens=48544",
+      "ms": 2380
     },
     {
       "case": "prose",
       "sample": 0,
-      "pass": false,
-      "label": "unwanted-card: got {TextBlock} want prose tokens=48463",
-      "ms": 3457
+      "pass": true,
+      "label": "prose-ok tokens=48543",
+      "ms": 7911
     }
   ]
 }

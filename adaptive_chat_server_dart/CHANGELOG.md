@@ -2,6 +2,64 @@
 
 ## [Unreleased]
 
+- Changed: **the fit control is re-measured under calibration, at a target
+  that states what it delivers.** All eight models re-run 2026-09-12 into
+  `context_fill_results/m1max-64gb-ollama0333-fitcontrol/` (67m58s, every
+  model `rc=0`), replacing runs that asked for 28000 tokens while delivering
+  42426 to 46287. Calibration measured 2.81 to 3.08 chars/token across the
+  eight, against the 4.0 the fixed filler assumed. Targets are now 42000
+  tokens, except `qwen2.5-coder:7b`, which a 32768 trained window caps: it
+  takes 20000, up from 12000, and at 24721 tokens runs its allocated window
+  about three quarters full rather than a third. Prompt tokens land about 3%
+  above target once each model's own system prompt is subtracted, and the
+  residue has a cause rather than being noise: the filler is indexed, so its
+  digit strings lengthen as it grows and a 118,000-character filler
+  tokenizes denser than the 10,000-character calibration sample. The
+  direction is size-dependent, so an undershoot recorded earlier at a much
+  smaller fill does not generalise. Every run still fits its window.
+
+- Added: **the Nemotron filled-context result reproduced across a 14% larger
+  prompt.** The superseded uncalibrated control carried 42.5k to 46.3k
+  tokens and returned 13/25, 12/25 and 6/25 for `nemotron-3.5-lightning:30b`,
+  `nemotron-3-nano:30b` and `nemotron-3-nano:4b`; the calibrated run carries
+  48.5k and returns the same three counts. Two runs at different prompt
+  sizes landing identically is what makes a `--samples 1` reading usable.
+  The Qwen models move by one or two cases in both directions and none of
+  that reproduces, so it stays noise.
+
+- Added: **fit-control runs for the two `nvfp4` builds, which are an
+  exception rather than a spoiled measurement.** `qwen3.8:27b-nvfp4` and
+  `qwen3.6:27b-coding-nvfp4` never dropped the filler: under the fixed-filler
+  sweep they evaluated 42542 and 42538 tokens against the 35851 `/api/ps`
+  reported allocating, roughly 6,700 past it, and scored 17/25 and 21/25
+  rather than collapsing. Every other model measured loses the whole message
+  at that boundary, so `min(requested, trained window)` describes what the
+  runner allocates and not what it enforces. No mechanism established; both
+  are `nvfp4` builds, which this file already records as flipping their
+  `format` verdict between runtimes. This also retires the earlier caution
+  that their sweep scores were measured under overflow and could not be
+  compared.
+
+- Fixed: **four errors and an omission in the `ModelBehavior.md`
+  context-fill section.** It claimed a dropped message "would have fit the
+  requested window", which the fit control disproves: every dropped prompt
+  was 42426 tokens or larger against 35851 requested, so both it and the
+  truncation case exceeded the window and they differ in what is lost, not
+  in whether it fit. It compared the droppers' counts against "the roughly
+  29.5k actually sent", which is what other models' tokenizers made of that
+  text rather than theirs. A paragraph still framed the drop as an open
+  mechanism question after the section had answered it, and duplicated a
+  later paragraph that makes the same point with both hosts measured; it is
+  cut. And nothing said the defect is fixed: the section now records which
+  archives are calibrated and which predate it, and that a calibrated sweep
+  would not reproduce the fixed-filler ones.
+
+- Changed: **`context_fill_fit_control.sh` runs calibrated and carries the
+  two `nvfp4` builds.** An earlier revision pinned `--no-calibrate` to keep
+  reproducing the uncalibrated archive; with that archive re-measured, the
+  pin is gone and the `PARAMS` targets state the fill level actually wanted
+  rather than a number that happened to land there.
+
 - Fixed: **`context_fill_probe.dart` calibrates its filler per model
   instead of assuming 4.0 chars/token.** The fixed constant is what
   produced, and then forced the retraction of, a finding about models
