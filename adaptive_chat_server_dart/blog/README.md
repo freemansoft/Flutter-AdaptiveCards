@@ -20,7 +20,7 @@ When the notebook and a draft disagree, the notebook wins.
 | --- | -------------------------------------------------------------------------------------- | --------------------------------- | ---------------------------------------------------------------------------- |
 | 1   | An SDUI demo that turned into a local-model benchmark                                  | `article-1-origin-story-*`        | Drafted, revised 2026-09-08, screenshot added                                |
 | 2   | We tried 14 levers to get reliable card JSON from a local model                        | `article-2-tuning-process-*`      | Drafted, revised 2026-09-08, screenshots added                               |
-| 3   | Running local models for Adaptive Card JSON on a 64 GB M1 Max and a 16 GB M5           | `article-3-m1max-vs-m5-*`         | Drafted, revised 2026-09-08, mermaid chart added                             |
+| 3   | Running local models for Adaptive Card JSON on a 64 GB M1 Max and a 16 GB M5           | `article-3-m1max-vs-m5-*`         | Drafted, revised 2026-09-08, mermaid chart added, register pass 2026-09-12   |
 | 4   | The tool channel drove malformed JSON to zero and lost on half the models              | `article-4-tool-channel-*`        | Drafted, revised 2026-09-08, mermaid diagram added, register pass 2026-09-12 |
 | 5   | The measurement was wrong, in a way that looked exactly like a slow model              | `article-5-measurement-hygiene-*` | Drafted, revised 2026-09-08, register pass 2026-09-12                        |
 | 6   | Ollama drops an oversized history message whole, and nothing tells you                 | `article-6-context-fill-*`        | Drafted 2026-09-12, split 2026-09-12, no visual, register pass 2026-09-12    |
