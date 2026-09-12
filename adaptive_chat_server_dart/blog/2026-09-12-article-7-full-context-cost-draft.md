@@ -153,10 +153,15 @@ model moves when the window fills.
 
 Two caveats travel with all of it. Every figure is a single-sample run, so a
 one-case or two-case movement is noise and only the five-case and seven-case
-losses are large enough to read. And this is one fill size on one host: the
-`qwen2.5-coder:7b` reading suggests the effect begins somewhere below a full
-window, but where, and whether it arrives gradually or at a threshold, is
-unmeasured.
+losses are large enough to read. And the shape of the effect is only
+partly measured. A later run took the three models a 16 GB host can hold to
+a second fill level with the window held constant, and found no threshold:
+pooled coverage falls between a near-empty window and a half-filled one and
+then not at all between half and full, so the cost is neither proportional
+to how full the window is nor a cliff at some particular depth. That covers
+three models on one host, and none of them are the 30-billion-parameter
+Nemotron builds that carry the largest losses here, so for those the
+question stands.
 
 The repository is
 [https://github.com/freemansoft/Flutter-AdaptiveCards](https://github.com/freemansoft/Flutter-AdaptiveCards),
