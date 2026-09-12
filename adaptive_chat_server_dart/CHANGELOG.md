@@ -26,7 +26,7 @@
 
 - Changed: **the fit control is re-measured under calibration, at a target
   that states what it delivers.** All eight models re-run 2026-09-12 into
-  `context_fill_results/m1max-64gb-ollama0333-fitcontrol/` (67m58s, every
+  `context_fill_results/m1max-64gb-ollama0333-fitcontrol-calibrated/` (67m58s, every
   model `rc=0`), replacing runs that asked for 28000 tokens while delivering
   42426 to 46287. Calibration measured 2.81 to 3.08 chars/token across the
   eight, against the 4.0 the fixed filler assumed. Targets are now 42000
@@ -148,7 +148,7 @@
   tokens there, overflowing the 35851-token window the probe sized from the
   estimate, so Ollama dropped the history message whole and the archive
   recorded a model discarding history it appeared to have room for. The new
-  `context_fill_results/m1max-64gb-ollama0333-fitcontrol/` is the control:
+  `context_fill_results/m1max-64gb-ollama0333-fitcontrol-calibrated/` is the control:
   the same six models, each given a filler that fits the window it is
   actually allocated, and all six ingest it. `ModelBehavior.md` retracts the
   policy finding, its open-questions entry is closed, and

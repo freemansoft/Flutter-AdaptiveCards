@@ -1,8 +1,17 @@
-# Fit control: a filler sized to fit each model's own window
+# Fit control, calibrated: a filler sized to fit each model's own window
 
 Apple M1 Max / 64 GB, Ollama 0.33.3, `--samples 1`, measured 2026-09-12
 with per-model calibration on, so each `--fill-tokens` target means what it
 says on that model's tokenizer rather than on an assumed 4.0 chars/token.
+
+**`-calibrated` is in the name because uncalibrated fit controls exist.**
+This directory was measured under the fixed 4.0 constant until 2026-09-12
+and re-measured after it; the run it replaced survives in commit `9698553`
+rather than in the tree. The M5 host carries both conditions side by side,
+in [`m5-16gb-ollama0333-fitcontrol-uncalibrated/`](../m5-16gb-ollama0333-fitcontrol-uncalibrated)
+and [`m5-16gb-ollama0333-fitcontrol-calibrated/`](../m5-16gb-ollama0333-fitcontrol-calibrated),
+so no fit-control directory anywhere in this tree leaves its calibration
+state to be inferred from a date.
 
 The sibling `m1max-64gb-ollama0333-fill28000/` directories hold a **fixed**
 filler: the same text, sized at 28000 tokens by `fillerCharsPerToken = 4.0`,

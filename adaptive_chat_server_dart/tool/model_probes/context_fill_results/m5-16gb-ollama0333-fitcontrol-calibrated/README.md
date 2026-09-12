@@ -5,7 +5,7 @@ the filler sized by per-model calibration rather than the fixed
 `fillerCharsPerToken = 4.0`.
 
 This is the M5 half of
-[`m1max-64gb-ollama0333-fitcontrol/`](../m1max-64gb-ollama0333-fitcontrol)
+[`m1max-64gb-ollama0333-fitcontrol-calibrated/`](../m1max-64gb-ollama0333-fitcontrol-calibrated)
 under the same parameters that directory now uses, so the cross-host
 comparison cites two live archives instead of resting on a superseded
 commit. The uncalibrated predecessor is kept separately in

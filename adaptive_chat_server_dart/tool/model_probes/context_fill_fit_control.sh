@@ -16,7 +16,7 @@
 # every one of them keeps it. See ModelBehavior.md's context-fill section.
 #
 #   cd adaptive_chat_server_dart
-#   export FIT_CONTROL_RESULTS=tool/model_probes/context_fill_results/m1max-64gb-ollama0333-fitcontrol
+#   export FIT_CONTROL_RESULTS=tool/model_probes/context_fill_results/m1max-64gb-ollama0333-fitcontrol-calibrated
 #   tool/model_probes/context_fill_fit_control.sh                    # every model below
 #   tool/model_probes/context_fill_fit_control.sh qwen3.5:9b         # just one
 #
@@ -44,7 +44,7 @@ cd "$(dirname "$0")/../.." || exit 1
 
 if [[ -z ${FIT_CONTROL_RESULTS:-} ]]; then
   echo "context_fill_fit_control.sh: set FIT_CONTROL_RESULTS, e.g."
-  echo "  FIT_CONTROL_RESULTS=tool/model_probes/context_fill_results/m1max-64gb-ollama0333-fitcontrol $0 $*"
+  echo "  FIT_CONTROL_RESULTS=tool/model_probes/context_fill_results/m1max-64gb-ollama0333-fitcontrol-calibrated $0 $*"
   exit 2
 fi
 RES=$FIT_CONTROL_RESULTS

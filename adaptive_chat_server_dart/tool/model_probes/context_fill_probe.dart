@@ -33,7 +33,7 @@
 /// window sized for it, and Ollama drops the history message whole. Six
 /// models were recorded that way and read as discarding history they had
 /// room for; the fit control in
-/// `context_fill_results/m1max-64gb-ollama0333-fitcontrol/` shows all six
+/// `context_fill_results/m1max-64gb-ollama0333-fitcontrol-calibrated/` shows all six
 /// keep it once it fits.
 ///
 /// **The filler is now calibrated per model, and the constant is only a

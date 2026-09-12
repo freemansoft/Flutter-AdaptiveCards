@@ -13,7 +13,7 @@ value is that both hosts ran the identical uncalibrated condition, and the
 M1 Max half of it survives in commit `9698553` rather than in the tree.
 
 This was the memory-constrained half of
-[`m1max-64gb-ollama0333-fitcontrol/`](../m1max-64gb-ollama0333-fitcontrol)
+[`m1max-64gb-ollama0333-fitcontrol-calibrated/`](../m1max-64gb-ollama0333-fitcontrol-calibrated)
 as that directory stood on 2026-09-11, before it was re-measured under
 calibration. That directory established that a filler sized to fit a
 model's own window is ingested rather than dropped; it could not establish
