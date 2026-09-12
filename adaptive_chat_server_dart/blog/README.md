@@ -23,14 +23,23 @@ When the notebook and a draft disagree, the notebook wins.
 | 3   | Running local models for Adaptive Card JSON on a 64 GB M1 Max and a 16 GB M5 | `2026-08-30-article-3-m1max-vs-m5-*`         | Drafted, revised 2026-09-08, mermaid chart added   |
 | 4   | The tool channel drove malformed JSON to zero and lost on half the models    | `2026-08-30-article-4-tool-channel-*`        | Drafted, revised 2026-09-08, mermaid diagram added |
 | 5   | The measurement was wrong, in a way that looked exactly like a slow model    | `2026-08-30-article-5-measurement-hygiene-*` | Drafted, revised 2026-09-08                        |
+| 6   | Ollama drops an oversized history message whole, and nothing tells you       | `2026-09-12-article-6-context-fill-*`        | Drafted 2026-09-12, no visual yet                  |
 
-All five articles are drafted and have their visuals: articles 3 and 4 carry
+Articles 1 to 5 are drafted and have their visuals: articles 3 and 4 carry
 mermaid diagrams in place of image placeholders (article 5 already had one),
-and articles 1 and 2 have real screenshots from the demo client.
+and articles 1 and 2 have real screenshots from the demo client. Article 6 is
+drafted and still needs one.
 
-The 2026-09-08 revision removed every em dash from all five (see **Register**),
-framed the chat demo as a demo rather than a production architecture, and
-rewrote the closing headings of articles 1, 2 and 5 to state a finding.
+The 2026-09-08 revision removed every em dash from articles 1 to 5 (see
+**Register**), framed the chat demo as a demo rather than a production
+architecture, and rewrote the closing headings of articles 1, 2 and 5 to state
+a finding.
+
+Article 6 was added 2026-09-12, when the notebook gained a context-fill section.
+It is the first article in the series whose subject postdates the original plan,
+and it took one caveat back into article 3: every latency figure in the series
+before it was measured against a nearly empty context, which article 3 now says
+in its own caveat list.
 
 **Audience:** developers running local models on Ollama who need structured
 output. Secondary: Flutter and server-driven-UI readers.
@@ -104,7 +113,16 @@ cross-runtime material, stall counts not being comparable across versions and
 the ceiling's effect on one 0.32.14 figure, belongs to article 5, which owns it as
 a methodological finding rather than as a host comparison.
 
+Every figure in it was measured against a nearly empty context, a probe call
+being a system prompt, one question and at most a two-turn seed. That is a
+property of the whole series before article 6 and it is stated in article 3's
+caveat list, because article 3 is the one carrying latency figures a reader
+might otherwise generalize to a long conversation.
+
 _Defers:_ bad assertions and undelivered `system` messages to article 5.
+Everything about a filled window, meaning what the runner allocates, what
+happens to history that does not fit, and what a full context costs in
+coverage, to article 6.
 
 **Article 4: the tool channel.** How the two arms are paired, including why the
 tool arm is scored against the unseeded prose run. The eight-model comparison.
@@ -143,6 +161,28 @@ _Defers:_ the `llama3.2:latest` M5 artifact row and the throttling analysis to
 article 3; it recaps article 3's sweep-position control in one paragraph, as a
 second instance of the same discipline that resolves the stall counts: isolate
 the confound, measure it, do not read a mechanism off a net number.
+
+**Article 6: the filled context.** Everything about running a model with its
+window actually full. The allocation rule, `min(requested, trained window)`,
+measured on both hosts with no counterexample in thirty-one runs, and the
+reading that retires host memory as a factor. **The silent whole-message drop
+outright**: history that exceeds the allocated window is removed rather than
+trimmed, nothing errors, and `prompt_eval_count` is the only signal. The
+per-tokenizer spread, 4.30 characters per token against 2.74 on the same text,
+and the probe defect it caused: a filler sized in characters overflowed the
+window sized for it, and three models were written up as discarding history
+they had room for when no such model existed. The filled-context cost, in which
+three Nemotron models give up about a third of their shape coverage while four
+Qwen models are unaffected, and the generalization that capacity under a full
+window is not predicted by score on an empty one. The two `nvfp4` builds that
+evaluate roughly 6,700 tokens past their reported allocation at no cost, which
+separates what the runner allocates from what it enforces.
+
+_Defers:_ the general form of "suspect the harness before the model" to
+article 5, naming its own instance in one clause rather than re-deriving the
+principle. Host-to-host latency and the 16 GB fit question to article 3; it
+quotes no ratio and no sweep timing, because its runs are `--samples 1` at one
+fill size and carry no position control.
 
 ## Conventions
 

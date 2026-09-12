@@ -174,7 +174,7 @@ producer measured is `qwen3-coder:30b` at **1.5 s/call** on the M1 Max, ahead
 of `qwen2.5-coder:7b` at a quarter its size, and it is off this table because
 it needs 17.3 GB. The slowest is `gpt-oss:20b` at **7.2 s**, in 12.8 GB.
 
-Three caveats travel with the table rather than any one row.
+Four caveats travel with the table rather than any one row.
 
 1. The M1 Max figures for `granite4.1:3b` and `llama3.2:latest` were measured
    **after runner eviction**, and the other six **before runner eviction**.
@@ -193,6 +193,18 @@ Three caveats travel with the table rather than any one row.
 3. `qwen3.5:9b`'s **1.15x** is not a finding either way. Its cold and hot M1 Max
    figures fall on opposite sides of 1.0x, a spread that sits inside the 1.54x
    sweep-position effect measured below.
+4. **Every figure in this article was measured against a nearly empty context.**
+   A probe call sends the card system prompt, one question, and at most a
+   two-turn seed, so the prompt runs a few thousand tokens and the call is
+   dominated by generating tokens rather than by reading them. A conversation
+   that has filled its window is a different measurement on both axes: reading
+   the prompt grows with the history and can come to dominate the call, and
+   coverage moves too. A later run with roughly 48,000 tokens actually in the
+   window costs three of these models about a third of their shape coverage
+   while leaving others unchanged. The context article in this series owns that
+   account. Read the medians here as what a short exchange costs, which is what
+   the demo's own traffic looks like, and not as what a long conversation
+   costs.
 
 ### One row was an artifact: 89 minutes became 15
 
