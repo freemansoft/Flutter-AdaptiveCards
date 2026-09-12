@@ -16,31 +16,37 @@ When the notebook and a draft disagree, the notebook wins.
 
 ## The articles
 
-| #   | Article                                                                      | File                                         | Status                                             |
-| --- | ---------------------------------------------------------------------------- | -------------------------------------------- | -------------------------------------------------- |
-| 1   | An SDUI demo that turned into a local-model benchmark                        | `2026-08-29-article-1-origin-story-*`        | Drafted, revised 2026-09-08, screenshot added      |
-| 2   | We tried 14 levers to get reliable card JSON from a local model              | `2026-08-30-article-2-tuning-process-*`      | Drafted, revised 2026-09-08, screenshots added     |
-| 3   | Running local models for Adaptive Card JSON on a 64 GB M1 Max and a 16 GB M5 | `2026-08-30-article-3-m1max-vs-m5-*`         | Drafted, revised 2026-09-08, mermaid chart added   |
-| 4   | The tool channel drove malformed JSON to zero and lost on half the models    | `2026-08-30-article-4-tool-channel-*`        | Drafted, revised 2026-09-08, mermaid diagram added |
-| 5   | The measurement was wrong, in a way that looked exactly like a slow model    | `2026-08-30-article-5-measurement-hygiene-*` | Drafted, revised 2026-09-08                        |
-| 6   | Ollama drops an oversized history message whole, and nothing tells you       | `2026-09-12-article-6-context-fill-*`        | Drafted 2026-09-12, chart added, split candidate   |
+| #   | Article                                                                                | File                                         | Status                                             |
+| --- | -------------------------------------------------------------------------------------- | -------------------------------------------- | -------------------------------------------------- |
+| 1   | An SDUI demo that turned into a local-model benchmark                                  | `2026-08-29-article-1-origin-story-*`        | Drafted, revised 2026-09-08, screenshot added      |
+| 2   | We tried 14 levers to get reliable card JSON from a local model                        | `2026-08-30-article-2-tuning-process-*`      | Drafted, revised 2026-09-08, screenshots added     |
+| 3   | Running local models for Adaptive Card JSON on a 64 GB M1 Max and a 16 GB M5           | `2026-08-30-article-3-m1max-vs-m5-*`         | Drafted, revised 2026-09-08, mermaid chart added   |
+| 4   | The tool channel drove malformed JSON to zero and lost on half the models              | `2026-08-30-article-4-tool-channel-*`        | Drafted, revised 2026-09-08, mermaid diagram added |
+| 5   | The measurement was wrong, in a way that looked exactly like a slow model              | `2026-08-30-article-5-measurement-hygiene-*` | Drafted, revised 2026-09-08                        |
+| 6   | Ollama drops an oversized history message whole, and nothing tells you                 | `2026-09-12-article-6-context-fill-*`        | Drafted 2026-09-12, split 2026-09-12, no visual    |
+| 7   | A full context makes one model stop producing cards and another produce the wrong ones | `2026-09-12-article-7-full-context-cost-*`   | Split from 6 on 2026-09-12, mermaid chart          |
 
 Articles 1 to 5 are drafted and have their visuals: articles 3 and 4 carry
 mermaid diagrams in place of image placeholders (article 5 already had one),
-and articles 1 and 2 have real screenshots from the demo client. Article 6
-carries a mermaid chart of the cases each model gains or loses when its window
-is filled.
+and articles 1 and 2 have real screenshots from the demo client. Article 7 took
+the mermaid chart of the cases each model gains or loses when its window is
+filled. Article 6 has no visual of its own after the split.
 
 The 2026-09-08 revision removed every em dash from articles 1 to 5 (see
 **Register**), framed the chat demo as a demo rather than a production
 architecture, and rewrote the closing headings of articles 1, 2 and 5 to state
 a finding.
 
-Article 6 was added 2026-09-12, when the notebook gained a context-fill section.
-It is the first article in the series whose subject postdates the original plan,
-and it took one caveat back into article 3: every latency figure in the series
-before it was measured against a nearly empty context, which article 3 now says
-in its own caveat list.
+Articles 6 and 7 were added 2026-09-12, when the notebook gained a context-fill
+section. They are the first articles in the series whose subject postdates the
+original plan, and they took one caveat back into article 3: every latency
+figure in the series before them was measured against a nearly empty context,
+which article 3 now says in its own caveat list.
+
+They were drafted as one article and split the same day, on topic rather than on
+length: the draft was 1823 prose words, well inside the cap. The split separates
+a runtime finding from a model finding, which a reader may want separately.
+Article 6 is 1137 prose words and article 7 is 1106.
 
 **Audience:** developers running local models on Ollama who need structured
 output. Secondary: Flutter and server-driven-UI readers.
@@ -121,9 +127,9 @@ caveat list, because article 3 is the one carrying latency figures a reader
 might otherwise generalize to a long conversation.
 
 _Defers:_ bad assertions and undelivered `system` messages to article 5.
-Everything about a filled window, meaning what the runner allocates, what
-happens to history that does not fit, and what a full context costs in
-coverage, to article 6.
+What the runner allocates and what happens to history
+that does not fit, to article 6. What a full context costs a model's coverage,
+to article 7.
 
 **Article 4: the tool channel.** How the two arms are paired, including why the
 tool arm is scored against the unseeded prose run. The eight-model comparison.
@@ -172,54 +178,48 @@ trimmed, nothing errors, and `prompt_eval_count` is the only signal. The
 per-tokenizer spread, 4.30 characters per token against 2.74 on the same text,
 and the probe defect it caused: a filler sized in characters overflowed the
 window sized for it, and three models were written up as discarding history
-they had room for when no such model existed. The filled-context cost, in which
-three Nemotron models give up about a third of their shape coverage while four
-Qwen models are unaffected, and the generalization that capacity under a full
-window is not predicted by score on an empty one. **The failure decomposition
-that goes with it**: the two largest losses are opposite failures, one model
-abandoning card output for prose and the other emitting well-formed cards with
-a `TextBlock` where an `Input.*` was asked for, which matters because only the
-first is caught by checking that a reply parsed as a card. The two `nvfp4` builds that
+they had room for when no such model existed. The two `nvfp4` builds that
 evaluate roughly 6,700 tokens past their reported allocation at no cost, which
 separates what the runner allocates from what it enforces.
-
-**Article 6 carries two topics and is a split candidate.** They are separable
-and a reader may want only one of them:
-
-1. **What Ollama does with context parameters**, which is a runtime finding.
-   `num_ctx` is a request rather than a guarantee, the runner allocates
-   `min(requested, trained window)`, history that exceeds the allocation is
-   removed whole rather than trimmed, and `prompt_eval_count` is the only
-   signal a client gets. The two `nvfp4` builds that evaluate past their
-   reported allocation belong here, since they separate what is allocated from
-   what is enforced. So does the tokenizer spread and the probe defect it
-   caused, because both are about establishing that a fill target was actually
-   delivered, which is a precondition for anything in the second topic being
-   measurable.
-2. **What a full window does to a model**, which is a model finding. The
-   filled-context cost, the failure decomposition into abandoning cards versus
-   substituting a `TextBlock` for an `Input.*`, and the generalization that
-   capacity under a full window is not predicted by score on an empty one.
-
-The seam is the runtime against the models: topic 1 is a property of Ollama and
-of a model's trained window, topic 2 is a property of the model's behavior. The
-current draft is 1823 prose words, so length is not forcing the split and it
-should be made on whether a reader arrives wanting one topic or both.
-
-If it is split, topic 1 keeps the current title and the two tables of allocation
-and dropped-history figures; topic 2 takes the fit-control table, the failure
-decomposition and the existing mermaid chart, and needs a new title stating its
-own finding. Both halves need the shared setup the series requires of every
-article, meaning the project, what the model is asked for, and what renders the
-reply, and topic 2 additionally has to state in a sentence that its fill targets
-were verified as delivered, citing topic 1 rather than re-deriving it. Topic 1
-would then need a visual it does not currently have.
 
 _Defers:_ the general form of "suspect the harness before the model" to
 article 5, naming its own instance in one clause rather than re-deriving the
 principle. Host-to-host latency and the 16 GB fit question to article 3; it
 quotes no ratio and no sweep timing, because its runs are `--samples 1` at one
 fill size and carry no position control.
+
+**Article 7: what a full window costs a model.** The filled-context measurement
+for eight models, four unaffected and three losing about a third of their shape
+coverage. **The failure decomposition outright**: the two largest losses are
+opposite failures, `nemotron-3.5-lightning:30b` abandoning card output for prose
+and `nemotron-3-nano:30b` emitting well-formed cards with a `TextBlock` where an
+`Input.*` was asked for, and the consequence that only the first is caught by
+checking that a reply parsed as a card. The reordering, in which a model ahead
+on an empty window falls behind on a full one. The `qwen2.5-coder:7b` partial
+reversion at roughly half the fill, which is the only sign in the set that the
+effect begins below a full window.
+
+_Defers:_ everything about the runtime to article 6, including what `num_ctx`
+does, what the runner allocates, and how history that does not fit is removed.
+It states in one paragraph that its fill sizes were verified as delivered and
+cites article 6 for why that needed verifying, rather than re-deriving the
+tokenizer defect.
+
+### Pending: the M5 calibrated run
+
+The M5 is re-running the fit control under calibration. When it lands, both
+articles need checking against it rather than assuming it reproduces:
+
+- **Article 7** carries the eight-row fit-control table and the mermaid chart,
+  both M1 Max only. If the M5 figures differ, the article needs either a second
+  host column or a sentence saying the numbers are single-host. The chart's
+  eight bars are M1 Max deltas and would need the same decision.
+- **Article 6** quotes no fit-control score except the two `nvfp4` rows, so it
+  is likely unaffected, but its claim of "no counterexample in thirty-one runs"
+  is a count that new runs change.
+- The failure decomposition in article 7 is the reading most worth confirming on
+  a second host, because a model abandoning card output is the kind of behavior
+  that could plausibly be host-dependent and has been seen on one host only.
 
 ## Conventions
 

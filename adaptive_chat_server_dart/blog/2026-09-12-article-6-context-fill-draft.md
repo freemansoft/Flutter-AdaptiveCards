@@ -11,13 +11,16 @@ prompt, one question, and at most a short seed exchange. This article asks what
 changes when the window is actually full, which is what a real conversation
 does to it.
 
-Three findings, all on an Apple M1 Max with 64 GB and an Apple M5 with 16 GB,
-both running Ollama 0.33.3. A model handed more history than its window holds
-does not get a trimmed version of it, it gets none of it, and no error says so.
-What the runner allocates follows one rule with no counterexample in
-thirty-one runs. And once a window really is full, the cost is not uniform:
-three models lose about a third of their shape coverage while four are
-unaffected.
+Two findings, all on an Apple M1 Max with 64 GB and an Apple M5 with 16 GB,
+both running Ollama 0.33.3. What the runner allocates follows one rule with no
+counterexample in thirty-one runs, and it is often not what was asked for. A
+model handed more history than its window holds does not get a trimmed version
+of it, it gets none of it, and no error says so.
+
+Both are properties of the runtime rather than of any model. What a full window
+does to a model's own behavior is a separate question with a separate answer,
+and a companion article measures it: three of eight models lose about a third of
+their shape coverage, and the two worst fail in opposite ways.
 
 Every figure is transcribed from
 [`ModelBehavior.md`](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md),
@@ -135,109 +138,6 @@ measurement produces a behavior with no mechanism, suspect the instrument before
 the subject, which is a rule the measurement-hygiene article in this series
 arrived at independently.
 
-## A full window costs three models a third of their coverage, and four nothing
-
-With a filler calibrated per model, the window can be filled on purpose and the
-question the probe was built for can finally be asked. These runs carry roughly
-48,500 tokens in a 65536-token window. The **Was** column is each model's score
-when the history was dropped, which is to say the same task with an empty
-context.
-
-| Model                        | Prompt tokens | Pass      | Was   |
-| ---------------------------- | ------------- | --------- | ----- |
-| `qwen3-coder:30b`            | 48459         | 20/25     | 18/25 |
-| `qwen3.6:27b-coding-nvfp4`   | 48535         | 20/25     | 21/25 |
-| `qwen2.5-coder:7b`           | 24721         | 19/25     | 22/25 |
-| `qwen3.5:9b`                 | 48537         | 16/25     | 18/25 |
-| `qwen3.8:27b-nvfp4`          | 48539         | 16/25     | 17/25 |
-| `nemotron-3.5-lightning:30b` | 48600         | **13/25** | 20/25 |
-| `nemotron-3-nano:30b`        | 48611         | **12/25** | 17/25 |
-| `nemotron-3-nano:4b`         | 48559         | **6/25**  | 8/25  |
-
-```mermaid
-xychart-beta horizontal
-    title "Shape cases gained or lost when the window is filled, out of 25"
-    x-axis ["nemotron-3.5-lightning:30b", "nemotron-3-nano:30b", "qwen2.5-coder:7b", "qwen3.5:9b", "nemotron-3-nano:4b", "qwen3.6:27b-coding-nvfp4", "qwen3.8:27b-nvfp4", "qwen3-coder:30b"]
-    y-axis "Cases, filled window minus empty" -8 --> 3
-    bar [-7, -5, -3, -2, -2, -1, -1, 2]
-```
-
-The three bars past minus three are the finding. Everything from minus two
-rightward is a single-sample run moving by one or two cases, which is noise.
-
-`qwen2.5-coder:7b`'s minus three is the one bar not to read alongside the
-others. It carries 24721 tokens where the rest carry about 48,500, because its
-trained window caps it at 32768, so its bar is a smaller experiment rather than
-a smaller model failing harder.
-
-The Qwen models move by one or two cases in both directions, which is inside the
-noise of a single-sample run. The three Nemotron models lose five, seven and two
-cases, and `nemotron-3.5-lightning:30b` and `nemotron-3-nano:30b` give up about a
-third of their coverage for nothing but a full window.
-
-`qwen2.5-coder:7b` carries a smaller prompt because it has to. Its trained window
-caps it at 32768, so a larger request changes nothing and it takes a smaller
-filler instead, running its allocated window about three quarters full.
-
-The Nemotron figures are the ones worth acting on, because they reproduced. An
-earlier run of the same control carried between 42,500 and 46,300 tokens and
-returned 13, 12 and 6 for those three models; the calibrated run carries 48,500
-and returns 13, 12 and 6 again. Two runs at different prompt sizes landing on
-the same three counts is a stronger reading than either alone, and none of the
-Qwen movements reproduce that way.
-
-### The two big losers fail in opposite ways
-
-A lost case is not one thing. Sorting each run's 25 verdicts by what the judge
-said turns the two largest losses into two different problems.
-
-| Model                        | Pass     | No card at all | Card, wrong element |
-| ---------------------------- | -------- | -------------- | ------------------- |
-| `nemotron-3.5-lightning:30b` | 20 to 13 | **1 to 10**    | 1 to 0              |
-| `nemotron-3-nano:30b`        | 17 to 12 | 0 to 0         | **4 to 8**          |
-| `qwen2.5-coder:7b`           | 22 to 19 | 0 to 3         | 2 to 1              |
-| `nemotron-3-nano:4b`         | 8 to 6   | 14 to 14       | 0 to 0              |
-
-`nemotron-3.5-lightning:30b` **stops producing cards**. All eight cases it loses
-come back as prose: it answers the question in plain text rather than emitting
-card JSON at all. On an empty window it did that once in twenty-five.
-
-`nemotron-3-nano:30b` keeps producing cards and **picks worse elements**. Its
-replies are valid card JSON every time, with a static `TextBlock` substituted
-for the interactive input the question called for: `got {TextBlock} want
-{Input.Time}`, `want {Input.ChoiceSet}`, `want {Input.Toggle}`. It is asked to
-collect something and displays something instead.
-
-The difference matters when choosing a model, because the two fail differently
-in production. A model that reverts to prose is caught by any check that asks
-whether the reply parsed as a card. A model that returns a well-formed card with
-the wrong element type passes that check and reaches the user as a screen that
-renders correctly and cannot be filled in.
-
-`nemotron-3-nano:4b` is in the table to be excluded from the finding. Its prose
-count does not move, 14 to 14, because it was already answering most cases in
-prose on an empty window. Its two lost cases are ordinary single-sample
-movement, not a context effect.
-
-`qwen2.5-coder:7b` is the one hint that the effect starts below a full window.
-It reverts to prose on three cases while carrying 24721 tokens, roughly half
-what the others carry.
-
-**A mechanism consistent with both patterns, and not measured here.** Both
-failures are failures to follow the system prompt specifically: the instruction
-to answer as a card in one case, the element palette in the other. Ordinary
-question answering is intact in both, since a prose reply and a `TextBlock` card
-both answer what was asked. That is what degrading instruction adherence over a
-long context would look like. Nothing in these runs tests it, and establishing
-it would mean moving the instruction or sweeping the fill across sizes to see
-whether the loss scales. Neither was run.
-
-The generalizable form: capacity under a full window is not predicted by score
-on an empty one. A model chosen on a benchmark that asks short questions can be
-the wrong choice for a chat application, and the ranking reorders. On an empty
-context `nemotron-3.5-lightning:30b` at 20/25 beats `qwen3.5:9b` at 18/25. On a
-full one it loses to it, 13 against 16.
-
 ## Two builds ignore the limit entirely
 
 `qwen3.8:27b-nvfp4` and `qwen3.6:27b-coding-nvfp4` never dropped the filler. Under
@@ -261,7 +161,7 @@ Four things, in the order a developer hits them.
 | -------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
 | Read `prompt_eval_count` on every reply                  | It is the only signal that history was dropped, and a count flat across a growing conversation is the tell.                         |
 | Compare `ollama ps` against the `num_ctx` you asked for  | You get `min(requested, trained window)`, silently, and a model's trained window is often far below what you assumed.               |
-| Measure a model at the context length you will run it at | Three of eight models here lose about a third of their coverage on a full window, and score on an empty one does not predict it.    |
+| Measure a model at the context length you will run it at | A full window costs three of eight models measured about a third of their coverage, which the companion article decomposes.         |
 | Size context in tokens, not in characters or bytes       | The same text is 4.30 characters per token on one tokenizer and 2.74 on another, which is enough to overflow a window sized for it. |
 
 None of this is a criticism of Ollama's defaults. Dropping a message that cannot

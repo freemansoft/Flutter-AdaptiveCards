@@ -201,8 +201,8 @@ Four caveats travel with the table rather than any one row.
    the prompt grows with the history and can come to dominate the call, and
    coverage moves too. A later run with roughly 48,000 tokens actually in the
    window costs three of these models about a third of their shape coverage
-   while leaving others unchanged. The context article in this series owns that
-   account. Read the medians here as what a short exchange costs, which is what
+   while leaving others unchanged. The full-context article in this series owns
+   that account. Read the medians here as what a short exchange costs, which is what
    the demo's own traffic looks like, and not as what a long conversation
    costs.
 
