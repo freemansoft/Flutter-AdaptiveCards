@@ -30,6 +30,10 @@ Two of the eight ship at `Q4_0` rather than `Q4_K_M` -- `llama3-chatqa:8b` and
 went wrong, but it sits underneath any latency comparison between them and the
 other six.
 
-The Apple M1 Max / 64 GB runs in [`../results/`](../results/) do not record the
-Ollama version they were taken against, so a ratio between the two hosts spans
-an unknown runtime change as well as a hardware one.
+The Apple M1 Max / 64 GB runs this host was compared against are no longer in
+the tree. They were archived as `results-m1max-64gb-ollama032/` and removed on
+2026-09-03 in commit `2e0a7b8d`, so `2e0a7b8d^` is where they survive; the path
+this note originally gave, `../results/`, is two renames older still. Their run
+files carry no `ollama` field at all — the version in that directory name came
+from a later rename rather than from the runs — so a ratio between the two
+hosts spans an unknown runtime change as well as a hardware one.
