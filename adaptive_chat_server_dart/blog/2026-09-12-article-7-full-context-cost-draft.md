@@ -86,6 +86,15 @@ returns 13, 12 and 6 again. Two runs at different prompt sizes landing on the
 same three counts is a stronger reading than either alone, and none of the Qwen
 movements reproduce that way.
 
+Three of these rows have since been repeated on a second machine, a 16 GB Apple
+M5, which is every model in the table it can hold. The prompt counts are
+identical to the digit and two of the three scores are unchanged:
+`nemotron-3-nano:4b` 48559 tokens and 6/25, `qwen3.5:9b` 48537 tokens and 16/25,
+`qwen2.5-coder:7b` 24721 tokens and 20/25 against the 19/25 above. One case
+across three models is the noise floor. Identical prompt counts are expected
+rather than corroborating, since a tokenizer is a property of the model and not
+of the machine, but the scores are generated text and they held.
+
 ## The two big losers fail in opposite ways
 
 A lost case is not one thing. Sorting each run's 25 verdicts by what the judge
@@ -154,14 +163,14 @@ model moves when the window fills.
 Two caveats travel with all of it. Every figure is a single-sample run, so a
 one-case or two-case movement is noise and only the five-case and seven-case
 losses are large enough to read. And the shape of the effect is only
-partly measured. A later run took the three models a 16 GB host can hold to
-a second fill level with the window held constant, and found no threshold:
+partly measured. A later run on that same M5 took the three models it can
+hold to a second fill level with the window held constant, and found no
+threshold:
 pooled coverage falls between a near-empty window and a half-filled one and
 then not at all between half and full, so the cost is neither proportional
 to how full the window is nor a cliff at some particular depth. That covers
-three models on one host, and none of them are the 30-billion-parameter
-Nemotron builds that carry the largest losses here, so for those the
-question stands.
+three models, and none of them are the 30-billion-parameter Nemotron builds that
+carry the largest losses here, so for those the question stands.
 
 The repository is
 [https://github.com/freemansoft/Flutter-AdaptiveCards](https://github.com/freemansoft/Flutter-AdaptiveCards),

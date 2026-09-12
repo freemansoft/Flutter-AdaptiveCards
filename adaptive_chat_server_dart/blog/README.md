@@ -205,23 +205,33 @@ It states in one paragraph that its fill sizes were verified as delivered and
 cites article 6 for why that needed verifying, rather than re-deriving the
 tokenizer defect.
 
-### Pending: the M5 calibrated run
+### Resolved: the M5 calibrated run
 
-The M5 is re-running the fit control under calibration. When it lands, both
-articles need checking against it rather than assuming it reproduces:
+Landed 2026-09-12. The three models a 16 GB host can hold were re-run under the
+M1 Max's calibrated parameters, and article 7 now carries the comparison: prompt
+counts identical to the digit, two of three scores unchanged, one case apart on
+the third. Article 7 keeps its M1 Max attribution for the eight-row table, since
+five of those rows are still single-host, and states the three-row cross-host
+confirmation beside the reproduction paragraph rather than adding a column that
+would be empty for five models.
 
-- **Article 7** carries the eight-row fit-control table and the mermaid chart,
-  both M1 Max only. If the M5 figures differ, the article needs either a second
-  host column or a sentence saying the numbers are single-host. The chart's
-  eight bars are M1 Max deltas and would need the same decision.
-- **Article 6** quotes no fit-control score except the two `nvfp4` rows, so it
-  is likely unaffected, but its claim of "no counterexample in thirty-one runs"
-  is a count that new runs change.
-- The failure decomposition in article 7 is the reading most worth confirming on
-  a second host, because a model abandoning card output is the kind of behavior
-  that could plausibly be host-dependent and has been seen on one host only.
+The same run added a second fill level with the window held constant, which
+answered a caveat article 7 had left open. Pooled coverage runs 47/75 near-empty,
+42/75 half and 42/75 full, so the filled-context cost is neither proportional to
+occupancy nor a cliff. Article 7's closing caveat was narrowed to what is still
+open: the two 30-billion-parameter Nemotron builds that carry the largest losses
+were not among the three models measured that way.
 
-## Conventions
+What the same run withdrew is worth recording, because it is the kind of figure
+an article would otherwise have quoted. The latency medians from these runs do
+not reproduce: `nemotron-3-nano:4b` medians 13356 ms and 3506 ms on the same host
+a day apart at a 5% larger prompt, and the cross-host direction flips between
+those days. Pass and token columns reproduce across every one of those runs and
+the medians do not, so no article carries a latency claim from the fit control.
+Article 3 owns host-to-host latency and its figures are from the shape sweep,
+which is unaffected.
+
+## Conventions## Conventions
 
 ### Figures
 
