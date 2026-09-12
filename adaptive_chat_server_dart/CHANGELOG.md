@@ -2,6 +2,30 @@
 
 ## [Unreleased]
 
+- Fixed: **`context_fill_probe.dart` calibrates its filler per model
+  instead of assuming 4.0 chars/token.** The fixed constant is what
+  produced, and then forced the retraction of, a finding about models
+  discarding history they had room for: sized in characters, the filler
+  overflowed `num_ctx` on every tokenizer denser than the llama family's
+  ~4.30 chars/token. The probe now sends one short sample
+  (`calibrationSampleChars` at `calibrationNumCtx`) before sizing anything
+  and derives this model's own ratio from Ollama's `prompt_eval_count`.
+  `qwen2.5-coder:7b` measures 3.08 against the assumed 4.0. Runs record
+  `charsPerTokenUsed` and a `charsPerTokenMeasured` flag, so an archive says
+  whether its filler was measured or guessed, and `--no-calibrate` restores
+  the old behavior. `charsPerTokenFrom` returns null rather than a ratio for
+  an absent, zero or negative count, so a failed calibration falls back to
+  the constant instead of sizing a filler from `Infinity`; the failure line
+  now names the probe label that caused it rather than saying only that it
+  failed. Calibration costs one extra model load, which is why the sample is
+  small and its window fixed. The derived ratio runs slightly low, since the
+  count includes the calibration call's own system prompt and template
+  overhead, so the filler lands under target rather than over: a
+  `--fill-tokens 8000` run achieved roughly 7,000 tokens inside a 16979
+  window, unclamped. Undershooting is the safe direction, and only
+  overflowing `num_ctx` invalidates a run. Read the achieved figure from
+  each call's `tokens=`, never from `--fill-tokens`.
+
 - Docs: **the context-fill allocation rule is measured on a 16 GB host, not
   only inferred from the 64 GB one.** All eight models a 16 GB host can hold
   were re-measured on the Apple M5 under the fixed filler, and three of them

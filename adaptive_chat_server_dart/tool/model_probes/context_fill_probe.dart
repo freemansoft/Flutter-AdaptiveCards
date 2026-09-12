@@ -34,10 +34,26 @@
 /// models were recorded that way and read as discarding history they had
 /// room for; the fit control in
 /// `context_fill_results/m1max-64gb-ollama0333-fitcontrol/` shows all six
-/// keep it once it fits. **Until this is calibrated per model, pass
-/// `--num-ctx` well above the default for any model outside the llama,
-/// granite and gpt-oss families, and check `runnerContextLength` against
-/// the recorded token count before reading a run as capacity.**
+/// keep it once it fits.
+///
+/// **The filler is now calibrated per model, and the constant is only a
+/// fallback.** Before sizing anything the probe sends one short sample
+/// ([calibrationSampleChars] characters at [calibrationNumCtx]) and derives
+/// this model's own chars-per-token from Ollama's reported
+/// `prompt_eval_count`. `qwen2.5-coder:7b` measures 3.08 against the
+/// assumed 4.0. The run records `charsPerTokenUsed` and a
+/// `charsPerTokenMeasured` flag, so an archive says whether its filler was
+/// measured or guessed. `--no-calibrate` restores the old fixed behavior.
+/// Calibration costs one extra model load, which is why the sample is
+/// small and its window fixed.
+///
+/// The derived ratio runs slightly low, because the count includes the
+/// calibration call's own system prompt and chat-template overhead. The
+/// filler therefore lands under its target rather than over: a
+/// `--fill-tokens 8000` run on `qwen2.5-coder:7b` achieved roughly 7,000.
+/// That is the direction to err in, since the target is approximate by
+/// nature and only overflowing `num_ctx` invalidates a run. Read the
+/// achieved figure from each call's `tokens=`, never from `--fill-tokens`.
 ///
 /// **`num_ctx` budgets the system prompt, not just the filler.** An earlier
 /// version sized `num_ctx` off `--fill-tokens` alone; the card system
@@ -130,6 +146,79 @@ int estimateTokenCount(
   double charsPerToken = fillerCharsPerToken,
 }) => text.isEmpty ? 0 : (text.length / charsPerToken).ceil();
 
+/// Characters per token implied by a sample of [sampleChars] characters
+/// that Ollama reported costing [promptEvalCount] tokens.
+///
+/// Returns null when the reading cannot be a ratio (an absent, zero or
+/// negative count, or an empty sample), so a failed calibration falls back
+/// to [fillerCharsPerToken] rather than sizing a filler from `Infinity`.
+///
+/// The count includes a few tokens of chat-template overhead the sample
+/// text did not contain, which biases the ratio slightly low and makes the
+/// filler built from it land slightly under target. That is the safe
+/// direction: undershooting the fill target cannot overflow `num_ctx`,
+/// while overshooting is exactly the failure this replaces.
+double? charsPerTokenFrom({
+  required int sampleChars,
+  required int? promptEvalCount,
+}) {
+  if (promptEvalCount == null || promptEvalCount <= 0) return null;
+  if (sampleChars <= 0) return null;
+  return sampleChars / promptEvalCount;
+}
+
+/// Characters of filler sent to measure a model's own chars-per-token.
+///
+/// Large enough that the chat template's fixed overhead is a rounding
+/// error, small enough to fit [calibrationNumCtx] even on the densest
+/// tokenizer measured (2.74 chars/token, so ~3,650 tokens here).
+const calibrationSampleChars = 10000;
+
+/// `num_ctx` for the calibration call. Fixed and small: the real run's
+/// window cannot be computed until the calibration result is in, and a
+/// small window keeps this load cheap on a 25 GB model.
+const calibrationNumCtx = 8192;
+
+/// Measures [model]'s chars-per-token, or null if the reading fails.
+///
+/// Sends a filler sample as a bare user prompt with no system prompt, so
+/// the count reflects the filler text rather than assets that vary. Best
+/// effort: a failure returns null and the caller keeps
+/// [fillerCharsPerToken].
+Future<({double? charsPerToken, String label})> calibrateCharsPerToken({
+  required HttpClient client,
+  required String url,
+  required String model,
+  Duration timeout = defaultProbeTimeout,
+}) async {
+  final sample = buildFillerText(
+    (calibrationSampleChars / fillerCharsPerToken).round(),
+  );
+  final outcome = await probeOnce(
+    client: client,
+    url: url,
+    model: model,
+    systemPrompt: calibrationSystemPrompt,
+    userPrompt: sample,
+    options: {'temperature': 0.0, 'num_ctx': calibrationNumCtx},
+    timeout: timeout,
+  );
+  final ratio = charsPerTokenFrom(
+    sampleChars: sample.length,
+    promptEvalCount: outcome.promptEvalCount,
+  );
+  return (charsPerToken: ratio, label: outcome.label);
+}
+
+/// System prompt for the calibration call.
+///
+/// Not empty: the point of this call is a token count, and a one-line
+/// instruction that keeps the reply short costs a handful of tokens while
+/// avoiding a model rambling for the full timeout on nonsense input. Its
+/// own tokens are included in the count, which biases the derived ratio
+/// low and so undersizes the filler, the safe direction.
+const calibrationSystemPrompt = 'Reply with the single word: ok';
+
 /// `num_ctx` for a run targeting [fillTokens] of filler on top of a system
 /// prompt estimated at [systemPromptTokens], leaving [margin] tokens of
 /// headroom for the case prompt and the model's reply.
@@ -161,6 +250,15 @@ Future<void> main(List<String> argv) async {
           "system prompt's own estimated token cost plus "
           '$defaultFillMargin tokens of headroom.',
     )
+    ..addFlag(
+      'calibrate',
+      defaultsTo: true,
+      help:
+          "Measure this model's own chars-per-token before sizing the "
+          'filler. --no-calibrate uses the fixed '
+          '$fillerCharsPerToken estimate, which overflows num_ctx on any '
+          'tokenizer denser than the llama family.',
+    )
     ..addOption('model')
     ..addOption('url')
     ..addOption('samples')
@@ -180,21 +278,52 @@ Future<void> main(List<String> argv) async {
   }
   final fillTokens = int.parse(fillTokensRaw);
   final systemPrompt = loadCardSystemPrompt();
-  final systemPromptTokens = estimateTokenCount(systemPrompt);
-  final defaultNumCtx = defaultNumCtxFor(
-    fillTokens,
-    systemPromptTokens: systemPromptTokens,
-  );
-  final numCtx = int.parse(
-    parsed['num-ctx'] as String? ?? '$defaultNumCtx',
-  );
 
   final args = parseProbeArgs([
     for (final option in ['model', 'url', 'samples', 'json', 'timeout'])
       if (parsed[option] != null) ...['--$option', parsed[option] as String],
   ], defaultSamples: 1);
 
-  final filler = buildFillerText(fillTokens);
+  // Calibrate before sizing anything. fillerCharsPerToken is a single
+  // constant, and a filler sized by it overflows num_ctx on any tokenizer
+  // denser than the llama family's ~4.30 chars/token -- the defect that
+  // produced, and then retracted, a finding about models discarding
+  // history they had room for.
+  final calibrationClient = HttpClient()
+    ..idleTimeout = const Duration(minutes: 10);
+  double? measuredCharsPerToken;
+  if (parsed['calibrate'] as bool) {
+    stdout.writeln('calibrating ${args.model} chars-per-token...');
+    await evictModel(args.url, args.model);
+    final calibration = await calibrateCharsPerToken(
+      client: calibrationClient,
+      url: args.url,
+      model: args.model,
+      timeout: args.timeout,
+    );
+    measuredCharsPerToken = calibration.charsPerToken;
+    stdout.writeln(
+      measuredCharsPerToken == null
+          ? 'calibration failed (${calibration.label}); falling back to '
+                '$fillerCharsPerToken'
+          : 'measured ${measuredCharsPerToken.toStringAsFixed(2)} '
+                'chars/token (assumed $fillerCharsPerToken)',
+    );
+  }
+  calibrationClient.close(force: true);
+  final charsPerToken = measuredCharsPerToken ?? fillerCharsPerToken;
+
+  final systemPromptTokens = estimateTokenCount(
+    systemPrompt,
+    charsPerToken: charsPerToken,
+  );
+  final defaultNumCtx = defaultNumCtxFor(
+    fillTokens,
+    systemPromptTokens: systemPromptTokens,
+  );
+  final numCtx = int.parse(parsed['num-ctx'] as String? ?? '$defaultNumCtx');
+
+  final filler = buildFillerText(fillTokens, charsPerToken: charsPerToken);
   // A resident runner does not reliably pick up a new num_ctx from a later
   // request -- measured directly: raising num_ctx from 32096 to 45000
   // against an already-loaded qwen2.5-coder:7b left prompt_eval_count
@@ -204,6 +333,8 @@ Future<void> main(List<String> argv) async {
   stdout
     ..writeln(
       'context_fill_probe: model=${args.model} fill-tokens=$fillTokens '
+      'chars-per-token=${charsPerToken.toStringAsFixed(2)}'
+      '${measuredCharsPerToken == null ? " (assumed)" : " (measured)"} '
       'system-prompt-tokens=$systemPromptTokens num-ctx=$numCtx '
       'filler-chars=${filler.length}',
     )
@@ -283,6 +414,8 @@ Future<void> main(List<String> argv) async {
         'total': calls.length,
         'fillTokensTarget': fillTokens,
         'systemPromptTokensEstimate': systemPromptTokens,
+        'charsPerTokenUsed': charsPerToken,
+        'charsPerTokenMeasured': measuredCharsPerToken != null,
         'numCtx': numCtx,
         if (allocated != null) ...{
           'runnerContextLength': allocated,
