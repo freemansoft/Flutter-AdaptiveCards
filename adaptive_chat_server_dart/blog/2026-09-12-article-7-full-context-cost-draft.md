@@ -43,18 +43,24 @@ which is the **Prompt tokens** column.
 
 Each model was given a filler calibrated to its own tokenizer, sized to fit the
 window it is actually allocated. The **Was** column is the same 25 cases with an
-empty window.
+empty window, for six of the eight rows: the two `nvfp4` rows are marked below
+because that condition was never actually empty for them.
 
-| Model                        | Prompt tokens | Pass      | Was   |
-| ---------------------------- | ------------- | --------- | ----- |
-| `qwen3-coder:30b`            | 48459         | 20/25     | 18/25 |
-| `qwen3.6:27b-coding-nvfp4`   | 48535         | 20/25     | 21/25 |
-| `qwen2.5-coder:7b`           | 24721         | 19/25     | 22/25 |
-| `qwen3.5:9b`                 | 48537         | 16/25     | 18/25 |
-| `qwen3.8:27b-nvfp4`          | 48539         | 16/25     | 17/25 |
-| `nemotron-3.5-lightning:30b` | 48600         | **13/25** | 20/25 |
-| `nemotron-3-nano:30b`        | 48611         | **12/25** | 17/25 |
-| `nemotron-3-nano:4b`         | 48559         | **6/25**  | 8/25  |
+| Model                        | Prompt tokens | Pass      | Was     |
+| ---------------------------- | ------------- | --------- | ------- |
+| `qwen3-coder:30b`            | 48459         | 20/25     | 18/25   |
+| `qwen3.6:27b-coding-nvfp4`   | 48535         | 20/25     | 21/25\* |
+| `qwen2.5-coder:7b`           | 24721         | 19/25     | 22/25   |
+| `qwen3.5:9b`                 | 48537         | 16/25     | 18/25   |
+| `qwen3.8:27b-nvfp4`          | 48539         | 16/25     | 17/25\* |
+| `nemotron-3.5-lightning:30b` | 48600         | **13/25** | 20/25   |
+| `nemotron-3-nano:30b`        | 48611         | **12/25** | 17/25   |
+| `nemotron-3-nano:4b`         | 48559         | **6/25**  | 8/25    |
+
+\* These two builds never emptied their window under any condition measured
+(see the companion article). Their **Was** figure is an earlier ~42,500-token
+reading that was already full, so their row compares full against differently
+full, not full against empty.
 
 ```mermaid
 xychart-beta horizontal
