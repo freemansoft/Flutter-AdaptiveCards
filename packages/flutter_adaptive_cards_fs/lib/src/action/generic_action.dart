@@ -10,7 +10,7 @@ import 'package:flutter_adaptive_cards_fs/src/flutter_raw_adaptive_card.dart';
 abstract class GenericAction {
   /// Base type for injectable action tap handlers resolved by
   /// `ActionTypeRegistry`.
-  const GenericAction();
+  const new();
 
   /// Returns the action label from [adaptiveMap], typically the `title`
   /// property.
@@ -28,7 +28,7 @@ abstract class GenericAction {
 /// Abstract action type for Action.Submit
 abstract class GenericSubmitAction extends GenericAction {
   /// Handler contract for `Action.Submit` taps.
-  const GenericSubmitAction();
+  const new();
 
   @override
   void tap({
@@ -41,7 +41,7 @@ abstract class GenericSubmitAction extends GenericAction {
 /// Abstract action type for Action.Execute
 abstract class GenericExecuteAction extends GenericAction {
   /// Handler contract for `Action.Execute` taps.
-  const GenericExecuteAction();
+  const new();
 
   @override
   void tap({
@@ -54,7 +54,7 @@ abstract class GenericExecuteAction extends GenericAction {
 /// Abstract action type for Action.OpenUrl
 abstract class GenericActionOpenUrl extends GenericAction {
   /// Handler contract for `Action.OpenUrl` taps.
-  const GenericActionOpenUrl();
+  const new();
 
   @override
   void tap({
@@ -69,13 +69,13 @@ abstract class GenericActionOpenUrl extends GenericAction {
 /// Exists to support possible webview in future
 abstract class GenericActionOpenUrlDialog extends GenericActionOpenUrl {
   /// Handler contract for `Action.OpenUrlDialog` taps.
-  const GenericActionOpenUrlDialog();
+  const new();
 }
 
 /// Abstract action for onTaps for Action.ResetInputs
 abstract class GenericActionResetInputs extends GenericAction {
   /// Handler contract for `Action.ResetInputs` taps.
-  const GenericActionResetInputs();
+  const new();
 
   @override
   void tap({
@@ -88,7 +88,7 @@ abstract class GenericActionResetInputs extends GenericAction {
 /// Handler contract for `Action.ToggleVisibility` taps.
 abstract class GenericActionToggleVisibility extends GenericAction {
   /// Creates a toggle-visibility action handler implementation.
-  const GenericActionToggleVisibility();
+  const new();
 
   @override
   void tap({
@@ -105,7 +105,7 @@ abstract class GenericActionToggleVisibility extends GenericAction {
 /// Model, schema v1.4). It is still used by Outlook Actionable Messages.
 abstract class GenericHttpAction extends GenericAction {
   /// Creates an `Action.Http` handler implementation.
-  const GenericHttpAction();
+  const new();
 
   @override
   void tap({
@@ -118,7 +118,7 @@ abstract class GenericHttpAction extends GenericAction {
 /// Handler contract for `Action.Popover` taps.
 abstract class GenericPopoverAction extends GenericAction {
   /// Creates a popover action handler implementation.
-  const GenericPopoverAction();
+  const new();
 
   @override
   void tap({

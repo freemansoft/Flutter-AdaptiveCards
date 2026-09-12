@@ -1,12 +1,12 @@
 /// HostConfig `textBlock` section controlling TextBlock heading defaults.
 class TextBlockConfig {
   /// Creates TextBlock settings from explicit values.
-  TextBlockConfig({
+  new({
     required this.headingLevel,
   });
 
   /// Parses `textBlock` from HostConfig JSON.
-  factory TextBlockConfig.fromJson(Map<String, dynamic> json) {
+  factory fromJson(Map<String, dynamic> json) {
     return TextBlockConfig(
       headingLevel: json['headingLevel'] as int? ?? 2,
     );

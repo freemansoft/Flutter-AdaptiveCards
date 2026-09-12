@@ -25,13 +25,11 @@ void main() {
     final Widget second = cardRegistry.getElement(
       map: {
         'type': 'Media',
-        'poster':
-            'https://docs.microsoft.com/en-us/adaptive-cards/content/videoposter.png',
+        'poster': 'https://docs.microsoft.com/en-us/adaptive-cards/content/videoposter.png',
         'sources': [
           {
             'mimeType': 'video/mp4',
-            'url':
-                'https://github.com/youtube/api-samples/raw/refs/heads/master/java/src/main/resources/sample-video.mp4',
+            'url': 'https://github.com/youtube/api-samples/raw/refs/heads/master/java/src/main/resources/sample-video.mp4',
           },
         ],
       },

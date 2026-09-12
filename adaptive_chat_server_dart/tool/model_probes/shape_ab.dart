@@ -29,6 +29,7 @@ import 'dart:io';
 
 import 'package:args/args.dart';
 import 'package:path/path.dart' as p;
+
 // Relative: these live outside lib/, beside this file.
 import 'probe_results.dart';
 import 'probe_support.dart';
@@ -280,13 +281,7 @@ Future<void> main(List<String> argv) async {
     return;
   }
   final args = parseProbeArgs([
-    for (final option in [
-      'model',
-      'url',
-      'samples',
-      'json',
-      'timeout',
-    ])
+    for (final option in ['model', 'url', 'samples', 'json', 'timeout'])
       if (parsed[option] != null) ...['--$option', parsed[option] as String],
   ], defaultSamples: 1);
 

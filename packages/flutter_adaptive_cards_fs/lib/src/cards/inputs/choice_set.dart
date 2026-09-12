@@ -24,7 +24,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class AdaptiveChoiceSet extends ConsumerStatefulWidget
     with AdaptiveElementWidgetMixin {
   /// Creates a choice-set input from [adaptiveMap] JSON.
-  AdaptiveChoiceSet({
+  new({
     required this.adaptiveMap,
   }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);

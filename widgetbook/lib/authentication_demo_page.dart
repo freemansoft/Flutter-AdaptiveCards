@@ -8,7 +8,7 @@ import 'package:flutter_adaptive_cards_fs/flutter_adaptive_cards_fs.dart';
 /// the button `value` (sign-in URL) and the `connectionName`. A real host opens
 /// the URL, captures the OAuth redirect, and swaps in the returned card.
 class AuthenticationDemoPage extends StatelessWidget {
-  const AuthenticationDemoPage({super.key});
+  const new({super.key});
 
   static const _assetPath = 'lib/samples/v1.4/authentication_signin_demo.json';
 

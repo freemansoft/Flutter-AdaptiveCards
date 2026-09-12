@@ -13,7 +13,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class AdaptiveCodeBlock extends ConsumerStatefulWidget
     with AdaptiveElementWidgetMixin {
   /// Creates a code block from [adaptiveMap] JSON.
-  AdaptiveCodeBlock({
+  new({
     required this.adaptiveMap,
   }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);

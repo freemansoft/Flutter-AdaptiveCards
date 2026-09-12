@@ -200,10 +200,7 @@ void main() {
     });
 
     test('Expressions: Math operations % and ^', () {
-      final templateJson = {
-        'modulo': r'${10 % 3}',
-        'power': r'${2 ^ 3}',
-      };
+      final templateJson = {'modulo': r'${10 % 3}', 'power': r'${2 ^ 3}'};
 
       final template = AdaptiveCardTemplate(templateJson);
       final result = json.decode(template.expand({}));

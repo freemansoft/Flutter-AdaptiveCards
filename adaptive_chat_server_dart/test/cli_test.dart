@@ -199,46 +199,38 @@ void main() {
   // user actually hits it -- including that it prints a message and not a
   // Dart stack trace, which the unit-level tests above cannot see.
   group('bin/server.dart', () {
-    test(
-      '--help prints usage and exits 0 without starting a server',
-      () async {
-        // Platform.resolvedExecutable, not `fvm dart`: CI runs this suite on
-        // a plain Dart SDK with no fvm on PATH. This invokes whichever SDK is
-        // executing the test, so it works locally and in CI alike.
-        final result = await Process.run(Platform.resolvedExecutable, [
-          'run',
-          'bin/server.dart',
-          '--help',
-        ], workingDirectory: Directory.current.path);
-        expect(result.exitCode, 0);
-        expect('${result.stdout}', contains('--keep-alive'));
-        expect('${result.stdout}', contains('--ollama-url'));
-      },
-      timeout: const Timeout(Duration(minutes: 2)),
-    );
+    test('--help prints usage and exits 0 without starting a server', () async {
+      // Platform.resolvedExecutable, not `fvm dart`: CI runs this suite on
+      // a plain Dart SDK with no fvm on PATH. This invokes whichever SDK is
+      // executing the test, so it works locally and in CI alike.
+      final result = await Process.run(Platform.resolvedExecutable, [
+        'run',
+        'bin/server.dart',
+        '--help',
+      ], workingDirectory: Directory.current.path);
+      expect(result.exitCode, 0);
+      expect('${result.stdout}', contains('--keep-alive'));
+      expect('${result.stdout}', contains('--ollama-url'));
+    }, timeout: const Timeout(Duration(minutes: 2)));
 
     // args throws a plain ArgParserException for this; the risk is that
     // something upstream (a bare rethrow, a bug in error handling) turns
     // that into an uncaught exception and a printed stack trace instead.
-    test(
-      'an unknown flag fails with a message, not a stack trace',
-      () async {
-        final result = await Process.run(Platform.resolvedExecutable, [
-          'run',
-          'bin/server.dart',
-          '--nonsense',
-        ], workingDirectory: Directory.current.path);
-        expect(result.exitCode, isNot(0));
-        final output = '${result.stdout}${result.stderr}';
-        expect(output, contains('nonsense'));
-        expect(
-          output,
-          isNot(contains('#0')),
-          reason: 'a bad flag is user error, not a crash to dump a trace for',
-        );
-      },
-      timeout: const Timeout(Duration(minutes: 2)),
-    );
+    test('an unknown flag fails with a message, not a stack trace', () async {
+      final result = await Process.run(Platform.resolvedExecutable, [
+        'run',
+        'bin/server.dart',
+        '--nonsense',
+      ], workingDirectory: Directory.current.path);
+      expect(result.exitCode, isNot(0));
+      final output = '${result.stdout}${result.stderr}';
+      expect(output, contains('nonsense'));
+      expect(
+        output,
+        isNot(contains('#0')),
+        reason: 'a bad flag is user error, not a crash to dump a trace for',
+      );
+    }, timeout: const Timeout(Duration(minutes: 2)));
 
     test(
       'naming no reply mode fails with guidance, not a stack trace',
@@ -265,22 +257,18 @@ void main() {
       timeout: const Timeout(Duration(minutes: 2)),
     );
 
-    test(
-      '--echo alone is a complete invocation',
-      () async {
-        // --echo names a mode, so it must satisfy the requirement on its own.
-        // Verified via --help + --echo so the process exits instead of serving.
-        final result = await Process.run(Platform.resolvedExecutable, [
-          'run',
-          'bin/server.dart',
-          '--echo',
-          '--help',
-        ], workingDirectory: Directory.current.path);
-        expect(result.exitCode, 0);
-        expect('${result.stdout}', isNot(contains('Choose a reply mode')));
-      },
-      timeout: const Timeout(Duration(minutes: 2)),
-    );
+    test('--echo alone is a complete invocation', () async {
+      // --echo names a mode, so it must satisfy the requirement on its own.
+      // Verified via --help + --echo so the process exits instead of serving.
+      final result = await Process.run(Platform.resolvedExecutable, [
+        'run',
+        'bin/server.dart',
+        '--echo',
+        '--help',
+      ], workingDirectory: Directory.current.path);
+      expect(result.exitCode, 0);
+      expect('${result.stdout}', isNot(contains('Choose a reply mode')));
+    }, timeout: const Timeout(Duration(minutes: 2)));
 
     test(
       'a bad --ollama-temperature fails with a message, not a stack trace',

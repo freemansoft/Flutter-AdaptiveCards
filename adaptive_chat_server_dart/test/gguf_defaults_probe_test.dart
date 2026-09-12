@@ -45,22 +45,19 @@ void main() {
     // Confirms the arm adds historicalDefaults rather than replacing
     // temperature/seed with them — getting this backwards would make the
     // arm measure a different experiment than the one the design describes.
-    test(
-      'pinned-historical adds the pre-0.33.3 defaults on top of the same '
-      'temperature and seed',
-      () {
-        final options = armOptions(
-          temperature: 0.6,
-          seed: 7,
-          pinnedHistorical: true,
-        );
-        expect(options['temperature'], 0.6);
-        expect(options['seed'], 7);
-        expect(options['top_k'], 40);
-        expect(options['top_p'], 0.9);
-        expect(options['presence_penalty'], 0);
-      },
-    );
+    test('pinned-historical adds the pre-0.33.3 defaults on top of the same '
+        'temperature and seed', () {
+      final options = armOptions(
+        temperature: 0.6,
+        seed: 7,
+        pinnedHistorical: true,
+      );
+      expect(options['temperature'], 0.6);
+      expect(options['seed'], 7);
+      expect(options['top_k'], 40);
+      expect(options['top_p'], 0.9);
+      expect(options['presence_penalty'], 0);
+    });
   });
 
   group('isolationArmOptions', () {
@@ -71,37 +68,31 @@ void main() {
     // (expected inert under greedy decoding); presence-penalty-only
     // isolates the half that adjusts logits before the argmax (expected to
     // move even a greedy reply).
-    test(
-      'topk-topp-only carries top_k/top_p, not presence_penalty',
-      () {
-        final options = isolationArmOptions(
-          temperature: 0,
-          seed: 7,
-          topKTopP: true,
-        );
-        expect(options['temperature'], 0);
-        expect(options['seed'], 7);
-        expect(options['top_k'], 40);
-        expect(options['top_p'], 0.9);
-        expect(options.containsKey('presence_penalty'), isFalse);
-      },
-    );
+    test('topk-topp-only carries top_k/top_p, not presence_penalty', () {
+      final options = isolationArmOptions(
+        temperature: 0,
+        seed: 7,
+        topKTopP: true,
+      );
+      expect(options['temperature'], 0);
+      expect(options['seed'], 7);
+      expect(options['top_k'], 40);
+      expect(options['top_p'], 0.9);
+      expect(options.containsKey('presence_penalty'), isFalse);
+    });
 
-    test(
-      'presence-penalty-only carries presence_penalty, not top_k/top_p',
-      () {
-        final options = isolationArmOptions(
-          temperature: 0,
-          seed: 7,
-          topKTopP: false,
-        );
-        expect(options['temperature'], 0);
-        expect(options['seed'], 7);
-        expect(options['presence_penalty'], 0);
-        expect(options.containsKey('top_k'), isFalse);
-        expect(options.containsKey('top_p'), isFalse);
-      },
-    );
+    test('presence-penalty-only carries presence_penalty, not top_k/top_p', () {
+      final options = isolationArmOptions(
+        temperature: 0,
+        seed: 7,
+        topKTopP: false,
+      );
+      expect(options['temperature'], 0);
+      expect(options['seed'], 7);
+      expect(options['presence_penalty'], 0);
+      expect(options.containsKey('top_k'), isFalse);
+      expect(options.containsKey('top_p'), isFalse);
+    });
   });
 
   group('optionsForArm dispatch', () {
@@ -172,65 +163,53 @@ void main() {
       options: optionsForArm(arm, temperature: 0.6, seed: 4242),
     );
 
-    test(
-      'unpinned: options carries temperature, num_ctx and seed, and no '
-      'candidate-set knobs',
-      () async {
-        await sendArm('unpinned');
-        final options = bodies.single['options'] as Map<String, dynamic>;
-        expect(options['temperature'], 0.6);
-        expect(options['seed'], 4242);
-        expect(options.containsKey('num_ctx'), isTrue);
-        expect(options.containsKey('top_k'), isFalse);
-        expect(options.containsKey('top_p'), isFalse);
-        expect(options.containsKey('presence_penalty'), isFalse);
-      },
-    );
+    test('unpinned: options carries temperature, num_ctx and seed, and no '
+        'candidate-set knobs', () async {
+      await sendArm('unpinned');
+      final options = bodies.single['options'] as Map<String, dynamic>;
+      expect(options['temperature'], 0.6);
+      expect(options['seed'], 4242);
+      expect(options.containsKey('num_ctx'), isTrue);
+      expect(options.containsKey('top_k'), isFalse);
+      expect(options.containsKey('top_p'), isFalse);
+      expect(options.containsKey('presence_penalty'), isFalse);
+    });
 
-    test(
-      'pinned-historical: options carries all of those, with the '
-      'pre-0.33.3 default values',
-      () async {
-        await sendArm('pinned-historical');
-        final options = bodies.single['options'] as Map<String, dynamic>;
-        expect(options['temperature'], 0.6);
-        expect(options['seed'], 4242);
-        expect(options.containsKey('num_ctx'), isTrue);
-        expect(options['top_k'], 40);
-        expect(options['top_p'], 0.9);
-        expect(options['presence_penalty'], 0);
-      },
-    );
+    test('pinned-historical: options carries all of those, with the '
+        'pre-0.33.3 default values', () async {
+      await sendArm('pinned-historical');
+      final options = bodies.single['options'] as Map<String, dynamic>;
+      expect(options['temperature'], 0.6);
+      expect(options['seed'], 4242);
+      expect(options.containsKey('num_ctx'), isTrue);
+      expect(options['top_k'], 40);
+      expect(options['top_p'], 0.9);
+      expect(options['presence_penalty'], 0);
+    });
 
-    test(
-      'topk-topp-only: options carries top_k/top_p and num_ctx, not '
-      'presence_penalty',
-      () async {
-        await sendArm('topk-topp-only');
-        final options = bodies.single['options'] as Map<String, dynamic>;
-        expect(options['temperature'], 0.6);
-        expect(options['seed'], 4242);
-        expect(options.containsKey('num_ctx'), isTrue);
-        expect(options['top_k'], 40);
-        expect(options['top_p'], 0.9);
-        expect(options.containsKey('presence_penalty'), isFalse);
-      },
-    );
+    test('topk-topp-only: options carries top_k/top_p and num_ctx, not '
+        'presence_penalty', () async {
+      await sendArm('topk-topp-only');
+      final options = bodies.single['options'] as Map<String, dynamic>;
+      expect(options['temperature'], 0.6);
+      expect(options['seed'], 4242);
+      expect(options.containsKey('num_ctx'), isTrue);
+      expect(options['top_k'], 40);
+      expect(options['top_p'], 0.9);
+      expect(options.containsKey('presence_penalty'), isFalse);
+    });
 
-    test(
-      'presence-penalty-only: options carries presence_penalty and '
-      'num_ctx, not top_k/top_p',
-      () async {
-        await sendArm('presence-penalty-only');
-        final options = bodies.single['options'] as Map<String, dynamic>;
-        expect(options['temperature'], 0.6);
-        expect(options['seed'], 4242);
-        expect(options.containsKey('num_ctx'), isTrue);
-        expect(options['presence_penalty'], 0);
-        expect(options.containsKey('top_k'), isFalse);
-        expect(options.containsKey('top_p'), isFalse);
-      },
-    );
+    test('presence-penalty-only: options carries presence_penalty and '
+        'num_ctx, not top_k/top_p', () async {
+      await sendArm('presence-penalty-only');
+      final options = bodies.single['options'] as Map<String, dynamic>;
+      expect(options['temperature'], 0.6);
+      expect(options['seed'], 4242);
+      expect(options.containsKey('num_ctx'), isTrue);
+      expect(options['presence_penalty'], 0);
+      expect(options.containsKey('top_k'), isFalse);
+      expect(options.containsKey('top_p'), isFalse);
+    });
 
     // Only the options map may vary across arms. If the prompt/messages
     // differed too — a stray edit landing in one arm but not another — the

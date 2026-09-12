@@ -96,7 +96,7 @@ int _ms(Map<String, dynamic> data, String key) =>
 /// printed — the fields [ProbeRun.summary] needs, per the doc comment's
 /// second decision.
 class _CallResult {
-  const _CallResult({
+  const new({
     required this.completed,
     this.prompt,
     this.cached,
@@ -268,18 +268,8 @@ Future<void> main(List<String> argv) async {
   ]);
 
   stdout.writeln('1. identical repeat');
-  await record(
-    'identical-repeat',
-    'cold',
-    0,
-    ask('Define alpha-term7.'),
-  );
-  await record(
-    'identical-repeat',
-    'identical',
-    1,
-    ask('Define alpha-term7.'),
-  );
+  await record('identical-repeat', 'cold', 0, ask('Define alpha-term7.'));
+  await record('identical-repeat', 'identical', 1, ask('Define alpha-term7.'));
 
   stdout.writeln('2. same system prompt, different question');
   await record(
@@ -295,12 +285,7 @@ Future<void> main(List<String> argv) async {
   history
     ..add({'role': 'assistant', 'content': first.reply ?? ''})
     ..add({'role': 'user', 'content': 'Now define alpha-term15.'});
-  final second = await record(
-    'growing-conversation',
-    'turn-2',
-    1,
-    history,
-  );
+  final second = await record('growing-conversation', 'turn-2', 1, history);
   history
     ..add({'role': 'assistant', 'content': second.reply ?? ''})
     ..add({'role': 'user', 'content': 'And alpha-term18?'});
@@ -312,12 +297,7 @@ Future<void> main(List<String> argv) async {
     {'role': 'system', 'content': other},
     {'role': 'user', 'content': 'Define bravo-term7.'},
   ]);
-  await record(
-    'interleaved',
-    'back-to-a',
-    1,
-    ask('Define alpha-term7.'),
-  );
+  await record('interleaved', 'back-to-a', 1, ask('Define alpha-term7.'));
 
   stdout.writeln('5. retry after aborting mid-prefill');
   final retry = _systemPrompt('charlie');

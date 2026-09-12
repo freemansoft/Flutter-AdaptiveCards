@@ -22,9 +22,8 @@ import '../utils/test_utils.dart';
 /// Returns the first element map in [body] whose `id` matches [id].
 Map<String, dynamic> _fieldById(List<dynamic> body, String id) {
   return body.firstWhere(
-        (e) => e is Map<String, dynamic> && e['id'] == id,
-      )
-      as Map<String, dynamic>;
+    (e) => e is Map<String, dynamic> && e['id'] == id,
+  ) as Map<String, dynamic>;
 }
 
 void main() {

@@ -4,10 +4,10 @@ library;
 /// Result of starting a conversation.
 class ChatStart {
   /// Creates a start result.
-  const ChatStart({required this.conversationId, required this.postNext});
+  const new({required this.conversationId, required this.postNext});
 
   /// Parses the `POST /conversations` response.
-  factory ChatStart.fromJson(Map<String, dynamic> json) {
+  factory fromJson(Map<String, dynamic> json) {
     final links = json['links'] as Map<String, dynamic>;
     return ChatStart(
       conversationId: json['conversationId'] as String,
@@ -25,7 +25,7 @@ class ChatStart {
 /// One interaction's response: pre-styled cards plus follow-up links.
 class ChatEnvelope {
   /// Creates an envelope.
-  const ChatEnvelope({
+  const new({
     required this.conversationId,
     required this.interactionId,
     required this.messages,
@@ -34,7 +34,7 @@ class ChatEnvelope {
   });
 
   /// Parses a send/replay response envelope.
-  factory ChatEnvelope.fromJson(Map<String, dynamic> json) {
+  factory fromJson(Map<String, dynamic> json) {
     final links = json['links'] as Map<String, dynamic>;
     final rawMessages = json['messages'] as List<dynamic>;
     return ChatEnvelope(
@@ -67,7 +67,7 @@ class ChatEnvelope {
 /// Raised when the chat backend returns an error or unreachable response.
 class ChatBackendException implements Exception {
   /// Creates the exception with a [message].
-  ChatBackendException(this.message);
+  new(this.message);
 
   /// Human-readable failure description.
   final String message;

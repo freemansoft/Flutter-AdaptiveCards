@@ -12,7 +12,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class AdaptiveRatingInput extends ConsumerStatefulWidget
     with AdaptiveElementWidgetMixin {
   /// Creates a rating input from [adaptiveMap] JSON.
-  AdaptiveRatingInput({
+  new({
     required this.adaptiveMap,
   }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);

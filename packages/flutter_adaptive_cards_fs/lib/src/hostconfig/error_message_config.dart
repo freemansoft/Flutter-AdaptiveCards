@@ -1,14 +1,14 @@
 /// HostConfig `inputs.errorMessage` section controlling validation error text.
 class ErrorMessageConfig {
   /// Creates error-message typography settings from explicit values.
-  ErrorMessageConfig({
+  new({
     required this.size,
     required this.spacing,
     required this.weight,
   });
 
   /// Parses `inputs.errorMessage` from HostConfig JSON.
-  factory ErrorMessageConfig.fromJson(Map<String, dynamic> json) {
+  factory fromJson(Map<String, dynamic> json) {
     return ErrorMessageConfig(
       size: json['size']?.toString() ?? 'default',
       spacing: json['spacing']?.toString() ?? 'default',

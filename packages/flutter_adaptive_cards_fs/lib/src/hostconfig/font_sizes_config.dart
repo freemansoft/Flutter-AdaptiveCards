@@ -3,7 +3,7 @@ import 'package:flutter_adaptive_cards_fs/src/hostconfig/fallback_configs.dart';
 /// HostConfig `fontSizes` section mapping size tokens to pixel font sizes.
 class FontSizesConfig {
   /// Creates font size tokens from explicit pixel values.
-  FontSizesConfig({
+  new({
     required this.small,
     required this.defaultSize,
     required this.medium,
@@ -12,7 +12,7 @@ class FontSizesConfig {
   });
 
   /// Parses `fontSizes` from HostConfig JSON.
-  factory FontSizesConfig.fromJson(Map<String, dynamic> json) {
+  factory fromJson(Map<String, dynamic> json) {
     final fallbackSizes = FallbackConfigs.fontSizesConfig;
     return FontSizesConfig(
       small: json['small'] as int? ?? fallbackSizes.small,

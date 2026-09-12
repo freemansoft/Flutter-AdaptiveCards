@@ -6,7 +6,7 @@ import 'package:flutter_adaptive_cards_fs/src/models/fact.dart';
 @immutable
 class AdaptiveElementUpdate {
   /// Creates a patch for element [id].
-  const AdaptiveElementUpdate({
+  const new({
     required this.id,
     this.isVisible,
     this.value,
@@ -126,7 +126,7 @@ class AdaptiveElementUpdate {
 @immutable
 class AdaptiveActionUpdate {
   /// Creates a patch for action [id].
-  const AdaptiveActionUpdate({
+  const new({
     required this.id,
     this.isEnabled,
     this.title,

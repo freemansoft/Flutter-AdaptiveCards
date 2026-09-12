@@ -14,7 +14,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 ///
 class ActionSet extends ConsumerStatefulWidget with AdaptiveElementWidgetMixin {
   /// Creates an action set from [adaptiveMap] JSON.
-  ActionSet({
+  new({
     required this.adaptiveMap,
   }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);

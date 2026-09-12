@@ -11,10 +11,7 @@ void main() {
       endpoint: Uri.parse('https://api.example.com/invoke'),
       client: MockClient((request) async {
         expect(request.method, 'POST');
-        expect(
-          jsonDecode(request.body),
-          {'kind': 'execute', 'verb': 'save'},
-        );
+        expect(jsonDecode(request.body), {'kind': 'execute', 'verb': 'save'});
         return http.Response(
           jsonEncode({
             'type': 'adaptiveCard.invokeResponse',

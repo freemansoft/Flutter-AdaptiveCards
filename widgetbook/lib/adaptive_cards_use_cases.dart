@@ -907,8 +907,7 @@ Widget buildInputChoiceSetExample1(BuildContext context) {
 )
 Widget buildInputChoiceSetValueChangedActionHostCascade(BuildContext context) {
   return const DependentChoiceSetDemoPage(
-    assetPath:
-        'lib/samples/inputs/input_choice_set/value_changed_action_filtered.json',
+    assetPath: 'lib/samples/inputs/input_choice_set/value_changed_action_filtered.json',
   );
 }
 
@@ -921,8 +920,7 @@ Widget buildInputChoiceSetValueChangedActionTeamsDataQuery(
   BuildContext context,
 ) {
   return const DependentChoiceSetDemoPage(
-    assetPath:
-        'lib/samples/inputs/input_choice_set/value_changed_action_dependent_query.json',
+    assetPath: 'lib/samples/inputs/input_choice_set/value_changed_action_dependent_query.json',
   );
 }
 
@@ -1276,8 +1274,7 @@ Widget buildV16ProgressRing(BuildContext context) {
 )
 Widget buildNetworkExpenseReport(BuildContext context) {
   return const NetworkPage(
-    url:
-        'https://raw.githubusercontent.com/microsoft/AdaptiveCards/main/samples/v1.5/Scenarios/ExpenseReport.json',
+    url: 'https://raw.githubusercontent.com/microsoft/AdaptiveCards/main/samples/v1.5/Scenarios/ExpenseReport.json',
   );
 }
 
@@ -1288,8 +1285,7 @@ Widget buildNetworkExpenseReport(BuildContext context) {
 )
 Widget buildNetworkShowCardWizard(BuildContext context) {
   return const NetworkPage(
-    url:
-        'https://raw.githubusercontent.com/microsoft/AdaptiveCards/main/samples/v1.5/Scenarios/ShowCardWizard.json',
+    url: 'https://raw.githubusercontent.com/microsoft/AdaptiveCards/main/samples/v1.5/Scenarios/ShowCardWizard.json',
   );
 }
 
@@ -1301,8 +1297,7 @@ Widget buildNetworkShowCardWizard(BuildContext context) {
 )
 Widget buildNetworkAgenda(BuildContext context) {
   return const NetworkPage(
-    url:
-        'https://raw.githubusercontent.com/microsoft/AdaptiveCards/main/samples/v1.5/Scenarios/Agenda.json',
+    url: 'https://raw.githubusercontent.com/microsoft/AdaptiveCards/main/samples/v1.5/Scenarios/Agenda.json',
   );
 }
 
@@ -1313,8 +1308,7 @@ Widget buildNetworkAgenda(BuildContext context) {
 )
 Widget buildNetworkFlightUpdateTable(BuildContext context) {
   return const NetworkPage(
-    url:
-        'https://raw.githubusercontent.com/microsoft/AdaptiveCards/main/samples/v1.5/Scenarios/FlightUpdateTable.json',
+    url: 'https://raw.githubusercontent.com/microsoft/AdaptiveCards/main/samples/v1.5/Scenarios/FlightUpdateTable.json',
   );
 }
 

@@ -20,7 +20,7 @@ import 'package:test/test.dart';
 // from it.
 
 class _CountingResponder implements Responder {
-  _CountingResponder(this.onCall);
+  new(this.onCall);
   final void Function() onCall;
 
   @override
@@ -40,7 +40,7 @@ class _CountingResponder implements Responder {
 /// Stays inside [reply] until [gate] completes, so a second request can
 /// arrive while the first is still in flight.
 class _GatedResponder implements Responder {
-  _GatedResponder(this.gate, this.onCall);
+  new(this.gate, this.onCall);
   final Future<void> gate;
   final void Function() onCall;
 
@@ -62,7 +62,7 @@ class _GatedResponder implements Responder {
 /// Records the history handed to each call so tests can assert on what the
 /// model would actually have been shown.
 class _HistorySpyResponder implements Responder {
-  _HistorySpyResponder(this.replyFor);
+  new(this.replyFor);
   final Reply Function(String text) replyFor;
   final histories = <List<(String, String)>>[];
 
@@ -138,174 +138,151 @@ void main() {
   // conversationId the in-memory store no longer knows about. A bare 404
   // here would strand the client with no way to recover the thread, so the
   // server re-creates it under the same id and says so via the notice card.
-  test(
-    'POST interaction against an unknown conversation auto-vivifies it '
-    'under the same id and prepends a notice card',
-    () async {
-      final response = await handler(
-        Request(
-          'POST',
-          Uri.parse('http://localhost/conversations/missing/interactions'),
-          headers: {'x-interaction-id': 'i_0001'},
-          body: jsonEncode({
-            'data': {'message': 'hi'},
-          }),
-        ),
-      );
-      expect(response.statusCode, 200);
-      // Transport-level signal for something that happened server-side but
-      // still answered with a normal envelope — see the "X-Chat-Notice"
-      // policy note in app.dart.
-      expect(response.headers['x-chat-notice'], 'conversation-recovered');
-      final envelope = await decode(response);
-      expect(envelope['conversationId'], 'missing');
-      final messages = envelope['messages'] as List;
-      expect(messages, hasLength(3));
-      // The notice card has no ColumnSet/role-label TextBlock ahead of it —
-      // just the attention-styled Container — unlike a user/assistant
-      // bubble.
-      final noticeBody = (messages[0] as Map)['body'] as List;
-      expect((noticeBody[0] as Map)['style'], 'attention');
-      expect(store.get('missing'), isNotNull);
-    },
-  );
+  test('POST interaction against an unknown conversation auto-vivifies it '
+      'under the same id and prepends a notice card', () async {
+    final response = await handler(
+      Request(
+        'POST',
+        Uri.parse('http://localhost/conversations/missing/interactions'),
+        headers: {'x-interaction-id': 'i_0001'},
+        body: jsonEncode({
+          'data': {'message': 'hi'},
+        }),
+      ),
+    );
+    expect(response.statusCode, 200);
+    // Transport-level signal for something that happened server-side but
+    // still answered with a normal envelope — see the "X-Chat-Notice"
+    // policy note in app.dart.
+    expect(response.headers['x-chat-notice'], 'conversation-recovered');
+    final envelope = await decode(response);
+    expect(envelope['conversationId'], 'missing');
+    final messages = envelope['messages'] as List;
+    expect(messages, hasLength(3));
+    // The notice card has no ColumnSet/role-label TextBlock ahead of it —
+    // just the attention-styled Container — unlike a user/assistant
+    // bubble.
+    final noticeBody = (messages[0] as Map)['body'] as List;
+    expect((noticeBody[0] as Map)['style'], 'attention');
+    expect(store.get('missing'), isNotNull);
+  });
 
   // The notice marks the moment the conversation was recovered, not every
   // turn that follows — this catches a header/card that leaks onto later,
   // unrelated interactions in the same (re-created) conversation.
-  test(
-    'a second interaction on an auto-vivified conversation carries no '
-    'notice card or X-Chat-Notice header',
-    () async {
-      const cid = 'missing-then-reused';
-      await handler(
-        Request(
-          'POST',
-          Uri.parse('http://localhost/conversations/$cid/interactions'),
-          headers: {'x-interaction-id': 'i_0001'},
-          body: jsonEncode({
-            'data': {'message': 'hi'},
-          }),
-        ),
-      );
-      final second = await handler(
-        Request(
-          'POST',
-          Uri.parse('http://localhost/conversations/$cid/interactions'),
-          headers: {'x-interaction-id': 'i_0002'},
-          body: jsonEncode({
-            'data': {'message': 'again'},
-          }),
-        ),
-      );
-      final envelope = await decode(second);
-      expect(envelope['messages'], hasLength(2));
-      expect(second.headers['x-chat-notice'], isNull);
-    },
-  );
-
-  // The stored-envelope replay path (see the `existing` branch in app.dart)
-  // returns the same messages a retry would have gotten the first time, so
-  // it must derive the same header from them too — a header computed only
-  // on the fresh-request path would vanish on replay.
-  test(
-    'a repeated X-Interaction-Id on an auto-vivified conversation still '
-    'carries the notice card and its header on replay',
-    () async {
-      const cid = 'missing-retried';
-      Request makeRequest() => Request(
+  test('a second interaction on an auto-vivified conversation carries no '
+      'notice card or X-Chat-Notice header', () async {
+    const cid = 'missing-then-reused';
+    await handler(
+      Request(
         'POST',
         Uri.parse('http://localhost/conversations/$cid/interactions'),
         headers: {'x-interaction-id': 'i_0001'},
         body: jsonEncode({
           'data': {'message': 'hi'},
         }),
-      );
-      await handler(makeRequest());
-      final retry = await handler(makeRequest());
+      ),
+    );
+    final second = await handler(
+      Request(
+        'POST',
+        Uri.parse('http://localhost/conversations/$cid/interactions'),
+        headers: {'x-interaction-id': 'i_0002'},
+        body: jsonEncode({
+          'data': {'message': 'again'},
+        }),
+      ),
+    );
+    final envelope = await decode(second);
+    expect(envelope['messages'], hasLength(2));
+    expect(second.headers['x-chat-notice'], isNull);
+  });
 
-      expect(retry.headers['x-chat-notice'], 'conversation-recovered');
-      final envelope = await decode(retry);
-      expect(envelope['messages'], hasLength(3));
-    },
-  );
+  // The stored-envelope replay path (see the `existing` branch in app.dart)
+  // returns the same messages a retry would have gotten the first time, so
+  // it must derive the same header from them too — a header computed only
+  // on the fresh-request path would vanish on replay.
+  test('a repeated X-Interaction-Id on an auto-vivified conversation still '
+      'carries the notice card and its header on replay', () async {
+    const cid = 'missing-retried';
+    Request makeRequest() => Request(
+      'POST',
+      Uri.parse('http://localhost/conversations/$cid/interactions'),
+      headers: {'x-interaction-id': 'i_0001'},
+      body: jsonEncode({
+        'data': {'message': 'hi'},
+      }),
+    );
+    await handler(makeRequest());
+    final retry = await handler(makeRequest());
+
+    expect(retry.headers['x-chat-notice'], 'conversation-recovered');
+    final envelope = await decode(retry);
+    expect(envelope['messages'], hasLength(3));
+  });
 
   // Negative control for the header: a conversation the store still knows
   // about must never carry the recovery signal, however similar its shape
   // is to the auto-vivified cases above.
-  test(
-    'an ordinary interaction (known conversation) carries no '
-    'X-Chat-Notice header',
-    () async {
-      final cid = await startConversation(handler);
-      final response = await handler(
-        Request(
-          'POST',
-          Uri.parse('http://localhost/conversations/$cid/interactions'),
-          headers: {'x-interaction-id': 'i_0001'},
-          body: jsonEncode({
-            'data': {'message': 'hello'},
-          }),
-        ),
-      );
-      expect(response.headers['x-chat-notice'], isNull);
-    },
-  );
+  test('an ordinary interaction (known conversation) carries no '
+      'X-Chat-Notice header', () async {
+    final cid = await startConversation(handler);
+    final response = await handler(
+      Request(
+        'POST',
+        Uri.parse('http://localhost/conversations/$cid/interactions'),
+        headers: {'x-interaction-id': 'i_0001'},
+        body: jsonEncode({
+          'data': {'message': 'hello'},
+        }),
+      ),
+    );
+    expect(response.headers['x-chat-notice'], isNull);
+  });
 
-  test(
-    'an auto-vivified conversation uses the caller-supplied notice body '
-    'and default role labels',
-    () async {
-      final customHandler = buildHandler(
-        store: ConversationStore(),
-        responder: EchoResponder(),
-        expiredConversationBodyItems: [
-          {'type': 'TextBlock', 'text': 'custom notice', 'wrap': true},
-        ],
-      );
-      final response = await customHandler(
-        Request(
-          'POST',
-          Uri.parse('http://localhost/conversations/missing/interactions'),
-          headers: {'x-interaction-id': 'i_0001'},
-          body: jsonEncode({
-            'data': {'message': 'hi'},
-          }),
-        ),
-      );
-      final envelope = await decode(response);
-      final messages = envelope['messages'] as List;
-      final noticeContainer = (messages[0] as Map)['body'] as List;
-      expect(
-        (noticeContainer[0] as Map)['items'],
-        [
-          {'type': 'TextBlock', 'text': 'custom notice', 'wrap': true},
-        ],
-      );
-      // Labels are lost across the restart, so the auto-vivified
-      // conversation falls back to the defaults.
-      final userCard = messages[1] as Map<String, dynamic>;
-      expect(((userCard['body'] as List)[0] as Map)['text'], 'user');
-    },
-  );
+  test('an auto-vivified conversation uses the caller-supplied notice body '
+      'and default role labels', () async {
+    final customHandler = buildHandler(
+      store: ConversationStore(),
+      responder: EchoResponder(),
+      expiredConversationBodyItems: [
+        {'type': 'TextBlock', 'text': 'custom notice', 'wrap': true},
+      ],
+    );
+    final response = await customHandler(
+      Request(
+        'POST',
+        Uri.parse('http://localhost/conversations/missing/interactions'),
+        headers: {'x-interaction-id': 'i_0001'},
+        body: jsonEncode({
+          'data': {'message': 'hi'},
+        }),
+      ),
+    );
+    final envelope = await decode(response);
+    final messages = envelope['messages'] as List;
+    final noticeContainer = (messages[0] as Map)['body'] as List;
+    expect((noticeContainer[0] as Map)['items'], [
+      {'type': 'TextBlock', 'text': 'custom notice', 'wrap': true},
+    ]);
+    // Labels are lost across the restart, so the auto-vivified
+    // conversation falls back to the defaults.
+    final userCard = messages[1] as Map<String, dynamic>;
+    expect(((userCard['body'] as List)[0] as Map)['text'], 'user');
+  });
 
   // A read-only replay must never have the side effect of creating a
   // conversation — only a POST, which carries a message to answer, does.
-  test(
-    'GET replay against a still-unknown conversation returns 404 — '
-    'auto-vivify only happens on POST',
-    () async {
-      final response = await handler(
-        Request(
-          'GET',
-          Uri.parse(
-            'http://localhost/conversations/missing/interactions/i_0001',
-          ),
-        ),
-      );
-      expect(response.statusCode, 404);
-    },
-  );
+  test('GET replay against a still-unknown conversation returns 404 — '
+      'auto-vivify only happens on POST', () async {
+    final response = await handler(
+      Request(
+        'GET',
+        Uri.parse('http://localhost/conversations/missing/interactions/i_0001'),
+      ),
+    );
+    expect(response.statusCode, 404);
+  });
 
   test('POST interaction with missing data.message returns 400', () async {
     final cid = await startConversation(handler);
@@ -349,61 +326,55 @@ void main() {
     expect(await decode(replay), envelope);
   });
 
-  test(
-    "labels supplied at POST /conversations apply to every interaction's "
-    'bubbles',
-    () async {
-      final start = await handler(
-        Request(
-          'POST',
-          Uri.parse('http://localhost/conversations'),
-          body: jsonEncode({'userLabel': 'Me', 'assistantLabel': 'Bot'}),
-        ),
-      );
-      final cid = (await decode(start))['conversationId'] as String;
+  test("labels supplied at POST /conversations apply to every interaction's "
+      'bubbles', () async {
+    final start = await handler(
+      Request(
+        'POST',
+        Uri.parse('http://localhost/conversations'),
+        body: jsonEncode({'userLabel': 'Me', 'assistantLabel': 'Bot'}),
+      ),
+    );
+    final cid = (await decode(start))['conversationId'] as String;
 
-      final send = await handler(
-        Request(
-          'POST',
-          Uri.parse('http://localhost/conversations/$cid/interactions'),
-          headers: {'x-interaction-id': 'i_0001'},
-          body: jsonEncode({
-            'data': {'message': 'hello'},
-          }),
-        ),
-      );
-      final envelope = await decode(send);
-      final messages = envelope['messages'] as List;
-      final userCard = messages[0] as Map<String, dynamic>;
-      final assistantCard = messages[1] as Map<String, dynamic>;
-      expect(((userCard['body'] as List)[0] as Map)['text'], 'Me');
-      expect(((assistantCard['body'] as List)[0] as Map)['text'], 'Bot');
-    },
-  );
+    final send = await handler(
+      Request(
+        'POST',
+        Uri.parse('http://localhost/conversations/$cid/interactions'),
+        headers: {'x-interaction-id': 'i_0001'},
+        body: jsonEncode({
+          'data': {'message': 'hello'},
+        }),
+      ),
+    );
+    final envelope = await decode(send);
+    final messages = envelope['messages'] as List;
+    final userCard = messages[0] as Map<String, dynamic>;
+    final assistantCard = messages[1] as Map<String, dynamic>;
+    expect(((userCard['body'] as List)[0] as Map)['text'], 'Me');
+    expect(((assistantCard['body'] as List)[0] as Map)['text'], 'Bot');
+  });
 
-  test(
-    'POST /conversations without a body defaults labels to '
-    '"user"/"assistant"',
-    () async {
-      final cid = await startConversation(handler);
-      final send = await handler(
-        Request(
-          'POST',
-          Uri.parse('http://localhost/conversations/$cid/interactions'),
-          headers: {'x-interaction-id': 'i_0001'},
-          body: jsonEncode({
-            'data': {'message': 'hello'},
-          }),
-        ),
-      );
-      final envelope = await decode(send);
-      final messages = envelope['messages'] as List;
-      final userCard = messages[0] as Map<String, dynamic>;
-      final assistantCard = messages[1] as Map<String, dynamic>;
-      expect(((userCard['body'] as List)[0] as Map)['text'], 'user');
-      expect(((assistantCard['body'] as List)[0] as Map)['text'], 'assistant');
-    },
-  );
+  test('POST /conversations without a body defaults labels to '
+      '"user"/"assistant"', () async {
+    final cid = await startConversation(handler);
+    final send = await handler(
+      Request(
+        'POST',
+        Uri.parse('http://localhost/conversations/$cid/interactions'),
+        headers: {'x-interaction-id': 'i_0001'},
+        body: jsonEncode({
+          'data': {'message': 'hello'},
+        }),
+      ),
+    );
+    final envelope = await decode(send);
+    final messages = envelope['messages'] as List;
+    final userCard = messages[0] as Map<String, dynamic>;
+    final assistantCard = messages[1] as Map<String, dynamic>;
+    expect(((userCard['body'] as List)[0] as Map)['text'], 'user');
+    expect(((assistantCard['body'] as List)[0] as Map)['text'], 'assistant');
+  });
 
   test('GET replay of an unknown interaction returns 404', () async {
     final cid = await startConversation(handler);

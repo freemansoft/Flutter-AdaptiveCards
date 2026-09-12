@@ -15,7 +15,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class AdaptiveRichTextBlock extends ConsumerStatefulWidget
     with AdaptiveElementWidgetMixin {
   /// Creates a rich text block from [adaptiveMap] JSON.
-  AdaptiveRichTextBlock({
+  new({
     required this.adaptiveMap,
   }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);

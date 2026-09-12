@@ -69,16 +69,13 @@ void main() {
   // third distinct failure mode, checked after jsonDecode succeeds — the
   // one this file's own type-check (`decoded is! List`) exists to catch,
   // separate from the two exception-based fallbacks above.
-  test(
-    'falls back to a built-in notice when the file is not a JSON array',
-    () {
-      final path = '${tempDir.path}/object.json';
-      File(path).writeAsStringSync(jsonEncode({'type': 'TextBlock'}));
+  test('falls back to a built-in notice when the file is not a JSON array', () {
+    final path = '${tempDir.path}/object.json';
+    File(path).writeAsStringSync(jsonEncode({'type': 'TextBlock'}));
 
-      final items = loadExpiredConversationBodyItems(path);
+    final items = loadExpiredConversationBodyItems(path);
 
-      expect(items, isNotEmpty);
-      expect(items.single['type'], 'TextBlock');
-    },
-  );
+    expect(items, isNotEmpty);
+    expect(items.single['type'], 'TextBlock');
+  });
 }

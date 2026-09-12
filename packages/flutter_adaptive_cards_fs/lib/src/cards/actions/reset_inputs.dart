@@ -12,7 +12,7 @@ import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 class AdaptiveActionResetInputs extends StatefulWidget
     with AdaptiveElementWidgetMixin {
   /// Creates an `Action.ResetInputs` widget from [adaptiveMap].
-  AdaptiveActionResetInputs({
+  new({
     required this.adaptiveMap,
   }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);

@@ -45,9 +45,7 @@ void main() {
     expect(find.text('Merged'), findsOneWidget);
   });
 
-  testWidgets('App bar not shown when no files open', (
-    tester,
-  ) async {
+  testWidgets('App bar not shown when no files open', (tester) async {
     await tester.pumpWidget(const AdaptiveExplorerApp());
 
     // Verify tab bar is present
@@ -73,18 +71,16 @@ void main() {
     final saveButtonFinder = find
         .ancestor(
           of: find.text('Save'),
-          matching: find.byWidgetPredicate(
-            (widget) {
-              try {
-                // ignoring because the onPressed could take action
-                // ignore: unnecessary_statements
-                (widget as dynamic).onPressed;
-                return true;
-              } on Object catch (_) {
-                return false;
-              }
-            },
-          ),
+          matching: find.byWidgetPredicate((widget) {
+            try {
+              // ignoring because the onPressed could take action
+              // ignore: unnecessary_statements
+              (widget as dynamic).onPressed;
+              return true;
+            } on Object catch (_) {
+              return false;
+            }
+          }),
         )
         .first;
     expect(saveButtonFinder, findsOneWidget);

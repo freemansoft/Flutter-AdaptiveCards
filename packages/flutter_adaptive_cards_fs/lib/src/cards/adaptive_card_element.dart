@@ -27,7 +27,7 @@ class AdaptiveCardElement extends StatefulWidget
   /// Creates the root `AdaptiveCard` element from [adaptiveMap].
   ///
   /// When [listView] is true, body children are laid out in a [ListView].
-  AdaptiveCardElement({
+  new({
     required this.adaptiveMap,
     required this.listView,
   }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
@@ -262,11 +262,9 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
       showCardTargetElements = List<AdaptiveCardElement>.from(
         showCardActions
             .map(
-              (action) =>
-                  cardTypeRegistry.getElement(
-                        map: action.adaptiveMap['card'],
-                      )
-                      as AdaptiveCardElement,
+              (action) => cardTypeRegistry.getElement(
+                map: action.adaptiveMap['card'],
+              ) as AdaptiveCardElement,
             )
             .toList(),
       );
@@ -448,7 +446,7 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
 /// Watches [cardWidthBucketProvider], so it reflows when the card crosses a
 /// width boundary. Falls back to a vertical stack otherwise.
 class _AdaptiveCardBody extends ConsumerWidget {
-  const _AdaptiveCardBody({
+  const new({
     required this.bodyItems,
     required this.childMaps,
     required this.layouts,
@@ -485,7 +483,7 @@ class _AdaptiveCardBody extends ConsumerWidget {
 /// Renders the optional prompt text and one button per
 /// [AuthenticationConfig.buttons] entry.
 class _AuthenticationRegion extends StatelessWidget {
-  const _AuthenticationRegion({
+  const new({
     required this.config,
     required this.onSignin,
   });
@@ -537,7 +535,7 @@ class _AuthenticationRegion extends StatelessWidget {
 
 /// Manual refresh control shown when root card JSON defines `refresh.action`.
 class _RefreshAffordance extends StatelessWidget {
-  const _RefreshAffordance({required this.onPressed});
+  const new({required this.onPressed});
 
   final VoidCallback onPressed;
 

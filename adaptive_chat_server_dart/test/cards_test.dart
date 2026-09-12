@@ -18,29 +18,25 @@ void main() {
     // Pins the layout mechanism itself: alignment lives in which column
     // carries the spacer, not in a flag the renderer interprets. Swap the
     // column order and the bubble silently renders on the wrong side.
-    test(
-      'is right-aligned accent style with the text in a spacer/content ColumnSet',
-      () {
-        final card = userBubble('hello');
-        expect(card['type'], 'AdaptiveCard');
-        final body = card['body'] as List;
-        final columnSet = body[1] as Map<String, dynamic>;
-        final columns = columnSet['columns'] as List;
-        expect(columns, hasLength(2));
-        // spacer (weight 1) first, content (weight 3) second, for right
-        // alignment.
-        expect((columns[0] as Map)['width'], 1);
-        expect((columns[1] as Map)['width'], 3);
-        final container =
-            ((columns[1] as Map)['items'] as List).single
-                as Map<String, dynamic>;
-        expect(container['style'], 'accent');
-        expect(container['roundedCorners'], true);
-        final textBlock =
-            (container['items'] as List).single as Map<String, dynamic>;
-        expect(textBlock['text'], 'hello');
-      },
-    );
+    test('is right-aligned accent style with the text in a spacer/content ColumnSet', () {
+      final card = userBubble('hello');
+      expect(card['type'], 'AdaptiveCard');
+      final body = card['body'] as List;
+      final columnSet = body[1] as Map<String, dynamic>;
+      final columns = columnSet['columns'] as List;
+      expect(columns, hasLength(2));
+      // spacer (weight 1) first, content (weight 3) second, for right
+      // alignment.
+      expect((columns[0] as Map)['width'], 1);
+      expect((columns[1] as Map)['width'], 3);
+      final container =
+          ((columns[1] as Map)['items'] as List).single as Map<String, dynamic>;
+      expect(container['style'], 'accent');
+      expect(container['roundedCorners'], true);
+      final textBlock =
+          (container['items'] as List).single as Map<String, dynamic>;
+      expect(textBlock['text'], 'hello');
+    });
 
     // The default label is user-facing chrome shown above every anonymous
     // conversation's bubbles, not an internal placeholder.
@@ -139,26 +135,23 @@ void main() {
   });
 
   group('noticeCard', () {
-    test(
-      'renders full-width attention style with no role label, embedding '
-      'the given body items',
-      () {
-        final bodyItems = [
-          {'type': 'TextBlock', 'text': 'notice', 'wrap': true},
-        ];
-        final card = noticeCard(bodyItems);
-        expect(card['type'], 'AdaptiveCard');
-        final body = card['body'] as List;
-        // No role-label TextBlock ahead of the container: a notice card has
-        // no author.
-        expect(body, hasLength(1));
-        final container = body[0] as Map<String, dynamic>;
-        expect(container['type'], 'Container');
-        expect(container['style'], 'attention');
-        expect(container['roundedCorners'], true);
-        expect(container['items'], bodyItems);
-      },
-    );
+    test('renders full-width attention style with no role label, embedding '
+        'the given body items', () {
+      final bodyItems = [
+        {'type': 'TextBlock', 'text': 'notice', 'wrap': true},
+      ];
+      final card = noticeCard(bodyItems);
+      expect(card['type'], 'AdaptiveCard');
+      final body = card['body'] as List;
+      // No role-label TextBlock ahead of the container: a notice card has
+      // no author.
+      expect(body, hasLength(1));
+      final container = body[0] as Map<String, dynamic>;
+      expect(container['type'], 'Container');
+      expect(container['style'], 'attention');
+      expect(container['roundedCorners'], true);
+      expect(container['items'], bodyItems);
+    });
   });
 
   group('envelope', () {

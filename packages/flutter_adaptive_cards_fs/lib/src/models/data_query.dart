@@ -6,7 +6,7 @@ import 'package:flutter_adaptive_cards_fs/src/utils/associated_inputs.dart';
 /// See https://learn.microsoft.com/en-us/adaptive-cards/schema-explorer/data-query
 class DataQuery {
   /// Creates a data query for the given [dataset] and optional paging fields.
-  DataQuery({
+  new({
     required this.dataset,
     this.count,
     this.skip,
@@ -15,7 +15,7 @@ class DataQuery {
   });
 
   /// Parses a `Data.Query` map from card JSON.
-  factory DataQuery.fromJson(Map<String, dynamic> json) {
+  factory fromJson(Map<String, dynamic> json) {
     return DataQuery(
       dataset: json['dataset'] as String,
       count: json['count'] as int?,

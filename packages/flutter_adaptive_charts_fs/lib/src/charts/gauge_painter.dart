@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 class GaugeSegment {
   /// Creates a gauge segment with [color], proportional [size], and optional
   /// [legend].
-  const GaugeSegment({
+  const new({
     required this.color,
     required this.size,
     this.legend,
@@ -67,7 +67,7 @@ String formatGaugeValue({
 class GaugePainter extends CustomPainter {
   /// Creates a gauge painter with the given scale, segments, and display
   /// options.
-  GaugePainter({
+  new({
     required this.value,
     required this.min,
     required this.max,

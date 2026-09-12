@@ -59,7 +59,7 @@ String? countryCodeFromOnChangeValue(Object? value) {
 /// parameters on city onChange. Country change preloads city choices; the city
 /// branch can also resolve choices from dataQuery.parameters['country'].
 class DependentChoiceSetDemoPage extends StatelessWidget {
-  const DependentChoiceSetDemoPage({
+  const new({
     super.key,
     required this.assetPath,
   });

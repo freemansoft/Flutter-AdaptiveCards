@@ -13,7 +13,7 @@ import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 class AdaptiveActionOpenUrl extends StatefulWidget
     with AdaptiveElementWidgetMixin {
   /// Creates an `Action.OpenUrl` widget from [adaptiveMap].
-  AdaptiveActionOpenUrl({
+  new({
     required this.adaptiveMap,
   }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);

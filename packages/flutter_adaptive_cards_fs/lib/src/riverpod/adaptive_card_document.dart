@@ -11,7 +11,7 @@ import 'package:flutter_adaptive_cards_fs/src/models/fact.dart';
 @immutable
 class AdaptiveCardDocument {
   /// Creates a document snapshot.
-  const AdaptiveCardDocument({
+  const new({
     required this.baseline,
     required this.nodesById,
     required this.overlaysById,
@@ -59,7 +59,7 @@ class AdaptiveCardDocument {
 @immutable
 class ElementOverlay {
   /// Creates an overlay patch for one element.
-  const ElementOverlay({
+  const new({
     this.isVisible,
     this.inputValue,
     this.choices,
@@ -204,7 +204,7 @@ class ElementOverlay {
 @immutable
 class ActionOverlay {
   /// Creates an overlay patch for one action.
-  const ActionOverlay({
+  const new({
     this.isEnabled,
     this.title,
     this.tooltip,

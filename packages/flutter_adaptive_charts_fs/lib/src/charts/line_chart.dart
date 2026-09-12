@@ -16,7 +16,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class AdaptiveLineChart extends ConsumerStatefulWidget
     with AdaptiveElementWidgetMixin {
   /// Creates a line chart element from [adaptiveMap].
-  AdaptiveLineChart({
+  new({
     required this.adaptiveMap,
   }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);

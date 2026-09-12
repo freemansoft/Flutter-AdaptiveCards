@@ -14,7 +14,7 @@ import 'package:flutter_adaptive_cards_fs/src/hostconfig/separator_config.dart';
 /// a fresh instance from the ambient theme on each build.
 class ThemeColorFallbacks {
   /// Builds color fallbacks from [theme]'s [ColorScheme].
-  ThemeColorFallbacks(ThemeData theme) : _theme = theme;
+  new(ThemeData theme) : _theme = theme;
 
   /// Light-theme fallbacks for HostConfig JSON parsing when no [ThemeData] is
   /// available at parse time.

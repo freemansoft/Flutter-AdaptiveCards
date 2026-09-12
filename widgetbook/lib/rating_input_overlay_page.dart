@@ -13,7 +13,7 @@ const _ratingId = 'demoRating';
 final ratingInputOverlayPageKey = GlobalKey<State<RatingInputOverlayPage>>();
 
 class RatingInputOverlayPage extends StatefulWidget {
-  const RatingInputOverlayPage({super.key});
+  const new({super.key});
 
   @override
   State<RatingInputOverlayPage> createState() => _RatingInputOverlayPageState();

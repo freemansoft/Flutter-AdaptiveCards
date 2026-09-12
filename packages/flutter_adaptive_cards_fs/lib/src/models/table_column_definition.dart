@@ -8,12 +8,12 @@ import 'package:flutter/foundation.dart';
 @immutable
 class TableColumnDefinition {
   /// Creates a column definition with optional [width].
-  const TableColumnDefinition({
+  const new({
     this.width,
   });
 
   /// Creates a TableColumnDefinition from JSON map
-  factory TableColumnDefinition.fromJson(Map<String, dynamic> json) {
+  factory fromJson(Map<String, dynamic> json) {
     return TableColumnDefinition(
       width: json['width'], // Can be num (flex ratio) or String (pixels)
     );

@@ -13,7 +13,7 @@ import 'package:widgetbook_workspace/widgetbook_card_registry.dart';
 /// Default knob values extracted from the first chart in a sample card.
 class ChartKnobDefaults {
   /// Creates defaults for Widgetbook chart property knobs.
-  const ChartKnobDefaults({
+  const new({
     this.title = '',
     this.xAxisTitle = '',
     this.yAxisTitle = '',
@@ -72,7 +72,7 @@ GlobalKey<State<ChartKnobsPage>> chartKnobsPageKeyFor(String assetPath) {
 /// Widgetbook page that deep-clones base card JSON and patches chart elements.
 class ChartKnobsPage extends StatefulWidget {
   /// Creates a chart knobs page for the sample at [assetPath].
-  const ChartKnobsPage({required this.assetPath, super.key});
+  const new({required this.assetPath, super.key});
 
   /// Asset path to the Adaptive Card JSON (Widgetbook bundle path).
   final String assetPath;

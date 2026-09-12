@@ -247,11 +247,10 @@ Future<void> main(List<String> argv) async {
 
   stdout.writeln();
   for (var i = 0; i < args.samples; i++) {
-    stdout.writeln(
-      'sample $i: ${[
-        for (final arm in ggufProbeArmNames) '$arm=${byArm[arm]![i].hash}',
-      ].join('  ')}',
-    );
+    final hashes = [
+      for (final arm in ggufProbeArmNames) '$arm=${byArm[arm]![i].hash}',
+    ];
+    stdout.writeln('sample $i: ${hashes.join('  ')}');
   }
 
   final sampleDiffs = diffsVsUnpinned('pinned-historical');

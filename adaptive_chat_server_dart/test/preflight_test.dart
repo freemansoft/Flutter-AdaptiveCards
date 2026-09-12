@@ -97,9 +97,8 @@ void main() {
   // The detail message is the operator's actual remedy, not just a
   // diagnostic — it has to be specific enough to copy-paste and run.
   test('a model that is not pulled reports the pull command', () async {
-    final readiness = await makeResponder(
-      client: tagsClient(['some-other:7b']),
-    ).checkReadiness();
+    final readiness = await makeResponder(client: tagsClient(['some-other:7b']))
+        .checkReadiness();
     expect(readiness.isReady, isFalse);
     expect(readiness.detail, contains('ollama pull qwen2.5-coder:7b'));
     // The operator needs to know what *is* available to pick from.

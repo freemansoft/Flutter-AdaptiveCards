@@ -16,7 +16,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class AdaptiveContainer extends ConsumerStatefulWidget
     with AdaptiveElementWidgetMixin {
   /// Creates a `Container` element from [adaptiveMap].
-  AdaptiveContainer({
+  new({
     required this.adaptiveMap,
   }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);

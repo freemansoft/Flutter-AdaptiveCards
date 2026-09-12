@@ -4,7 +4,7 @@ import 'package:flutter_adaptive_template_fs/src/evaluator.dart';
 /// produce renderable card JSON.
 class AdaptiveCardTemplate {
   /// Wraps a parsed template map (from JSON) before expansion.
-  AdaptiveCardTemplate(this._payload);
+  new(this._payload);
 
   final Map<String, dynamic> _payload;
 

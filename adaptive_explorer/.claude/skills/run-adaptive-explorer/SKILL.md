@@ -11,7 +11,7 @@ process**, driven by
 [`driver_main.dart`](driver_main.dart).
 
 All paths below are relative to `adaptive_explorer/`. Every `flutter`/`dart`
-command is prefixed with `fvm` (the repo pins its SDK — Flutter 3.44.0 — via
+command is prefixed with `fvm` (the repo pins its SDK — Flutter 3.47.4 — via
 FVM; bare `flutter` may be the wrong version).
 
 ## Prerequisites

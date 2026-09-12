@@ -12,16 +12,13 @@ class HttpAdaptiveCardBackendClient implements AdaptiveCardBackendClient {
   /// `Content-Type: application/json`. The response body is capped at
   /// [maxResponseBytes] (default 1 MiB) to bound memory use on untrusted
   /// backend responses.
-  HttpAdaptiveCardBackendClient({
+  new({
     required this.endpoint,
     http.Client? client,
     Map<String, String> headers = const {},
     this.maxResponseBytes = 1024 * 1024,
   }) : _client = client ?? http.Client(),
-       _headers = {
-         'Content-Type': 'application/json',
-         ...headers,
-       };
+       _headers = {'Content-Type': 'application/json', ...headers};
 
   /// Invoke URL for the flow-service or bot endpoint.
   final Uri endpoint;

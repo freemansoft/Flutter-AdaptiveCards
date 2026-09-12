@@ -12,7 +12,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class AdaptiveTimeInput extends ConsumerStatefulWidget
     with AdaptiveElementWidgetMixin {
   /// Creates a time input from [adaptiveMap] JSON.
-  AdaptiveTimeInput({
+  new({
     required this.adaptiveMap,
   }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);

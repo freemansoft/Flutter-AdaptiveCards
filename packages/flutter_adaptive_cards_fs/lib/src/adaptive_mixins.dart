@@ -397,7 +397,7 @@ mixin AdaptiveInputMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
 
 /// Marker mixin for text-like inputs that share [AdaptiveInputMixin] behavior.
 mixin AdaptiveTextualInputMixin<T extends ConsumerStatefulWidget>
-    on ConsumerState<T> {}
+    on ConsumerState<T>;
 
 /// Reactive `isVisible` from merged baseline + overlays.
 mixin AdaptiveVisibilityMixin<T extends ConsumerStatefulWidget>

@@ -240,10 +240,7 @@ void main() {
       });
 
       test('malformed segment in interpolation is left unchanged', () {
-        expect(
-          evalStringField(r'ok ${(bad} end'),
-          r'ok ${(bad} end',
-        );
+        expect(evalStringField(r'ok ${(bad} end'), r'ok ${(bad} end');
       });
 
       test('pure expression returns non-string types without stringifying', () {

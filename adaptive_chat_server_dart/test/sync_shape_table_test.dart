@@ -125,11 +125,8 @@ void main() {
     // cascade.
     test('is n/a when turn 1 never produced a card', () {
       expect(
-        cascade(const {
-          'cases': 3,
-          'exercised': 0,
-          'passed': 0,
-        }).let(cascadeCell),
+        cascade(const {'cases': 3, 'exercised': 0, 'passed': 0})
+            .let(cascadeCell),
         'n/a',
       );
     });
@@ -259,23 +256,20 @@ void main() {
     // it is computed from — an independently recorded seedGain could
     // disagree with its own inputs; a derived one structurally cannot.
     test('is derived, so it cannot disagree with the columns beside it', () {
-      final rows = derivedRows(
-        [
-          shapeRun(
-            model: 'm:1',
-            variant: 'seeded',
-            cold: {for (var i = 0; i < 25; i++) 'c$i': i < 20},
-            warm: {for (var i = 0; i < 25; i++) 'c$i': i < 20},
-          ),
-          shapeRun(
-            model: 'm:1',
-            variant: 'unaided',
-            cold: {for (var i = 0; i < 25; i++) 'c$i': i < 12},
-            warm: {for (var i = 0; i < 25; i++) 'c$i': i < 12},
-          ),
-        ],
-        const {},
-      );
+      final rows = derivedRows([
+        shapeRun(
+          model: 'm:1',
+          variant: 'seeded',
+          cold: {for (var i = 0; i < 25; i++) 'c$i': i < 20},
+          warm: {for (var i = 0; i < 25; i++) 'c$i': i < 20},
+        ),
+        shapeRun(
+          model: 'm:1',
+          variant: 'unaided',
+          cold: {for (var i = 0; i < 25; i++) 'c$i': i < 12},
+          warm: {for (var i = 0; i < 25; i++) 'c$i': i < 12},
+        ),
+      ], const {});
       final r = rows['m:1']!;
       expect(r.warm - r.preSeed, r.seedGain);
       expect(seedCell(r), '**needs it** (+8)');

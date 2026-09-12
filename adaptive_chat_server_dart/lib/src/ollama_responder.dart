@@ -122,7 +122,7 @@ Map<String, dynamic>? _loadCardSchema(String path) {
 /// instead of appending items to one array.
 class DuplicateJsonKeyException implements Exception {
   /// Creates an exception naming the [key] that was repeated.
-  DuplicateJsonKeyException(this.key);
+  new(this.key);
 
   /// The JSON object key that was repeated within one object literal.
   final String key;
@@ -201,7 +201,7 @@ class OllamaResponder implements Responder {
   /// in the task brief. The system-prompt file *path* is stored (not its
   /// contents), so edits to the file take effect on the next request without
   /// restarting the server.
-  OllamaResponder({
+  new({
     required String ollamaUrl,
     required String defaultSystemPromptPath,
     required String cardSchemaPath,
@@ -358,9 +358,7 @@ class OllamaResponder implements Responder {
 
     final wanted = _model.contains(':') ? _model : '$_model:latest';
     if (names.contains(_model) || names.contains(wanted)) {
-      return ResponderReadiness.ready(
-        'Ollama at $_ollamaUrl has $_model',
-      );
+      return ResponderReadiness.ready('Ollama at $_ollamaUrl has $_model');
     }
     return ResponderReadiness.notReady(
       'Ollama at $_ollamaUrl does not have $_model — run '

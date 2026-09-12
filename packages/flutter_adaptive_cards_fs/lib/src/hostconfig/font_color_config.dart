@@ -6,13 +6,13 @@ import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 /// color name.
 class FontColorConfig {
   /// Creates a foreground color pair from explicit values.
-  FontColorConfig({
+  new({
     required this.defaultColor,
     required this.subtleColor,
   });
 
   /// Parses a foreground color object from HostConfig JSON.
-  factory FontColorConfig.fromJson(
+  factory fromJson(
     Map<String, dynamic> json, {
     FontColorConfig? defaults,
   }) {

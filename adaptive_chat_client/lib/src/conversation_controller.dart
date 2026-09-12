@@ -12,7 +12,7 @@ class ConversationController extends ChangeNotifier {
   /// [startConversation], and set the bubble role labels for the whole
   /// conversation. [language] is passed through to the backend for future
   /// use.
-  ConversationController({
+  new({
     required this.client,
     this.userLabel = 'user',
     this.assistantLabel = 'assistant',

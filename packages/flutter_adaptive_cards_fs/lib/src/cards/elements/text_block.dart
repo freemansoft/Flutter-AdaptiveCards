@@ -19,7 +19,7 @@ class AdaptiveTextBlock extends ConsumerStatefulWidget
   ///
   /// When [supportMarkdown] is true, renders markdown and routes link taps
   /// through `Action.OpenUrl`.
-  AdaptiveTextBlock({
+  new({
     required this.adaptiveMap,
     required this.supportMarkdown,
   }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {

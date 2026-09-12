@@ -15,7 +15,7 @@ import 'package:test/test.dart';
 // from a status poll.
 
 class _StubResponder implements Responder {
-  _StubResponder(this._describeImpl);
+  new(this._describeImpl);
   final Map<String, dynamic> Function() _describeImpl;
 
   @override
@@ -41,16 +41,13 @@ void main() {
   // A Responder's describe() is arbitrary code (host-supplied in principle);
   // this pins the fallback that keeps a throwing implementation from
   // turning an unauthenticated GET into a 500 instead of a degraded row.
-  test(
-    'a responder whose describe() throws degrades to unknown',
-    () {
-      final result = buildStatus(
-        ConversationStore(),
-        _StubResponder(() => throw StateError('boom')),
-      );
-      expect(result['responder'], {'kind': 'unknown'});
-    },
-  );
+  test('a responder whose describe() throws degrades to unknown', () {
+    final result = buildStatus(
+      ConversationStore(),
+      _StubResponder(() => throw StateError('boom')),
+    );
+    expect(result['responder'], {'kind': 'unknown'});
+  });
 
   // order is empty right after store.create(), before any interaction is
   // added — lastInteraction must read null here rather than index into an
@@ -131,9 +128,9 @@ void main() {
     final refs = (result['conversations'] as List)
         .map((row) => (row as Map)['conversationRef'])
         .toList();
-    expect(
-      refs,
-      [conversationRef(a.conversationId), conversationRef(b.conversationId)],
-    );
+    expect(refs, [
+      conversationRef(a.conversationId),
+      conversationRef(b.conversationId),
+    ]);
   });
 }

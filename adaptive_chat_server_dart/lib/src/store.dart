@@ -15,7 +15,7 @@ const defaultAssistantLabel = 'assistant';
 /// One rendered bubble: an author role plus its Adaptive Card map.
 class Message {
   /// Creates a message.
-  const Message({required this.role, required this.card});
+  const new({required this.role, required this.card});
 
   /// The author role of the message.
   final String role;
@@ -27,7 +27,7 @@ class Message {
 /// One send/response cycle within a conversation.
 class Interaction {
   /// Creates an interaction.
-  const Interaction({
+  const new({
     required this.interactionId,
     required this.text,
     required this.messages,
@@ -62,7 +62,7 @@ class Interaction {
 /// A session: ordered interactions keyed by client-supplied id.
 class Conversation {
   /// Creates a conversation.
-  Conversation({
+  new({
     required this.conversationId,
     this.userLabel = defaultUserLabel,
     this.assistantLabel = defaultAssistantLabel,

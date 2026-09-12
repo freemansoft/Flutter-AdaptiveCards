@@ -138,16 +138,13 @@ Map<String, dynamic> noticeCard(List<Map<String, dynamic>> bodyItems) {
 }
 
 /// Wire envelope: pre-styled cards plus self/postNext links.
-Map<String, dynamic> envelope(
-  String cid,
-  String iid,
-  List<Message> messages,
-) => {
-  'conversationId': cid,
-  'interactionId': iid,
-  'messages': messages.map((m) => m.card).toList(),
-  'links': {
-    'self': '/conversations/$cid/interactions/$iid',
-    'postNext': '/conversations/$cid/interactions',
-  },
-};
+Map<String, dynamic> envelope(String cid, String iid, List<Message> messages) =>
+    {
+      'conversationId': cid,
+      'interactionId': iid,
+      'messages': messages.map((m) => m.card).toList(),
+      'links': {
+        'self': '/conversations/$cid/interactions/$iid',
+        'postNext': '/conversations/$cid/interactions',
+      },
+    };
