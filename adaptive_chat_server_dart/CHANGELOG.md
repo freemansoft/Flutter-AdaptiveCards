@@ -2,6 +2,28 @@
 
 ## [Unreleased]
 
+- Added: **a calibrated M5 fit control and a second fill level, and the
+  medians in that section are withdrawn as uninterpretable.** The three
+  models a 16 GB host can hold were re-run 2026-09-12 under the M1 Max's
+  calibrated parameters, in
+  `context_fill_results/m5-16gb-ollama0333-fitcontrol-calibrated/`, so the
+  cross-host comparison cites two live archives rather than a superseded
+  commit. Prompt counts and allocations match exactly and the measured
+  chars-per-token match to every digit, calibration being a property of the
+  tokenizer rather than the host; one case separates the hosts across nine
+  content columns. A companion run at roughly half the fill with each window
+  held constant,
+  `context_fill_results/m5-16gb-ollama0333-fitcontrol-calibrated-halffill/`,
+  adds the third fill level the section wanted: pooled coverage runs 47/75
+  near-empty, 42/75 half, 42/75 full, so the cost is neither proportional to
+  occupancy nor a cliff, and no single model's steps clear the `--samples 1`
+  noise floor. The latency paragraph is rewritten rather than extended:
+  `nemotron-3-nano:4b` medians 13356 ms and 3506 ms on the same host a day
+  apart at a 5% larger prompt, so no host or fill-level claim rests on a
+  median. Renames the uncalibrated M5 archive to
+  `m5-16gb-ollama0333-fitcontrol-uncalibrated/` now that a calibrated
+  sibling exists, and closes three resolved items in the open questions.
+
 - Changed: **the fit control is re-measured under calibration, at a target
   that states what it delivers.** All eight models re-run 2026-09-12 into
   `context_fill_results/m1max-64gb-ollama0333-fitcontrol/` (67m58s, every
@@ -97,7 +119,7 @@
   so no existing figure moved. The fit control reproduces to the token and
   to the case on both hosts; median latency is the only column that moves,
   and it moves in both directions, so it is reported rather than attributed.
-  Adds `context_fill_results/m5-16gb-ollama0333-fitcontrol/`.
+  Adds `context_fill_results/m5-16gb-ollama0333-fitcontrol-uncalibrated/`.
 
 - Added: **`tool/model_probes/context_fill_fit_control.sh` makes the fit
   control reproducible.** The run that disproved the dropped-history reading

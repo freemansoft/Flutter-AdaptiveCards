@@ -1,13 +1,25 @@
-# Fit control on a 16 GB host: the same filler, the same result
+# Fit control on a 16 GB host, uncalibrated: the same filler, the same result
 
-Apple M5 / 16 GB, Ollama 0.33.3, `--samples 1`, measured 2026-09-11.
+Apple M5 / 16 GB, Ollama 0.33.3, `--samples 1`, measured 2026-09-11, with
+the filler sized by the fixed `fillerCharsPerToken = 4.0` rather than by
+per-model calibration.
 
-This is the memory-constrained half of
-[`m1max-64gb-ollama0333-fitcontrol/`](../m1max-64gb-ollama0333-fitcontrol).
-That directory established that a filler sized to fit a model's own window
-is ingested rather than dropped; it could not establish whether host memory
-was what allowed it, because it was measured on a 64 GB machine. These three
-models are the ones a 16 GB host can hold under these windows.
+**`-uncalibrated` is in the name because a calibrated sibling exists.** The
+probe now measures each model's own chars-per-token before sizing the
+filler, and [`m5-16gb-ollama0333-fitcontrol-calibrated/`](../m5-16gb-ollama0333-fitcontrol-calibrated)
+holds the same three models under that change. This directory is kept
+rather than replaced: it is the M5 half of a cross-host comparison whose
+value is that both hosts ran the identical uncalibrated condition, and the
+M1 Max half of it survives in commit `9698553` rather than in the tree.
+
+This was the memory-constrained half of
+[`m1max-64gb-ollama0333-fitcontrol/`](../m1max-64gb-ollama0333-fitcontrol)
+as that directory stood on 2026-09-11, before it was re-measured under
+calibration. That directory established that a filler sized to fit a
+model's own window is ingested rather than dropped; it could not establish
+whether host memory was what allowed it, because it was measured on a 64 GB
+machine. These three models are the ones a 16 GB host can hold under these
+windows.
 
 Every prompt count and every pass count is identical to the M1 Max reading:
 
