@@ -23,7 +23,7 @@ When the notebook and a draft disagree, the notebook wins.
 | 3   | Running local models for Adaptive Card JSON on a 64 GB M1 Max and a 16 GB M5 | `2026-08-30-article-3-m1max-vs-m5-*`         | Drafted, revised 2026-09-08, mermaid chart added   |
 | 4   | The tool channel drove malformed JSON to zero and lost on half the models    | `2026-08-30-article-4-tool-channel-*`        | Drafted, revised 2026-09-08, mermaid diagram added |
 | 5   | The measurement was wrong, in a way that looked exactly like a slow model    | `2026-08-30-article-5-measurement-hygiene-*` | Drafted, revised 2026-09-08                        |
-| 6   | Ollama drops an oversized history message whole, and nothing tells you       | `2026-09-12-article-6-context-fill-*`        | Drafted 2026-09-12, mermaid chart added            |
+| 6   | Ollama drops an oversized history message whole, and nothing tells you       | `2026-09-12-article-6-context-fill-*`        | Drafted 2026-09-12, chart added, split candidate   |
 
 Articles 1 to 5 are drafted and have their visuals: articles 3 and 4 carry
 mermaid diagrams in place of image placeholders (article 5 already had one),
@@ -182,6 +182,38 @@ a `TextBlock` where an `Input.*` was asked for, which matters because only the
 first is caught by checking that a reply parsed as a card. The two `nvfp4` builds that
 evaluate roughly 6,700 tokens past their reported allocation at no cost, which
 separates what the runner allocates from what it enforces.
+
+**Article 6 carries two topics and is a split candidate.** They are separable
+and a reader may want only one of them:
+
+1. **What Ollama does with context parameters**, which is a runtime finding.
+   `num_ctx` is a request rather than a guarantee, the runner allocates
+   `min(requested, trained window)`, history that exceeds the allocation is
+   removed whole rather than trimmed, and `prompt_eval_count` is the only
+   signal a client gets. The two `nvfp4` builds that evaluate past their
+   reported allocation belong here, since they separate what is allocated from
+   what is enforced. So does the tokenizer spread and the probe defect it
+   caused, because both are about establishing that a fill target was actually
+   delivered, which is a precondition for anything in the second topic being
+   measurable.
+2. **What a full window does to a model**, which is a model finding. The
+   filled-context cost, the failure decomposition into abandoning cards versus
+   substituting a `TextBlock` for an `Input.*`, and the generalization that
+   capacity under a full window is not predicted by score on an empty one.
+
+The seam is the runtime against the models: topic 1 is a property of Ollama and
+of a model's trained window, topic 2 is a property of the model's behavior. The
+current draft is 1823 prose words, so length is not forcing the split and it
+should be made on whether a reader arrives wanting one topic or both.
+
+If it is split, topic 1 keeps the current title and the two tables of allocation
+and dropped-history figures; topic 2 takes the fit-control table, the failure
+decomposition and the existing mermaid chart, and needs a new title stating its
+own finding. Both halves need the shared setup the series requires of every
+article, meaning the project, what the model is asked for, and what renders the
+reply, and topic 2 additionally has to state in a sentence that its fill targets
+were verified as delivered, citing topic 1 rather than re-deriving it. Topic 1
+would then need a visual it does not currently have.
 
 _Defers:_ the general form of "suspect the harness before the model" to
 article 5, naming its own instance in one clause rather than re-deriving the
