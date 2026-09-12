@@ -154,6 +154,22 @@ context.
 | `nemotron-3-nano:30b`        | 48611         | **12/25** | 17/25 |
 | `nemotron-3-nano:4b`         | 48559         | **6/25**  | 8/25  |
 
+```mermaid
+xychart-beta horizontal
+    title "Shape cases gained or lost when the window is filled, out of 25"
+    x-axis ["nemotron-3.5-lightning:30b", "nemotron-3-nano:30b", "qwen2.5-coder:7b", "qwen3.5:9b", "nemotron-3-nano:4b", "qwen3.6:27b-coding-nvfp4", "qwen3.8:27b-nvfp4", "qwen3-coder:30b"]
+    y-axis "Cases, filled window minus empty" -8 --> 3
+    bar [-7, -5, -3, -2, -2, -1, -1, 2]
+```
+
+The three bars past minus three are the finding. Everything from minus two
+rightward is a single-sample run moving by one or two cases, which is noise.
+
+`qwen2.5-coder:7b`'s minus three is the one bar not to read alongside the
+others. It carries 24721 tokens where the rest carry about 48,500, because its
+trained window caps it at 32768, so its bar is a smaller experiment rather than
+a smaller model failing harder.
+
 The Qwen models move by one or two cases in both directions, which is inside the
 noise of a single-sample run. The three Nemotron models lose five, seven and two
 cases, and `nemotron-3.5-lightning:30b` and `nemotron-3-nano:30b` give up about a

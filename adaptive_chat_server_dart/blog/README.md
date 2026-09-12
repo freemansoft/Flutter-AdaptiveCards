@@ -23,12 +23,13 @@ When the notebook and a draft disagree, the notebook wins.
 | 3   | Running local models for Adaptive Card JSON on a 64 GB M1 Max and a 16 GB M5 | `2026-08-30-article-3-m1max-vs-m5-*`         | Drafted, revised 2026-09-08, mermaid chart added   |
 | 4   | The tool channel drove malformed JSON to zero and lost on half the models    | `2026-08-30-article-4-tool-channel-*`        | Drafted, revised 2026-09-08, mermaid diagram added |
 | 5   | The measurement was wrong, in a way that looked exactly like a slow model    | `2026-08-30-article-5-measurement-hygiene-*` | Drafted, revised 2026-09-08                        |
-| 6   | Ollama drops an oversized history message whole, and nothing tells you       | `2026-09-12-article-6-context-fill-*`        | Drafted 2026-09-12, no visual yet                  |
+| 6   | Ollama drops an oversized history message whole, and nothing tells you       | `2026-09-12-article-6-context-fill-*`        | Drafted 2026-09-12, mermaid chart added            |
 
 Articles 1 to 5 are drafted and have their visuals: articles 3 and 4 carry
 mermaid diagrams in place of image placeholders (article 5 already had one),
-and articles 1 and 2 have real screenshots from the demo client. Article 6 is
-drafted and still needs one.
+and articles 1 and 2 have real screenshots from the demo client. Article 6
+carries a mermaid chart of the cases each model gains or loses when its window
+is filled.
 
 The 2026-09-08 revision removed every em dash from articles 1 to 5 (see
 **Register**), framed the chat demo as a demo rather than a production
