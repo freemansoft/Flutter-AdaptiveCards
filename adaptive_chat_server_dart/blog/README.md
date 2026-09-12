@@ -16,15 +16,15 @@ When the notebook and a draft disagree, the notebook wins.
 
 ## The articles
 
-| #   | Article                                                                                | File                              | Status                                             |
-| --- | -------------------------------------------------------------------------------------- | --------------------------------- | -------------------------------------------------- |
-| 1   | An SDUI demo that turned into a local-model benchmark                                  | `article-1-origin-story-*`        | Drafted, revised 2026-09-08, screenshot added      |
-| 2   | We tried 14 levers to get reliable card JSON from a local model                        | `article-2-tuning-process-*`      | Drafted, revised 2026-09-08, screenshots added     |
-| 3   | Running local models for Adaptive Card JSON on a 64 GB M1 Max and a 16 GB M5           | `article-3-m1max-vs-m5-*`         | Drafted, revised 2026-09-08, mermaid chart added   |
-| 4   | The tool channel drove malformed JSON to zero and lost on half the models              | `article-4-tool-channel-*`        | Drafted, revised 2026-09-08, mermaid diagram added |
-| 5   | The measurement was wrong, in a way that looked exactly like a slow model              | `article-5-measurement-hygiene-*` | Drafted, revised 2026-09-08                        |
-| 6   | Ollama drops an oversized history message whole, and nothing tells you                 | `article-6-context-fill-*`        | Drafted 2026-09-12, split 2026-09-12, no visual    |
-| 7   | A full context makes one model stop producing cards and another produce the wrong ones | `article-7-full-context-cost-*`   | Split from 6 on 2026-09-12, mermaid chart          |
+| #   | Article                                                                                | File                              | Status                                                                       |
+| --- | -------------------------------------------------------------------------------------- | --------------------------------- | ---------------------------------------------------------------------------- |
+| 1   | An SDUI demo that turned into a local-model benchmark                                  | `article-1-origin-story-*`        | Drafted, revised 2026-09-08, screenshot added                                |
+| 2   | We tried 14 levers to get reliable card JSON from a local model                        | `article-2-tuning-process-*`      | Drafted, revised 2026-09-08, screenshots added                               |
+| 3   | Running local models for Adaptive Card JSON on a 64 GB M1 Max and a 16 GB M5           | `article-3-m1max-vs-m5-*`         | Drafted, revised 2026-09-08, mermaid chart added                             |
+| 4   | The tool channel drove malformed JSON to zero and lost on half the models              | `article-4-tool-channel-*`        | Drafted, revised 2026-09-08, mermaid diagram added, register pass 2026-09-12 |
+| 5   | The measurement was wrong, in a way that looked exactly like a slow model              | `article-5-measurement-hygiene-*` | Drafted, revised 2026-09-08, register pass 2026-09-12                        |
+| 6   | Ollama drops an oversized history message whole, and nothing tells you                 | `article-6-context-fill-*`        | Drafted 2026-09-12, split 2026-09-12, no visual, register pass 2026-09-12    |
+| 7   | A full context makes one model stop producing cards and another produce the wrong ones | `article-7-full-context-cost-*`   | Split from 6 on 2026-09-12, mermaid chart, register pass 2026-09-12          |
 
 Articles 1 to 5 are drafted and have their visuals: articles 3 and 4 carry
 mermaid diagrams in place of image placeholders (article 5 already had one),
@@ -231,7 +231,7 @@ the medians do not, so no article carries a latency claim from the fit control.
 Article 3 owns host-to-host latency and its figures are from the shape sweep,
 which is unaffected.
 
-## Conventions## Conventions
+## Conventions
 
 ### Figures
 
@@ -358,6 +358,36 @@ for figures, hedge inferred mechanisms, and end on the last factual sentence.
 Counts are measured; the explanation for them usually is not. Report negative
 results as plainly as wins. Articles 2 and 4 are substantially negative results
 and they must not read as apologies.
+
+**Write a technical blog post, not a research paper.** Active voice, sentences
+of about 12 to 20 words, and one idea per sentence. The published posts on the
+target blog are the register to match. A paper hides the actor behind a passive
+("eight models were measured", "the filler is sized in characters", "that group
+was written up as unexplained"); a post names it. Do not name it as a person.
+
+**No first-person singular.** No "I", "me", or "my" anywhere in an article,
+even though the blog's older, hand-written posts use them. An article drafted
+with an agent's help cannot say "I measured" without the reader wondering
+whether the author or the model is speaking, so the articles drop the question
+entirely. "We" and "our" are allowed, because they read as the project speaking;
+article 2's published title is "We tried 14 levers". Prefer the thing that acted
+over either pronoun: the probe sizes the filler, the sweep omitted the unload
+step, the server log shows the generation kept running, the notebook records
+the run as cascade-damaged. Where nobody in particular acted, "is still open" or
+"has no explanation yet" replaces "I cannot say". Imperatives are fine ("check
+`ollama ps`", "dump the bytes"), and "you" is fine where the reader is the one
+acting.
+
+Three paper habits to convert on sight, beside the em dash below:
+
+- **The agentless passive.** Rewrite with the probe, sweep, server, runtime, or
+  notebook as the subject.
+- **Announcing the article's question.** "This article asks what changes when
+  the window is full" becomes the question itself, or the finding.
+- **The defensive pair.** "checked rather than assumed", "measured rather than
+  inferred", "not a finding either way". Keep the hedge, drop the contrast:
+  say what was checked. A pair that carries real information, such as "a
+  correctness requirement, not a performance tip", may stay.
 
 **No em dashes as punctuation.** A dash setting off a clause reads to many
 readers as a machine-authored tell, so the published articles carry none.
