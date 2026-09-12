@@ -175,7 +175,11 @@ window sized for it, and three models were written up as discarding history
 they had room for when no such model existed. The filled-context cost, in which
 three Nemotron models give up about a third of their shape coverage while four
 Qwen models are unaffected, and the generalization that capacity under a full
-window is not predicted by score on an empty one. The two `nvfp4` builds that
+window is not predicted by score on an empty one. **The failure decomposition
+that goes with it**: the two largest losses are opposite failures, one model
+abandoning card output for prose and the other emitting well-formed cards with
+a `TextBlock` where an `Input.*` was asked for, which matters because only the
+first is caught by checking that a reply parsed as a card. The two `nvfp4` builds that
 evaluate roughly 6,700 tokens past their reported allocation at no cost, which
 separates what the runner allocates from what it enforces.
 

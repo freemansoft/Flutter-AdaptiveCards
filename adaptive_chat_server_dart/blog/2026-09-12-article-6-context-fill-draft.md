@@ -186,6 +186,52 @@ and returns 13, 12 and 6 again. Two runs at different prompt sizes landing on
 the same three counts is a stronger reading than either alone, and none of the
 Qwen movements reproduce that way.
 
+### The two big losers fail in opposite ways
+
+A lost case is not one thing. Sorting each run's 25 verdicts by what the judge
+said turns the two largest losses into two different problems.
+
+| Model                        | Pass     | No card at all | Card, wrong element |
+| ---------------------------- | -------- | -------------- | ------------------- |
+| `nemotron-3.5-lightning:30b` | 20 to 13 | **1 to 10**    | 1 to 0              |
+| `nemotron-3-nano:30b`        | 17 to 12 | 0 to 0         | **4 to 8**          |
+| `qwen2.5-coder:7b`           | 22 to 19 | 0 to 3         | 2 to 1              |
+| `nemotron-3-nano:4b`         | 8 to 6   | 14 to 14       | 0 to 0              |
+
+`nemotron-3.5-lightning:30b` **stops producing cards**. All eight cases it loses
+come back as prose: it answers the question in plain text rather than emitting
+card JSON at all. On an empty window it did that once in twenty-five.
+
+`nemotron-3-nano:30b` keeps producing cards and **picks worse elements**. Its
+replies are valid card JSON every time, with a static `TextBlock` substituted
+for the interactive input the question called for: `got {TextBlock} want
+{Input.Time}`, `want {Input.ChoiceSet}`, `want {Input.Toggle}`. It is asked to
+collect something and displays something instead.
+
+The difference matters when choosing a model, because the two fail differently
+in production. A model that reverts to prose is caught by any check that asks
+whether the reply parsed as a card. A model that returns a well-formed card with
+the wrong element type passes that check and reaches the user as a screen that
+renders correctly and cannot be filled in.
+
+`nemotron-3-nano:4b` is in the table to be excluded from the finding. Its prose
+count does not move, 14 to 14, because it was already answering most cases in
+prose on an empty window. Its two lost cases are ordinary single-sample
+movement, not a context effect.
+
+`qwen2.5-coder:7b` is the one hint that the effect starts below a full window.
+It reverts to prose on three cases while carrying 24721 tokens, roughly half
+what the others carry.
+
+**A mechanism consistent with both patterns, and not measured here.** Both
+failures are failures to follow the system prompt specifically: the instruction
+to answer as a card in one case, the element palette in the other. Ordinary
+question answering is intact in both, since a prose reply and a `TextBlock` card
+both answer what was asked. That is what degrading instruction adherence over a
+long context would look like. Nothing in these runs tests it, and establishing
+it would mean moving the instruction or sweeping the fill across sizes to see
+whether the loss scales. Neither was run.
+
 The generalizable form: capacity under a full window is not predicted by score
 on an empty one. A model chosen on a benchmark that asks short questions can be
 the wrong choice for a chat application, and the ranking reorders. On an empty

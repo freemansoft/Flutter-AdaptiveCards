@@ -609,6 +609,29 @@ The control is [`m1max-64gb-ollama0333-fitcontrol/`](tool/model_probes/context_f
 
 **What a genuinely filled context costs is strongly model-dependent.** Every **Was** figure for the six droppers was taken with the history discarded, which measures the unfilled task. With roughly 48.5k tokens actually in the window, the Qwen models are close to unaffected: `qwen3-coder:30b` gains two cases, `qwen3.5:9b` and `qwen3.8:27b-nvfp4` lose two and one, `qwen3.6:27b-coding-nvfp4` loses one, all within `--samples 1` noise. The Nemotron models lose about a third of their shapes: `nemotron-3.5-lightning:30b` 20 to 13, `nemotron-3-nano:30b` 17 to 12, `nemotron-3-nano:4b` 8 to 6. Capacity under a full window is not predicted by score on an empty one.
 
+**The two largest losses are different failures, not one.** Sorting each run's 25 judge verdicts by category shows what a filled window costs is model-specific. `prose` is a reply with no card in it; `no-input` is a valid card that shows something where the case asked it to collect something, almost always a `TextBlock` substituted for an `Input.*`; `wrong-shape` is a card using the wrong element; `broken` is a body that does not parse. Each cell reads empty context to full.
+
+| Model                        | Pass     | `prose`  | `no-input` | `wrong-shape` | `broken` |
+| ---------------------------- | -------- | -------- | ---------- | ------------- | -------- |
+| `qwen3-coder:30b`            | 18 to 20 | 0 to 0   | 2 to 2     | 2 to 1        | 2 to 1   |
+| `qwen3.6:27b-coding-nvfp4`   | 21 to 20 | 0 to 0   | 0 to 0     | 0 to 0        | 4 to 5   |
+| `qwen2.5-coder:7b`           | 22 to 19 | 0 to 3   | 2 to 1     | 1 to 2        | 0 to 0   |
+| `qwen3.5:9b`                 | 18 to 16 | 0 to 0   | 2 to 5     | 1 to 1        | 4 to 2   |
+| `qwen3.8:27b-nvfp4`          | 17 to 16 | 4 to 2   | 0 to 0     | 0 to 0        | 4 to 7   |
+| `nemotron-3.5-lightning:30b` | 20 to 13 | 1 to 10  | 1 to 0     | 0 to 0        | 3 to 2   |
+| `nemotron-3-nano:30b`        | 17 to 12 | 0 to 0   | 4 to 8     | 2 to 3        | 2 to 2   |
+| `nemotron-3-nano:4b`         | 8 to 6   | 14 to 14 | 0 to 0     | 2 to 3        | 1 to 2   |
+
+`nemotron-3.5-lightning:30b` **stops producing cards**. Its `prose` count goes 1 to 10, and all eight cases it loses are labelled `prose`: it answers the question in plain text rather than emitting card JSON at all.
+
+`nemotron-3-nano:30b` **keeps producing cards and picks worse elements**. Its `no-input` count goes 4 to 8, and the labels are uniform: `got {TextBlock} want {Input.Time}`, `want {Input.ChoiceSet}`, `want {Input.Toggle}`. Valid JSON every time, with a static `TextBlock` standing in for the interactive input the case asked for.
+
+`nemotron-3-nano:4b` is not a context casualty at all. Its `prose` count does not move, 14 to 14, because it was already answering most cases in prose on an empty window. Its two lost cases are one truncated body and one wrong element, which is `--samples 1` movement.
+
+A third model reverts partially: `qwen2.5-coder:7b` goes 0 to 3 on `prose`, at 24721 tokens rather than the 48.5k the others carry, which is the only sign in this table that the effect starts below a full window.
+
+**A mechanism consistent with those two patterns, and not measured here.** Both losing modes are failures to follow the **system prompt** specifically: the instruction to answer as a card for one model, the element palette for the other. Ordinary question answering is intact in both cases, since a `prose` reply and a `TextBlock` card both answer what was asked. That is what degrading instruction adherence over a long context would look like, and nothing in these runs tests it. Establishing it would need the instruction moved to a different position, or the fill swept across sizes to see whether the loss scales with it. Neither was run.
+
 **The Nemotron figures reproduced exactly across a 14% larger prompt**, which is what makes them readable at `--samples 1`. An earlier uncalibrated run of this control carried 42.5k to 46.3k tokens and returned 13, 12 and 6 for the same three models; the calibrated run above carries 48.5k and returns 13, 12 and 6 again. Two independent runs at different prompt sizes landing on the same three counts is a stronger reading than either alone, and none of the Qwen movements reproduce that way.
 
 **The probe no longer assumes the constant, and the two archives here sit on opposite sides of that change.** `context_fill_probe.dart` sends one short calibration sample before sizing anything and derives each model's own chars-per-token from Ollama's `prompt_eval_count`. Runs record `charsPerTokenUsed` and a `charsPerTokenMeasured` flag, so an archive says whether its filler was measured or guessed, and `--no-calibrate` restores the old behavior. The **fit control was re-measured under calibration** and carries both fields. The **fixed-filler sweeps predate it** and carry neither: `m1max-64gb-ollama0333-fill28000/` and both M5 directories asked for 28000 tokens and delivered between 3819 and 46287 depending on the tokenizer and on whether the message survived. Those sweeps are still the record of what the fixed filler did, which is the subject of this section, but **a calibrated sweep would not reproduce them** and should not be filed beside them. Compare achieved `prompt_eval_count` across any two runs here, never the `--fill-tokens` value.
