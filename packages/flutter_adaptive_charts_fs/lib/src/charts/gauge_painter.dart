@@ -3,23 +3,19 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 
 /// A colored segment on the gauge arc.
-class GaugeSegment {
-  /// Creates a gauge segment with [color], proportional [size], and optional
-  /// [legend].
-  const new({
-    required this.color,
-    required this.size,
-    this.legend,
-  });
-
+class const GaugeSegment({
   /// Segment fill color.
-  final Color color;
+  required final Color color,
 
   /// Relative size used to proportion segment arcs along the gauge.
-  final double size;
+  required final double size,
 
   /// Optional legend label for this segment.
-  final String? legend;
+  final String? legend,
+}) {
+  /// Creates a gauge segment with [color], proportional [size], and optional
+  /// [legend].
+  this;
 }
 
 /// How the gauge center value is formatted.
@@ -64,59 +60,46 @@ String formatGaugeValue({
 }
 
 /// Paints a semicircular gauge with colored segments and a value needle.
-class GaugePainter extends CustomPainter {
-  /// Creates a gauge painter with the given scale, segments, and display
-  /// options.
-  new({
-    required this.value,
-    required this.min,
-    required this.max,
-    required this.segments,
-    required this.showMinMax,
-    required this.valueFormat,
-    required this.subLabel,
-    required this.trackColor,
-    required this.needleColor,
-    required this.labelStyle,
-    required this.valueStyle,
-    required this.subLabelStyle,
-  });
-
+class GaugePainter({
   /// Current gauge reading.
-  final double value;
+  required final double value,
 
   /// Minimum scale value.
-  final double min;
+  required final double min,
 
   /// Maximum scale value.
-  final double max;
+  required final double max,
 
   /// Colored arc segments; sizes are proportional weights.
-  final List<GaugeSegment> segments;
+  required final List<GaugeSegment> segments,
 
   /// Whether min and max labels are drawn at the arc ends.
-  final bool showMinMax;
+  required final bool showMinMax,
 
   /// Center value display format.
-  final GaugeValueFormat valueFormat;
+  required final GaugeValueFormat valueFormat,
 
   /// Optional text below the formatted value.
-  final String? subLabel;
+  required final String? subLabel,
 
   /// Background track color behind segments.
-  final Color trackColor;
+  required final Color trackColor,
 
   /// Needle indicator color.
-  final Color needleColor;
+  required final Color needleColor,
 
   /// Style for min/max endpoint labels.
-  final TextStyle labelStyle;
+  required final TextStyle labelStyle,
 
   /// Style for the center formatted value.
-  final TextStyle valueStyle;
+  required final TextStyle valueStyle,
 
   /// Style for [subLabel].
-  final TextStyle subLabelStyle;
+  required final TextStyle subLabelStyle,
+}) extends CustomPainter {
+  /// Creates a gauge painter with the given scale, segments, and display
+  /// options.
+  this;
 
   static const double _startAngle = math.pi;
   static const double _sweepAngle = math.pi;

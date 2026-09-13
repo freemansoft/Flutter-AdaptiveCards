@@ -31,10 +31,13 @@ analyzer:
     inference_failure_on_function_return_type: ignore
     # never understood this warning
     one_member_abstracts: ignore
+  exclude:
+    - build/**
     # invalid_assignment: ignore
 
 linter:
   rules:
+    use_declaring_parameters: true
     # avoid_print: false  # Uncomment to disable the `avoid_print` rule
     # prefer_single_quotes: true # Uncomment to enable the `prefer_single_quotes` rule
     # require_trailing_commas: true

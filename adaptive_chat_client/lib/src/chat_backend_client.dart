@@ -13,15 +13,15 @@ export 'package:adaptive_chat_client/src/chat_models.dart';
 /// (`AdaptiveCardInvokeRequest.fromSubmit` + `PlainJsonInvokeAdapter.toMap`)
 /// for the send body, then parses the chat envelope itself (the response is a
 /// list of cards to append, not an invoke-effect patch).
-class ChatBackendClient {
-  /// Creates a client posting to [baseUrl]; inject [client] in tests.
-  new({required this.baseUrl, http.Client? client})
-    : _client = client ?? http.Client();
-
+class ChatBackendClient({
   /// Base URL of the backend (e.g. `http://localhost:8000`).
-  final Uri baseUrl;
+  required final Uri baseUrl,
+  http.Client? client,
+}) {
+  /// Creates a client posting to [baseUrl]; inject [client] in tests.
+  this;
 
-  final http.Client _client;
+  final http.Client _client = client ?? http.Client();
 
   static const Map<String, String> _jsonHeaders = {
     'Content-Type': 'application/json',

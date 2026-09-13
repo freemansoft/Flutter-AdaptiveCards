@@ -42,19 +42,23 @@ Follow these conventions:
 
 ```dart
 @immutable
-class Choice {
-  const Choice({required this.title, required this.value});
+class const Choice({
+  /// Label shown in the ChoiceSet UI.
+  required final String title,
+
+  /// Submitted value when this choice is selected.
+  required final String value,
+}) {
+  /// One ChoiceSet option; [title] is shown, [value] is submitted.
+  this;
 
   /// Parses an Adaptive Cards `Input.Choice` object from card JSON.
-  factory Choice.fromJson(Map<String, dynamic> json) {
+  factory fromJson(Map<String, dynamic> json) {
     return Choice(
       title: json['title'] as String? ?? '',
       value: json['value']?.toString() ?? '',
     );
   }
-
-  final String title;
-  final String value;
 
   Map<String, dynamic> toJson() => {'title': title, 'value': value};
 }

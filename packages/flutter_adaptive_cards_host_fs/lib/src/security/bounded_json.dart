@@ -5,12 +5,12 @@ import 'dart:convert';
 /// Backend invoke responses are attacker-influenced; decoding an unbounded
 /// body risks memory exhaustion. Callers catch this to fail the invoke
 /// gracefully instead of OOMing.
-class AdaptiveJsonTooLargeException implements Exception {
-  /// Records the [maxBytes] cap that the body exceeded.
-  const new(this.maxBytes);
-
+class const AdaptiveJsonTooLargeException(
   /// The byte cap that was exceeded.
-  final int maxBytes;
+  final int maxBytes,
+) implements Exception {
+  /// Records the [maxBytes] cap that the body exceeded.
+  this;
 
   @override
   String toString() =>

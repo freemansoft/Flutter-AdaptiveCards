@@ -2,13 +2,18 @@ import 'package:flutter_adaptive_cards_fs/src/hostconfig/fallback_configs.dart';
 
 /// HostConfig `imageSizes` section mapping size tokens to pixel dimensions
 /// for Image elements.
-class ImageSizesConfig {
+class ImageSizesConfig({
+  /// Pixel dimension for the `small` image size token.
+  required final int small,
+
+  /// Pixel dimension for the `medium` image size token.
+  required final int medium,
+
+  /// Pixel dimension for the `large` image size token.
+  required final int large,
+}) {
   /// Creates image size tokens from explicit pixel values.
-  new({
-    required this.small,
-    required this.medium,
-    required this.large,
-  });
+  this;
 
   /// Parses `imageSizes` from HostConfig JSON.
   factory fromJson(Map<String, dynamic> json) {
@@ -18,15 +23,6 @@ class ImageSizesConfig {
       large: json['large'] as int? ?? 180,
     );
   }
-
-  /// Pixel dimension for the `small` image size token.
-  final int small;
-
-  /// Pixel dimension for the `medium` image size token.
-  final int medium;
-
-  /// Pixel dimension for the `large` image size token.
-  final int large;
 
   /// Resolves a pixel dimension for the given image size token.
   static int resolveImageSizes(

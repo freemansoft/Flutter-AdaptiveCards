@@ -3,12 +3,12 @@ import 'package:flutter/foundation.dart';
 /// Merged baseline + overlay view of one input element from the resolved
 /// element provider for that id.
 @immutable
-class ResolvedInputState {
-  /// Creates a resolved input snapshot from a merged element map.
-  const new(this.map);
-
+class const ResolvedInputState(
   /// Baseline JSON merged with runtime overlays for one input id.
-  final Map<String, dynamic> map;
+  final Map<String, dynamic> map,
+) {
+  /// Creates a resolved input snapshot from a merged element map.
+  this;
 
   /// Raw resolved `"value"` (overlay or baseline).
   Object? get valueRaw => map['value'];

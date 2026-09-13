@@ -13,19 +13,26 @@ import 'package:flutter_adaptive_cards_fs/src/security/adaptive_uri_validation.d
 /// Use [standard] in production and [development] for local dev servers and
 /// widget tests. Construct a custom instance to permit extra schemes (e.g.
 /// `mailto`, `tel`) or to pin an [allowedHosts] allowlist.
-class AdaptiveUriPolicy {
+class const AdaptiveUriPolicy({
+  /// Schemes permitted (compared case-insensitively).
+  final Set<String> allowedSchemes = const {'https', 'http'},
+
+  /// Whether loopback hosts (`localhost`, `127.0.0.0/8`, `::1`) are permitted.
+  final bool allowLoopback = false,
+
+  /// Whether RFC1918 / link-local private hosts are permitted.
+  final bool allowPrivateHosts = false,
+
+  /// When non-null, only these hosts (case-insensitive) are permitted.
+  final Set<String>? allowedHosts,
+}) {
   /// Creates a policy.
   ///
   /// By default only `https`/`http` are allowed and loopback/private hosts are
   /// rejected. Set [allowLoopback] / [allowPrivateHosts] for dev scenarios, add
   /// schemes to [allowedSchemes] to permit protocols like `mailto`/`tel`, or
   /// pass [allowedHosts] to restrict to an explicit host allowlist.
-  const new({
-    this.allowedSchemes = const {'https', 'http'},
-    this.allowLoopback = false,
-    this.allowPrivateHosts = false,
-    this.allowedHosts,
-  });
+  this;
 
   /// Default production policy: `https`/`http` only, no private networks.
   static const standard = AdaptiveUriPolicy();
@@ -36,18 +43,6 @@ class AdaptiveUriPolicy {
     allowLoopback: true,
     allowPrivateHosts: true,
   );
-
-  /// Schemes permitted (compared case-insensitively).
-  final Set<String> allowedSchemes;
-
-  /// Whether loopback hosts (`localhost`, `127.0.0.0/8`, `::1`) are permitted.
-  final bool allowLoopback;
-
-  /// Whether RFC1918 / link-local private hosts are permitted.
-  final bool allowPrivateHosts;
-
-  /// When non-null, only these hosts (case-insensitive) are permitted.
-  final Set<String>? allowedHosts;
 
   /// Validates [url] against this policy.
   ///

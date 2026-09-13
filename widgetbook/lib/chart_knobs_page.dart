@@ -11,37 +11,23 @@ import 'package:widgetbook/widgetbook.dart';
 import 'package:widgetbook_workspace/widgetbook_card_registry.dart';
 
 /// Default knob values extracted from the first chart in a sample card.
-class ChartKnobDefaults {
+class const ChartKnobDefaults({
+  final String title = '',
+  final String xAxisTitle = '',
+  final String yAxisTitle = '',
+  final String subLabel = '',
+  final bool showBarValues = false,
+  final bool showLegend = false,
+  final bool showMinMax = true,
+  final String colorSet = 'default',
+  final double sampleValue = 50,
+  final double gaugeMin = 0,
+  final double gaugeMax = 100,
+  final double gaugeValue = 50,
+  final String valueFormat = 'Percentage',
+}) {
   /// Creates defaults for Widgetbook chart property knobs.
-  const new({
-    this.title = '',
-    this.xAxisTitle = '',
-    this.yAxisTitle = '',
-    this.subLabel = '',
-    this.showBarValues = false,
-    this.showLegend = false,
-    this.showMinMax = true,
-    this.colorSet = 'default',
-    this.sampleValue = 50,
-    this.gaugeMin = 0,
-    this.gaugeMax = 100,
-    this.gaugeValue = 50,
-    this.valueFormat = 'Percentage',
-  });
-
-  final String title;
-  final String xAxisTitle;
-  final String yAxisTitle;
-  final String subLabel;
-  final bool showBarValues;
-  final bool showLegend;
-  final bool showMinMax;
-  final String colorSet;
-  final double sampleValue;
-  final double gaugeMin;
-  final double gaugeMax;
-  final double gaugeValue;
-  final String valueFormat;
+  this;
 }
 
 /// Keeps knob-driven chart pages mounted when Widgetbook query params change.
@@ -70,12 +56,13 @@ GlobalKey<State<ChartKnobsPage>> chartKnobsPageKeyFor(String assetPath) {
 }
 
 /// Widgetbook page that deep-clones base card JSON and patches chart elements.
-class ChartKnobsPage extends StatefulWidget {
-  /// Creates a chart knobs page for the sample at [assetPath].
-  const new({required this.assetPath, super.key});
-
+class const ChartKnobsPage({
   /// Asset path to the Adaptive Card JSON (Widgetbook bundle path).
-  final String assetPath;
+  required final String assetPath,
+  super.key,
+}) extends StatefulWidget {
+  /// Creates a chart knobs page for the sample at [assetPath].
+  this;
 
   @override
   State<ChartKnobsPage> createState() => _ChartKnobsPageState();

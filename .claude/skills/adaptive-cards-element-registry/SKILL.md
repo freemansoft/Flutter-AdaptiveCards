@@ -70,15 +70,13 @@ import 'package:flutter_adaptive_cards_fs/src/additional.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 
 /// Implements the MyElement Adaptive Card element type.
-class AdaptiveMyElement extends StatefulWidget with AdaptiveElementWidgetMixin {
-  AdaptiveMyElement({
-    required this.adaptiveMap,
-  }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
-    id = loadId(adaptiveMap);  // load id before super() via initializer
+class AdaptiveMyElement({
+  @override required final Map<String, dynamic> adaptiveMap,
+}) extends StatefulWidget with AdaptiveElementWidgetMixin {
+  /// Creates a MyElement from [adaptiveMap] JSON.
+  this : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
+    id = loadId(adaptiveMap);  // load id after super()
   }
-
-  @override
-  final Map<String, dynamic> adaptiveMap;
 
   @override
   late final String id;
@@ -112,6 +110,14 @@ class AdaptiveMyElementState extends State<AdaptiveMyElement>
   }
 }
 ```
+
+Fields come from declaring parameters in the class header (`final` in the
+parameter list); `use_declaring_parameters` is enforced, so never write
+`this.adaptiveMap` in a primary constructor. The in-body `this : super(...) {
+... }` part is where the key and `id` are set, and its `///` comment
+documents the constructor: `public_member_api_docs` requires one, and a bare
+`this;` with a doc comment is the form for classes that need nothing else in
+the body.
 
 ### Step 2: Register in `CardTypeRegistry`
 
@@ -213,9 +219,9 @@ Every element must set its `key` deterministically from `adaptiveMap`. The
 `generateAdaptiveWidgetKey` function handles this automatically:
 
 ```dart
-// In StatefulWidget constructor:
-AdaptiveMyElement({required this.adaptiveMap})
-    : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
+// In the widget's in-body constructor part:
+/// Creates a MyElement from [adaptiveMap] JSON.
+this : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
   id = loadId(adaptiveMap);
 }
 ```

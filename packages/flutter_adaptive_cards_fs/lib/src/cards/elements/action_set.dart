@@ -12,16 +12,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 /// This class is described as a _Container_ in the docs but is located in
 /// elements for some reason
 ///
-class ActionSet extends ConsumerStatefulWidget with AdaptiveElementWidgetMixin {
+class ActionSet({
+  @override required final Map<String, dynamic> adaptiveMap,
+}) extends ConsumerStatefulWidget with AdaptiveElementWidgetMixin {
   /// Creates an action set from [adaptiveMap] JSON.
-  new({
-    required this.adaptiveMap,
-  }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
+  this : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
   }
-
-  @override
-  final Map<String, dynamic> adaptiveMap;
 
   @override
   late final String id;

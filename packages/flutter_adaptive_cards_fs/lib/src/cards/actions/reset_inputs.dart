@@ -9,17 +9,13 @@ import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 ///
 /// Renders `Action.ResetInputs` as an elevated button and clears targeted
 /// inputs via [GenericActionResetInputs].
-class AdaptiveActionResetInputs extends StatefulWidget
-    with AdaptiveElementWidgetMixin {
+class AdaptiveActionResetInputs({
+  @override required final Map<String, dynamic> adaptiveMap,
+}) extends StatefulWidget with AdaptiveElementWidgetMixin {
   /// Creates an `Action.ResetInputs` widget from [adaptiveMap].
-  new({
-    required this.adaptiveMap,
-  }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
+  this : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
   }
-
-  @override
-  final Map<String, dynamic> adaptiveMap;
 
   @override
   late final String id;

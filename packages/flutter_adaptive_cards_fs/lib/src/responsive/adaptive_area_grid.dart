@@ -1,8 +1,3 @@
-// RenderObject fields are private with public getters/setters (the Flutter
-// idiom), so their constructor params cannot be initializing formals (named
-// params cannot be private).
-// ignore_for_file: prefer_initializing_formals
-
 import 'dart:developer' as developer;
 
 import 'package:flutter/material.dart';
@@ -13,31 +8,25 @@ import 'package:flutter_adaptive_cards_fs/src/responsive/area_grid_solver.dart';
 import 'package:flutter_adaptive_cards_fs/src/utils/block_height.dart';
 
 /// Placement + stretch flag for one placed grid child (1-based indices).
-class AreaGridPlacement {
-  /// Creates a placement spanning [columnSpan]×[rowSpan] from ([column],
-  /// [row]).
-  const new({
-    required this.column,
-    required this.columnSpan,
-    required this.row,
-    required this.rowSpan,
-    required this.stretch,
-  });
-
+class const AreaGridPlacement({
   /// 1-based start column.
-  final int column;
+  required final int column,
 
   /// Number of columns spanned.
-  final int columnSpan;
+  required final int columnSpan,
 
   /// 1-based start row.
-  final int row;
+  required final int row,
 
   /// Number of rows spanned.
-  final int rowSpan;
+  required final int rowSpan,
 
   /// Whether the child requested `height: "stretch"` (fills its cell height).
-  final bool stretch;
+  required final bool stretch,
+}) {
+  /// Creates a placement spanning [columnSpan]×[rowSpan] from ([column],
+  /// [row]).
+  this;
 }
 
 /// Renders a container's children as a `Layout.AreaGrid`.
@@ -46,27 +35,22 @@ class AreaGridPlacement {
 /// a custom [RenderAdaptiveAreaGrid]; children with a missing or unknown
 /// `grid.area` are not dropped — they render in a fallback [Column] below the
 /// grid (and are logged), mirroring the fail-open `targetWidth` philosophy.
-class AdaptiveAreaGrid extends StatelessWidget {
-  /// Creates an AreaGrid for [children] using the parsed [layout].
-  const new({
-    required this.layout,
-    required this.styleResolver,
-    required this.childMaps,
-    required this.children,
-    super.key,
-  });
-
+class const AdaptiveAreaGrid({
   /// Parsed `Layout.AreaGrid` (columns, areas, spacing).
-  final AreaGridLayout layout;
+  required final AreaGridLayout layout,
 
   /// Resolves HostConfig spacing tokens to pixels.
-  final ReferenceResolver styleResolver;
+  required final ReferenceResolver styleResolver,
 
   /// Raw item JSON, index-aligned with [children].
-  final List<Map<String, dynamic>> childMaps;
+  required final List<Map<String, dynamic>> childMaps,
 
   /// The container's already-built child widgets.
-  final List<Widget> children;
+  required final List<Widget> children,
+  super.key,
+}) extends StatelessWidget {
+  /// Creates an AreaGrid for [children] using the parsed [layout].
+  this;
 
   @override
   Widget build(BuildContext context) {
@@ -133,24 +117,15 @@ class _AreaGridParentData extends ContainerBoxParentData<RenderBox> {
   AreaGridPlacement? placement;
 }
 
-class _AreaGridRenderWidget extends MultiChildRenderObjectWidget {
-  const new({
-    required this.columns,
-    required this.colCount,
-    required this.rowCount,
-    required this.columnSpacing,
-    required this.rowSpacing,
-    required this.placements,
-    required super.children,
-  });
-
-  final List<AreaGridTrack> columns;
-  final int colCount;
-  final int rowCount;
-  final double columnSpacing;
-  final double rowSpacing;
-  final List<AreaGridPlacement> placements;
-
+class const _AreaGridRenderWidget({
+  required final List<AreaGridTrack> columns,
+  required final int colCount,
+  required final int rowCount,
+  required final double columnSpacing,
+  required final double rowSpacing,
+  required final List<AreaGridPlacement> placements,
+  required super.children,
+}) extends MultiChildRenderObjectWidget {
   @override
   RenderAdaptiveAreaGrid createRenderObject(BuildContext context) =>
       RenderAdaptiveAreaGrid(
@@ -181,28 +156,22 @@ double _atLeastZero(double value) => value < 0 ? 0 : value;
 
 /// Custom grid layout: resolves column widths, sizes rows (content + spans),
 /// fills `height:stretch` cells to their row band, and positions each child.
-class RenderAdaptiveAreaGrid extends RenderBox
+class RenderAdaptiveAreaGrid({
+  required var List<AreaGridTrack> _columns,
+  required var int _colCount,
+  required var int _rowCount,
+  required var double _columnSpacing,
+  required var double _rowSpacing,
+  required var List<AreaGridPlacement> _placements,
+}) extends RenderBox
     with
         ContainerRenderObjectMixin<RenderBox, _AreaGridParentData>,
         RenderBoxContainerDefaultsMixin<RenderBox, _AreaGridParentData> {
   /// Creates the AreaGrid render object.
-  new({
-    required List<AreaGridTrack> columns,
-    required int colCount,
-    required int rowCount,
-    required double columnSpacing,
-    required double rowSpacing,
-    required List<AreaGridPlacement> placements,
-  }) : _columns = columns,
-       _colCount = colCount,
-       _rowCount = rowCount,
-       _columnSpacing = columnSpacing,
-       _rowSpacing = rowSpacing,
-       _placements = placements;
+  this;
 
   /// Declared column tracks.
   List<AreaGridTrack> get columns => _columns;
-  List<AreaGridTrack> _columns;
   set columns(List<AreaGridTrack> v) {
     _columns = v;
     markNeedsLayout();
@@ -210,7 +179,6 @@ class RenderAdaptiveAreaGrid extends RenderBox
 
   /// Total column count (declared + implied).
   int get colCount => _colCount;
-  int _colCount;
   set colCount(int v) {
     if (_colCount == v) return;
     _colCount = v;
@@ -219,7 +187,6 @@ class RenderAdaptiveAreaGrid extends RenderBox
 
   /// Total row count.
   int get rowCount => _rowCount;
-  int _rowCount;
   set rowCount(int v) {
     if (_rowCount == v) return;
     _rowCount = v;
@@ -228,7 +195,6 @@ class RenderAdaptiveAreaGrid extends RenderBox
 
   /// Pixel gap between columns.
   double get columnSpacing => _columnSpacing;
-  double _columnSpacing;
   set columnSpacing(double v) {
     if (_columnSpacing == v) return;
     _columnSpacing = v;
@@ -237,7 +203,6 @@ class RenderAdaptiveAreaGrid extends RenderBox
 
   /// Pixel gap between rows.
   double get rowSpacing => _rowSpacing;
-  double _rowSpacing;
   set rowSpacing(double v) {
     if (_rowSpacing == v) return;
     _rowSpacing = v;
@@ -246,7 +211,6 @@ class RenderAdaptiveAreaGrid extends RenderBox
 
   /// Per-child placement, in child order.
   List<AreaGridPlacement> get placements => _placements;
-  List<AreaGridPlacement> _placements;
   set placements(List<AreaGridPlacement> v) {
     _placements = v;
     markNeedsLayout();

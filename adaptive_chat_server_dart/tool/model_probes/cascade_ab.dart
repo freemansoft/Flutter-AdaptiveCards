@@ -37,19 +37,19 @@ import 'probe_results.dart';
 import 'probe_support.dart';
 
 /// The `Input.ChoiceSet` findings from one reply, or why there were none.
-class ChoiceSetReading {
-  /// Creates a reading.
-  const new({this.titles, this.multiSelect, this.failure});
-
+class const ChoiceSetReading({
   /// Choice titles in the order the model offered them.
-  final List<String>? titles;
+  final List<String>? titles,
 
   /// The set's `isMultiSelect`, defaulting to false when the model omits it —
   /// which is what the Adaptive Cards spec says it means.
-  final bool? multiSelect;
+  final bool? multiSelect,
 
   /// Why no choice set could be read, or null on success.
-  final String? failure;
+  final String? failure,
+}) {
+  /// Creates a reading.
+  this;
 
   /// Whether a choice set was found.
   bool get ok => failure == null;
@@ -92,15 +92,15 @@ ChoiceSetReading readChoiceSet(String reply) {
 }
 
 /// The verdict for one cascade run.
-class CascadeResult {
-  /// Creates a result.
-  const new({required this.pass, required this.detail});
-
+class const CascadeResult({
   /// Whether all three requirements held.
-  final bool pass;
+  required final bool pass,
 
   /// Human-readable outcome.
-  final String detail;
+  required final String detail,
+}) {
+  /// Creates a result.
+  this;
 }
 
 /// Applies the three pass conditions to one turn-1 / turn-2 pair.

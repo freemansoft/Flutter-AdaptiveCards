@@ -6,11 +6,13 @@ import 'package:flutter/foundation.dart';
 /// * https://adaptivecards.io/explorer/Table.html
 /// * https://learn.microsoft.com/en-us/adaptive-cards/schema-explorer/table
 @immutable
-class TableColumnDefinition {
+class const TableColumnDefinition({
+  /// Column width - number (flex ratio) or string (pixel value like "50px")
+  /// If null, column uses equal flex distribution
+  final dynamic width,
+}) {
   /// Creates a column definition with optional [width].
-  const new({
-    this.width,
-  });
+  this;
 
   /// Creates a TableColumnDefinition from JSON map
   factory fromJson(Map<String, dynamic> json) {
@@ -18,10 +20,6 @@ class TableColumnDefinition {
       width: json['width'], // Can be num (flex ratio) or String (pixels)
     );
   }
-
-  /// Column width - number (flex ratio) or string (pixel value like "50px")
-  /// If null, column uses equal flex distribution
-  final dynamic width;
 
   /// Converts TableColumnDefinition to JSON map
   Map<String, dynamic> toJson() {

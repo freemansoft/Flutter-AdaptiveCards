@@ -6,14 +6,22 @@
 /// is not performed by the renderer.
 ///
 /// See [Authentication](https://learn.microsoft.com/en-us/adaptive-cards/schema-explorer/authentication).
-class AuthenticationConfig {
+class const AuthenticationConfig({
+  /// Prompt shown above the sign-in buttons.
+  final String? text,
+
+  /// OAuth connection name the host uses to complete sign-in.
+  final String? connectionName,
+
+  /// Raw `tokenExchangeResource` object; preserved but not acted on (SSO is a
+  /// future phase).
+  final Map<String, dynamic>? tokenExchangeResource,
+
+  /// Sign-in buttons rendered for the auth affordance.
+  final List<AuthCardButton> buttons = const [],
+}) {
   /// Creates authentication metadata from parsed JSON fields.
-  const new({
-    this.text,
-    this.connectionName,
-    this.tokenExchangeResource,
-    this.buttons = const [],
-  });
+  this;
 
   /// Parses a card `authentication` object map, tolerating malformed fields.
   factory fromJson(Map<String, dynamic> json) {
@@ -42,30 +50,24 @@ class AuthenticationConfig {
       buttons: buttons,
     );
   }
-
-  /// Prompt shown above the sign-in buttons.
-  final String? text;
-
-  /// OAuth connection name the host uses to complete sign-in.
-  final String? connectionName;
-
-  /// Raw `tokenExchangeResource` object; preserved but not acted on (SSO is a
-  /// future phase).
-  final Map<String, dynamic>? tokenExchangeResource;
-
-  /// Sign-in buttons rendered for the auth affordance.
-  final List<AuthCardButton> buttons;
 }
 
 /// A single button inside an [AuthenticationConfig.buttons] list.
-class AuthCardButton {
+class const AuthCardButton({
+  /// Button type; the renderer only actions `"signin"`.
+  required final String type,
+
+  /// Button label.
+  final String? title,
+
+  /// Optional leading image URL.
+  final String? image,
+
+  /// Sign-in URL / action value forwarded to the host on tap.
+  final String? value,
+}) {
   /// Creates a sign-in button descriptor.
-  const new({
-    required this.type,
-    this.title,
-    this.image,
-    this.value,
-  });
+  this;
 
   /// Parses one `authentication.buttons` entry.
   factory fromJson(Map<String, dynamic> json) {
@@ -76,16 +78,4 @@ class AuthCardButton {
       value: json['value']?.toString(),
     );
   }
-
-  /// Button type; the renderer only actions `"signin"`.
-  final String type;
-
-  /// Button label.
-  final String? title;
-
-  /// Optional leading image URL.
-  final String? image;
-
-  /// Sign-in URL / action value forwarded to the host on tap.
-  final String? value;
 }

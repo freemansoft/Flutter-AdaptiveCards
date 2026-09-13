@@ -1,18 +1,15 @@
 import 'package:flutter/material.dart';
 
 /// Material [IconData] pair for Fluent **Filled** and **Regular** styles.
-class FluentIconEntry {
-  /// Creates a Fluent icon mapping entry.
-  const new({
-    required this.filled,
-    this.regular,
-  });
-
+class const FluentIconEntry({
   /// Filled variant (default Teams `style`).
-  final IconData filled;
+  required final IconData filled,
 
   /// Outlined / regular variant when Material provides one.
-  final IconData? regular;
+  final IconData? regular,
+}) {
+  /// Creates a Fluent icon mapping entry.
+  this;
 }
 
 /// Normalizes Fluent icon names for case-insensitive lookup.

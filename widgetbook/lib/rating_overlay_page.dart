@@ -12,9 +12,7 @@ const _ratingId = 'stars';
 
 final ratingOverlayPageKey = GlobalKey<State<RatingOverlayPage>>();
 
-class RatingOverlayPage extends StatefulWidget {
-  const new({super.key});
-
+class const RatingOverlayPage({super.key}) extends StatefulWidget {
   @override
   State<RatingOverlayPage> createState() => _RatingOverlayPageState();
 }

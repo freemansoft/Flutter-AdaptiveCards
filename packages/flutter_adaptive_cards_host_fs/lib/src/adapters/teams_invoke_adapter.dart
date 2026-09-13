@@ -9,9 +9,7 @@ import 'package:flutter_adaptive_cards_host_fs/src/models/invoke_response.dart';
 /// Use with `AdaptiveCardBackendHandlers` when POSTing to a Teams bot endpoint:
 /// set `TeamsInvokeAdapter.toMap` as `requestAdapter` and
 /// `TeamsInvokeAdapter.responseFromMap` as `responseParser`.
-class TeamsInvokeAdapter {
-  const new _();
-
+class const TeamsInvokeAdapter._() {
   static const _adaptiveCardContentType =
       'application/vnd.microsoft.card.adaptive';
 

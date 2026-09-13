@@ -7,15 +7,15 @@ abstract class AdaptiveCardBackendClient {
 }
 
 /// Thrown when [AdaptiveCardBackendClient.post] fails.
-class AdaptiveCardBackendException implements Exception {
-  /// Creates an exception with [message] and optional raw response [body].
-  new(this.message, {this.body});
-
+class AdaptiveCardBackendException(
   /// Short failure description (for example HTTP status).
-  final String message;
+  final String message, {
 
   /// Raw response body when the server returned an error payload.
-  final String? body;
+  final String? body,
+}) implements Exception {
+  /// Creates an exception with [message] and optional raw response [body].
+  this;
 
   @override
   String toString() => 'AdaptiveCardBackendException: $message';

@@ -1,14 +1,23 @@
 /// Sets default properties for text of a given style
 /// https://adaptivecards.io/explorer/TextStyleConfig.html
-class TextStyleConfig {
+class TextStyleConfig({
+  /// Font weight token for this text style.
+  required final String weight,
+
+  /// Font size token for this text style.
+  required final String size,
+
+  /// Foreground color token for this text style.
+  required final String color,
+
+  /// Font family token (`default` or `monospace`).
+  required final String fontType,
+
+  /// Whether this text style uses the subtle color variant.
+  required final bool isSubtle,
+}) {
   /// Creates text style defaults from explicit values.
-  new({
-    required this.weight,
-    required this.size,
-    required this.color,
-    required this.fontType,
-    required this.isSubtle,
-  });
+  this;
 
   /// Parses a text style object from HostConfig JSON.
   factory fromJson(
@@ -23,19 +32,4 @@ class TextStyleConfig {
       isSubtle: json['isSubtle'] as bool? ?? defaults?.isSubtle ?? false,
     );
   }
-
-  /// Font weight token for this text style.
-  final String weight;
-
-  /// Font size token for this text style.
-  final String size;
-
-  /// Foreground color token for this text style.
-  final String color;
-
-  /// Font family token (`default` or `monospace`).
-  final String fontType;
-
-  /// Whether this text style uses the subtle color variant.
-  final bool isSubtle;
 }

@@ -1,16 +1,27 @@
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/fallback_configs.dart';
 
 /// HostConfig `spacing` section mapping spacing tokens to pixel gaps.
-class SpacingsConfig {
+class SpacingsConfig({
+  /// Pixel gap for the `small` spacing token.
+  required final int small,
+
+  /// Pixel gap for the `default` spacing token.
+  required final int defaultSpacing,
+
+  /// Pixel gap for the `medium` spacing token.
+  required final int medium,
+
+  /// Pixel gap for the `large` spacing token.
+  required final int large,
+
+  /// Pixel gap for the `extraLarge` spacing token.
+  required final int extraLarge,
+
+  /// Pixel padding applied inside containers (`spacing.padding`).
+  required final int padding,
+}) {
   /// Creates spacing tokens from explicit pixel values.
-  new({
-    required this.small,
-    required this.defaultSpacing,
-    required this.medium,
-    required this.large,
-    required this.extraLarge,
-    required this.padding,
-  });
+  this;
 
   /// Parses `spacing` from HostConfig JSON.
   factory fromJson(Map<String, dynamic> json) {
@@ -23,24 +34,6 @@ class SpacingsConfig {
       padding: json['padding'] as int? ?? 20,
     );
   }
-
-  /// Pixel gap for the `small` spacing token.
-  final int small;
-
-  /// Pixel gap for the `default` spacing token.
-  final int defaultSpacing;
-
-  /// Pixel gap for the `medium` spacing token.
-  final int medium;
-
-  /// Pixel gap for the `large` spacing token.
-  final int large;
-
-  /// Pixel gap for the `extraLarge` spacing token.
-  final int extraLarge;
-
-  /// Pixel padding applied inside containers (`spacing.padding`).
-  final int padding;
 
   /// Resolves a pixel spacing value from a spacing token name.
   static double resolveSpacing(SpacingsConfig? config, String? spacing) {

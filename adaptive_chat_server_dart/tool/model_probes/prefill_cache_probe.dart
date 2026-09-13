@@ -95,36 +95,27 @@ int _ms(Map<String, dynamic> data, String key) =>
 /// What one `/api/chat` call reported, machine-readable rather than only
 /// printed — the fields [ProbeRun.summary] needs, per the doc comment's
 /// second decision.
-class _CallResult {
-  const new({
-    required this.completed,
-    this.prompt,
-    this.cached,
-    this.prefillMs,
-    this.totalMs,
-    this.reply,
-  });
-
+class const _CallResult({
   /// Whether the call returned a reply, as opposed to being aborted or
   /// throwing. Deliberately not a judgement about cache behaviour — see the
   /// doc comment's first decision.
-  final bool completed;
+  required final bool completed,
 
   /// `prompt_eval_count`: prompt tokens the call carried.
-  final int? prompt;
+  final int? prompt,
 
   /// `prompt_eval_cached_count`: of those, how many were served from cache.
-  final int? cached;
+  final int? cached,
 
   /// `prompt_eval_duration`, in milliseconds.
-  final int? prefillMs;
+  final int? prefillMs,
 
   /// `total_duration`, in milliseconds.
-  final int? totalMs;
+  final int? totalMs,
 
   /// The assistant's reply text, when the call completed.
-  final String? reply;
-
+  final String? reply,
+}) {
   /// The structured figures, for [ProbeRun.summary].
   Map<String, dynamic> toSummary(String role) => {
     'label': role,

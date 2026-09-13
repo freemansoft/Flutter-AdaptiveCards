@@ -1636,3 +1636,4 @@ conversation`; the route auto-vivifies and prepends the notice card, as the
   new policy: a noteworthy-but-not-an-error server event on an otherwise
   normal `200` is signalled via this header, not the status code or a body
   field.
+- refactor: classes use Dart 3.13 primary constructors with declaring parameters; field docs sit on the parameters in the class header and constructor docs on the in-body `this` declaration. `use_declaring_parameters` is enforced by `analysis_options.yaml`. No behavior change; public constructor signatures are unchanged.

@@ -4,160 +4,122 @@ import 'package:flutter_adaptive_cards_fs/src/models/fact.dart';
 
 /// One element's runtime overlay patch (baseline JSON unchanged).
 @immutable
-class AdaptiveElementUpdate {
-  /// Creates a patch for element [id].
-  const new({
-    required this.id,
-    this.isVisible,
-    this.value,
-    this.errorMessage,
-    this.isInvalid,
-    this.isRequired,
-    this.url,
-    this.text,
-    this.choices,
-    this.queryCount,
-    this.querySkip,
-    this.querySearchText,
-    this.label,
-    this.placeholder,
-    this.facts,
-    this.inlines,
-    this.extensionPatches,
-    this.clearValue = false,
-    this.clearError = false,
-    this.clearChoices = false,
-    this.clearText = false,
-    this.clearIsRequired = false,
-    this.clearUrl = false,
-    this.clearLabel = false,
-    this.clearPlaceholder = false,
-    this.clearFacts = false,
-    this.clearInlines = false,
-    this.clearExtensions = const {},
-  });
-
+class const AdaptiveElementUpdate({
   /// Target element or input id from card JSON.
-  final String id;
+  required final String id,
 
   /// Overrides baseline `"isVisible"`.
-  final bool? isVisible;
+  final bool? isVisible,
 
   /// Overrides baseline `"value"` on inputs.
-  final Object? value;
+  final Object? value,
 
   /// Overrides baseline `"errorMessage"`.
-  final String? errorMessage;
+  final String? errorMessage,
 
   /// Host validation flag merged into `"isInvalid"`.
-  final bool? isInvalid;
+  final bool? isInvalid,
 
   /// Overrides baseline `"isRequired"` on inputs.
-  final bool? isRequired;
+  final bool? isRequired,
 
   /// Overrides baseline `"url"` on `Image` / `Media`.
-  final String? url;
+  final String? url,
 
   /// Overrides baseline `"text"` (e.g. `TextBlock`).
-  final String? text;
+  final String? text,
 
   /// Replaces `Input.ChoiceSet` `"choices"`.
-  final List<Choice>? choices;
+  final List<Choice>? choices,
 
   /// Session override for `choices.data.count`.
-  final int? queryCount;
+  final int? queryCount,
 
   /// Session override for `choices.data.skip`.
-  final int? querySkip;
+  final int? querySkip,
 
   /// Typeahead search text (overlay only).
-  final String? querySearchText;
+  final String? querySearchText,
 
   /// Overrides baseline `"label"` on inputs.
-  final String? label;
+  final String? label,
 
   /// Overrides baseline `"placeholder"` on inputs.
-  final String? placeholder;
+  final String? placeholder,
 
   /// Replaces `FactSet` `"facts"`.
-  final List<Fact>? facts;
+  final List<Fact>? facts,
 
   /// Replaces `RichTextBlock` `"inlines"`.
-  final List<Map<String, dynamic>>? inlines;
+  final List<Map<String, dynamic>>? inlines,
 
   /// Patches optional-package overlay payloads keyed by extension id.
-  final Map<String, Map<String, dynamic>>? extensionPatches;
+  final Map<String, Map<String, dynamic>>? extensionPatches,
 
   /// Clears the `inputValue` overlay.
-  final bool clearValue;
+  final bool clearValue = false,
 
   /// Clears validation overlays.
-  final bool clearError;
+  final bool clearError = false,
 
   /// Clears the `choices` overlay.
-  final bool clearChoices;
+  final bool clearChoices = false,
 
   /// Clears the `text` overlay.
-  final bool clearText;
+  final bool clearText = false,
 
   /// Clears the `isRequired` overlay.
-  final bool clearIsRequired;
+  final bool clearIsRequired = false,
 
   /// Clears the `url` overlay.
-  final bool clearUrl;
+  final bool clearUrl = false,
 
   /// Clears the `label` overlay.
-  final bool clearLabel;
+  final bool clearLabel = false,
 
   /// Clears the `placeholder` overlay.
-  final bool clearPlaceholder;
+  final bool clearPlaceholder = false,
 
   /// Clears the `facts` overlay.
-  final bool clearFacts;
+  final bool clearFacts = false,
 
   /// Clears the `inlines` overlay.
-  final bool clearInlines;
+  final bool clearInlines = false,
 
   /// Clears optional-package overlay payloads for these extension ids.
-  final Set<String> clearExtensions;
+  final Set<String> clearExtensions = const {},
+}) {
+  /// Creates a patch for element [id].
+  this;
 }
 
 /// Action overlay patch for `Action.*` nodes.
 @immutable
-class AdaptiveActionUpdate {
-  /// Creates a patch for action [id].
-  const new({
-    required this.id,
-    this.isEnabled,
-    this.title,
-    this.tooltip,
-    this.iconUrl,
-    this.clearTitle = false,
-    this.clearTooltip = false,
-    this.clearIconUrl = false,
-  });
-
+class const AdaptiveActionUpdate({
   /// Target action id from card JSON.
-  final String id;
+  required final String id,
 
   /// Overrides baseline `"isEnabled"`.
-  final bool? isEnabled;
+  final bool? isEnabled,
 
   /// Overrides baseline `"title"`.
-  final String? title;
+  final String? title,
 
   /// Overrides baseline `"tooltip"`.
-  final String? tooltip;
+  final String? tooltip,
 
   /// Overrides baseline `"iconUrl"`.
-  final String? iconUrl;
+  final String? iconUrl,
 
   /// Clears the `title` overlay.
-  final bool clearTitle;
+  final bool clearTitle = false,
 
   /// Clears the `tooltip` overlay.
-  final bool clearTooltip;
+  final bool clearTooltip = false,
 
   /// Clears the `iconUrl` overlay.
-  final bool clearIconUrl;
+  final bool clearIconUrl = false,
+}) {
+  /// Creates a patch for action [id].
+  this;
 }

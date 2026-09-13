@@ -9,20 +9,7 @@ import 'package:flutter_adaptive_cards_fs/src/hostconfig/fallback_configs.dart';
 ///
 /// **Non-standard:** this is a custom extension to HostConfig and is not part
 /// of the official Adaptive Cards HostConfig schema.
-class ChoiceSetConfig {
-  /// Creates compact `Input.ChoiceSet` dropdown settings from explicit values.
-  new({required this.enableSearch, this.requestFocusOnTap});
-
-  /// Parses `inputs.choiceSet` from HostConfig JSON.
-  factory fromJson(Map<String, dynamic> json) {
-    return ChoiceSetConfig(
-      enableSearch:
-          json['enableSearch'] as bool? ??
-          FallbackConfigs.inputsConfig.choiceSet.enableSearch,
-      requestFocusOnTap: json['requestFocusOnTap'] as bool?,
-    );
-  }
-
+class ChoiceSetConfig({
   /// Whether typing in the compact dropdown jumps to / highlights the matching
   /// entry (the closest analog to a native HTML `<select>`).
   ///
@@ -30,7 +17,7 @@ class ChoiceSetConfig {
   /// HostConfig schema.
   ///
   /// Host default; maps to `DropdownMenu.enableSearch`.
-  final bool enableSearch;
+  required final bool enableSearch,
 
   /// Overrides whether the compact dropdown takes focus (and thus enables
   /// keyboard type-ahead) when tapped.
@@ -43,5 +30,18 @@ class ChoiceSetConfig {
   /// HostConfig schema.
   ///
   /// Host default; maps to `DropdownMenu.requestFocusOnTap`.
-  final bool? requestFocusOnTap;
+  final bool? requestFocusOnTap,
+}) {
+  /// Creates compact `Input.ChoiceSet` dropdown settings from explicit values.
+  this;
+
+  /// Parses `inputs.choiceSet` from HostConfig JSON.
+  factory fromJson(Map<String, dynamic> json) {
+    return ChoiceSetConfig(
+      enableSearch:
+          json['enableSearch'] as bool? ??
+          FallbackConfigs.inputsConfig.choiceSet.enableSearch,
+      requestFocusOnTap: json['requestFocusOnTap'] as bool?,
+    );
+  }
 }

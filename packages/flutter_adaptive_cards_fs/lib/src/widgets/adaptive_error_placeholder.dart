@@ -6,31 +6,26 @@ import 'package:flutter/material.dart';
 /// see what went wrong in any build mode, not only in a debugger. Used for
 /// unrecognized element/action types (`AdaptiveUnknown`) and for images that
 /// fail to load (`AdaptiveImageUtils.getImage`).
-class AdaptiveErrorPlaceholder extends StatelessWidget {
+class const AdaptiveErrorPlaceholder({
+  /// Description of what failed to render.
+  required final String message,
+
+  /// Optional width to size the placeholder, matching the failed element.
+  final double? width,
+
+  /// Optional height to size the placeholder, matching the failed element.
+  final double? height,
+
+  /// Accessible name for the icon, e.g. an image's `altText`.
+  final String? semanticsLabel,
+  super.key,
+}) extends StatelessWidget {
   /// Creates a placeholder showing [message] beside a broken-image icon.
   ///
   /// [width]/[height] size the placeholder to match the element it replaces
   /// (e.g. an `Image`'s resolved dimensions), avoiding layout shift.
   /// [semanticsLabel] is applied to the icon, e.g. an image's `altText`.
-  const new({
-    required this.message,
-    this.width,
-    this.height,
-    this.semanticsLabel,
-    super.key,
-  });
-
-  /// Description of what failed to render.
-  final String message;
-
-  /// Optional width to size the placeholder, matching the failed element.
-  final double? width;
-
-  /// Optional height to size the placeholder, matching the failed element.
-  final double? height;
-
-  /// Accessible name for the icon, e.g. an image's `altText`.
-  final String? semanticsLabel;
+  this;
 
   @override
   Widget build(BuildContext context) {

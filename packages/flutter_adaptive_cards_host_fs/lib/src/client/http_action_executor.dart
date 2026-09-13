@@ -7,22 +7,18 @@ import 'package:http/http.dart' as http;
 /// Carries the raw transport outcome so the backend handlers can interpret the
 /// Outlook Actionable Messages response conventions (`CARD-UPDATE-IN-BODY`,
 /// `CARD-ACTION-STATUS`).
-class AdaptiveHttpResult {
-  /// Creates a result with [statusCode], lower-cased [headers], and [body].
-  const new({
-    required this.statusCode,
-    required this.headers,
-    required this.body,
-  });
-
+class const AdaptiveHttpResult({
   /// HTTP status code returned by the endpoint.
-  final int statusCode;
+  required final int statusCode,
 
   /// Response headers with lower-cased names (as `package:http` returns them).
-  final Map<String, String> headers;
+  required final Map<String, String> headers,
 
   /// Response body as text.
-  final String body;
+  required final String body,
+}) {
+  /// Creates a result with [statusCode], lower-cased [headers], and [body].
+  this;
 
   /// Whether [statusCode] is in the 2xx success range.
   bool get isSuccess => statusCode >= 200 && statusCode < 300;
@@ -42,18 +38,19 @@ abstract class AdaptiveHttpExecutor {
 }
 
 /// Default [AdaptiveHttpExecutor] built on `package:http`.
-class HttpAdaptiveHttpExecutor implements AdaptiveHttpExecutor {
+class HttpAdaptiveHttpExecutor({
+  http.Client? client,
+
+  /// Maximum response body length, in bytes.
+  final int maxResponseBytes = 1024 * 1024,
+}) implements AdaptiveHttpExecutor {
   /// Creates an executor; pass [client] in tests.
   ///
   /// [maxResponseBytes] caps the response body length read into memory
   /// (default 1 MiB) to bound exposure to untrusted endpoints.
-  new({http.Client? client, this.maxResponseBytes = 1024 * 1024})
-    : _client = client ?? http.Client();
+  this;
 
-  /// Maximum response body length, in bytes.
-  final int maxResponseBytes;
-
-  final http.Client _client;
+  final http.Client _client = client ?? http.Client();
 
   @override
   Future<AdaptiveHttpResult> execute(HttpActionInvoke invoke) async {

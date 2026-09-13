@@ -11,16 +11,16 @@ import 'package:flutter_test/flutter_test.dart';
 /// based on the URL file extension. Supply [urlResponder] to override the
 /// response for specific URLs (e.g., returning JSON card payloads for
 /// `Action.OpenUrlDialog` tests).
-class MyTestHttpOverrides extends HttpOverrides {
+class MyTestHttpOverrides({
+  /// Optional factory for custom per-URL responses. Return `null` to fall back
+  /// to the default PNG/SVG stub.
+  final ({List<int> bytes, String contentType}) Function(Uri url)? urlResponder,
+}) extends HttpOverrides {
   /// Creates overrides with an optional per-URL response factory.
   ///
   /// [urlResponder] receives the request [Uri] and returns the raw bytes and
   /// content-type to use. Return `null` to fall back to the default image stub.
-  new({this.urlResponder});
-
-  /// Optional factory for custom per-URL responses. Return `null` to fall back
-  /// to the default PNG/SVG stub.
-  final ({List<int> bytes, String contentType}) Function(Uri url)? urlResponder;
+  this;
 
   @override
   HttpClient createHttpClient(SecurityContext? context) {
@@ -28,11 +28,9 @@ class MyTestHttpOverrides extends HttpOverrides {
   }
 }
 
-class _TestImageHttpClient extends Fake implements HttpClient {
-  new({this.urlResponder});
-
-  final ({List<int> bytes, String contentType}) Function(Uri url)? urlResponder;
-
+class _TestImageHttpClient({
+  final ({List<int> bytes, String contentType}) Function(Uri url)? urlResponder,
+}) extends Fake implements HttpClient {
   @override
   bool autoUncompress = true;
 
@@ -48,14 +46,10 @@ class _TestImageHttpClient extends Fake implements HttpClient {
   void close({bool force = false}) {}
 }
 
-class _TestImageHttpClientRequest extends Fake implements HttpClientRequest {
-  new(this.uri, {this.urlResponder});
-
-  @override
-  final Uri uri;
-
-  final ({List<int> bytes, String contentType}) Function(Uri url)? urlResponder;
-
+class _TestImageHttpClientRequest(
+  @override final Uri uri, {
+  final ({List<int> bytes, String contentType}) Function(Uri url)? urlResponder,
+}) extends Fake implements HttpClientRequest {
   @override
   HttpHeaders get headers => _TestImageHttpHeaders();
 
@@ -85,12 +79,10 @@ class _TestImageHttpClientRequest extends Fake implements HttpClientRequest {
       _TestImageHttpClientResponse(uri: uri, urlResponder: urlResponder);
 }
 
-class _TestImageHttpClientResponse extends Fake implements HttpClientResponse {
-  new({required this.uri, this.urlResponder});
-
-  final Uri uri;
-  final ({List<int> bytes, String contentType}) Function(Uri url)? urlResponder;
-
+class _TestImageHttpClientResponse({
+  required final Uri uri,
+  final ({List<int> bytes, String contentType}) Function(Uri url)? urlResponder,
+}) extends Fake implements HttpClientResponse {
   ({List<int> bytes, String contentType}) get _response {
     final custom = urlResponder?.call(uri);
     if (custom != null) return custom;
@@ -154,11 +146,9 @@ class _TestImageHttpClientResponse extends Fake implements HttpClientResponse {
   }
 }
 
-class _TestImageHttpHeaders extends Fake implements HttpHeaders {
-  new([this._headers = const {}]);
-
-  final Map<String, List<String>> _headers;
-
+class _TestImageHttpHeaders([
+  final Map<String, List<String>> _headers = const {},
+]) extends Fake implements HttpHeaders {
   @override
   void forEach(void Function(String name, List<String> values) action) {
     _headers.forEach(action);

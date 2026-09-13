@@ -40,27 +40,22 @@ const _highlightRow = 1;
 const _highlightCol = 0;
 
 /// Default knob values extracted from the first Table in a sample card.
-class TableKnobDefaults {
-  /// Creates defaults for the Table property knobs.
-  const new({
-    this.showGridLines = true,
-    this.firstRowAsHeader = true,
-    this.gridStyle = 'accent',
-    this.columnWidths = const ['auto', 'stretch', '60px', '2'],
-  });
-
+class const TableKnobDefaults({
   /// Whether grid lines are drawn (`showGridLines`).
-  final bool showGridLines;
+  final bool showGridLines = true,
 
   /// Whether the first row uses header styling (`firstRowAsHeader`).
-  final bool firstRowAsHeader;
+  final bool firstRowAsHeader = true,
 
   /// Grid line color token (`gridStyle`).
-  final String gridStyle;
+  final String gridStyle = 'accent',
 
   /// Per-column `width` values, as strings
   /// (e.g. `auto`, `stretch`, `60px`, `2`).
-  final List<String> columnWidths;
+  final List<String> columnWidths = const ['auto', 'stretch', '60px', '2'],
+}) {
+  /// Creates defaults for the Table property knobs.
+  this;
 }
 
 /// Keeps knob-driven Table pages mounted when Widgetbook query params change.
@@ -77,12 +72,13 @@ GlobalKey<State<TableKnobsPage>> tableKnobsPageKeyFor(String assetPath) {
 /// Widgetbook page deep-clones a base card and patches its first Table from
 /// knobs, demonstrating `auto`/`stretch`/numeric/`px` column widths plus cell
 /// `minHeight` and `style`.
-class TableKnobsPage extends StatefulWidget {
-  /// Creates a Table knobs page for the sample at [assetPath].
-  const new({required this.assetPath, super.key});
-
+class const TableKnobsPage({
   /// Asset path to the Adaptive Card JSON (Widgetbook bundle path).
-  final String assetPath;
+  required final String assetPath,
+  super.key,
+}) extends StatefulWidget {
+  /// Creates a Table knobs page for the sample at [assetPath].
+  this;
 
   @override
   State<TableKnobsPage> createState() => _TableKnobsPageState();

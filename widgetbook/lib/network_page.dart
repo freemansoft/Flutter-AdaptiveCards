@@ -11,10 +11,8 @@ import 'package:widgetbook_workspace/widgetbook_card_registry.dart';
 ///
 /// Based on example/lib/network_page.dart but adapted for Widgetbook:
 /// - No Scaffold/AppBar (Widgetbook provides its own chrome)
-class NetworkPage extends StatelessWidget {
-  const new({super.key, required this.url});
-  final String url;
-
+class const NetworkPage({super.key, required final String url})
+    extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SelectionArea(

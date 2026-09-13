@@ -135,11 +135,8 @@ void main() {
   });
 }
 
-class _FakeBackendClient implements AdaptiveCardBackendClient {
-  new(this.response);
-
-  final Map<String, dynamic> response;
-
+class _FakeBackendClient(final Map<String, dynamic> response)
+    implements AdaptiveCardBackendClient {
   @override
   Future<Map<String, dynamic>> post(Map<String, dynamic> body) async {
     return response;

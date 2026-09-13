@@ -22,25 +22,21 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 /// This is actually classified under _cards_ and not _elements_ in the taxonomy
 /// https://adaptivecards.io/explorer/
 /// https://learn.microsoft.com/en-us/adaptive-cards/schema-explorer/adaptive-card
-class AdaptiveCardElement extends StatefulWidget
-    with AdaptiveElementWidgetMixin {
+class AdaptiveCardElement({
+  @override required final Map<String, dynamic> adaptiveMap,
+
+  /// Whether body content uses a scrollable [ListView] instead of a [Column].
+  required final bool listView,
+}) extends StatefulWidget with AdaptiveElementWidgetMixin {
   /// Creates the root `AdaptiveCard` element from [adaptiveMap].
   ///
   /// When [listView] is true, body children are laid out in a [ListView].
-  new({
-    required this.adaptiveMap,
-    required this.listView,
-  }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
+  this : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
   }
 
   @override
-  final Map<String, dynamic> adaptiveMap;
-  @override
   late final String id;
-
-  /// Whether body content uses a scrollable [ListView] instead of a [Column].
-  final bool listView;
 
   @override
   AdaptiveCardElementState createState() => AdaptiveCardElementState();
@@ -445,21 +441,14 @@ class AdaptiveCardElementState extends State<AdaptiveCardElement>
 ///
 /// Watches [cardWidthBucketProvider], so it reflows when the card crosses a
 /// width boundary. Falls back to a vertical stack otherwise.
-class _AdaptiveCardBody extends ConsumerWidget {
-  const new({
-    required this.bodyItems,
-    required this.childMaps,
-    required this.layouts,
-    required this.styleResolver,
-  });
-
-  final List<Widget> bodyItems;
+class const _AdaptiveCardBody({
+  required final List<Widget> bodyItems,
 
   /// Raw body JSON, index-aligned with [bodyItems].
-  final List<Map<String, dynamic>> childMaps;
-  final List<dynamic>? layouts;
-  final ReferenceResolver styleResolver;
-
+  required final List<Map<String, dynamic>> childMaps,
+  required final List<dynamic>? layouts,
+  required final ReferenceResolver styleResolver,
+}) extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return buildLayoutChildren(
@@ -482,15 +471,10 @@ class _AdaptiveCardBody extends ConsumerWidget {
 ///
 /// Renders the optional prompt text and one button per
 /// [AuthenticationConfig.buttons] entry.
-class _AuthenticationRegion extends StatelessWidget {
-  const new({
-    required this.config,
-    required this.onSignin,
-  });
-
-  final AuthenticationConfig config;
-  final void Function(AuthCardButton button) onSignin;
-
+class const _AuthenticationRegion({
+  required final AuthenticationConfig config,
+  required final void Function(AuthCardButton button) onSignin,
+}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final text = config.text;
@@ -534,11 +518,8 @@ class _AuthenticationRegion extends StatelessWidget {
 }
 
 /// Manual refresh control shown when root card JSON defines `refresh.action`.
-class _RefreshAffordance extends StatelessWidget {
-  const new({required this.onPressed});
-
-  final VoidCallback onPressed;
-
+class const _RefreshAffordance({required final VoidCallback onPressed})
+    extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Semantics(

@@ -58,27 +58,30 @@ typedef ElementCreator = Widget Function(Map<String, dynamic> map);
 /// Delete an element even if you have provided it yourself via the
 /// [addedElements]
 ///
-class CardTypeRegistry {
-  /// Creates a registry with optional custom, removed, and action element
-  /// types.
-  const new({
-    this.removedElements = const [],
-    this.addedElements = const {},
-    this.addedActions = const {},
-    this.overlayExtensions = const CardOverlayExtensionRegistry(),
-    this.listView = false,
-    this.supportMarkdown = true,
-  });
+class const CardTypeRegistry({
+  /// Element/action `type` strings rendered as [AdaptiveUnknown] instead of built-ins.
+  final List<String> removedElements = const [],
 
   /// Custom element builders keyed by `type`; same key overrides built-ins.
-  final Map<String, ElementCreator> addedElements;
+  final Map<String, ElementCreator> addedElements = const {},
 
   /// Custom action widgets keyed by action `type` (for example
   /// `Action.Submit`).
-  final Map<String, ElementCreator> addedActions;
+  final Map<String, ElementCreator> addedActions = const {},
 
   /// Optional-package overlay merge hooks (e.g. chart data patches).
-  final CardOverlayExtensionRegistry overlayExtensions;
+  final CardOverlayExtensionRegistry overlayExtensions =
+      const CardOverlayExtensionRegistry(),
+
+  /// When true, the root `AdaptiveCard` body uses list scrolling.
+  final bool listView = false,
+
+  /// When false, built-in text elements skip Markdown rendering.
+  final bool supportMarkdown = true,
+}) {
+  /// Creates a registry with optional custom, removed, and action element
+  /// types.
+  this;
 
   /// Supported runtime overlay fields for elements/actions in this card scope.
   OverlayCapabilityRegistry get overlayCapabilities =>
@@ -86,17 +89,8 @@ class CardTypeRegistry {
         overlayExtensions: overlayExtensions,
       );
 
-  /// Element/action `type` strings rendered as [AdaptiveUnknown] instead of built-ins.
-  final List<String> removedElements;
-
   // Due to https://github.com/flutter/flutter_markdown/issues/171, markdown
   // support doesn't work at the same time as content alignment in a column set
-  /// When false, built-in text elements skip Markdown rendering.
-  final bool supportMarkdown;
-
-  /// When true, the root `AdaptiveCard` body uses list scrolling.
-  final bool listView;
-
   /// Builds the widget for an element JSON map, honoring [addedElements],
   /// [removedElements], and fallback.
   Widget getElement({

@@ -31,44 +31,35 @@ double resolveRatingIconSize(String size) {
 }
 
 /// Shared star row for display Rating elements and interactive Input.Rating.
-class RatingStars extends StatelessWidget {
-  /// Creates a row of [max] stars for [value].
-  const new({
-    required this.value,
-    required this.max,
-    required this.starColor,
-    required this.iconSize,
-    this.readOnly = true,
-    this.allowHalfSteps = false,
-    this.onRatingChanged,
-    this.useHalfStarDisplay = false,
-    super.key,
-  });
-
+class const RatingStars({
   /// Current rating (0 when unset).
-  final double value;
+  required final double value,
 
   /// Maximum star count.
-  final double max;
+  required final double max,
 
   /// Color applied to each star icon.
-  final Color starColor;
+  required final Color starColor,
 
   /// Logical size of each star icon.
-  final double iconSize;
+  required final double iconSize,
 
   /// When true, stars are not tappable.
-  final bool readOnly;
+  final bool readOnly = true,
 
   /// Enables half-step selection and half-star icons when interactive.
-  final bool allowHalfSteps;
+  final bool allowHalfSteps = false,
 
   /// Called when the user selects a new rating (interactive mode only).
-  final ValueChanged<double>? onRatingChanged;
+  final ValueChanged<double>? onRatingChanged,
 
   /// When true, fractional [value] renders with [Icons.star_half] (display
   /// only).
-  final bool useHalfStarDisplay;
+  final bool useHalfStarDisplay = false,
+  super.key,
+}) extends StatelessWidget {
+  /// Creates a row of [max] stars for [value].
+  this;
 
   IconData _iconForIndex(int index) {
     if (useHalfStarDisplay) {

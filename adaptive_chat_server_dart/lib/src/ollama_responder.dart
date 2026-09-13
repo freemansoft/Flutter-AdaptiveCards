@@ -120,12 +120,12 @@ Map<String, dynamic>? _loadCardSchema(String path) {
 /// schema-constrained decoding: the model sometimes re-emits an object
 /// property key (e.g. Carousel's `pages`, Table's `rows`) once per item
 /// instead of appending items to one array.
-class DuplicateJsonKeyException implements Exception {
-  /// Creates an exception naming the [key] that was repeated.
-  new(this.key);
-
+class DuplicateJsonKeyException(
   /// The JSON object key that was repeated within one object literal.
-  final String key;
+  final String key,
+) implements Exception {
+  /// Creates an exception naming the [key] that was repeated.
+  this;
 
   @override
   String toString() => 'duplicate key "$key"';
@@ -193,7 +193,26 @@ void checkNoDuplicateJsonKeys(String text) {
 }
 
 /// Calls `POST {ollamaUrl}/api/chat` with the conversation history.
-class OllamaResponder implements Responder {
+class OllamaResponder({
+  required final String _ollamaUrl,
+  required String defaultSystemPromptPath,
+  required String cardSchemaPath,
+  final String _model = defaultOllamaModel,
+  http.Client? client,
+  String? systemPromptFile,
+  String? seedCardFile,
+  final int _historyTurns = defaultHistoryTurns,
+  final int _numCtx = defaultNumCtx,
+  String jsonFormat = defaultJsonFormat,
+  final Duration _ollamaTimeout = const Duration(
+    seconds: defaultOllamaTimeoutSeconds,
+  ),
+  final String _keepAlive = defaultKeepAlive,
+
+  /// `null` means send no `temperature`, so Ollama applies the model's own
+  /// Modelfile value rather than one this server picked.
+  final double? _temperature = defaultCardTemperature,
+}) implements Responder {
   /// Configures the responder.
   ///
   /// [defaultSystemPromptPath] and [cardSchemaPath] are resolved once by the
@@ -201,53 +220,7 @@ class OllamaResponder implements Responder {
   /// in the task brief. The system-prompt file *path* is stored (not its
   /// contents), so edits to the file take effect on the next request without
   /// restarting the server.
-  new({
-    required String ollamaUrl,
-    required String defaultSystemPromptPath,
-    required String cardSchemaPath,
-    String model = defaultOllamaModel,
-    http.Client? client,
-    String? systemPromptFile,
-    String? seedCardFile,
-    int historyTurns = defaultHistoryTurns,
-    int numCtx = defaultNumCtx,
-    String jsonFormat = defaultJsonFormat,
-    Duration ollamaTimeout = const Duration(
-      seconds: defaultOllamaTimeoutSeconds,
-    ),
-    String keepAlive = defaultKeepAlive,
-    double? temperature = defaultCardTemperature,
-  }) : // Field names are prefixed with `_` while the required constructor
-       // param names (fixed by the public API contract) are not, so an
-       // initializing formal isn't available here.
-       // ignore: prefer_initializing_formals
-       _ollamaUrl = ollamaUrl,
-       // Same reason as _ollamaUrl above.
-       // ignore: prefer_initializing_formals
-       _model = model,
-       _client = client ?? http.Client(),
-       // Null means "send no seed at all", mirroring how the server treats
-       // an absent --system-prompt-file: the seed is opt-in by naming a
-       // file, so a configuration cannot be seeded by accident.
-       _seedCardPath = seedCardFile,
-       // Same reason as _ollamaUrl above.
-       // ignore: prefer_initializing_formals
-       _historyTurns = historyTurns,
-       // Same reason as _ollamaUrl above.
-       // ignore: prefer_initializing_formals
-       _numCtx = numCtx,
-       _systemPromptPath = systemPromptFile ?? defaultSystemPromptPath,
-       _jsonFormat = jsonFormat,
-       _requestedJsonFormat = jsonFormat,
-       // Same reason as _ollamaUrl above.
-       // ignore: prefer_initializing_formals
-       _ollamaTimeout = ollamaTimeout,
-       // Same reason as _ollamaUrl above.
-       // ignore: prefer_initializing_formals
-       _keepAlive = keepAlive,
-       // Same reason as _ollamaUrl above.
-       // ignore: prefer_initializing_formals
-       _temperature = temperature {
+  this {
     _knownElementTypes = loadKnownElementTypes(cardSchemaPath);
     if (_jsonFormat == 'schema') {
       _cardSchema = _loadCardSchema(cardSchemaPath);
@@ -257,22 +230,12 @@ class OllamaResponder implements Responder {
     }
   }
 
-  final String _ollamaUrl;
-  final String _model;
-  final http.Client _client;
-  final int _historyTurns;
-  final int _numCtx;
-  final String _systemPromptPath;
-  final String? _seedCardPath;
+  final http.Client _client = client ?? http.Client();
+  final String _systemPromptPath = systemPromptFile ?? defaultSystemPromptPath;
+  final String? _seedCardPath = seedCardFile;
 
-  final String _requestedJsonFormat;
-  final Duration _ollamaTimeout;
-  final String _keepAlive;
-
-  /// `null` means send no `temperature`, so Ollama applies the model's own
-  /// Modelfile value rather than one this server picked.
-  final double? _temperature;
-  String _jsonFormat;
+  final String _requestedJsonFormat = jsonFormat;
+  String _jsonFormat = jsonFormat;
   Map<String, dynamic>? _cardSchema;
 
   /// Vocabulary for the unknown-type warning; empty means the check is off.

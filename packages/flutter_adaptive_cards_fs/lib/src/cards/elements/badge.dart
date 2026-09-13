@@ -9,17 +9,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 /// Renders the Adaptive Cards **Badge** element (text and optional icon).
 ///
 /// See https://adaptivecards.io/explorer/Badge.html
-class AdaptiveBadge extends ConsumerStatefulWidget
-    with AdaptiveElementWidgetMixin {
+class AdaptiveBadge({
+  @override required final Map<String, dynamic> adaptiveMap,
+}) extends ConsumerStatefulWidget with AdaptiveElementWidgetMixin {
   /// Creates a badge from [adaptiveMap] JSON.
-  new({
-    required this.adaptiveMap,
-  }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
+  this : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
   }
-
-  @override
-  final Map<String, dynamic> adaptiveMap;
 
   @override
   late final String id;

@@ -24,17 +24,35 @@ import 'package:crypto/crypto.dart';
 import 'package:path/path.dart' as p;
 
 /// One `/api/chat` call and how the server's own judge scored it.
-class ProbeCall {
+class const ProbeCall({
+  /// The case this call exercised (`table`, `choice1`, …).
+  required final String caseId,
+
+  /// Which repeat of that case this was, zero-based.
+  required final int sample,
+
+  /// The server's verdict — a renderable card, or clean prose.
+  required final bool pass,
+
+  /// The verdict detail (`card[2]`, `prose`, `wrong-shape: …`).
+  ///
+  /// Kept verbatim because it carries the distinction a pass count erases: a
+  /// stress cell scored `PASS` is a card *or* prose, and which one it was is
+  /// the difference between "the model answered well" and "the model stopped
+  /// producing cards". See `cardsAndProse`.
+  required final String label,
+
+  /// Cold-start versus with-history, where the probe measures both.
+  final String? condition,
+
+  /// The decoding setting, where the probe sweeps several.
+  final String? setting,
+
+  /// Wall-clock for the call, including a model load on the first one.
+  final int? ms,
+}) {
   /// Creates a call record.
-  const new({
-    required this.caseId,
-    required this.sample,
-    required this.pass,
-    required this.label,
-    this.condition,
-    this.setting,
-    this.ms,
-  });
+  this;
 
   /// Rebuilds a call from its JSON form.
   factory fromJson(Map<String, dynamic> json) => ProbeCall(
@@ -46,32 +64,6 @@ class ProbeCall {
     setting: json['setting'] as String?,
     ms: json['ms'] as int?,
   );
-
-  /// The case this call exercised (`table`, `choice1`, …).
-  final String caseId;
-
-  /// Which repeat of that case this was, zero-based.
-  final int sample;
-
-  /// The server's verdict — a renderable card, or clean prose.
-  final bool pass;
-
-  /// The verdict detail (`card[2]`, `prose`, `wrong-shape: …`).
-  ///
-  /// Kept verbatim because it carries the distinction a pass count erases: a
-  /// stress cell scored `PASS` is a card *or* prose, and which one it was is
-  /// the difference between "the model answered well" and "the model stopped
-  /// producing cards". See `cardsAndProse`.
-  final String label;
-
-  /// Cold-start versus with-history, where the probe measures both.
-  final String? condition;
-
-  /// The decoding setting, where the probe sweeps several.
-  final String? setting;
-
-  /// Wall-clock for the call, including a model load on the first one.
-  final int? ms;
 
   /// Whether the reply was a card rather than prose.
   bool get isCard => label.startsWith('card[');
@@ -99,24 +91,91 @@ class ProbeCall {
 }
 
 /// A complete probe run: what was measured, against what, and every call.
-class ProbeRun {
+class const ProbeRun({
+  /// Which script produced this (`shape_ab`, `cascade_ab`, …).
+  required final String probe,
+
+  /// The Ollama model tag, verbatim.
+  required final String model,
+
+  /// `YYYY-MM-DD` the run was taken.
+  required final String measuredAt,
+
+  /// Repeats per case.
+  required final int samples,
+
+  /// Digests of the prompt assets this run used, by asset name.
+  ///
+  /// This is what makes staleness detectable without a model: if
+  /// `assets/card_system_prompt.txt` is edited, every stored run still names
+  /// the digest it was measured against, so a checker can say which recorded
+  /// results have quietly become historical.
+  required final Map<String, String> assets,
+
+  /// Per-call detail, in the order the probe made the calls.
+  required final List<ProbeCall> calls,
+
+  /// The host the run was taken on, e.g. `Apple M1 Max / 64 GB`.
+  ///
+  /// Stamped into every result because latency is a property of the pair, not
+  /// of the model. A column that silently mixed two Macs would be worse than
+  /// no column, and this file is the only place that can rule it out.
+  final String? machine,
+
+  /// The Ollama version that served the calls, where it could be read.
+  ///
+  /// Recorded for the same reason [machine] is: a latency figure is a joint
+  /// property of the model, the box, and the runtime. The first cross-host
+  /// comparison in this directory was taken across an Ollama upgrade with no
+  /// record of which version produced which half, so the difference could not
+  /// be attributed to the box rather than to the runtime.
+  ///
+  /// Null on runs recorded before this field existed -- the archive is full of
+  /// them, and their version is not recoverable -- and on any run where the
+  /// daemon did not answer.
+  final String? ollama,
+
+  /// A distinguishing label where one probe is run two ways.
+  ///
+  /// `shape_ab` is the case that needs it: the same script produces the
+  /// as-shipped number with the card seed and the seed-dependence baseline
+  /// without it, and conflating those two would be conflating what a user
+  /// gets with what the seed is worth.
+  final String? variant,
+
+  /// The temperature, where the probe fixes one.
+  final double? temperature,
+
+  /// Headline figures, as the probe itself reported them.
+  ///
+  /// Stored rather than only derived so a reader can spot a probe whose
+  /// printed summary disagrees with its own calls — which is exactly the
+  /// class of error hand-transcription hides.
+  final Map<String, dynamic> summary = const {},
+
+  /// Anything about the run a number cannot carry.
+  final String? notes,
+
+  /// Results directory this run was read from, or null when built in memory.
+  ///
+  /// Set by [readAllResults] rather than stored in the file. A check that
+  /// treats one archive differently from another — a superseded host or
+  /// runtime, say — needs to know which archive a run came from, and nothing
+  /// in the JSON records that.
+  final String? sourceDir,
+
+  /// Basename of the file this run was read from, or null when built in memory.
+  ///
+  /// Set by [ProbeRun.read] rather than stored in the file, the same way
+  /// [sourceDir] is. `probe` and `variant` do not identify a file: one
+  /// directory can hold several runs that agree on both — `shape_ab-seeded-
+  /// format-schema.json` beside its `-confirm` and `-recheck` re-runs — and
+  /// those are exactly the runs a reader needs told apart, since they were
+  /// taken separately and can disagree.
+  final String? fileName,
+}) {
   /// Creates a run record.
-  const new({
-    required this.probe,
-    required this.model,
-    required this.measuredAt,
-    required this.samples,
-    required this.assets,
-    required this.calls,
-    this.machine,
-    this.ollama,
-    this.variant,
-    this.temperature,
-    this.summary = const {},
-    this.notes,
-    this.sourceDir,
-    this.fileName,
-  });
+  this;
 
   /// Rebuilds a run from its JSON form.
   factory fromJson(
@@ -157,88 +216,6 @@ class ProbeRun {
     sourceDir: sourceDir,
     fileName: p.basename(file.path),
   );
-
-  /// Which script produced this (`shape_ab`, `cascade_ab`, …).
-  final String probe;
-
-  /// The Ollama model tag, verbatim.
-  final String model;
-
-  /// `YYYY-MM-DD` the run was taken.
-  final String measuredAt;
-
-  /// Repeats per case.
-  final int samples;
-
-  /// Digests of the prompt assets this run used, by asset name.
-  ///
-  /// This is what makes staleness detectable without a model: if
-  /// `assets/card_system_prompt.txt` is edited, every stored run still names
-  /// the digest it was measured against, so a checker can say which recorded
-  /// results have quietly become historical.
-  final Map<String, String> assets;
-
-  /// The host the run was taken on, e.g. `Apple M1 Max / 64 GB`.
-  ///
-  /// Stamped into every result because latency is a property of the pair, not
-  /// of the model. A column that silently mixed two Macs would be worse than
-  /// no column, and this file is the only place that can rule it out.
-  final String? machine;
-
-  /// The Ollama version that served the calls, where it could be read.
-  ///
-  /// Recorded for the same reason [machine] is: a latency figure is a joint
-  /// property of the model, the box, and the runtime. The first cross-host
-  /// comparison in this directory was taken across an Ollama upgrade with no
-  /// record of which version produced which half, so the difference could not
-  /// be attributed to the box rather than to the runtime.
-  ///
-  /// Null on runs recorded before this field existed -- the archive is full of
-  /// them, and their version is not recoverable -- and on any run where the
-  /// daemon did not answer.
-  final String? ollama;
-
-  /// A distinguishing label where one probe is run two ways.
-  ///
-  /// `shape_ab` is the case that needs it: the same script produces the
-  /// as-shipped number with the card seed and the seed-dependence baseline
-  /// without it, and conflating those two would be conflating what a user
-  /// gets with what the seed is worth.
-  final String? variant;
-
-  /// The temperature, where the probe fixes one.
-  final double? temperature;
-
-  /// Per-call detail, in the order the probe made the calls.
-  final List<ProbeCall> calls;
-
-  /// Headline figures, as the probe itself reported them.
-  ///
-  /// Stored rather than only derived so a reader can spot a probe whose
-  /// printed summary disagrees with its own calls — which is exactly the
-  /// class of error hand-transcription hides.
-  final Map<String, dynamic> summary;
-
-  /// Anything about the run a number cannot carry.
-  final String? notes;
-
-  /// Results directory this run was read from, or null when built in memory.
-  ///
-  /// Set by [readAllResults] rather than stored in the file. A check that
-  /// treats one archive differently from another — a superseded host or
-  /// runtime, say — needs to know which archive a run came from, and nothing
-  /// in the JSON records that.
-  final String? sourceDir;
-
-  /// Basename of the file this run was read from, or null when built in memory.
-  ///
-  /// Set by [ProbeRun.read] rather than stored in the file, the same way
-  /// [sourceDir] is. `probe` and `variant` do not identify a file: one
-  /// directory can hold several runs that agree on both — `shape_ab-seeded-
-  /// format-schema.json` beside its `-confirm` and `-recheck` re-runs — and
-  /// those are exactly the runs a reader needs told apart, since they were
-  /// taken separately and can disagree.
-  final String? fileName;
 
   /// Passes and total.
   (int, int) get score => (calls.where((c) => c.pass).length, calls.length);

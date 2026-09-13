@@ -58,14 +58,10 @@ String? countryCodeFromOnChangeValue(Object? value) {
 /// Phase 1: associatedInputs merges sibling input values into Data.Query
 /// parameters on city onChange. Country change preloads city choices; the city
 /// branch can also resolve choices from dataQuery.parameters['country'].
-class DependentChoiceSetDemoPage extends StatelessWidget {
-  const new({
-    super.key,
-    required this.assetPath,
-  });
-
-  final String assetPath;
-
+class const DependentChoiceSetDemoPage({
+  super.key,
+  required final String assetPath,
+}) extends StatelessWidget {
   /// `onChange` handler shared by Option 1 and Option 2 Widgetbook use cases.
   ///
   /// Option 1 (`value_changed_action_filtered.json`) and

@@ -7,12 +7,15 @@ import 'package:flutter/foundation.dart';
 /// * https://adaptivecards.io/explorer/Input.Choice.html
 /// * https://learn.microsoft.com/en-us/adaptive-cards/schema-explorer/input-choice
 @immutable
-class Choice {
+class const Choice({
+  /// Label shown in the ChoiceSet UI.
+  required final String title,
+
+  /// Submitted value when this choice is selected (not the display title).
+  required final String value,
+}) {
   /// One ChoiceSet option; [title] is shown, [value] is submitted.
-  const new({
-    required this.title,
-    required this.value,
-  });
+  this;
 
   /// Parses an Adaptive Cards `Input.Choice` object from card JSON.
   factory fromJson(Map<String, dynamic> json) {
@@ -21,12 +24,6 @@ class Choice {
       value: json['value']?.toString() ?? '',
     );
   }
-
-  /// Label shown in the ChoiceSet UI.
-  final String title;
-
-  /// Submitted value when this choice is selected (not the display title).
-  final String value;
 
   /// Serializes for overlay updates and resolved element JSON.
   Map<String, dynamic> toJson() {

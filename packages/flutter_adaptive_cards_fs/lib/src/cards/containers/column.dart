@@ -13,24 +13,19 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 ///
 /// Renders a `Column` inside a `ColumnSet`, sizing by `width` and laying out
 /// `items` vertically.
-class AdaptiveColumn extends ConsumerStatefulWidget
-    with AdaptiveElementWidgetMixin {
+class AdaptiveColumn({
+  @override required final Map<String, dynamic> adaptiveMap,
+
+  /// Whether nested text elements may render markdown.
+  required final bool supportMarkdown,
+}) extends ConsumerStatefulWidget with AdaptiveElementWidgetMixin {
   /// Creates a `Column` from [adaptiveMap] within a parent `ColumnSet`.
-  new({
-    required this.adaptiveMap,
-    required this.supportMarkdown,
-  }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
+  this : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
   }
 
   @override
-  final Map<String, dynamic> adaptiveMap;
-
-  @override
   late final String id;
-
-  /// Whether nested text elements may render markdown.
-  final bool supportMarkdown;
 
   @override
   AdaptiveColumnState createState() => AdaptiveColumnState();

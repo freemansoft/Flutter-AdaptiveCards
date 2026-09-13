@@ -9,17 +9,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 /// Renders the Adaptive Cards hub **Icon** element (Fluent icon catalog).
 ///
 /// See https://learn.microsoft.com/en-us/microsoftteams/platform/task-modules-and-cards/cards/cards-format
-class AdaptiveIcon extends ConsumerStatefulWidget
-    with AdaptiveElementWidgetMixin {
+class AdaptiveIcon({
+  @override required final Map<String, dynamic> adaptiveMap,
+}) extends ConsumerStatefulWidget with AdaptiveElementWidgetMixin {
   /// Creates an icon element from [adaptiveMap] JSON.
-  new({
-    required this.adaptiveMap,
-  }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
+  this : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
   }
-
-  @override
-  final Map<String, dynamic> adaptiveMap;
 
   @override
   late final String id;

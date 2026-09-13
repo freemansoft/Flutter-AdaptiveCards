@@ -7,10 +7,10 @@ import 'package:flutter_adaptive_cards_fs/src/flutter_raw_adaptive_card.dart';
 ///
 /// The root default beahvior for onTaps in each of the Action types
 /// Each action type has its own implementation
-abstract class GenericAction {
+abstract class const GenericAction() {
   /// Base type for injectable action tap handlers resolved by
   /// `ActionTypeRegistry`.
-  const new();
+  this;
 
   /// Returns the action label from [adaptiveMap], typically the `title`
   /// property.
@@ -26,9 +26,9 @@ abstract class GenericAction {
 }
 
 /// Abstract action type for Action.Submit
-abstract class GenericSubmitAction extends GenericAction {
+abstract class const GenericSubmitAction() extends GenericAction {
   /// Handler contract for `Action.Submit` taps.
-  const new();
+  this;
 
   @override
   void tap({
@@ -39,9 +39,9 @@ abstract class GenericSubmitAction extends GenericAction {
 }
 
 /// Abstract action type for Action.Execute
-abstract class GenericExecuteAction extends GenericAction {
+abstract class const GenericExecuteAction() extends GenericAction {
   /// Handler contract for `Action.Execute` taps.
-  const new();
+  this;
 
   @override
   void tap({
@@ -52,9 +52,9 @@ abstract class GenericExecuteAction extends GenericAction {
 }
 
 /// Abstract action type for Action.OpenUrl
-abstract class GenericActionOpenUrl extends GenericAction {
+abstract class const GenericActionOpenUrl() extends GenericAction {
   /// Handler contract for `Action.OpenUrl` taps.
-  const new();
+  this;
 
   @override
   void tap({
@@ -67,15 +67,15 @@ abstract class GenericActionOpenUrl extends GenericAction {
 
 /// Abstract action for onTaps for Action.OpenUrlDialog
 /// Exists to support possible webview in future
-abstract class GenericActionOpenUrlDialog extends GenericActionOpenUrl {
+abstract class const GenericActionOpenUrlDialog() extends GenericActionOpenUrl {
   /// Handler contract for `Action.OpenUrlDialog` taps.
-  const new();
+  this;
 }
 
 /// Abstract action for onTaps for Action.ResetInputs
-abstract class GenericActionResetInputs extends GenericAction {
+abstract class const GenericActionResetInputs() extends GenericAction {
   /// Handler contract for `Action.ResetInputs` taps.
-  const new();
+  this;
 
   @override
   void tap({
@@ -86,9 +86,9 @@ abstract class GenericActionResetInputs extends GenericAction {
 }
 
 /// Handler contract for `Action.ToggleVisibility` taps.
-abstract class GenericActionToggleVisibility extends GenericAction {
+abstract class const GenericActionToggleVisibility() extends GenericAction {
   /// Creates a toggle-visibility action handler implementation.
-  const new();
+  this;
 
   @override
   void tap({
@@ -103,9 +103,9 @@ abstract class GenericActionToggleVisibility extends GenericAction {
 /// **Deprecated/legacy:** `Action.Http` was the original Adaptive Cards HTTP
 /// action model (schema v1.0), superseded by `Action.Execute` (Universal Action
 /// Model, schema v1.4). It is still used by Outlook Actionable Messages.
-abstract class GenericHttpAction extends GenericAction {
+abstract class const GenericHttpAction() extends GenericAction {
   /// Creates an `Action.Http` handler implementation.
-  const new();
+  this;
 
   @override
   void tap({
@@ -116,9 +116,9 @@ abstract class GenericHttpAction extends GenericAction {
 }
 
 /// Handler contract for `Action.Popover` taps.
-abstract class GenericPopoverAction extends GenericAction {
+abstract class const GenericPopoverAction() extends GenericAction {
   /// Creates a popover action handler implementation.
-  const new();
+  this;
 
   @override
   void tap({

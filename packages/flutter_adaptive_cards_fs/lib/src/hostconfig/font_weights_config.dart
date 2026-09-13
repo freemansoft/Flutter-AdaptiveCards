@@ -1,13 +1,18 @@
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/fallback_configs.dart';
 
 /// HostConfig `fontWeights` section mapping weight tokens to numeric weights.
-class FontWeightsConfig {
+class FontWeightsConfig({
+  /// Numeric weight for the `lighter` font weight token.
+  required final int lighter,
+
+  /// Numeric weight for the `default` font weight token.
+  required final int defaultWeight,
+
+  /// Numeric weight for the `bolder` font weight token.
+  required final int bolder,
+}) {
   /// Creates font weight tokens from explicit numeric values.
-  new({
-    required this.lighter,
-    required this.defaultWeight,
-    required this.bolder,
-  });
+  this;
 
   /// Parses `fontWeights` from HostConfig JSON.
   factory fromJson(Map<String, dynamic> json) {
@@ -18,13 +23,4 @@ class FontWeightsConfig {
       bolder: json['bolder'] as int? ?? fallbackWeights.bolder,
     );
   }
-
-  /// Numeric weight for the `lighter` font weight token.
-  final int lighter;
-
-  /// Numeric weight for the `default` font weight token.
-  final int defaultWeight;
-
-  /// Numeric weight for the `bolder` font weight token.
-  final int bolder;
 }

@@ -12,31 +12,25 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 /// https://adaptivecards.io/explorer/Image.html
 /// https://learn.microsoft.com/en-us/adaptive-cards/schema-explorer/image
 ///
-class AdaptiveImage extends ConsumerStatefulWidget
-    with AdaptiveElementWidgetMixin {
+class AdaptiveImage({
+  @override required final Map<String, dynamic> adaptiveMap,
+
+  /// Parent container width mode (`auto`, `stretch`, etc.).
+  final String parentMode = 'stretch',
+
+  /// When true, uses [Align] instead of [Row] for horizontal placement.
+  required final bool supportMarkdown,
+}) extends ConsumerStatefulWidget with AdaptiveElementWidgetMixin {
   /// Creates an image element from [adaptiveMap] JSON.
   ///
   /// [parentMode] controls flex behavior when nested in column/row layouts.
   /// [supportMarkdown] enables markdown-friendly alignment when true.
-  new({
-    required this.adaptiveMap,
-    this.parentMode = 'stretch',
-    required this.supportMarkdown,
-  }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
+  this : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
   }
 
   @override
-  final Map<String, dynamic> adaptiveMap;
-
-  @override
   late final String id;
-
-  /// Parent container width mode (`auto`, `stretch`, etc.).
-  final String parentMode;
-
-  /// When true, uses [Align] instead of [Row] for horizontal placement.
-  final bool supportMarkdown;
 
   @override
   AdaptiveImageState createState() => AdaptiveImageState();

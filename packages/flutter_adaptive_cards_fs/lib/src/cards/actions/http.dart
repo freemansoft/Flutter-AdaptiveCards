@@ -12,17 +12,13 @@ import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 ///
 /// Renders `Action.Http` as a button and forwards an `HttpActionInvoke` to the
 /// host via [GenericHttpAction].
-class AdaptiveActionHttp extends StatefulWidget
-    with AdaptiveElementWidgetMixin {
+class AdaptiveActionHttp({
+  @override required final Map<String, dynamic> adaptiveMap,
+}) extends StatefulWidget with AdaptiveElementWidgetMixin {
   /// Creates an `Action.Http` widget from [adaptiveMap].
-  new({
-    required this.adaptiveMap,
-  }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
+  this : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
   }
-
-  @override
-  final Map<String, dynamic> adaptiveMap;
 
   @override
   late final String id;

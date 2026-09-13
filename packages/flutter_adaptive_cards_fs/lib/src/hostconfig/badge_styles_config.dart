@@ -2,12 +2,15 @@ import 'package:flutter_adaptive_cards_fs/src/hostconfig/foreground_colors_confi
 
 /// HostConfig `badgeStyles` entry defining background and foreground colors
 /// for a single badge style variant.
-class BadgeStyleConfig {
+class BadgeStyleConfig({
+  /// Background colors keyed by semantic color names.
+  required final ForegroundColorsConfig backgroundColors,
+
+  /// Foreground (text/icon) colors keyed by semantic color names.
+  required final ForegroundColorsConfig foregroundColors,
+}) {
   /// Creates a badge style from explicit color configurations.
-  new({
-    required this.backgroundColors,
-    required this.foregroundColors,
-  });
+  this;
 
   /// Parses a badge style object from HostConfig JSON.
   factory fromJson(
@@ -27,21 +30,18 @@ class BadgeStyleConfig {
           : defaults?.foregroundColors ?? ForegroundColorsConfig.fromJson({}),
     );
   }
-
-  /// Background colors keyed by semantic color names.
-  final ForegroundColorsConfig backgroundColors;
-
-  /// Foreground (text/icon) colors keyed by semantic color names.
-  final ForegroundColorsConfig foregroundColors;
 }
 
 /// HostConfig `badgeStyles` section mapping named badge variants to colors.
-class BadgeStylesConfig {
+class BadgeStylesConfig({
+  /// Solid-fill badge colors (`badgeStyles.filled`).
+  required final BadgeStyleConfig filled,
+
+  /// Tinted badge colors (`badgeStyles.tint`).
+  required final BadgeStyleConfig tint,
+}) {
   /// Creates badge style variants from explicit configurations.
-  new({
-    required this.filled,
-    required this.tint,
-  });
+  this;
 
   /// Parses `badgeStyles` from HostConfig JSON.
   factory fromJson(Map<String, dynamic> json) {
@@ -62,10 +62,4 @@ class BadgeStylesConfig {
       ),
     );
   }
-
-  /// Solid-fill badge colors (`badgeStyles.filled`).
-  final BadgeStyleConfig filled;
-
-  /// Tinted badge colors (`badgeStyles.tint`).
-  final BadgeStyleConfig tint;
 }

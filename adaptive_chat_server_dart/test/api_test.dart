@@ -19,10 +19,7 @@ import 'package:test/test.dart';
 // the notice card exactly (including on a replayed retry) rather than drift
 // from it.
 
-class _CountingResponder implements Responder {
-  new(this.onCall);
-  final void Function() onCall;
-
+class _CountingResponder(final void Function() onCall) implements Responder {
   @override
   Future<Reply> reply(String text, List<(String, String)> history) async {
     onCall();
@@ -39,11 +36,8 @@ class _CountingResponder implements Responder {
 
 /// Stays inside [reply] until [gate] completes, so a second request can
 /// arrive while the first is still in flight.
-class _GatedResponder implements Responder {
-  new(this.gate, this.onCall);
-  final Future<void> gate;
-  final void Function() onCall;
-
+class _GatedResponder(final Future<void> gate, final void Function() onCall)
+    implements Responder {
   @override
   Future<Reply> reply(String text, List<(String, String)> history) async {
     onCall();
@@ -61,9 +55,8 @@ class _GatedResponder implements Responder {
 
 /// Records the history handed to each call so tests can assert on what the
 /// model would actually have been shown.
-class _HistorySpyResponder implements Responder {
-  new(this.replyFor);
-  final Reply Function(String text) replyFor;
+class _HistorySpyResponder(final Reply Function(String text) replyFor)
+    implements Responder {
   final histories = <List<(String, String)>>[];
 
   @override

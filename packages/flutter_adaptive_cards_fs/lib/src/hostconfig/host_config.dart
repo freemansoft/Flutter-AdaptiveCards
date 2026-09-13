@@ -34,24 +34,21 @@ enum AdaptiveCardBrightnessMode {
 }
 
 /// Light and dark HostConfig pair with a mutable [current] selection.
-class HostConfigs {
+class HostConfigs({
+  /// HostConfig for light theme rendering.
+  final HostConfig light = const HostConfig(),
+
+  /// HostConfig for dark theme rendering.
+  final HostConfig dark = const HostConfig(),
+}) {
   /// Creates a light/dark HostConfig pair; [current] starts as [light].
-  new({
-    this.light = const HostConfig(),
-    this.dark = const HostConfig(),
-  }) {
+  this {
     // should look at the teme
     current = light;
   }
 
   /// Active HostConfig used for rendering (set to [light] or [dark]).
   late HostConfig current;
-
-  /// HostConfig for light theme rendering.
-  final HostConfig light;
-
-  /// HostConfig for dark theme rendering.
-  final HostConfig dark;
 }
 
 /// Parsed Adaptive Cards HostConfig JSON that maps spec tokens to Flutter
@@ -62,35 +59,93 @@ class HostConfigs {
 /// supplies defaults for an element family (inputs, actions, charts, and so
 /// on). Load via [HostConfig.fromJson] from host JSON, or compose sections in
 /// code when building a config programmatically.
-class HostConfig {
+class const HostConfig({
+  /// Resolves relative image URLs in card JSON.
+  final String? imageBaseUrl,
+
+  /// Default font family for card text elements.
+  final String? fontFamily,
+
+  /// When false, inputs and actions are disabled for read-only card display.
+  final bool? supportsInteractivity,
+
+  /// ImageSet thumbnail sizing and layout defaults.
+  final ImageSetConfig? imageSet,
+
+  /// Semantic foreground colors for text and icons.
+  final ForegroundColorsConfig? foregroundColors,
+
+  /// Named text style presets for card typography.
+  final TextStylesConfig? textStyles,
+
+  /// Root AdaptiveCard container styling.
+  final AdaptiveCardConfig? adaptiveCard,
+
+  /// ActionSet layout and button chrome.
+  final ActionsConfig? actions,
+
+  /// Named container background and foreground styles.
+  final ContainerStylesConfig? containerStyles,
+
+  /// FactSet label and value typography and spacing.
+  final FactSetConfig? factSet,
+
+  /// Font size tokens referenced by card JSON.
+  final FontSizesConfig? fontSizes,
+
+  /// Font weight tokens referenced by card JSON.
+  final FontWeightsConfig? fontWeights,
+
+  /// Image element size tokens.
+  final ImageSizesConfig? imageSizes,
+
+  /// Input label, placeholder, and error styling.
+  final InputsConfig? inputs,
+
+  /// Media element chrome and playback defaults.
+  final MediaConfig? media,
+
+  /// Separator line weight and color.
+  final SeparatorConfig? separator,
+
+  /// Spacing tokens (`small`, `medium`, and so on).
+  final SpacingsConfig? spacing,
+
+  /// TextBlock heading and wrap defaults.
+  final TextBlockConfig? textBlock,
+
+  /// Badge color variants.
+  final BadgeStylesConfig? badgeStyles,
+
+  /// Progress ring and bar size tokens.
+  final ProgressSizesConfig? progressSizes,
+
+  /// Progress indicator semantic colors.
+  final ProgressColorsConfig? progressColors,
+
+  /// Default chart series palette.
+  final ChartColorsConfig? chartColors,
+
+  /// Chart dimensions and chrome; see [ChartsLayoutConfig].
+  final ChartsLayoutConfig? chartsLayout,
+
+  /// Responsive width breakpoints separating veryNarrow/narrow/standard/wide.
+  final HostWidthsConfig? hostWidthBreakpoints,
+
+  /// Default corner radius in logical pixels for the Microsoft Teams
+  /// `roundedCorners` extension (`cornerRadius` in HostConfig JSON).
+  ///
+  /// `roundedCorners` is a Teams Adaptive Cards property (not in the base
+  /// Adaptive Cards schema) supported on Container, ColumnSet, Column,
+  /// Table, and Image — see
+  /// https://learn.microsoft.com/en-us/microsoftteams/platform/task-modules-and-cards/cards/cards-format.
+  /// This package wires the flag on all five elements. Falls back to
+  /// `FallbackConfigs.cornerRadius` (8) when unset — see
+  /// `ReferenceResolver.resolveCornerRadius()`.
+  final double? cornerRadius,
+}) {
   /// Builds a HostConfig programmatically when you are not loading from JSON.
-  const new({
-    this.imageBaseUrl,
-    this.fontFamily,
-    this.supportsInteractivity,
-    this.imageSet,
-    this.foregroundColors,
-    this.textStyles,
-    this.adaptiveCard,
-    this.actions,
-    this.containerStyles,
-    this.factSet,
-    this.fontSizes,
-    this.fontWeights,
-    this.imageSizes,
-    this.inputs,
-    this.media,
-    this.separator,
-    this.spacing,
-    this.textBlock,
-    this.badgeStyles,
-    this.progressSizes,
-    this.progressColors,
-    this.chartColors,
-    this.chartsLayout,
-    this.hostWidthBreakpoints,
-    this.cornerRadius,
-  });
+  this;
 
   /// Load HostConfig from card host JSON; optional [theme] supplies Material
   /// color fallbacks.
@@ -177,88 +232,4 @@ class HostConfig {
       cornerRadius: (json['cornerRadius'] as num?)?.toDouble(),
     );
   }
-
-  /// Resolves relative image URLs in card JSON.
-  final String? imageBaseUrl;
-
-  /// Default font family for card text elements.
-  final String? fontFamily;
-
-  /// When false, inputs and actions are disabled for read-only card display.
-  final bool? supportsInteractivity;
-
-  /// ImageSet thumbnail sizing and layout defaults.
-  final ImageSetConfig? imageSet;
-
-  /// Semantic foreground colors for text and icons.
-  final ForegroundColorsConfig? foregroundColors;
-
-  /// Named text style presets for card typography.
-  final TextStylesConfig? textStyles;
-
-  /// Root AdaptiveCard container styling.
-  final AdaptiveCardConfig? adaptiveCard;
-
-  /// ActionSet layout and button chrome.
-  final ActionsConfig? actions;
-
-  /// Named container background and foreground styles.
-  final ContainerStylesConfig? containerStyles;
-
-  /// FactSet label and value typography and spacing.
-  final FactSetConfig? factSet;
-
-  /// Font size tokens referenced by card JSON.
-  final FontSizesConfig? fontSizes;
-
-  /// Font weight tokens referenced by card JSON.
-  final FontWeightsConfig? fontWeights;
-
-  /// Image element size tokens.
-  final ImageSizesConfig? imageSizes;
-
-  /// Input label, placeholder, and error styling.
-  final InputsConfig? inputs;
-
-  /// Media element chrome and playback defaults.
-  final MediaConfig? media;
-
-  /// Separator line weight and color.
-  final SeparatorConfig? separator;
-
-  /// Spacing tokens (`small`, `medium`, and so on).
-  final SpacingsConfig? spacing;
-
-  /// TextBlock heading and wrap defaults.
-  final TextBlockConfig? textBlock;
-
-  /// Badge color variants.
-  final BadgeStylesConfig? badgeStyles;
-
-  /// Progress ring and bar size tokens.
-  final ProgressSizesConfig? progressSizes;
-
-  /// Progress indicator semantic colors.
-  final ProgressColorsConfig? progressColors;
-
-  /// Default chart series palette.
-  final ChartColorsConfig? chartColors;
-
-  /// Chart dimensions and chrome; see [ChartsLayoutConfig].
-  final ChartsLayoutConfig? chartsLayout;
-
-  /// Responsive width breakpoints separating veryNarrow/narrow/standard/wide.
-  final HostWidthsConfig? hostWidthBreakpoints;
-
-  /// Default corner radius in logical pixels for the Microsoft Teams
-  /// `roundedCorners` extension (`cornerRadius` in HostConfig JSON).
-  ///
-  /// `roundedCorners` is a Teams Adaptive Cards property (not in the base
-  /// Adaptive Cards schema) supported on Container, ColumnSet, Column,
-  /// Table, and Image — see
-  /// https://learn.microsoft.com/en-us/microsoftteams/platform/task-modules-and-cards/cards/cards-format.
-  /// This package wires the flag on all five elements. Falls back to
-  /// `FallbackConfigs.cornerRadius` (8) when unset — see
-  /// `ReferenceResolver.resolveCornerRadius()`.
-  final double? cornerRadius;
 }

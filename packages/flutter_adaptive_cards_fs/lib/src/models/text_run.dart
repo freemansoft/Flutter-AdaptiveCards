@@ -2,21 +2,42 @@
 ///
 /// See [TextRun](https://adaptivecards.io/explorer/TextRun.html).
 /// See [TextRun](https://learn.microsoft.com/en-us/adaptive-cards/schema-explorer/text-run).
-class TextRunModel {
+class const TextRunModel({
+  /// Run display text.
+  required final String text,
+
+  /// Semantic foreground color token.
+  final String? color,
+
+  /// Monospace vs default font token.
+  final String? fontType,
+
+  /// When true, apply highlight background on this run.
+  final bool highlight = false,
+
+  /// When true, use subtle foreground color.
+  final bool isSubtle = false,
+
+  /// When true, render italic.
+  final bool italic = false,
+
+  /// Optional per-run tap action.
+  final Map<String, dynamic>? selectAction,
+
+  /// Size token (`Small`, `Medium`, `Large`, …).
+  final String? size,
+
+  /// When true, strikethrough decoration.
+  final bool strikethrough = false,
+
+  /// When true, underline decoration.
+  final bool underline = false,
+
+  /// Weight token (`Lighter`, `Default`, `Bolder`, …).
+  final String? weight,
+}) {
   /// Creates a text run with display [text] and optional inline styling.
-  const new({
-    required this.text,
-    this.color,
-    this.fontType,
-    this.highlight = false,
-    this.isSubtle = false,
-    this.italic = false,
-    this.selectAction,
-    this.size,
-    this.strikethrough = false,
-    this.underline = false,
-    this.weight,
-  });
+  this;
 
   /// Parses a `TextRun` object from card JSON.
   factory fromJson(Map<String, dynamic> json) {
@@ -36,39 +57,6 @@ class TextRunModel {
       weight: json['weight']?.toString(),
     );
   }
-
-  /// Run display text.
-  final String text;
-
-  /// Semantic foreground color token.
-  final String? color;
-
-  /// Monospace vs default font token.
-  final String? fontType;
-
-  /// When true, apply highlight background on this run.
-  final bool highlight;
-
-  /// When true, use subtle foreground color.
-  final bool isSubtle;
-
-  /// When true, render italic.
-  final bool italic;
-
-  /// Optional per-run tap action.
-  final Map<String, dynamic>? selectAction;
-
-  /// Size token (`Small`, `Medium`, `Large`, …).
-  final String? size;
-
-  /// When true, strikethrough decoration.
-  final bool strikethrough;
-
-  /// When true, underline decoration.
-  final bool underline;
-
-  /// Weight token (`Lighter`, `Default`, `Bolder`, …).
-  final String? weight;
 }
 
 /// Parses a card JSON `inlines` array; returns empty when invalid.

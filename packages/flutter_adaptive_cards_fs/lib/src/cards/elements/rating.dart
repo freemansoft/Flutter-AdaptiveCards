@@ -9,17 +9,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 /// Renders the Adaptive Cards **Rating** element as a row of stars.
 ///
 /// See https://adaptivecards.io/explorer/Rating.html
-class AdaptiveRating extends ConsumerStatefulWidget
-    with AdaptiveElementWidgetMixin {
+class AdaptiveRating({
+  @override required final Map<String, dynamic> adaptiveMap,
+}) extends ConsumerStatefulWidget with AdaptiveElementWidgetMixin {
   /// Creates a rating display from [adaptiveMap] JSON.
-  new({
-    required this.adaptiveMap,
-  }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
+  this : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
   }
-
-  @override
-  final Map<String, dynamic> adaptiveMap;
 
   @override
   late final String id;

@@ -48,23 +48,19 @@ BarChartAlignment _toFlChartAlignment(BarChartAlignmentToken token) {
 /// `Chart.VerticalBar`, `Chart.HorizontalBar`, and grouped or stacked variants.
 /// Uses [AdaptiveElementWidgetMixin] for element identity and is wrapped in
 /// [SeparatorElement] for card layout and spacing.
-class AdaptiveBarChart extends ConsumerStatefulWidget
-    with AdaptiveElementWidgetMixin {
+class AdaptiveBarChart({
+  @override required final Map<String, dynamic> adaptiveMap,
+
+  /// The bar chart layout variant derived from the card element's `type`.
+  required final BarChartType type,
+}) extends ConsumerStatefulWidget with AdaptiveElementWidgetMixin {
   /// Creates a bar chart element from [adaptiveMap] with the given [type].
-  new({
-    required this.adaptiveMap,
-    required this.type,
-  }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
+  this : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
   }
 
   @override
-  final Map<String, dynamic> adaptiveMap;
-  @override
   late final String id;
-
-  /// The bar chart layout variant derived from the card element's `type`.
-  final BarChartType type;
 
   @override
   AdaptiveBarChartState createState() => AdaptiveBarChartState();

@@ -11,17 +11,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 /// Renders the Adaptive Cards **Carousel** element with page dots.
 ///
 /// See https://adaptivecards.io/explorer/Carousel.html
-class AdaptiveCarousel extends ConsumerStatefulWidget
-    with AdaptiveElementWidgetMixin {
+class AdaptiveCarousel({
+  @override required final Map<String, dynamic> adaptiveMap,
+}) extends ConsumerStatefulWidget with AdaptiveElementWidgetMixin {
   /// Creates a carousel from [adaptiveMap] JSON.
-  new({
-    required this.adaptiveMap,
-  }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
+  this : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
   }
-
-  @override
-  final Map<String, dynamic> adaptiveMap;
 
   @override
   late final String id;
@@ -271,18 +267,14 @@ class AdaptiveCarouselState extends ConsumerState<AdaptiveCarousel>
 /// Renders a single **CarouselPage** inside a [AdaptiveCarousel].
 ///
 /// See https://adaptivecards.io/explorer/CarouselPage.html
-class AdaptiveCarouselPage extends StatefulWidget
-    with AdaptiveElementWidgetMixin {
+class AdaptiveCarouselPage({
+  super.key,
+  @override required final Map<String, dynamic> adaptiveMap,
+}) extends StatefulWidget with AdaptiveElementWidgetMixin {
   /// Creates a carousel page from [adaptiveMap] JSON.
-  new({
-    super.key,
-    required this.adaptiveMap,
-  }) {
+  this {
     id = loadId(adaptiveMap);
   }
-
-  @override
-  final Map<String, dynamic> adaptiveMap;
 
   @override
   late final String id;
@@ -377,11 +369,10 @@ typedef _SizeCallback = void Function(Size size);
 ///
 /// Used by [AdaptiveCarousel] to measure each page's natural height so the
 /// carousel can size itself to the tallest page.
-class _MeasureSize extends SingleChildRenderObjectWidget {
-  const new({required this.onChange, required Widget super.child});
-
-  final _SizeCallback onChange;
-
+class const _MeasureSize({
+  required final _SizeCallback onChange,
+  required Widget super.child,
+}) extends SingleChildRenderObjectWidget {
   @override
   RenderObject createRenderObject(BuildContext context) =>
       _MeasureSizeRenderObject(onChange);
@@ -395,10 +386,8 @@ class _MeasureSize extends SingleChildRenderObjectWidget {
   }
 }
 
-class _MeasureSizeRenderObject extends RenderProxyBox {
-  new(this.onChange);
-
-  _SizeCallback onChange;
+class _MeasureSizeRenderObject(var _SizeCallback onChange)
+    extends RenderProxyBox {
   Size? _oldSize;
 
   @override

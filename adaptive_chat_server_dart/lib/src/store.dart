@@ -13,78 +13,65 @@ const defaultUserLabel = 'user';
 const defaultAssistantLabel = 'assistant';
 
 /// One rendered bubble: an author role plus its Adaptive Card map.
-class Message {
-  /// Creates a message.
-  const new({required this.role, required this.card});
-
+class const Message({
   /// The author role of the message.
-  final String role;
+  required final String role,
 
   /// The Adaptive Card map for this message.
-  final Map<String, dynamic> card;
+  required final Map<String, dynamic> card,
+}) {
+  /// Creates a message.
+  this;
 }
 
 /// One send/response cycle within a conversation.
-class Interaction {
-  /// Creates an interaction.
-  const new({
-    required this.interactionId,
-    required this.text,
-    required this.messages,
-    this.replyText = '',
-    this.stats,
-    this.ok = true,
-  });
-
+class const Interaction({
   /// The unique identifier for this interaction.
-  final String interactionId;
+  required final String interactionId,
 
   /// The user input text.
-  final String text;
+  required final String text,
 
   /// The rendered messages in this interaction.
-  final List<Message> messages;
+  required final List<Message> messages,
 
   /// The reply text from the model.
-  final String replyText;
+  final String replyText = '',
 
   /// `null` whenever the reply cost no measurable tokens: echo mode, or any
   /// Ollama failure. The interaction still counts — it happened.
-  final InteractionStats? stats;
+  final InteractionStats? stats,
 
   /// Whether [replyText] is a real answer rather than a failure diagnostic.
   ///
   /// Stored so history rebuilds can skip failed exchanges; the interaction is
   /// still kept and replayed to the client, because it did happen.
-  final bool ok;
+  final bool ok = true,
+}) {
+  /// Creates an interaction.
+  this;
 }
 
 /// A session: ordered interactions keyed by client-supplied id.
-class Conversation {
-  /// Creates a conversation.
-  new({
-    required this.conversationId,
-    this.userLabel = defaultUserLabel,
-    this.assistantLabel = defaultAssistantLabel,
-    this.language,
-  }) : interactions = {},
-       order = [];
-
+class Conversation({
   /// The unique identifier for this conversation.
-  final String conversationId;
+  required final String conversationId,
 
   /// Role label shown above the user's bubbles, fixed for the conversation's
   /// lifetime (set once, at `POST /conversations`).
-  final String userLabel;
+  final String userLabel = defaultUserLabel,
 
   /// Role label shown above the assistant's bubbles. See [userLabel].
-  final String assistantLabel;
+  final String assistantLabel = defaultAssistantLabel,
 
   /// Client-supplied language tag (e.g. `es`), if any.
   ///
   /// Stored for future use (e.g. a localized system prompt or the
   /// "conversation expired" card); nothing reads it yet.
-  final String? language;
+  final String? language,
+}) {
+  /// Creates a conversation.
+  this : interactions = {}, order = [];
 
   /// Map of interaction ids to interactions.
   final Map<String, Interaction> interactions;

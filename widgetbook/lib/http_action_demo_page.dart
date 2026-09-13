@@ -10,9 +10,7 @@ import 'package:flutter_adaptive_cards_fs/flutter_adaptive_cards_fs.dart';
 /// show the request the core resolved (method, url, body, headers) after
 /// `{{nameInput.value}}` substitution. The core never performs the request — a
 /// host (for example `flutter_adaptive_cards_host_fs`) supplies the transport.
-class HttpActionDemoPage extends StatelessWidget {
-  const new({super.key});
-
+class const HttpActionDemoPage({super.key}) extends StatelessWidget {
   static const _assetPath = 'lib/samples/action_http/example1.json';
 
   @override

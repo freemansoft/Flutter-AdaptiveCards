@@ -4,7 +4,10 @@ analyzer:
   errors:
     one_member_abstracts: ignore
     prefer_asserts_with_message: ignore
+  exclude:
+    - build/**
 
 linter:
   rules:
+    use_declaring_parameters: true
     always_use_package_imports: true

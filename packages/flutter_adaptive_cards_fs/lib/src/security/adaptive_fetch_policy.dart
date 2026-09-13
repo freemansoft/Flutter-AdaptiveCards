@@ -3,12 +3,12 @@
 /// Card-initiated fetches (remote card JSON, `Action.OpenUrlDialog` content)
 /// read attacker-influenced response bodies. This exception lets callers abort
 /// before materializing an unbounded body, capping memory/DoS exposure.
-class AdaptiveFetchTooLargeException implements Exception {
-  /// Creates an exception recording the [maxBytes] cap that was exceeded.
-  const new(this.maxBytes);
-
+class const AdaptiveFetchTooLargeException(
   /// The byte cap that the response body exceeded.
-  final int maxBytes;
+  final int maxBytes,
+) implements Exception {
+  /// Creates an exception recording the [maxBytes] cap that was exceeded.
+  this;
 
   @override
   String toString() =>
@@ -20,21 +20,18 @@ class AdaptiveFetchTooLargeException implements Exception {
 /// Bundles the response-size cap ([maxBytes]) and request [timeout] used when a
 /// card causes the renderer to fetch remote content. Use [standard] unless a
 /// host needs different bounds.
-class AdaptiveFetchPolicy {
+class const AdaptiveFetchPolicy({
+  /// Maximum response body size, in bytes.
+  final int maxBytes = 1024 * 1024,
+
+  /// Maximum time to wait for a card-initiated fetch.
+  final Duration timeout = const Duration(seconds: 15),
+}) {
   /// Creates a fetch policy with an optional [maxBytes] cap and [timeout].
-  const new({
-    this.maxBytes = 1024 * 1024,
-    this.timeout = const Duration(seconds: 15),
-  });
+  this;
 
   /// Default policy: 1 MiB body cap, 15-second timeout.
   static const standard = AdaptiveFetchPolicy();
-
-  /// Maximum response body size, in bytes.
-  final int maxBytes;
-
-  /// Maximum time to wait for a card-initiated fetch.
-  final Duration timeout;
 }
 
 /// Returns [body] unchanged when within [maxBytes], otherwise throws

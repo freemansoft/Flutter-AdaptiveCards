@@ -13,17 +13,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 /// and is wrapped in [SeparatorElement] for card layout and spacing.
 ///
 /// See also: https://adaptivecards.microsoft.com/?topic=Chart.Line
-class AdaptiveLineChart extends ConsumerStatefulWidget
-    with AdaptiveElementWidgetMixin {
+class AdaptiveLineChart({
+  @override required final Map<String, dynamic> adaptiveMap,
+}) extends ConsumerStatefulWidget with AdaptiveElementWidgetMixin {
   /// Creates a line chart element from [adaptiveMap].
-  new({
-    required this.adaptiveMap,
-  }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
+  this : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
   }
-
-  @override
-  final Map<String, dynamic> adaptiveMap;
 
   @override
   late final String id;

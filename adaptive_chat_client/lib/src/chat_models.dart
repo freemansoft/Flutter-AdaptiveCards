@@ -2,9 +2,15 @@
 library;
 
 /// Result of starting a conversation.
-class ChatStart {
+class const ChatStart({
+  /// Server-minted conversation id.
+  required final String conversationId,
+
+  /// URL the next interaction posts to.
+  required final String postNext,
+}) {
   /// Creates a start result.
-  const new({required this.conversationId, required this.postNext});
+  this;
 
   /// Parses the `POST /conversations` response.
   factory fromJson(Map<String, dynamic> json) {
@@ -14,24 +20,27 @@ class ChatStart {
       postNext: links['postNext'] as String,
     );
   }
-
-  /// Server-minted conversation id.
-  final String conversationId;
-
-  /// URL the next interaction posts to.
-  final String postNext;
 }
 
 /// One interaction's response: pre-styled cards plus follow-up links.
-class ChatEnvelope {
+class const ChatEnvelope({
+  /// Conversation this interaction belongs to.
+  required final String conversationId,
+
+  /// Client-supplied id echoed by the server.
+  required final String interactionId,
+
+  /// Ordered, pre-styled Adaptive Card maps to render as bubbles.
+  required final List<Map<String, dynamic>> messages,
+
+  /// Re-GET URL for this interaction (replay).
+  required final String self,
+
+  /// URL the next interaction posts to.
+  required final String postNext,
+}) {
   /// Creates an envelope.
-  const new({
-    required this.conversationId,
-    required this.interactionId,
-    required this.messages,
-    required this.self,
-    required this.postNext,
-  });
+  this;
 
   /// Parses a send/replay response envelope.
   factory fromJson(Map<String, dynamic> json) {
@@ -47,30 +56,15 @@ class ChatEnvelope {
       postNext: links['postNext'] as String,
     );
   }
-
-  /// Conversation this interaction belongs to.
-  final String conversationId;
-
-  /// Client-supplied id echoed by the server.
-  final String interactionId;
-
-  /// Ordered, pre-styled Adaptive Card maps to render as bubbles.
-  final List<Map<String, dynamic>> messages;
-
-  /// Re-GET URL for this interaction (replay).
-  final String self;
-
-  /// URL the next interaction posts to.
-  final String postNext;
 }
 
 /// Raised when the chat backend returns an error or unreachable response.
-class ChatBackendException implements Exception {
-  /// Creates the exception with a [message].
-  new(this.message);
-
+class ChatBackendException(
   /// Human-readable failure description.
-  final String message;
+  final String message,
+) implements Exception {
+  /// Creates the exception with a [message].
+  this;
 
   @override
   String toString() => 'ChatBackendException: $message';

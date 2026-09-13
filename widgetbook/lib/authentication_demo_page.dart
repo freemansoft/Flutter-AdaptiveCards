@@ -7,9 +7,7 @@ import 'package:flutter_adaptive_cards_fs/flutter_adaptive_cards_fs.dart';
 /// Demonstrates the sign-in button path: tapping a button fires `onSignin` with
 /// the button `value` (sign-in URL) and the `connectionName`. A real host opens
 /// the URL, captures the OAuth redirect, and swaps in the returned card.
-class AuthenticationDemoPage extends StatelessWidget {
-  const new({super.key});
-
+class const AuthenticationDemoPage({super.key}) extends StatelessWidget {
   static const _assetPath = 'lib/samples/v1.4/authentication_signin_demo.json';
 
   @override

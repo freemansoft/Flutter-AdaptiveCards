@@ -12,17 +12,12 @@ import 'package:widgetbook_workspace/widgetbook_card_registry.dart';
 /// Based on example/lib/generic_page.dart but adapted for Widgetbook:
 /// - Displays a single card (not a list)
 /// - No Scaffold/AppBar (Widgetbook provides its own chrome)
-class GenericPage extends StatelessWidget {
-  const new({
-    super.key,
-    required this.url,
-    this.supportMarkdown = true,
-    this.initData = const {},
-  });
-  final String url;
-  final bool supportMarkdown;
-  final Map<String, String> initData;
-
+class const GenericPage({
+  super.key,
+  required final String url,
+  final bool supportMarkdown = true,
+  final Map<String, String> initData = const {},
+}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     assert(() {

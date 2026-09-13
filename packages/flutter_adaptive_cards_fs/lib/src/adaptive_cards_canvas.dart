@@ -17,9 +17,9 @@ import 'package:http/http.dart' as http;
 /// Async source of root card JSON for [AdaptiveCardsCanvas].
 ///
 /// Implement or use a built-in provider (memory, JSON string, asset, network).
-abstract class AdaptiveCardContentProvider {
+abstract class AdaptiveCardContentProvider() {
   /// Creates a content provider; subclasses supply load behavior.
-  new();
+  this;
 
   /// Called by the canvas on first build; return the parsed root `AdaptiveCard`
   /// map.
@@ -27,12 +27,12 @@ abstract class AdaptiveCardContentProvider {
 }
 
 /// Synchronous in-memory card source when JSON is already parsed.
-class MemoryAdaptiveCardContentProvider implements AdaptiveCardContentProvider {
-  /// Supplies an already-parsed card map without I/O.
-  new({required this.content}) : super();
-
+class MemoryAdaptiveCardContentProvider({
   /// Parsed root card map supplied to [loadAdaptiveCardContent].
-  Map<String, dynamic> content;
+  required var Map<String, dynamic> content,
+}) implements AdaptiveCardContentProvider {
+  /// Supplies an already-parsed card map without I/O.
+  this : super();
 
   @override
   Future<Map<String, dynamic>> loadAdaptiveCardContent() {
@@ -41,12 +41,12 @@ class MemoryAdaptiveCardContentProvider implements AdaptiveCardContentProvider {
 }
 
 /// Card source that decodes a JSON string at load time.
-class JsonAdaptiveCardContentProvider implements AdaptiveCardContentProvider {
-  /// Decodes [jsonString] when [loadAdaptiveCardContent] runs.
-  new({required this.jsonString}) : super();
-
+class JsonAdaptiveCardContentProvider({
   /// Root card JSON text decoded on load.
-  String jsonString;
+  required var String jsonString,
+}) implements AdaptiveCardContentProvider {
+  /// Decodes [jsonString] when [loadAdaptiveCardContent] runs.
+  this : super();
 
   @override
   Future<Map<String, dynamic>> loadAdaptiveCardContent() async {
@@ -55,12 +55,12 @@ class JsonAdaptiveCardContentProvider implements AdaptiveCardContentProvider {
 }
 
 /// Card source that reads JSON from the Flutter asset bundle.
-class AssetAdaptiveCardContentProvider implements AdaptiveCardContentProvider {
-  /// Loads card JSON from a Flutter asset via [path].
-  new({required this.path}) : super();
-
+class AssetAdaptiveCardContentProvider({
   /// Bundle path passed to `rootBundle.loadString`.
-  String path;
+  required var String path,
+}) implements AdaptiveCardContentProvider {
+  /// Loads card JSON from a Flutter asset via [path].
+  this : super();
 
   @override
   Future<Map<String, dynamic>> loadAdaptiveCardContent() async {
@@ -74,26 +74,21 @@ class AssetAdaptiveCardContentProvider implements AdaptiveCardContentProvider {
 /// The [url] is untrusted, so it is validated against [uriPolicy] before any
 /// request (blocking SSRF to loopback/private hosts) and the response body is
 /// capped by [fetchPolicy]. Pass an optional `client` to inject HTTP in tests.
-class NetworkAdaptiveCardContentProvider
-    implements AdaptiveCardContentProvider {
-  /// Fetches card JSON from a remote [url] when content is requested.
-  new({
-    required this.url,
-    this.uriPolicy = AdaptiveUriPolicy.standard,
-    this.fetchPolicy = AdaptiveFetchPolicy.standard,
-    http.Client? client,
-  }) : _client = client ?? http.Client();
-
+class NetworkAdaptiveCardContentProvider({
   /// Remote URL fetched when the canvas loads.
-  String url;
+  required var String url,
 
   /// Policy validating [url] before the request is issued.
-  final AdaptiveUriPolicy uriPolicy;
+  final AdaptiveUriPolicy uriPolicy = AdaptiveUriPolicy.standard,
 
   /// Policy bounding the response size and request timeout.
-  final AdaptiveFetchPolicy fetchPolicy;
+  final AdaptiveFetchPolicy fetchPolicy = AdaptiveFetchPolicy.standard,
+  http.Client? client,
+}) implements AdaptiveCardContentProvider {
+  /// Fetches card JSON from a remote [url] when content is requested.
+  this;
 
-  final http.Client _client;
+  final http.Client _client = client ?? http.Client();
 
   @override
   Future<Map<String, dynamic>> loadAdaptiveCardContent() async {

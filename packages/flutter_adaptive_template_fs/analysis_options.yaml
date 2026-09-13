@@ -3,6 +3,12 @@ analyzer:
   errors:
     # we use asserts to log in debug mode
     prefer_asserts_with_message: ignore
+  exclude:
+    - build/**
 
 # Additional information about this file can be found at
 # https://dart.dev/guides/language/analysis-options
+
+linter:
+  rules:
+    use_declaring_parameters: true

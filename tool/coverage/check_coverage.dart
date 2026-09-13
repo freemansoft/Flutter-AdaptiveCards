@@ -121,30 +121,23 @@ LineStats lineCoverage(String lcov) {
 }
 
 /// Line-coverage totals for a single lcov report.
-class LineStats {
-  LineStats({required this.found, required this.hit, required this.percent});
-
-  final int found;
-  final int hit;
-  final double percent;
+class LineStats({
+  required final int found,
+  required final int hit,
+  required final double percent,
+}) {
+  this;
 }
 
-class _Row {
-  _Row(
-    this.package,
-    this.percent,
-    this.hit,
-    this.found,
-    this.floor, {
-    this.missingReason,
-  });
-
-  final String package;
-  final double? percent;
-  final int hit;
-  final int found;
-  final int floor;
-  final String? missingReason;
+class _Row(
+  final String package,
+  final double? percent,
+  final int hit,
+  final int found,
+  final int floor, {
+  final String? missingReason,
+}) {
+  this;
 
   bool get passes => missingReason == null && percent! >= floor;
 }

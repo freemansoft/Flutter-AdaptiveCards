@@ -3,12 +3,17 @@ import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 
 /// HostConfig `chartColors` section controlling default palette for Chart
 /// elements (Adaptive Cards 1.6+).
-class ChartColorsConfig {
+class const ChartColorsConfig({
+  /// Ordered series colors cycled when a chart has more data than palette
+  /// entries (`chartColors.defaultPalette`).
+  required final List<Color> defaultPalette,
+
+  /// Fallback color when a series index has no palette entry
+  /// (`chartColors.defaultColor`).
+  required final Color defaultColor,
+}) {
   /// Creates chart color settings from explicit values.
-  const new({
-    required this.defaultPalette,
-    required this.defaultColor,
-  });
+  this;
 
   /// Parses `chartColors` from HostConfig JSON.
   factory fromJson(Map<String, dynamic> json) {
@@ -26,14 +31,6 @@ class ChartColorsConfig {
           (palette.isNotEmpty ? palette.first : Colors.blue),
     );
   }
-
-  /// Ordered series colors cycled when a chart has more data than palette
-  /// entries (`chartColors.defaultPalette`).
-  final List<Color> defaultPalette;
-
-  /// Fallback color when a series index has no palette entry
-  /// (`chartColors.defaultColor`).
-  final Color defaultColor;
 }
 
 /// Named chart palette families from the Teams / Adaptive Cards chart color reference.

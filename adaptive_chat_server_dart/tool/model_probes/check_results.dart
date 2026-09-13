@@ -171,15 +171,15 @@ List<Finding> checkVersionStampConsistency(String probesDir) {
 }
 
 /// One thing wrong, and whether it should fail the build.
-class Finding {
-  /// Creates a finding.
-  const new({required this.fatal, required this.message});
-
+class const Finding({
   /// Whether this fails CI rather than merely printing.
-  final bool fatal;
+  required final bool fatal,
 
   /// Human-readable description.
-  final String message;
+  required final String message,
+}) {
+  /// Creates a finding.
+  this;
 }
 
 /// Model tags `launch.json` currently launches.

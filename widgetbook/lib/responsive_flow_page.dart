@@ -11,9 +11,7 @@ import 'package:widgetbook_workspace/widgetbook_card_registry.dart';
 /// width across the breakpoints flips the card's width bucket, so containers
 /// reflow between vertical stack (narrow) and a wrapping flow (wide). A second
 /// knob picks which responsive sample to render.
-class ResponsiveFlowPage extends StatelessWidget {
-  const new({super.key});
-
+class const ResponsiveFlowPage({super.key}) extends StatelessWidget {
   /// Selectable responsive samples (label → asset path). Each file is a copy of
   /// the matching `test/samples/responsive/*.json` fixture used by the package
   /// golden and widget tests.

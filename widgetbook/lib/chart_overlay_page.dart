@@ -8,15 +8,17 @@ import 'package:widgetbook/widgetbook.dart';
 import 'package:widgetbook_workspace/overlay_demo_scaffold.dart';
 import 'package:widgetbook_workspace/widgetbook_card_registry.dart';
 
-enum ChartOverlayTitlePreset { baseline, updated, hidden }
+enum ChartOverlayTitlePreset {
+  baseline,
+  updated,
+  hidden,
+}
 
 const _chartId = 'demoChart';
 
 final chartOverlayPageKey = GlobalKey<State<ChartOverlayPage>>();
 
-class ChartOverlayPage extends StatefulWidget {
-  const new({super.key});
-
+class const ChartOverlayPage({super.key}) extends StatefulWidget {
   @override
   State<ChartOverlayPage> createState() => _ChartOverlayPageState();
 }

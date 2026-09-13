@@ -14,15 +14,17 @@ import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 /// snapshot passed as [data] when the modal opens. Hosts that need fresh rows
 /// after async loads should close and reopen the picker (or apply overlay
 /// choices before the user taps the field).
-class ChoiceFilter extends StatefulWidget {
-  /// Creates a searchable choice picker over [data].
-  const new({super.key, required this.data, required this.callback});
+class const ChoiceFilter({
+  super.key,
 
   /// Resolved choices at modal open time.
-  final List<Choice>? data;
+  required final List<Choice>? data,
 
   /// Called with the tapped [Choice] after [Navigator.pop].
-  final void Function(Choice? value)? callback;
+  required final void Function(Choice? value)? callback,
+}) extends StatefulWidget {
+  /// Creates a searchable choice picker over [data].
+  this;
 
   @override
   ChoiceFilterState createState() => ChoiceFilterState();

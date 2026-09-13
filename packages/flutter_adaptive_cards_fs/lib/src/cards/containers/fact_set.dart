@@ -18,17 +18,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 ///
 /// Renders a `FactSet` as title/value pairs in two columns, with reactive
 /// updates when overlay `facts` change.
-class AdaptiveFactSet extends ConsumerStatefulWidget
-    with AdaptiveElementWidgetMixin {
+class AdaptiveFactSet({
+  @override required final Map<String, dynamic> adaptiveMap,
+}) extends ConsumerStatefulWidget with AdaptiveElementWidgetMixin {
   /// Creates a `FactSet` from [adaptiveMap].
-  new({
-    required this.adaptiveMap,
-  }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
+  this : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
   }
-
-  @override
-  final Map<String, dynamic> adaptiveMap;
 
   @override
   late final String id;

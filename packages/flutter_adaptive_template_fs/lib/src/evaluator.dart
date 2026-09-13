@@ -10,14 +10,12 @@ import 'package:flutter_adaptive_template_fs/src/resolver.dart';
 import 'package:intl/intl.dart';
 
 /// template expression evaluator
-class Evaluator {
+class Evaluator(final Map<String, dynamic> _rootData) {
   /// create a new evaluator
-  new(this._rootData) {
+  this {
     _dataStack.add(_rootData);
     _scopeStack.add({r'$root': _rootData});
   }
-  final Map<String, dynamic> _rootData;
-
   // Stack of data contexts. The last one is the current '$data'.
   final List<dynamic> _dataStack = [];
 

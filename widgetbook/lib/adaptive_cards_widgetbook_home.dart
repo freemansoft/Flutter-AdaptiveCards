@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class AdaptiveCardsWidgetbookHome extends StatelessWidget {
-  const new({super.key});
-
-  // The original page used WidgetbookTheme.of(context) to get the theme.
+class const AdaptiveCardsWidgetbookHome({super.key}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -95,17 +92,11 @@ class AdaptiveCardsWidgetbookHome extends StatelessWidget {
   }
 }
 
-class _Card extends StatelessWidget {
-  const new({
-    required this.title,
-    required this.description,
-    required this.url,
-  });
-
-  final String title;
-  final String description;
-  final String url;
-
+class const _Card({
+  required final String title,
+  required final String description,
+  required final String url,
+}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ConstrainedBox(

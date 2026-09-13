@@ -11,9 +11,7 @@ import 'package:flutter_adaptive_cards_host_fs/src/models/invoke_response.dart';
 /// `PlainJsonInvokeAdapter.toMap` as `requestAdapter` and
 /// `PlainJsonInvokeAdapter.responseFromMap` as `responseParser` when POSTing
 /// to a plain JSON backend (not Teams/Bot Framework).
-class PlainJsonInvokeAdapter {
-  const new _();
-
+class const PlainJsonInvokeAdapter._() {
   /// PlainJson POST body from a card invoke; used as `requestAdapter` default.
   static Map<String, dynamic> toMap(AdaptiveCardInvokeRequest request) {
     return {

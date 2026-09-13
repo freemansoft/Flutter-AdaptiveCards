@@ -8,23 +8,19 @@ import 'package:flutter_adaptive_cards_fs/src/widgets/adaptive_error_placeholder
 ///
 /// This Element is returned when an unknown element type is encountered,
 /// rendered as an [AdaptiveErrorPlaceholder] describing the problem.
-class AdaptiveUnknown extends StatefulWidget with AdaptiveElementWidgetMixin {
+class AdaptiveUnknown({
+  @override required final Map<String, dynamic> adaptiveMap,
+
+  /// The unrecognized `type` string from card JSON.
+  required final String type,
+}) extends StatefulWidget with AdaptiveElementWidgetMixin {
   /// Creates a placeholder for an unrecognized element [type].
-  new({
-    required this.adaptiveMap,
-    required this.type,
-  }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
+  this : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
   }
 
   @override
-  final Map<String, dynamic> adaptiveMap;
-
-  @override
   late final String id;
-
-  /// The unrecognized `type` string from card JSON.
-  final String type;
 
   @override
   AdaptiveUnknownState createState() => AdaptiveUnknownState();

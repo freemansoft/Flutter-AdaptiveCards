@@ -13,27 +13,22 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 /// https://adaptivecards.io/explorer/TextBlock.html
 /// https://learn.microsoft.com/en-us/adaptive-cards/schema-explorer/text-block
 ///
-class AdaptiveTextBlock extends ConsumerStatefulWidget
-    with AdaptiveElementWidgetMixin {
+class AdaptiveTextBlock({
+  @override required final Map<String, dynamic> adaptiveMap,
+
+  /// Whether to render `text` as markdown instead of plain [Text].
+  required final bool supportMarkdown,
+}) extends ConsumerStatefulWidget with AdaptiveElementWidgetMixin {
   /// Creates a text block from [adaptiveMap] JSON.
   ///
   /// When [supportMarkdown] is true, renders markdown and routes link taps
   /// through `Action.OpenUrl`.
-  new({
-    required this.adaptiveMap,
-    required this.supportMarkdown,
-  }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
+  this : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
   }
 
   @override
-  final Map<String, dynamic> adaptiveMap;
-
-  @override
   late final String id;
-
-  /// Whether to render `text` as markdown instead of plain [Text].
-  final bool supportMarkdown;
 
   @override
   AdaptiveTextBlockState createState() => AdaptiveTextBlockState();

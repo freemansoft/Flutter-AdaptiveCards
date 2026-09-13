@@ -22,24 +22,19 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 /// lines, and optional header row styling from `firstRowAsHeader`. Column
 /// widths are resolved across all rows by a single Flutter [Table], so `auto`
 /// columns size to their widest content consistently.
-class AdaptiveTable extends ConsumerStatefulWidget
-    with AdaptiveElementWidgetMixin {
+class AdaptiveTable({
+  @override required final Map<String, dynamic> adaptiveMap,
+
+  /// Whether nested text elements may render markdown.
+  required final bool supportMarkdown,
+}) extends ConsumerStatefulWidget with AdaptiveElementWidgetMixin {
   /// Creates a `Table` from [adaptiveMap].
-  new({
-    required this.adaptiveMap,
-    required this.supportMarkdown,
-  }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
+  this : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
   }
 
   @override
-  final Map<String, dynamic> adaptiveMap;
-
-  @override
   late final String id;
-
-  /// Whether nested text elements may render markdown.
-  final bool supportMarkdown;
 
   @override
   AdaptiveTableState createState() => AdaptiveTableState();
