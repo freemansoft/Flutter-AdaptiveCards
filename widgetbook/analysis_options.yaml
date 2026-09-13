@@ -21,6 +21,14 @@ analyzer:
     no_runtimeType_toString: ignore
     # we use asserts to log in debug mode
     prefer_asserts_with_message: ignore
+  exclude:
+    - build/**
+    - android/**
+    - ios/**
+    - web/**
+    - windows/**
+    - macos/**
+    - linux/**
 
 linter:
   # The lint rules applied to this project can be customized in the

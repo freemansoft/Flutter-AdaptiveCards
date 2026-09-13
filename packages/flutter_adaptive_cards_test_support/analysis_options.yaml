@@ -9,6 +9,8 @@ analyzer:
     avoid_dynamic_calls: ignore
     argument_type_not_assignable: ignore
     avoid_redundant_argument_values: ignore
+  exclude:
+    - build/**
 
 linter:
   rules:

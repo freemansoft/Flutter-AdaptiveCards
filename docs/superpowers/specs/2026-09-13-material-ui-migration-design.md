@@ -37,6 +37,22 @@ fvm flutter pub add cupertino_ui                      # core package only (one f
 
 In the three Flutter apps, `localizationsDelegates` moves to `GlobalMaterialLocalizations.delegates` from the new package. `material_ui` 1.2.0 requires Dart `^3.12.0` and Flutter `>=3.44.0`, so the current pins already satisfy it.
 
+## Gating factors
+
+The task plan is not written, and the migration is not started, until every item below has a recorded answer. Each one changes the shape of the work.
+
+| #   | Gate                                                                                                                                                                                                                            | How to check                                                                                       | Effect on the plan                                                                                                                                                                          |
+| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | The November stable (the release that formally deprecates the SDK Material and Cupertino libraries) has shipped, or a decision has been made to move ahead of it                                                                | Flutter release notes; `fvm releases`                                                              | Before it: opt-in, no analyzer pressure. After it: every `package:flutter/material.dart` import warns, and the SDK bump PR and this migration have to land together or in quick succession. |
+| 2   | widgetbook, fl_chart, and chewie have published releases that import `material_ui`                                                                                                                                              | The pub-cache grep in the readiness section below, run against the versions the lock file resolves | Yes: no bridge, the fix is mechanical. No: `MaterialUiCompatibilityBridge` in all three apps, a consumer note in every package README, and a widgetbook-4 decision (see open question 1).   |
+| 3   | The remaining five dependencies (accessibility_tools, flutter_markdown_plus, flutter_riverpod, json_editor_flutter, video_player) have moved, or their one-to-five SDK-Material files are known to be harmless under the bridge | Same grep; read the importing files for widgets that need a `Theme` or `Material` ancestor         | Decides whether the bridge can be removed at the end of the migration or stays until a later release.                                                                                       |
+| 4   | The 0.17.0 release has been cut and published                                                                                                                                                                                   | `git tag`, pub.dev                                                                                 | The migration is a release boundary for the packages ("treat as a major release"). It goes into the release after 0.17.0, never into a release that also carries unrelated changes.         |
+| 5   | The `flutter_localizations` rule in CLAUDE.md and the `adaptive-cards-localization` skill has been amended to "no direct dependency"                                                                                            | Read both files                                                                                    | Without the amendment, adding `material_ui` (which depends on `flutter_localizations`) contradicts a repo rule the review gate enforces.                                                    |
+| 6   | Goldens are green on both platforms on the SDK the migration will run on                                                                                                                                                        | Latest CI run on main                                                                              | A golden failure during the migration must be attributable to the migration, not to an SDK bump that landed in the same window.                                                             |
+| 7   | `dart fix --code=migrate_design_widgets` on the SDK in use converts a scratch copy of `packages/flutter_adaptive_cards_fs` without leaving unresolved imports beyond the pubspec additions                                      | Spike on a throwaway copy, as the primary-constructor migration did                                | Decides whether the conversion is one `dart fix` per tree or needs hand edits, which sets the task count.                                                                                   |
+
+Gates 1 and 2 decide the timing. Gates 3 to 7 are preconditions the plan's Task 0 verifies before any code moves.
+
 ## Readiness gate
 
 Every Flutter-facing direct dependency still imported the SDK library on 2026-09-13, and none imported `material_ui`:
@@ -54,7 +70,7 @@ Every Flutter-facing direct dependency still imported the SDK library on 2026-09
 
 Until a dependency moves, an app that has migrated must wrap itself in the `MaterialUiCompatibilityBridge` the announcement describes so SDK-Material widgets inside those packages still find a `Theme` and `Material` ancestor. Consumers of our published packages face the same choice.
 
-Re-run the check before scheduling. For each resolved version in the lock file:
+This is the check behind gates 2 and 3. For each resolved version in the lock file:
 
 ```bash
 grep -rl "package:material_ui" ~/.pub-cache/hosted/pub.dev/<dep>-<version>/lib | wc -l
