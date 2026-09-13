@@ -4,13 +4,13 @@ import 'package:flutter_adaptive_cards_fs/src/hostconfig/foreground_colors_confi
 /// for a single badge style variant.
 class BadgeStyleConfig {
   /// Creates a badge style from explicit color configurations.
-  BadgeStyleConfig({
+  new({
     required this.backgroundColors,
     required this.foregroundColors,
   });
 
   /// Parses a badge style object from HostConfig JSON.
-  factory BadgeStyleConfig.fromJson(
+  factory fromJson(
     Map<String, dynamic> json, {
     BadgeStyleConfig? defaults,
   }) {
@@ -38,13 +38,13 @@ class BadgeStyleConfig {
 /// HostConfig `badgeStyles` section mapping named badge variants to colors.
 class BadgeStylesConfig {
   /// Creates badge style variants from explicit configurations.
-  BadgeStylesConfig({
+  new({
     required this.filled,
     required this.tint,
   });
 
   /// Parses `badgeStyles` from HostConfig JSON.
-  factory BadgeStylesConfig.fromJson(Map<String, dynamic> json) {
+  factory fromJson(Map<String, dynamic> json) {
     return BadgeStylesConfig(
       filled: BadgeStyleConfig.fromJson(
         json['filled'] ?? {},

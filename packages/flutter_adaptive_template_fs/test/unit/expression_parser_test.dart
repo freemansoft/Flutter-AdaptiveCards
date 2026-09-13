@@ -41,15 +41,12 @@ void main() {
 
     test('skips whitespace between tokens', () {
       final tokens = _lexAll('  a  +  b  ');
-      expect(
-        tokens.map((t) => t.type).toList(),
-        [
-          TokenType.identifier,
-          TokenType.operator,
-          TokenType.identifier,
-          TokenType.eof,
-        ],
-      );
+      expect(tokens.map((t) => t.type).toList(), [
+        TokenType.identifier,
+        TokenType.operator,
+        TokenType.identifier,
+        TokenType.eof,
+      ]);
       expect(tokens[0].value, 'a');
       expect(tokens[1].value, '+');
       expect(tokens[2].value, 'b');
@@ -57,10 +54,15 @@ void main() {
 
     test('tokenizes multi-character operators before single-character', () {
       final tokens = _lexAll('== != <= >= && ||');
-      expect(
-        tokens.map((t) => t.value).toList(),
-        ['==', '!=', '<=', '>=', '&&', '||', ''],
-      );
+      expect(tokens.map((t) => t.value).toList(), [
+        '==',
+        '!=',
+        '<=',
+        '>=',
+        '&&',
+        '||',
+        '',
+      ]);
     });
 
     test('tokenizes numbers and strings', () {
@@ -77,28 +79,28 @@ void main() {
 
     test('tokenizes identifiers including magic variables', () {
       final tokens = _lexAll(r'name $root $index _private');
-      expect(
-        tokens.map((t) => t.value).toList(),
-        ['name', r'$root', r'$index', '_private', ''],
-      );
+      expect(tokens.map((t) => t.value).toList(), [
+        'name',
+        r'$root',
+        r'$index',
+        '_private',
+        '',
+      ]);
     });
 
     test('tokenizes punctuation', () {
       final tokens = _lexAll('().[],{}');
-      expect(
-        tokens.map((t) => t.type).toList(),
-        [
-          TokenType.leftParen,
-          TokenType.rightParen,
-          TokenType.dot,
-          TokenType.leftBracket,
-          TokenType.rightBracket,
-          TokenType.comma,
-          TokenType.leftBracket,
-          TokenType.rightBracket,
-          TokenType.eof,
-        ],
-      );
+      expect(tokens.map((t) => t.type).toList(), [
+        TokenType.leftParen,
+        TokenType.rightParen,
+        TokenType.dot,
+        TokenType.leftBracket,
+        TokenType.rightBracket,
+        TokenType.comma,
+        TokenType.leftBracket,
+        TokenType.rightBracket,
+        TokenType.eof,
+      ]);
     });
   });
 

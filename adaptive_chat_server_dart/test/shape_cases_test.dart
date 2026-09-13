@@ -20,9 +20,9 @@ import '../tool/model_probes/shape_cases.dart';
 /// The element types `--json-format schema` will actually accept, read from
 /// the shipped schema so this test tracks the schema rather than a copy.
 Set<String> schemaElementTypes() {
-  final schema =
-      jsonDecode(File('assets/card_schema.json').readAsStringSync())
-          as Map<String, dynamic>;
+  final schema = jsonDecode(
+    File('assets/card_schema.json').readAsStringSync(),
+  ) as Map<String, dynamic>;
   final defs = schema[r'$defs'] as Map<String, dynamic>;
   final element = defs['Element'] as Map<String, dynamic>;
   final properties = element['properties'] as Map<String, dynamic>;
@@ -48,9 +48,9 @@ Set<String> schemaElementTypes() {
 Set<String> promptElementTypes() {
   final prompt = File('assets/card_system_prompt.txt').readAsStringSync();
   final types = <String>{
-    ...RegExp(
-      '"type":"([A-Za-z.]+)"',
-    ).allMatches(prompt).map((m) => m.group(1)!),
+    ...RegExp('"type":"([A-Za-z.]+)"')
+        .allMatches(prompt)
+        .map((m) => m.group(1)!),
   };
   // Palette bullets name their types before an em dash, and one bullet may
   // list several separated by commas or "and".
@@ -146,34 +146,31 @@ void main() {
       expect(controls.single.requiresInput, isFalse);
     });
 
-    test(
-      'accepted types cover exactly the prompt palette minus TextBlock, '
-      'Icon, and Image',
-      () {
-        // Pinned against the prompt palette, not the schema enum. Those were
-        // the same set until the schema was widened to mirror the element
-        // registry, which split them: the enum now records what the client
-        // can render, a superset the model is never told about and could not
-        // emit if it tried. If the prompt gains a type, this fails rather
-        // than letting the coverage claim (here, in the README, and in the
-        // spec) go stale by leaving it unprobed.
-        final allowed = promptElementTypes();
-        final documentedExclusions = {'TextBlock', 'Icon', 'Image'};
-        final expectedCoverage = allowed.difference(documentedExclusions);
-        final actualCoverage = shapeCases.expand((c) => c.accepted).toSet();
-        expect(
-          actualCoverage,
-          equals(expectedCoverage),
-          reason:
-              'shapeCases should cover every element type the card system '
-              'prompt advertises except the documented exclusions '
-              '(TextBlock, Icon, Image). If this fails because the prompt '
-              'gained a type, either add a case that exercises it or add it '
-              'to the documented exclusions here, in the doc comment above '
-              'shapeCases, and in README.md / the spec.',
-        );
-      },
-    );
+    test('accepted types cover exactly the prompt palette minus TextBlock, '
+        'Icon, and Image', () {
+      // Pinned against the prompt palette, not the schema enum. Those were
+      // the same set until the schema was widened to mirror the element
+      // registry, which split them: the enum now records what the client
+      // can render, a superset the model is never told about and could not
+      // emit if it tried. If the prompt gains a type, this fails rather
+      // than letting the coverage claim (here, in the README, and in the
+      // spec) go stale by leaving it unprobed.
+      final allowed = promptElementTypes();
+      final documentedExclusions = {'TextBlock', 'Icon', 'Image'};
+      final expectedCoverage = allowed.difference(documentedExclusions);
+      final actualCoverage = shapeCases.expand((c) => c.accepted).toSet();
+      expect(
+        actualCoverage,
+        equals(expectedCoverage),
+        reason:
+            'shapeCases should cover every element type the card system '
+            'prompt advertises except the documented exclusions '
+            '(TextBlock, Icon, Image). If this fails because the prompt '
+            'gained a type, either add a case that exercises it or add it '
+            'to the documented exclusions here, in the doc comment above '
+            'shapeCases, and in README.md / the spec.',
+      );
+    });
 
     test('the six choice cases match choiceset_ab.dart verbatim', () {
       // Copied from choiceset_ab.dart's _prompts. If that list changes, the

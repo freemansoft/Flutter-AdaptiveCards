@@ -24,7 +24,7 @@
     "viện",
     "xuất"
   ],
-  "dart.flutterSdkPath": ".fvm/versions/3.44.0",
+  "dart.flutterSdkPath": ".fvm/versions/3.47.4",
   "cmake.sourceDirectory": "/Users/joefreeman/Documents/GitHub/freemansoft/Flutter-AdaptiveCards/adaptive_explorer/windows/runner",
   "[markdown]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode",

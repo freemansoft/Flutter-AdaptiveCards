@@ -11,7 +11,7 @@ import 'package:flutter_adaptive_cards_fs/src/responsive/width_bucket.dart';
 /// back to the Adaptive Cards spec defaults.
 class HostWidthsConfig {
   /// Creates breakpoints from explicit pixel upper bounds.
-  HostWidthsConfig({
+  new({
     required this.veryNarrowMax,
     required this.narrowMax,
     required this.standardMax,
@@ -21,7 +21,7 @@ class HostWidthsConfig {
   /// key to the corresponding spec default in
   /// [FallbackConfigs.hostWidthsConfig] (the single source of truth for the
   /// default breakpoints).
-  factory HostWidthsConfig.fromJson(Map<String, dynamic> json) {
+  factory fromJson(Map<String, dynamic> json) {
     final defaults = FallbackConfigs.hostWidthsConfig;
     return HostWidthsConfig(
       veryNarrowMax:

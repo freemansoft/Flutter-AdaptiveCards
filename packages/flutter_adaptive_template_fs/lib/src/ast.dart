@@ -1,13 +1,13 @@
 /// Base class for all Abstract Syntax Tree nodes.
 abstract class AstNode {
   /// Default constructor for the AST node.
-  const AstNode();
+  const new();
 }
 
 /// Represents a literal value like a string, number, or boolean.
 class LiteralNode extends AstNode {
   /// Creates a literal node with the given [value].
-  const LiteralNode(this.value);
+  const new(this.value);
 
   /// The literal value.
   final dynamic value;
@@ -19,7 +19,7 @@ class LiteralNode extends AstNode {
 /// Represents an identifier or variable name.
 class IdentifierNode extends AstNode {
   /// Creates an identifier node with the given [name].
-  const IdentifierNode(this.name);
+  const new(this.name);
 
   /// The name of the identifier.
   final String name;
@@ -31,7 +31,7 @@ class IdentifierNode extends AstNode {
 /// Represents accessing a property on an object.
 class MemberAccessNode extends AstNode {
   /// Creates a member access node.
-  const MemberAccessNode(this.object, this.property, {this.isComputed = false});
+  const new(this.object, this.property, {this.isComputed = false});
 
   /// The object being accessed.
   final AstNode object;
@@ -53,7 +53,7 @@ class MemberAccessNode extends AstNode {
 /// Represents a function call.
 class FunctionCallNode extends AstNode {
   /// Creates a function call node.
-  const FunctionCallNode(this.function, this.arguments);
+  const new(this.function, this.arguments);
 
   /// The function being called (usually an [IdentifierNode]).
   final AstNode function;
@@ -68,7 +68,7 @@ class FunctionCallNode extends AstNode {
 /// Represents a binary expression with a left and right operand.
 class BinaryExpressionNode extends AstNode {
   /// Creates a binary expression node.
-  const BinaryExpressionNode(this.operator, this.left, this.right);
+  const new(this.operator, this.left, this.right);
 
   /// The operator string (e.g., '+', '>', '&&').
   final String operator;
@@ -86,7 +86,7 @@ class BinaryExpressionNode extends AstNode {
 /// Represents a unary expression with a single argument.
 class UnaryExpressionNode extends AstNode {
   /// Creates a unary expression node.
-  const UnaryExpressionNode(this.operator, this.argument);
+  const new(this.operator, this.argument);
 
   /// The operator string (e.g., '!', '-').
   final String operator;

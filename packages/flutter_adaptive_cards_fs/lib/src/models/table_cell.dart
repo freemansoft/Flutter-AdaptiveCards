@@ -9,7 +9,7 @@ import 'package:flutter/foundation.dart';
 @immutable
 class TableCellModel {
   /// Creates a table cell from parsed JSON properties.
-  const TableCellModel({
+  const new({
     required this.items,
     this.style,
     this.verticalContentAlignment,
@@ -28,7 +28,7 @@ class TableCellModel {
   });
 
   /// Creates a TableCellModel from JSON map
-  factory TableCellModel.fromJson(Map<String, dynamic> json) {
+  factory fromJson(Map<String, dynamic> json) {
     return TableCellModel(
       items:
           (json['items'] as List<dynamic>?)

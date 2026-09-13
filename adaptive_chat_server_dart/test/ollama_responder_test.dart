@@ -99,26 +99,23 @@ void main() {
     },
   );
 
-  test(
-    'a stalled Ollama times out with a timeout diagnostic, not a hang and '
-    'not the unreachable message',
-    () async {
-      final client = MockClient((request) async {
-        await Future<void>.delayed(const Duration(milliseconds: 200));
-        return okResponse('should never be returned');
-      });
-      final reply = await makeResponder(
-        client: client,
-        ollamaTimeout: const Duration(milliseconds: 50),
-      ).reply('hi', const []);
-      // A slow-but-alive Ollama is a different problem from a dead one, and
-      // sends the operator somewhere different. Keep the two distinguishable.
-      expect(reply.text, contains('timed out'));
-      expect(reply.text, isNot(contains('unreachable')));
-      expect(reply.cardBody, isNull);
-      expect(reply.stats, isNull);
-    },
-  );
+  test('a stalled Ollama times out with a timeout diagnostic, not a hang and '
+      'not the unreachable message', () async {
+    final client = MockClient((request) async {
+      await Future<void>.delayed(const Duration(milliseconds: 200));
+      return okResponse('should never be returned');
+    });
+    final reply = await makeResponder(
+      client: client,
+      ollamaTimeout: const Duration(milliseconds: 50),
+    ).reply('hi', const []);
+    // A slow-but-alive Ollama is a different problem from a dead one, and
+    // sends the operator somewhere different. Keep the two distinguishable.
+    expect(reply.text, contains('timed out'));
+    expect(reply.text, isNot(contains('unreachable')));
+    expect(reply.cardBody, isNull);
+    expect(reply.stats, isNull);
+  });
 
   // ok is what app.dart reads before replaying a reply into stored
   // conversation history (Reply.ok's contract: a diagnostic must never be
@@ -227,17 +224,14 @@ void main() {
   // assumes (an API change, or a runner returning an error object instead of
   // a message) — distinct from the unparseable-JSON case above, since this
   // body is valid JSON that just lacks the expected keys.
-  test(
-    '2xx with missing message.content returns an unexpected-response '
-    'diagnostic',
-    () async {
-      final client = MockClient(
-        (request) async => http.Response(jsonEncode({'ok': true}), 200),
-      );
-      final reply = await makeResponder(client: client).reply('hi', const []);
-      expect(reply.text, contains('unexpected response'));
-    },
-  );
+  test('2xx with missing message.content returns an unexpected-response '
+      'diagnostic', () async {
+    final client = MockClient(
+      (request) async => http.Response(jsonEncode({'ok': true}), 200),
+    );
+    final reply = await makeResponder(client: client).reply('hi', const []);
+    expect(reply.text, contains('unexpected response'));
+  });
 
   // The default classification path: ordinary prose must never accidentally
   // get parsed as a card body just because it happens to run through
@@ -316,40 +310,34 @@ void main() {
     // system + N2 seed pair (2 entries) + current turn only = 4.
     expect(messages.length, 4);
     expect((messages[1] as Map<String, dynamic>)['content'], 'seed-user');
-    expect(
-      (messages[2] as Map<String, dynamic>)['content'],
-      'seed-assistant',
-    );
+    expect((messages[2] as Map<String, dynamic>)['content'], 'seed-assistant');
   });
 
-  test(
-    'the N2 seed pair precedes real history, which precedes the current '
-    'turn',
-    () async {
-      // Pins the promoted candidate's message order end to end: this fails
-      // if the seed lands after the real history, or after the current
-      // user turn, rather than strictly between the system prompt and the
-      // replayed conversation.
-      late Map<String, dynamic> capturedPayload;
-      final client = MockClient((request) async {
-        capturedPayload = jsonDecode(request.body) as Map<String, dynamic>;
-        return okResponse('ok');
-      });
-      final responder = makeResponder(client: client, historyTurns: 5);
-      final history = [('user', 'turn1'), ('assistant', 'reply1')];
-      await responder.reply('turn2', history);
-      final messages = (capturedPayload['messages'] as List)
-          .cast<Map<String, dynamic>>();
-      expect(
-        messages.map((m) => m['role']).toList(),
-        equals(['system', 'user', 'assistant', 'user', 'assistant', 'user']),
-      );
-      expect(
-        messages.skip(1).map((m) => m['content']).toList(),
-        equals(['seed-user', 'seed-assistant', 'turn1', 'reply1', 'turn2']),
-      );
-    },
-  );
+  test('the N2 seed pair precedes real history, which precedes the current '
+      'turn', () async {
+    // Pins the promoted candidate's message order end to end: this fails
+    // if the seed lands after the real history, or after the current
+    // user turn, rather than strictly between the system prompt and the
+    // replayed conversation.
+    late Map<String, dynamic> capturedPayload;
+    final client = MockClient((request) async {
+      capturedPayload = jsonDecode(request.body) as Map<String, dynamic>;
+      return okResponse('ok');
+    });
+    final responder = makeResponder(client: client, historyTurns: 5);
+    final history = [('user', 'turn1'), ('assistant', 'reply1')];
+    await responder.reply('turn2', history);
+    final messages = (capturedPayload['messages'] as List)
+        .cast<Map<String, dynamic>>();
+    expect(
+      messages.map((m) => m['role']).toList(),
+      equals(['system', 'user', 'assistant', 'user', 'assistant', 'user']),
+    );
+    expect(
+      messages.skip(1).map((m) => m['content']).toList(),
+      equals(['seed-user', 'seed-assistant', 'turn1', 'reply1', 'turn2']),
+    );
+  });
 
   // _loadSystemPrompt treats an IOException as "send no system message",
   // never as a reason to fail the whole reply — a system-prompt file being
@@ -610,10 +598,7 @@ void main() {
     });
     final livePath = '${tempDir.path}/live.txt';
     File(livePath).writeAsStringSync('first prompt');
-    final responder = makeResponder(
-      client: client,
-      systemPromptFile: livePath,
-    );
+    final responder = makeResponder(client: client, systemPromptFile: livePath);
 
     await responder.reply('q1', const []);
     final firstMessages = captured[0]['messages'] as List<dynamic>;
@@ -898,10 +883,7 @@ void main() {
         numCtx: 1000,
       );
       final logs = await replyCapturingLogs(responder);
-      expect(
-        logs.any((r) => r.message.contains('prompt truncated')),
-        isFalse,
-      );
+      expect(logs.any((r) => r.message.contains('prompt truncated')), isFalse);
     });
 
     test('fill above 76% logs a warning-level "context near limit"', () async {

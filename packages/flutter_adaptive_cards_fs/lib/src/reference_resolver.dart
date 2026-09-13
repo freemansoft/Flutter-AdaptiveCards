@@ -42,14 +42,14 @@ import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 class ReferenceResolver {
   /// Creates a resolver bound to [hostConfigs] and optional inherited style
   /// context.
-  ReferenceResolver({
+  new({
     this.inheritedContainerStyle,
     this.inheritedHorizontalAlignment,
     required this.hostConfigs,
     required this.colorFallbacks,
   });
 
-  ReferenceResolver._({
+  new _({
     this.inheritedContainerStyle,
     this.inheritedHorizontalAlignment,
     required this.hostConfigs,

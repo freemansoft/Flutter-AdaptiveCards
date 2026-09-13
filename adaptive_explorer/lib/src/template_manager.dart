@@ -71,9 +71,8 @@ class TemplateManager {
       final dataContent = await _dataFile!.readAsString();
       final dataMap = jsonDecode(dataContent) as Map<String, dynamic>;
 
-      final resultString = AdaptiveCardTemplate(
-        templateMap,
-      ).expand({r'$root': dataMap, ...dataMap});
+      final resultString = AdaptiveCardTemplate(templateMap)
+          .expand({r'$root': dataMap, ...dataMap});
       return jsonDecode(resultString) as Map<String, dynamic>;
     } on Exception catch (e) {
       assert(() {

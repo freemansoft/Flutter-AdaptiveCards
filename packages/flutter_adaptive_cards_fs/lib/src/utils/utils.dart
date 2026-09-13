@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:developer' as developer;
 
 import 'package:flutter/material.dart';
@@ -9,7 +8,7 @@ import 'package:intl/intl.dart';
 /// One-shot fade-out wrapper that removes [child] when the animation completes.
 class FadeAnimation extends StatefulWidget {
   /// Creates a one-shot fade-out animation around [child].
-  const FadeAnimation({
+  const new({
     super.key,
     required this.child,
     this.duration = const Duration(milliseconds: 500),
@@ -43,7 +42,7 @@ class _FadeAnimationState extends State<FadeAnimation>
         setState(() {});
       }
     });
-    unawaited(animationController.forward(from: 0));
+    animationController.forward(from: 0);
   }
 
   @override
@@ -56,7 +55,7 @@ class _FadeAnimationState extends State<FadeAnimation>
   void didUpdateWidget(FadeAnimation oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.child != widget.child) {
-      unawaited(animationController.forward(from: 0));
+      animationController.forward(from: 0);
     }
   }
 
@@ -81,7 +80,7 @@ String firstCharacterToLowerCase(String s) =>
 /// Lightweight two-value holder for internal/extension helpers.
 class Tuple<A, B> {
   /// Creates a tuple holding [a] and [b].
-  Tuple(this.a, this.b);
+  new(this.a, this.b);
 
   /// First component.
   final A a;
@@ -93,7 +92,7 @@ class Tuple<A, B> {
 /// Rectangular clipper used for person-style image masks in card elements.
 class FullCircleClipper extends CustomClipper<Rect> {
   /// Creates a clipper that fills the child's layout bounds.
-  const FullCircleClipper();
+  const new();
 
   /// Returns full-bounds clip rect for the child.
   @override
@@ -458,11 +457,11 @@ ValueKey<String> generateTableCellKey(String tableKey, int row, int col) =>
 /// Shared id generation for elements missing author-supplied `id` values.
 class UUIDGenerator {
   /// Access the shared [UUIDGenerator] instance used across the library.
-  factory UUIDGenerator() {
+  factory() {
     return _instance;
   }
 
-  UUIDGenerator._internal();
+  new _internal();
 
   static final UUIDGenerator _instance = UUIDGenerator._internal();
 

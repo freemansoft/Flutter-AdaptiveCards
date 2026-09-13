@@ -2,14 +2,14 @@
 /// rendering.
 class ShowCardConfig {
   /// Creates show-card layout settings from explicit values.
-  ShowCardConfig({
+  new({
     required this.actionMode,
     required this.style,
     required this.inlineTopMargin,
   });
 
   /// Parses `actions.showCard` from HostConfig JSON.
-  factory ShowCardConfig.fromJson(Map<String, dynamic> json) {
+  factory fromJson(Map<String, dynamic> json) {
     return ShowCardConfig(
       actionMode: json['actionMode']?.toString() ?? 'inline',
       style: json['style']?.toString() ?? 'emphasis',
@@ -31,7 +31,7 @@ class ShowCardConfig {
 /// chrome.
 class ActionsConfig {
   /// Creates action-set layout settings from explicit values.
-  ActionsConfig({
+  new({
     required this.actionsOrientation,
     required this.actionAlignment,
     required this.buttonSpacing,
@@ -43,7 +43,7 @@ class ActionsConfig {
   });
 
   /// Parses `actions` from HostConfig JSON.
-  factory ActionsConfig.fromJson(Map<String, dynamic> json) {
+  factory fromJson(Map<String, dynamic> json) {
     return ActionsConfig(
       actionsOrientation:
           json['actionsOrientation']?.toString() ?? 'horizontal',

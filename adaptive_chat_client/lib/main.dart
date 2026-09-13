@@ -15,7 +15,7 @@ class AdaptiveChatApp extends StatelessWidget {
   ///
   /// [locale] overrides the device locale; tests pass it to force a
   /// deterministic language instead of relying on the test runner's locale.
-  const AdaptiveChatApp({this.locale, super.key});
+  const new({this.locale, super.key});
 
   /// Locale override, if any.
   final Locale? locale;
@@ -38,7 +38,7 @@ class AdaptiveChatApp extends StatelessWidget {
 /// bubble role labels sent to the backend, and the `language` tag, follow
 /// the app's locale from the very first `startConversation()` call.
 class _ChatHome extends StatefulWidget {
-  const _ChatHome();
+  const new();
 
   @override
   State<_ChatHome> createState() => _ChatHomeState();

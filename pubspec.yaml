@@ -1,7 +1,7 @@
 name: _
 publish_to: none
 environment:
-  sdk: ^3.12.0
+  sdk: ^3.13.0
 # adaptive_chat_server_dart is deliberately NOT a workspace member: pub
 # workspaces resolve as one unit, so a Flutter-free package sitting in this
 # list still forces anything resolving it (including CI) to install the full

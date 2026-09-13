@@ -12,7 +12,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class AdaptiveCompoundButton extends ConsumerStatefulWidget
     with AdaptiveElementWidgetMixin {
   /// Creates a compound button from [adaptiveMap] JSON.
-  AdaptiveCompoundButton({
+  new({
     required this.adaptiveMap,
   }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);

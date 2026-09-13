@@ -22,7 +22,7 @@ class AdaptiveCardBackendHandlers {
   /// Defaults: `PlainJsonInvokeAdapter.toMap` and
   /// `PlainJsonInvokeResponseParser.parse`. Pass `TeamsInvokeAdapter` methods
   /// for Bot Framework–shaped JSON.
-  AdaptiveCardBackendHandlers({
+  new({
     required this.client,
     required this.cardKey,
     Map<String, dynamic> Function(AdaptiveCardInvokeRequest)? requestAdapter,

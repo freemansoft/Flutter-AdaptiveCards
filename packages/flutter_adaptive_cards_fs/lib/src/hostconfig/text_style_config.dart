@@ -2,7 +2,7 @@
 /// https://adaptivecards.io/explorer/TextStyleConfig.html
 class TextStyleConfig {
   /// Creates text style defaults from explicit values.
-  TextStyleConfig({
+  new({
     required this.weight,
     required this.size,
     required this.color,
@@ -11,7 +11,7 @@ class TextStyleConfig {
   });
 
   /// Parses a text style object from HostConfig JSON.
-  factory TextStyleConfig.fromJson(
+  factory fromJson(
     Map<String, dynamic> json, {
     TextStyleConfig? defaults,
   }) {

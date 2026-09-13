@@ -195,9 +195,9 @@ void main() {
       final result = await manager.saveJsonToPath(content, outputPath);
       expect(result, isTrue);
 
-      final savedContent =
-          jsonDecode(File(outputPath).readAsStringSync())
-              as Map<String, dynamic>;
+      final savedContent = jsonDecode(
+        File(outputPath).readAsStringSync(),
+      ) as Map<String, dynamic>;
       expect(savedContent['merged'], isTrue);
     });
   });

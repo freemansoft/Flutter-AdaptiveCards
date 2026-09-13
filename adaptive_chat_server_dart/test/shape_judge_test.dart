@@ -61,9 +61,7 @@ void main() {
       );
       final r = judgeShape(
         facts,
-        outcomeFor(
-          '{"type":"Table","columns":[{"width":1}],"rows":[]}',
-        ),
+        outcomeFor('{"type":"Table","columns":[{"width":1}],"rows":[]}'),
       );
       expect(r.pass, isTrue, reason: 'Table is an accepted alternative');
     });

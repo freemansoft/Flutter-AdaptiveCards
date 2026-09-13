@@ -12,7 +12,7 @@ class AdaptiveErrorPlaceholder extends StatelessWidget {
   /// [width]/[height] size the placeholder to match the element it replaces
   /// (e.g. an `Image`'s resolved dimensions), avoiding layout shift.
   /// [semanticsLabel] is applied to the icon, e.g. an image's `altText`.
-  const AdaptiveErrorPlaceholder({
+  const new({
     required this.message,
     this.width,
     this.height,

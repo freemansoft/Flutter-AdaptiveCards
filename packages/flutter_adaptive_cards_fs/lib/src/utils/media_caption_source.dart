@@ -3,7 +3,7 @@
 /// [url] and [mimeType]; [label] is the human-readable track name.
 class CaptionSource {
   /// Creates a caption source from its parsed fields.
-  const CaptionSource({
+  const new({
     required this.mimeType,
     required this.url,
     required this.label,

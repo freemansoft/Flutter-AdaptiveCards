@@ -29,7 +29,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class RawAdaptiveCard extends StatefulWidget {
   /// Renders [map] with [hostConfigs] and optional registries; ids are injected
   /// at runtime.
-  const RawAdaptiveCard.fromMap({
+  const new fromMap({
     super.key,
     required this.map,
     this.cardTypeRegistry = const CardTypeRegistry(),
@@ -94,7 +94,7 @@ class RawAdaptiveCard extends StatefulWidget {
 /// without mutating baseline JSON.
 class RawAdaptiveCardState extends State<RawAdaptiveCard> {
   /// Creates raw-card state; obtain via [GlobalKey] when calling host APIs.
-  RawAdaptiveCardState();
+  new();
 
   ///.  Wrapper around the host config
   late ReferenceResolver _resolver;
@@ -674,7 +674,7 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
 
 /// Registers the card-scoped [ProviderContainer] and seeds [initData] overlays.
 class _AdaptiveCardDocumentLifecycle extends StatefulWidget {
-  const _AdaptiveCardDocumentLifecycle({
+  const new({
     required this.cardState,
     required this.initData,
     required this.child,

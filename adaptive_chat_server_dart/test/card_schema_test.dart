@@ -35,16 +35,17 @@ import 'package:test/test.dart';
 /// period, so `use Chart.Pie.` yields `Chart.Pie`.
 Set<String> _chartTypesInPrompt() {
   final text = File('assets/card_system_prompt.txt').readAsStringSync();
-  return RegExp(
-    r'Chart\.[A-Za-z]+(?:\.[A-Za-z]+)*',
-  ).allMatches(text).map((m) => m.group(0)!).toSet();
+  return RegExp(r'Chart\.[A-Za-z]+(?:\.[A-Za-z]+)*')
+      .allMatches(text)
+      .map((m) => m.group(0)!)
+      .toSet();
 }
 
 /// The `type` enum the `--json-format schema` grammar constrains replies to.
 Set<String> _schemaElementTypes() {
-  final schema =
-      jsonDecode(File('assets/card_schema.json').readAsStringSync())
-          as Map<String, dynamic>;
+  final schema = jsonDecode(
+    File('assets/card_schema.json').readAsStringSync(),
+  ) as Map<String, dynamic>;
   final element =
       (schema[r'$defs'] as Map<String, dynamic>)['Element']
           as Map<String, dynamic>;
@@ -82,16 +83,17 @@ Set<String> _chartRegistryElementTypes() {
   final source = File(
     '../packages/flutter_adaptive_charts_fs/lib/src/card_chart_registry.dart',
   ).readAsStringSync();
-  return RegExp(
-    r'Chart\.[A-Za-z]+(?:\.[A-Za-z]+)*',
-  ).allMatches(source).map((m) => m.group(0)!).toSet();
+  return RegExp(r'Chart\.[A-Za-z]+(?:\.[A-Za-z]+)*')
+      .allMatches(source)
+      .map((m) => m.group(0)!)
+      .toSet();
 }
 
 /// The `type` enum covering every position, including nesting-only children.
 Set<String> _schemaChildElementTypes() {
-  final schema =
-      jsonDecode(File('assets/card_schema.json').readAsStringSync())
-          as Map<String, dynamic>;
+  final schema = jsonDecode(
+    File('assets/card_schema.json').readAsStringSync(),
+  ) as Map<String, dynamic>;
   final child =
       (schema[r'$defs'] as Map<String, dynamic>)['ChildElement']
           as Map<String, dynamic>;
@@ -192,9 +194,9 @@ void main() {
     // Plain relative paths, matching the existing groups in this file — tests
     // run from the package root, and `package:path` is not imported here.
     final prompt = File('assets/card_system_prompt.txt').readAsStringSync();
-    final schema =
-        jsonDecode(File('assets/card_schema.json').readAsStringSync())
-            as Map<String, dynamic>;
+    final schema = jsonDecode(
+      File('assets/card_schema.json').readAsStringSync(),
+    ) as Map<String, dynamic>;
     final readme = File('README.md').readAsStringSync();
 
     // Types the prompt actually advertises: the bullet headings plus every
@@ -204,9 +206,10 @@ void main() {
       // uses headings like "- Charts —" to introduce a family. Require a
       // matching "type":"X" example, which every real palette entry has and
       // no section heading does.
-      final exampled = RegExp(
-        '"type":"([A-Za-z.]+)"',
-      ).allMatches(prompt).map((m) => m.group(1)!).toSet();
+      final exampled = RegExp('"type":"([A-Za-z.]+)"')
+          .allMatches(prompt)
+          .map((m) => m.group(1)!)
+          .toSet();
       final headings = RegExp(
         '^- ([A-Z][A-Za-z.]+) —',
         multiLine: true,

@@ -10,7 +10,7 @@ import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 class AdaptiveActionInsertImage extends StatefulWidget
     with AdaptiveElementWidgetMixin {
   /// Creates an `Action.InsertImage` widget from [adaptiveMap].
-  AdaptiveActionInsertImage({
+  new({
     required this.adaptiveMap,
   }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);

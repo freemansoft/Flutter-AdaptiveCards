@@ -131,10 +131,7 @@ Widget getTestWidgetFromMap({
       home: Scaffold(
         appBar: AppBar(title: Text(title)),
         // tests look for this value key as the root for golden
-        body: RepaintBoundary(
-          key: key,
-          child: wrapBody(adaptiveCard),
-        ),
+        body: RepaintBoundary(key: key, child: wrapBody(adaptiveCard)),
       ),
     );
   }

@@ -8,7 +8,7 @@
 /// See [Authentication](https://learn.microsoft.com/en-us/adaptive-cards/schema-explorer/authentication).
 class AuthenticationConfig {
   /// Creates authentication metadata from parsed JSON fields.
-  const AuthenticationConfig({
+  const new({
     this.text,
     this.connectionName,
     this.tokenExchangeResource,
@@ -16,7 +16,7 @@ class AuthenticationConfig {
   });
 
   /// Parses a card `authentication` object map, tolerating malformed fields.
-  factory AuthenticationConfig.fromJson(Map<String, dynamic> json) {
+  factory fromJson(Map<String, dynamic> json) {
     Map<String, dynamic>? tokenExchangeResource;
     final ter = json['tokenExchangeResource'];
     if (ter is Map) {
@@ -60,7 +60,7 @@ class AuthenticationConfig {
 /// A single button inside an [AuthenticationConfig.buttons] list.
 class AuthCardButton {
   /// Creates a sign-in button descriptor.
-  const AuthCardButton({
+  const new({
     required this.type,
     this.title,
     this.image,
@@ -68,7 +68,7 @@ class AuthCardButton {
   });
 
   /// Parses one `authentication.buttons` entry.
-  factory AuthCardButton.fromJson(Map<String, dynamic> json) {
+  factory fromJson(Map<String, dynamic> json) {
     return AuthCardButton(
       type: json['type']?.toString() ?? '',
       title: json['title']?.toString(),

@@ -7,7 +7,7 @@ import 'package:flutter_adaptive_cards_fs/src/hostconfig/text_input_config.dart'
 /// styling, and `Input.Text`-specific settings (`inputs.text`).
 class InputsConfig {
   /// Creates input styling settings from explicit values.
-  InputsConfig({
+  new({
     required this.label,
     required this.errorMessage,
     required this.text,
@@ -15,7 +15,7 @@ class InputsConfig {
   });
 
   /// Parses `inputs` from HostConfig JSON.
-  factory InputsConfig.fromJson(Map<String, dynamic> json) {
+  factory fromJson(Map<String, dynamic> json) {
     return InputsConfig(
       label: LabelConfig.fromJson(json['label'] ?? {}),
       errorMessage: ErrorMessageConfig.fromJson(json['errorMessage'] ?? {}),

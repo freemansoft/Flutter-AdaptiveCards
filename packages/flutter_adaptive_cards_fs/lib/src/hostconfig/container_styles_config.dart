@@ -5,7 +5,7 @@ import 'package:flutter_adaptive_cards_fs/src/hostconfig/theme_color_fallbacks.d
 /// background and foreground colors.
 class ContainerStylesConfig {
   /// Creates container style variants from explicit configurations.
-  ContainerStylesConfig({
+  new({
     required this.defaultStyle,
     required this.emphasis,
     this.good,
@@ -15,7 +15,7 @@ class ContainerStylesConfig {
   });
 
   /// Parses `containerStyles` from HostConfig JSON.
-  factory ContainerStylesConfig.fromJson(
+  factory fromJson(
     Map<String, dynamic> json, {
     ThemeColorFallbacks? colorDefaults,
   }) {

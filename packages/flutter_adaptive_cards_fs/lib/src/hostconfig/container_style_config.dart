@@ -7,13 +7,13 @@ import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 /// background and foreground colors for a container variant.
 class ContainerStyleConfig {
   /// Creates a container style from explicit values.
-  ContainerStyleConfig({
+  new({
     required this.backgroundColor,
     required this.foregroundColors,
   });
 
   /// Parses a container style object from HostConfig JSON.
-  factory ContainerStyleConfig.fromJson(
+  factory fromJson(
     Map<String, dynamic> json, {
     ContainerStyleConfig? defaults,
   }) {

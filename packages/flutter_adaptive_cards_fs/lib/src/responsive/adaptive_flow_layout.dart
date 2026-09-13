@@ -28,7 +28,7 @@ final Set<String> _loggedFillWarnings = <String>{};
 /// [IntrinsicWidth]) to size it safely.
 class AdaptiveFlowLayout extends StatelessWidget {
   /// Creates a flow layout from a parsed `Layout.Flow` [layoutMap].
-  const AdaptiveFlowLayout({
+  const new({
     required this.layoutMap,
     required this.styleResolver,
     required this.children,

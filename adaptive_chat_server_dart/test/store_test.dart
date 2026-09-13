@@ -13,15 +13,12 @@ void main() {
     // The c_ prefix is how a caller (or a log line) tells a conversation id
     // apart from an interaction id (i_...) without knowing which store it
     // came from.
-    test(
-      'create returns c_ prefixed id, discoverable via get',
-      () {
-        final store = ConversationStore();
-        final conv = store.create();
-        expect(conv.conversationId, startsWith('c_'));
-        expect(store.get(conv.conversationId), same(conv));
-      },
-    );
+    test('create returns c_ prefixed id, discoverable via get', () {
+      final store = ConversationStore();
+      final conv = store.create();
+      expect(conv.conversationId, startsWith('c_'));
+      expect(store.get(conv.conversationId), same(conv));
+    });
 
     // Ids are minted from random bytes (_newConversationId); a collision
     // would silently merge two unrelated conversations under one entry.

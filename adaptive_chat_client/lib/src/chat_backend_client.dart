@@ -15,7 +15,7 @@ export 'package:adaptive_chat_client/src/chat_models.dart';
 /// list of cards to append, not an invoke-effect patch).
 class ChatBackendClient {
   /// Creates a client posting to [baseUrl]; inject [client] in tests.
-  ChatBackendClient({required this.baseUrl, http.Client? client})
+  new({required this.baseUrl, http.Client? client})
     : _client = client ?? http.Client();
 
   /// Base URL of the backend (e.g. `http://localhost:8000`).
@@ -70,8 +70,6 @@ class ChatBackendClient {
     if (resp.statusCode != 200) {
       throw ChatBackendException('send failed: HTTP ${resp.statusCode}');
     }
-    return ChatEnvelope.fromJson(
-      jsonDecode(resp.body) as Map<String, dynamic>,
-    );
+    return ChatEnvelope.fromJson(jsonDecode(resp.body) as Map<String, dynamic>);
   }
 }

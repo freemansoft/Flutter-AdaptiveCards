@@ -15,7 +15,7 @@ import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 class AdaptiveActionHttp extends StatefulWidget
     with AdaptiveElementWidgetMixin {
   /// Creates an `Action.Http` widget from [adaptiveMap].
-  AdaptiveActionHttp({
+  new({
     required this.adaptiveMap,
   }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);

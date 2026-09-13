@@ -64,7 +64,7 @@ class _StretchParentData extends ContainerBoxParentData<RenderBox> {
 }
 
 class _StretchColumn extends MultiChildRenderObjectWidget {
-  const _StretchColumn({
+  const new({
     required this.crossAxisAlignment,
     required this.mainAxisSize,
     required this.stretchFlags,
@@ -109,7 +109,7 @@ class RenderStretchColumn extends RenderBox
         ContainerRenderObjectMixin<RenderBox, _StretchParentData>,
         RenderBoxContainerDefaultsMixin<RenderBox, _StretchParentData> {
   /// Creates a stretch-aware vertical stack render object.
-  RenderStretchColumn({
+  new({
     required CrossAxisAlignment crossAxisAlignment,
     required MainAxisSize mainAxisSize,
     required List<bool> stretchFlags,

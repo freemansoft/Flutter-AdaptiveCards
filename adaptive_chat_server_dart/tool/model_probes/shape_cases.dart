@@ -31,7 +31,7 @@ export 'package:adaptive_chat_server_dart/src/seed_card.dart'
 /// input at all", which are different bugs with different fixes.
 class ShapeCase {
   /// Creates a case.
-  const ShapeCase({
+  const new({
     required this.id,
     required this.prompt,
     required this.accepted,
@@ -243,7 +243,7 @@ const reinforceReminder =
 /// How one reply scored against one [ShapeCase].
 class ShapeResult {
   /// Creates a result.
-  const ShapeResult({
+  const new({
     required this.caseId,
     required this.pass,
     required this.label,

@@ -41,11 +41,8 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         home: Scaffold(
-          body:
-              AdaptiveCardBackendHandlers(
-                client: client,
-                cardKey: cardKey,
-              ).wrap(
+          body: AdaptiveCardBackendHandlers(client: client, cardKey: cardKey)
+              .wrap(
                 RawAdaptiveCard.fromMap(
                   key: cardKey,
                   map: map,
@@ -71,13 +68,11 @@ void main() {
       final harness = await _pumpWiredCard(tester);
       // The closures resolve card state from cardKey, so a throwaway wrap
       // exposes the same callbacks bound to the mounted card.
-      final handlers =
-          harness.handlers.wrap(const SizedBox())
-              as InheritedAdaptiveCardHandlers;
+      final handlers = harness.handlers.wrap(
+        const SizedBox(),
+      ) as InheritedAdaptiveCardHandlers;
 
-      handlers.onExecute(
-        const ExecuteActionInvoke(data: {'a': 1}, verb: 'go'),
-      );
+      handlers.onExecute(const ExecuteActionInvoke(data: {'a': 1}, verb: 'go'));
       await tester.pumpAndSettle();
 
       expect(harness.client.postCount, 1);
@@ -86,9 +81,9 @@ void main() {
 
     testWidgets('onRefresh posts an execute-kind invoke', (tester) async {
       final harness = await _pumpWiredCard(tester);
-      final handlers =
-          harness.handlers.wrap(const SizedBox())
-              as InheritedAdaptiveCardHandlers;
+      final handlers = harness.handlers.wrap(
+        const SizedBox(),
+      ) as InheritedAdaptiveCardHandlers;
 
       handlers.onRefresh!(
         const RefreshActionInvoke(data: {'b': 2}, verb: 'refresh'),
@@ -101,9 +96,9 @@ void main() {
 
     testWidgets('onChange posts an inputChange-kind invoke', (tester) async {
       final harness = await _pumpWiredCard(tester);
-      final handlers =
-          harness.handlers.wrap(const SizedBox())
-              as InheritedAdaptiveCardHandlers;
+      final handlers = harness.handlers.wrap(
+        const SizedBox(),
+      ) as InheritedAdaptiveCardHandlers;
 
       handlers.onChange(
         InputChangeInvoke(
@@ -125,13 +120,11 @@ void main() {
     ) async {
       final errors = <Object>[];
       final client = _FakeBackendClient(const {});
-      final handlers =
-          AdaptiveCardBackendHandlers(
-                client: client,
-                cardKey: GlobalKey<RawAdaptiveCardState>(),
-                onError: errors.add,
-              ).wrap(const SizedBox())
-              as InheritedAdaptiveCardHandlers;
+      final handlers = AdaptiveCardBackendHandlers(
+        client: client,
+        cardKey: GlobalKey<RawAdaptiveCardState>(),
+        onError: errors.add,
+      ).wrap(const SizedBox()) as InheritedAdaptiveCardHandlers;
 
       handlers.onSubmit(const SubmitActionInvoke(data: {}));
       await tester.pump();
@@ -222,7 +215,7 @@ Future<_Harness> _pumpWiredCard(
 }
 
 class _Harness {
-  _Harness(this.handlers, this.cardKey, this.client);
+  new(this.handlers, this.cardKey, this.client);
 
   final AdaptiveCardBackendHandlers handlers;
   final GlobalKey<RawAdaptiveCardState> cardKey;
@@ -230,7 +223,7 @@ class _Harness {
 }
 
 class _FakeBackendClient implements AdaptiveCardBackendClient {
-  _FakeBackendClient(this.response);
+  new(this.response);
 
   final Map<String, dynamic> response;
   int postCount = 0;

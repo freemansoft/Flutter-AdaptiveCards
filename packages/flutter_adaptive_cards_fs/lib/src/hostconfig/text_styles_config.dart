@@ -4,13 +4,13 @@ import 'package:flutter_adaptive_cards_fs/src/hostconfig/text_style_config.dart'
 /// typography.
 class TextStylesConfig {
   /// Creates named text style defaults from explicit values.
-  TextStylesConfig({
+  new({
     required this.heading,
     required this.columnHeader,
   });
 
   /// Parses `textStyles` from HostConfig JSON.
-  factory TextStylesConfig.fromJson(Map<String, dynamic> json) {
+  factory fromJson(Map<String, dynamic> json) {
     return TextStylesConfig(
       heading: TextStyleConfig.fromJson(
         json['heading'] ?? {},

@@ -43,7 +43,7 @@ translation happens at the moment you run the command:
 Run from the **repository root**:
 
 ```bash
-fvm install <flutter-version>   # e.g. 3.44.0 — skip if already installed
+fvm install <flutter-version>   # e.g. 3.47.4 — skip if already installed
 fvm use <flutter-version>
 fvm flutter --version
 ```

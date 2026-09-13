@@ -30,6 +30,7 @@ import 'dart:io';
 import 'package:adaptive_chat_server_dart/src/card_detect.dart';
 import 'package:adaptive_chat_server_dart/src/seed_card.dart';
 import 'package:args/args.dart';
+
 // Relative: these live outside lib/, beside this file.
 import 'cascade_cases.dart';
 import 'probe_results.dart';
@@ -38,7 +39,7 @@ import 'probe_support.dart';
 /// The `Input.ChoiceSet` findings from one reply, or why there were none.
 class ChoiceSetReading {
   /// Creates a reading.
-  const ChoiceSetReading({this.titles, this.multiSelect, this.failure});
+  const new({this.titles, this.multiSelect, this.failure});
 
   /// Choice titles in the order the model offered them.
   final List<String>? titles;
@@ -93,7 +94,7 @@ ChoiceSetReading readChoiceSet(String reply) {
 /// The verdict for one cascade run.
 class CascadeResult {
   /// Creates a result.
-  const CascadeResult({required this.pass, required this.detail});
+  const new({required this.pass, required this.detail});
 
   /// Whether all three requirements held.
   final bool pass;
@@ -188,13 +189,7 @@ Future<void> main(List<String> argv) async {
     return;
   }
   final args = parseProbeArgs([
-    for (final option in [
-      'model',
-      'url',
-      'samples',
-      'json',
-      'timeout',
-    ])
+    for (final option in ['model', 'url', 'samples', 'json', 'timeout'])
       if (parsed[option] != null) ...['--$option', parsed[option] as String],
   ], defaultSamples: 1);
 

@@ -37,7 +37,7 @@ const defaultProbeTimeout = Duration(seconds: 180);
 /// host without editing source.
 class ProbeArgs {
   /// Creates the parsed option set.
-  const ProbeArgs({
+  const new({
     required this.model,
     required this.url,
     required this.samples,
@@ -194,9 +194,10 @@ String probeAssetsDir({Directory? startDir}) {
 }
 
 /// Reads the bundled card system prompt — the same file the server sends.
-String loadCardSystemPrompt() => File(
-  p.join(probeAssetsDir(), 'card_system_prompt.txt'),
-).readAsStringSync().trim();
+String loadCardSystemPrompt() =>
+    File(p.join(probeAssetsDir(), 'card_system_prompt.txt'))
+        .readAsStringSync()
+        .trim();
 
 /// Path to the bundled seed-card asset — the same file the server sends.
 ///
@@ -208,11 +209,9 @@ String loadCardSystemPrompt() => File(
 String defaultSeedCardPath() => p.join(probeAssetsDir(), 'seed_card.json');
 
 /// Reads the bundled card schema, for probes exercising `format: <schema>`.
-Map<String, dynamic> loadCardSchema() =>
-    jsonDecode(
-          File(p.join(probeAssetsDir(), 'card_schema.json')).readAsStringSync(),
-        )
-        as Map<String, dynamic>;
+Map<String, dynamic> loadCardSchema() => jsonDecode(
+  File(p.join(probeAssetsDir(), 'card_schema.json')).readAsStringSync(),
+) as Map<String, dynamic>;
 
 /// Maps a `--json-format` mode to what [probeOnce] should send as `format`.
 ///
@@ -230,7 +229,7 @@ Object? resolveProbeFormat(String mode) => switch (mode) {
 /// One reply, judged exactly as the running server would judge it.
 class ProbeOutcome {
   /// Creates an outcome.
-  const ProbeOutcome({
+  const new({
     required this.ok,
     required this.label,
     required this.chars,
@@ -336,7 +335,7 @@ Future<void> evictModel(String url, String model) async {
 /// distinguish a clamped runner from a model that discarded a message it
 /// had room for. See ModelBehavior.md's context-fill section.
 class RunnerStatus {
-  const RunnerStatus({this.contextLength, this.sizeVram});
+  const new({this.contextLength, this.sizeVram});
 
   /// Context the runner actually allocated, or null if this Ollama does not
   /// report it. Null rather than zero on purpose: a zero would read as a
@@ -615,10 +614,7 @@ ProbeOutcome judgeReply(String content, int ms, {int? promptEvalCount}) {
     return outcome(ok: true, label: 'card[${card.length}]');
   }
   if (replyWrapsCardInProse(content)) {
-    return outcome(
-      ok: false,
-      label: 'prose-with-card (user sees raw JSON)',
-    );
+    return outcome(ok: false, label: 'prose-with-card (user sees raw JSON)');
   }
   final why = cardParseFailureReason(content);
   return why == null
@@ -681,7 +677,5 @@ Set<String> collectElementTypes(List<Map<String, dynamic>> body) {
 /// [wanted] is a set rather than a single type because several shapes are
 /// often equally correct — "summarize these specs" is defensibly a `FactSet`
 /// or a `Table`, and forcing one would score a good reply as a failure.
-bool cardContainsAnyType(
-  List<Map<String, dynamic>> body,
-  Set<String> wanted,
-) => collectElementTypes(body).intersection(wanted).isNotEmpty;
+bool cardContainsAnyType(List<Map<String, dynamic>> body, Set<String> wanted) =>
+    collectElementTypes(body).intersection(wanted).isNotEmpty;

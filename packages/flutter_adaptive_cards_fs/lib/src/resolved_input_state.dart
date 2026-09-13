@@ -5,7 +5,7 @@ import 'package:flutter/foundation.dart';
 @immutable
 class ResolvedInputState {
   /// Creates a resolved input snapshot from a merged element map.
-  const ResolvedInputState(this.map);
+  const new(this.map);
 
   /// Baseline JSON merged with runtime overlays for one input id.
   final Map<String, dynamic> map;

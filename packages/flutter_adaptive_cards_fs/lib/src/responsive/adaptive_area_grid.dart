@@ -16,7 +16,7 @@ import 'package:flutter_adaptive_cards_fs/src/utils/block_height.dart';
 class AreaGridPlacement {
   /// Creates a placement spanning [columnSpan]×[rowSpan] from ([column],
   /// [row]).
-  const AreaGridPlacement({
+  const new({
     required this.column,
     required this.columnSpan,
     required this.row,
@@ -48,7 +48,7 @@ class AreaGridPlacement {
 /// grid (and are logged), mirroring the fail-open `targetWidth` philosophy.
 class AdaptiveAreaGrid extends StatelessWidget {
   /// Creates an AreaGrid for [children] using the parsed [layout].
-  const AdaptiveAreaGrid({
+  const new({
     required this.layout,
     required this.styleResolver,
     required this.childMaps,
@@ -134,7 +134,7 @@ class _AreaGridParentData extends ContainerBoxParentData<RenderBox> {
 }
 
 class _AreaGridRenderWidget extends MultiChildRenderObjectWidget {
-  const _AreaGridRenderWidget({
+  const new({
     required this.columns,
     required this.colCount,
     required this.rowCount,
@@ -186,7 +186,7 @@ class RenderAdaptiveAreaGrid extends RenderBox
         ContainerRenderObjectMixin<RenderBox, _AreaGridParentData>,
         RenderBoxContainerDefaultsMixin<RenderBox, _AreaGridParentData> {
   /// Creates the AreaGrid render object.
-  RenderAdaptiveAreaGrid({
+  new({
     required List<AreaGridTrack> columns,
     required int colCount,
     required int rowCount,

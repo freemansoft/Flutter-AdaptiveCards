@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 /// One entry in a chart legend row.
 class ChartLegendEntry {
   /// Creates a legend swatch and label pair.
-  const ChartLegendEntry({
+  const new({
     required this.label,
     required this.color,
   });
@@ -18,7 +18,7 @@ class ChartLegendEntry {
 /// Shared title, chart body, and optional legend layout for chart elements.
 class ChartChrome extends StatelessWidget {
   /// Wraps [chart] with an optional [title] and [legendEntries].
-  const ChartChrome({
+  const new({
     required this.chart,
     this.title,
     this.legendEntries = const [],

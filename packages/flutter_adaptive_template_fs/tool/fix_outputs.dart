@@ -17,9 +17,8 @@ void fixExample(String name) {
   );
   final expanded = template.expand(jsonDecode(dataStr) as Map<String, dynamic>);
 
-  final formatted = const JsonEncoder.withIndent(
-    '  ',
-  ).convert(jsonDecode(expanded));
+  final formatted = const JsonEncoder.withIndent('  ')
+      .convert(jsonDecode(expanded));
   File(outputPath).writeAsStringSync('$formatted\n');
   debugPrint('Fixed $name');
 }

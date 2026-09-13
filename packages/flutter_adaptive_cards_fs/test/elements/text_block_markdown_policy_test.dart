@@ -3,6 +3,7 @@ import 'package:flutter_adaptive_cards_fs/src/security/adaptive_uri_policy.dart'
 import 'package:flutter_adaptive_cards_fs/src/security/inherited_security_policy.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import 'package:flutter_test/flutter_test.dart';
+
 import '../utils/test_utils.dart';
 
 void main() {

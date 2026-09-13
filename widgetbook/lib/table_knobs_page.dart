@@ -42,7 +42,7 @@ const _highlightCol = 0;
 /// Default knob values extracted from the first Table in a sample card.
 class TableKnobDefaults {
   /// Creates defaults for the Table property knobs.
-  const TableKnobDefaults({
+  const new({
     this.showGridLines = true,
     this.firstRowAsHeader = true,
     this.gridStyle = 'accent',
@@ -79,7 +79,7 @@ GlobalKey<State<TableKnobsPage>> tableKnobsPageKeyFor(String assetPath) {
 /// `minHeight` and `style`.
 class TableKnobsPage extends StatefulWidget {
   /// Creates a Table knobs page for the sample at [assetPath].
-  const TableKnobsPage({required this.assetPath, super.key});
+  const new({required this.assetPath, super.key});
 
   /// Asset path to the Adaptive Card JSON (Widgetbook bundle path).
   final String assetPath;

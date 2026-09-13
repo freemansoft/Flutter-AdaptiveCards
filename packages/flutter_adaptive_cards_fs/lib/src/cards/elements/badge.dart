@@ -12,7 +12,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class AdaptiveBadge extends ConsumerStatefulWidget
     with AdaptiveElementWidgetMixin {
   /// Creates a badge from [adaptiveMap] JSON.
-  AdaptiveBadge({
+  new({
     required this.adaptiveMap,
   }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);

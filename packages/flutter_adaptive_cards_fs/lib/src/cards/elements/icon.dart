@@ -12,7 +12,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class AdaptiveIcon extends ConsumerStatefulWidget
     with AdaptiveElementWidgetMixin {
   /// Creates an icon element from [adaptiveMap] JSON.
-  AdaptiveIcon({
+  new({
     required this.adaptiveMap,
   }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);

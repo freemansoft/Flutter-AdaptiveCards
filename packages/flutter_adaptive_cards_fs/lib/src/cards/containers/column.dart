@@ -16,7 +16,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class AdaptiveColumn extends ConsumerStatefulWidget
     with AdaptiveElementWidgetMixin {
   /// Creates a `Column` from [adaptiveMap] within a parent `ColumnSet`.
-  AdaptiveColumn({
+  new({
     required this.adaptiveMap,
     required this.supportMarkdown,
   }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {

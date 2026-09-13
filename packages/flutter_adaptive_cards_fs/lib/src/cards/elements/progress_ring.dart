@@ -11,7 +11,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class AdaptiveProgressRing extends ConsumerStatefulWidget
     with AdaptiveElementWidgetMixin {
   /// Creates a progress ring from [adaptiveMap] JSON.
-  AdaptiveProgressRing({
+  new({
     required this.adaptiveMap,
   }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);

@@ -1,7 +1,7 @@
 /// HostConfig `factSet.title` or `factSet.value` text styling defaults.
 class FactSetTextConfig {
   /// Creates fact-set text settings from explicit values.
-  FactSetTextConfig({
+  new({
     required this.size,
     required this.weight,
     required this.color,
@@ -12,7 +12,7 @@ class FactSetTextConfig {
   });
 
   /// Parses a fact-set text object from HostConfig JSON.
-  factory FactSetTextConfig.fromJson(
+  factory fromJson(
     Map<String, dynamic> json, {
     FactSetTextConfig? defaults,
   }) {
@@ -53,14 +53,14 @@ class FactSetTextConfig {
 /// and row spacing.
 class FactSetConfig {
   /// Creates fact-set settings from explicit values.
-  FactSetConfig({
+  new({
     required this.title,
     required this.value,
     required this.spacing,
   });
 
   /// Parses `factSet` from HostConfig JSON.
-  factory FactSetConfig.fromJson(Map<String, dynamic> json) {
+  factory fromJson(Map<String, dynamic> json) {
     return FactSetConfig(
       title: FactSetTextConfig.fromJson(
         json['title'] ?? {},

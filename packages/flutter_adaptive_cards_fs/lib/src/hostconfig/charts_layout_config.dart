@@ -9,7 +9,7 @@ import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 /// options.
 class LineChartLayout {
   /// Resolved line chart layout for chart renderers.
-  const LineChartLayout({
+  const new({
     required this.height,
     required this.emptyMinX,
     required this.emptyMaxX,
@@ -100,7 +100,7 @@ class LineChartLayout {
 class BarChartLayout {
   /// Resolved bar chart layout for vertical, horizontal, grouped, and stacked
   /// charts.
-  const BarChartLayout({
+  const new({
     required this.height,
     required this.emptyMaxY,
     required this.maxYPaddingFactor,
@@ -172,7 +172,7 @@ enum BarChartAlignmentToken {
 /// [ChartsLayoutConfig.resolvePieLayout].
 class PieChartLayout {
   /// Resolved pie or donut chart layout for chart renderers.
-  const PieChartLayout({
+  const new({
     required this.height,
     required this.centerSpaceRadius,
     required this.sectionsSpace,
@@ -214,7 +214,7 @@ typedef DonutChartLayout = PieChartLayout;
 /// render time (or use [ChartsLayoutConfig.resolveLineLayout]).
 class LineChartLayoutSection {
   /// HostConfig overrides for line chart layout.
-  const LineChartLayoutSection({
+  const new({
     required this.height,
     required this.emptyMinX,
     required this.emptyMaxX,
@@ -238,7 +238,7 @@ class LineChartLayoutSection {
   });
 
   /// Parses `chartsLayout.line` from HostConfig JSON.
-  factory LineChartLayoutSection.fromJson(
+  factory fromJson(
     Map<String, dynamic> json, {
     LineChartLayoutSection? defaults,
   }) {
@@ -364,7 +364,7 @@ class LineChartLayoutSection {
 /// HostConfig `chartsLayout.bar` section.
 class BarChartLayoutSection {
   /// HostConfig overrides for bar chart layout.
-  const BarChartLayoutSection({
+  const new({
     required this.height,
     required this.emptyMaxY,
     required this.maxYPaddingFactor,
@@ -379,7 +379,7 @@ class BarChartLayoutSection {
   });
 
   /// Parses `chartsLayout.bar` from HostConfig JSON.
-  factory BarChartLayoutSection.fromJson(
+  factory fromJson(
     Map<String, dynamic> json, {
     BarChartLayoutSection? defaults,
   }) {
@@ -464,7 +464,7 @@ class BarChartLayoutSection {
 /// HostConfig `chartsLayout.pie` / `chartsLayout.donut` section.
 class PieChartLayoutSection {
   /// HostConfig overrides for pie, donut, and gauge chart layout.
-  const PieChartLayoutSection({
+  const new({
     required this.height,
     required this.centerSpaceRadius,
     required this.sectionsSpace,
@@ -475,7 +475,7 @@ class PieChartLayoutSection {
   });
 
   /// Parses `chartsLayout.pie` or `chartsLayout.donut` from HostConfig JSON.
-  factory PieChartLayoutSection.fromJson(
+  factory fromJson(
     Map<String, dynamic> json, {
     PieChartLayoutSection? defaults,
   }) {
@@ -541,7 +541,7 @@ class PieChartLayoutSection {
 class ChartsLayoutConfig {
   /// HostConfig overrides for all chart families; omit fields to keep
   /// [defaults].
-  const ChartsLayoutConfig({
+  const new({
     required this.line,
     required this.bar,
     required this.pie,
@@ -549,7 +549,7 @@ class ChartsLayoutConfig {
   });
 
   /// Parses `chartsLayout` from HostConfig JSON.
-  factory ChartsLayoutConfig.fromJson(Map<String, dynamic> json) {
+  factory fromJson(Map<String, dynamic> json) {
     return ChartsLayoutConfig(
       line: LineChartLayoutSection.fromJson(
         json['line'] as Map<String, dynamic>? ?? {},

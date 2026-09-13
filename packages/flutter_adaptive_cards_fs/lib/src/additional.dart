@@ -13,7 +13,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 /// custom elements.
 class SeparatorElement extends StatelessWidget {
   /// Applies Adaptive Card `spacing` and optional `separator` above [child].
-  const SeparatorElement({
+  const new({
     super.key,
     required this.adaptiveMap,
     required this.child,
@@ -80,7 +80,7 @@ class AdaptiveTappable extends StatefulWidget with AdaptiveElementWidgetMixin {
   /// wrapped element's own id via [loadId]; callers whose map has no id (e.g.
   /// table cells, whose `toJson()` omits `type`) must pass [idSeed] with a
   /// stable positional id. See [docs/AdaptiveWidget-Key-Generation.md].
-  factory AdaptiveTappable({
+  factory({
     required Widget child,
     required Map<String, dynamic> adaptiveMap,
     String? idSeed,
@@ -94,7 +94,7 @@ class AdaptiveTappable extends StatefulWidget with AdaptiveElementWidgetMixin {
     );
   }
 
-  AdaptiveTappable._({
+  new _({
     super.key,
     required this.adaptiveMap,
     required this.id,
@@ -119,7 +119,7 @@ class AdaptiveTappable extends StatefulWidget with AdaptiveElementWidgetMixin {
 class AdaptiveTappableState extends State<AdaptiveTappable>
     with AdaptiveElementMixin, ProviderScopeMixin {
   /// Creates tap-wrapper state; hosts should not construct this directly.
-  AdaptiveTappableState();
+  new();
 
   /// Resolved handler for `selectAction`, if present in [adaptiveMap].
   GenericAction? action;
@@ -170,7 +170,7 @@ class AdaptiveTappableState extends State<AdaptiveTappable>
 class ChildStyler extends StatelessWidget {
   /// Pushes container style and alignment context to [child] via a scoped
   /// resolver.
-  const ChildStyler({
+  const new({
     super.key,
     required this.child,
     required this.adaptiveMap,

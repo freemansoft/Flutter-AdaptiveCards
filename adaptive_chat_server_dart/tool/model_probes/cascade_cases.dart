@@ -10,11 +10,7 @@ library;
 /// follow-up that should widen the *same* list to multi-select.
 class CascadeCase {
   /// Creates a case.
-  const CascadeCase({
-    required this.id,
-    required this.first,
-    required this.second,
-  });
+  const new({required this.id, required this.first, required this.second});
 
   /// Short identifier used in output.
   final String id;

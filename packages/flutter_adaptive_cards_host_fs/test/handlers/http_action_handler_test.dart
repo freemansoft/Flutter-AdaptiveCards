@@ -97,7 +97,7 @@ void main() {
 }
 
 class _FakeExecutor implements AdaptiveHttpExecutor {
-  _FakeExecutor(this.result);
+  new(this.result);
 
   final AdaptiveHttpResult result;
   int calls = 0;

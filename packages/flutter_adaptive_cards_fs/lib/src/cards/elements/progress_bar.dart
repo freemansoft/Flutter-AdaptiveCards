@@ -10,7 +10,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class AdaptiveProgressBar extends ConsumerStatefulWidget
     with AdaptiveElementWidgetMixin {
   /// Creates a progress bar from [adaptiveMap] JSON.
-  AdaptiveProgressBar({
+  new({
     required this.adaptiveMap,
   }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);

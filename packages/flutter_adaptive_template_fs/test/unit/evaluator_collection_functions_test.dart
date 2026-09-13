@@ -79,10 +79,7 @@ void main() {
   group('date functions', () {
     test('formatEpoch formats seconds since epoch', () {
       // 1609459200 == 2021-01-01T00:00:00Z
-      expect(
-        evalExpression("formatEpoch(1609459200, 'yyyy')"),
-        '2021',
-      );
+      expect(evalExpression("formatEpoch(1609459200, 'yyyy')"), '2021');
     });
 
     test('getFutureTime returns a parseable future timestamp', () {

@@ -2,7 +2,7 @@
 /// available width (`isPercent == true`) or a fixed pixel width.
 class AreaGridTrack {
   /// Creates a column track with a [value] interpreted per [isPercent].
-  const AreaGridTrack({required this.value, required this.isPercent});
+  const new({required this.value, required this.isPercent});
 
   /// The numeric width (percent points when [isPercent], else logical pixels).
   final double value;
@@ -34,7 +34,7 @@ class AreaGridTrack {
 /// A named placement region in a `Layout.AreaGrid`. Indices are 1-based.
 class GridAreaModel {
   /// Creates a named area at a 1-based [column]/[row] with the given spans.
-  const GridAreaModel({
+  const new({
     required this.name,
     required this.column,
     required this.columnSpan,
@@ -44,7 +44,7 @@ class GridAreaModel {
 
   /// Parses one `areas` entry, applying spec defaults (column/row 1, spans 1)
   /// and clamping non-positive values to 1.
-  factory GridAreaModel.fromJson(Map<String, dynamic> json) => GridAreaModel(
+  factory fromJson(Map<String, dynamic> json) => GridAreaModel(
     name: (json['name'] as String?) ?? '',
     column: _posInt(json['column'], 1),
     columnSpan: _posInt(json['columnSpan'], 1),
@@ -76,7 +76,7 @@ class GridAreaModel {
 /// Parsed `Layout.AreaGrid` object (tracks, named areas, spacing tokens).
 class AreaGridLayout {
   /// Creates a parsed AreaGrid layout.
-  const AreaGridLayout({
+  const new({
     required this.columns,
     required this.areas,
     required this.columnSpacing,
@@ -85,7 +85,7 @@ class AreaGridLayout {
 
   /// Parses a selected `Layout.AreaGrid` map. Unparseable `columns` entries are
   /// dropped (the solver treats the shortfall as implied equal-share columns).
-  factory AreaGridLayout.fromMap(Map<String, dynamic> map) {
+  factory fromMap(Map<String, dynamic> map) {
     final cols = <AreaGridTrack>[];
     for (final c in (map['columns'] as List<dynamic>? ?? const [])) {
       final t = AreaGridTrack.fromJson(c);

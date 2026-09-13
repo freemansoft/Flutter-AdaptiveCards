@@ -3,7 +3,7 @@ import 'package:flutter_adaptive_cards_fs/flutter_adaptive_cards_fs.dart';
 
 /// Widgetbook page for root-card `refresh` with SnackBar feedback on invoke.
 class RefreshDemoPage extends StatelessWidget {
-  const RefreshDemoPage({super.key});
+  const new({super.key});
 
   static const _assetPath = 'lib/samples/v1.4/refresh_demo.json';
 

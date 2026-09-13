@@ -15,12 +15,7 @@ import 'package:adaptive_chat_server_dart/src/stats.dart';
 /// path). It never affects what the user sees — it exists for `GET /status`.
 class Reply {
   /// Creates a [Reply] with the given text, optional card body, and stats.
-  const Reply({
-    required this.text,
-    this.cardBody,
-    this.stats,
-    this.ok = true,
-  });
+  const new({required this.text, this.cardBody, this.stats, this.ok = true});
 
   /// The responder's raw text output for conversation history.
   final String text;
@@ -47,10 +42,10 @@ class Reply {
 /// looking, rather than as an error bubble on the first user message.
 class ResponderReadiness {
   /// The responder is able to serve requests.
-  const ResponderReadiness.ready(this.detail) : isReady = true;
+  const new ready(this.detail) : isReady = true;
 
   /// The responder cannot serve requests; [detail] says what to fix.
-  const ResponderReadiness.notReady(this.detail) : isReady = false;
+  const new notReady(this.detail) : isReady = false;
 
   /// Whether the responder is able to serve requests right now.
   final bool isReady;

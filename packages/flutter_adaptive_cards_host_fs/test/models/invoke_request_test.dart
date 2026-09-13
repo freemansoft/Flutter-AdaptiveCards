@@ -31,10 +31,7 @@ void main() {
     final invoke = InputChangeInvoke(
       inputId: 'city',
       value: 'nyc',
-      dataQuery: DataQuery(
-        dataset: 'cities',
-        parameters: {'country': 'usa'},
-      ),
+      dataQuery: DataQuery(dataset: 'cities', parameters: {'country': 'usa'}),
       cardState: _ThrowingCardState(),
     );
     final req = AdaptiveCardInvokeRequest.fromInputChange(invoke);

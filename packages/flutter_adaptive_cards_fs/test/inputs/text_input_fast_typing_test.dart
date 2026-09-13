@@ -114,8 +114,7 @@ void main() {
       expect(
         controller.selection.baseOffset,
         1,
-        reason:
-            'stale echo must not clobber cursor; fix reads latest value so echo is no-op',
+        reason: 'stale echo must not clobber cursor; fix reads latest value so echo is no-op',
       );
       expect(
         controller.text,
@@ -326,8 +325,7 @@ void main() {
       expect(
         controller.selection.baseOffset,
         1,
-        reason:
-            'stale echo must not clobber cursor on Input.Number; fix is a no-op',
+        reason: 'stale echo must not clobber cursor on Input.Number; fix is a no-op',
       );
       expect(
         controller.text,

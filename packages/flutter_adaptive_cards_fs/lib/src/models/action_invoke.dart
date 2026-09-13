@@ -24,13 +24,13 @@ String? actionIdFromMap(Map<String, dynamic> actionMap) {
 class SubmitActionInvoke {
   /// Creates a submit callback payload with merged [data] and optional
   /// [actionId].
-  const SubmitActionInvoke({
+  const new({
     required this.data,
     this.actionId,
   });
 
   /// Builds from action JSON and collected input [data].
-  factory SubmitActionInvoke.fromActionMap(
+  factory fromActionMap(
     Map<String, dynamic> actionMap,
     Map<String, dynamic> data,
   ) {
@@ -55,14 +55,14 @@ class SubmitActionInvoke {
 class RefreshActionInvoke {
   /// Creates a refresh callback payload with merged [data], [verb], and
   /// [actionId].
-  const RefreshActionInvoke({
+  const new({
     required this.data,
     this.verb,
     this.actionId,
   });
 
   /// Builds from `refresh.action` JSON and collected input [data].
-  factory RefreshActionInvoke.fromActionMap(
+  factory fromActionMap(
     Map<String, dynamic> actionMap,
     Map<String, dynamic> data,
   ) {
@@ -91,14 +91,14 @@ class RefreshActionInvoke {
 class ExecuteActionInvoke {
   /// Creates an execute callback payload with merged [data], [verb], and
   /// [actionId].
-  const ExecuteActionInvoke({
+  const new({
     required this.data,
     this.verb,
     this.actionId,
   });
 
   /// Builds from action JSON and collected input [data].
-  factory ExecuteActionInvoke.fromActionMap(
+  factory fromActionMap(
     Map<String, dynamic> actionMap,
     Map<String, dynamic> data,
   ) {
@@ -123,13 +123,13 @@ class ExecuteActionInvoke {
 /// Payload delivered to the host `onOpenUrl` callback.
 class OpenUrlActionInvoke {
   /// Creates an open-URL callback payload for [url] with optional [actionId].
-  const OpenUrlActionInvoke({
+  const new({
     required this.url,
     this.actionId,
   });
 
   /// Builds from action JSON, using [altUrl] when supplied by selectAction.
-  factory OpenUrlActionInvoke.fromActionMap(
+  factory fromActionMap(
     Map<String, dynamic> actionMap, {
     String? altUrl,
   }) {
@@ -150,13 +150,13 @@ class OpenUrlActionInvoke {
 /// Payload delivered to the host `onOpenUrlDialog` callback.
 class OpenUrlDialogActionInvoke {
   /// Creates an open-URL-in-dialog callback payload for [url].
-  const OpenUrlDialogActionInvoke({
+  const new({
     required this.url,
     this.actionId,
   });
 
   /// Builds from action JSON, using [altUrl] when supplied by selectAction.
-  factory OpenUrlDialogActionInvoke.fromActionMap(
+  factory fromActionMap(
     Map<String, dynamic> actionMap, {
     String? altUrl,
   }) {
@@ -180,7 +180,7 @@ class OpenUrlDialogActionInvoke {
 /// preserved and duplicate header names are allowed.
 class HttpActionHeader {
   /// Creates a header with [name] and resolved [value].
-  const HttpActionHeader({required this.name, required this.value});
+  const new({required this.name, required this.value});
 
   /// Header field name, for example `Content-Type`.
   final String name;
@@ -202,7 +202,7 @@ class HttpActionHeader {
 /// included so hosts can re-derive values if needed.
 class HttpActionInvoke {
   /// Creates an HTTP action payload with already-resolved request fields.
-  const HttpActionInvoke({
+  const new({
     required this.method,
     required this.url,
     required this.headers,
@@ -215,7 +215,7 @@ class HttpActionInvoke {
   ///
   /// `method` is upper-cased; `url`, `body`, and each header `value` have
   /// `{{inputId.value}}` tokens substituted from [inputValues].
-  factory HttpActionInvoke.fromActionMap(
+  factory fromActionMap(
     Map<String, dynamic> actionMap,
     Map<String, dynamic> inputValues,
   ) {
@@ -278,7 +278,7 @@ class HttpActionInvoke {
 /// installed, the library falls back to `onOpenUrl` for an http(s) [value].
 class SigninActionInvoke {
   /// Creates a sign-in callback payload.
-  const SigninActionInvoke({
+  const new({
     required this.value,
     this.connectionName,
     this.actionId,
@@ -286,7 +286,7 @@ class SigninActionInvoke {
 
   /// Builds from an [AuthCardButton] and the parent
   /// [AuthenticationConfig.connectionName].
-  factory SigninActionInvoke.fromButton(
+  factory fromButton(
     AuthCardButton button, {
     String? connectionName,
   }) {
@@ -310,7 +310,7 @@ class SigninActionInvoke {
 /// changes.
 class InputChangeInvoke {
   /// Creates an input-change callback for [inputId] with the new [value].
-  const InputChangeInvoke({
+  const new({
     required this.inputId,
     required this.value,
     required this.cardState,

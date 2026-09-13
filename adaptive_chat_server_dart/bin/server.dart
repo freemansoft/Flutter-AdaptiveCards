@@ -152,7 +152,6 @@ Future<void> main(List<String> arguments) async {
     args['host'] as String,
     int.parse(args['port'] as String),
   );
-  Logger(
-    'adaptive_chat_server_dart',
-  ).info('Serving at http://${server.address.host}:${server.port}');
+  Logger('adaptive_chat_server_dart')
+      .info('Serving at http://${server.address.host}:${server.port}');
 }

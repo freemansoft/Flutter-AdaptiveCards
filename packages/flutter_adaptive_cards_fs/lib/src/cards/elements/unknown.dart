@@ -10,7 +10,7 @@ import 'package:flutter_adaptive_cards_fs/src/widgets/adaptive_error_placeholder
 /// rendered as an [AdaptiveErrorPlaceholder] describing the problem.
 class AdaptiveUnknown extends StatefulWidget with AdaptiveElementWidgetMixin {
   /// Creates a placeholder for an unrecognized element [type].
-  AdaptiveUnknown({
+  new({
     required this.adaptiveMap,
     required this.type,
   }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {

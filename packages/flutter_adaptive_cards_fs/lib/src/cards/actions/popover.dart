@@ -15,7 +15,7 @@ export 'package:flutter_adaptive_cards_fs/src/cards/actions/popover_container.da
 class AdaptiveActionPopover extends StatefulWidget
     with AdaptiveElementWidgetMixin {
   /// Creates an `Action.Popover` widget from [adaptiveMap].
-  AdaptiveActionPopover({
+  new({
     required this.adaptiveMap,
   }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);

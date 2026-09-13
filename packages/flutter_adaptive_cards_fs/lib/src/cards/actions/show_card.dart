@@ -15,7 +15,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class AdaptiveActionShowCard extends ConsumerStatefulWidget
     with AdaptiveElementWidgetMixin {
   /// Creates an `Action.ShowCard` widget from [adaptiveMap].
-  AdaptiveActionShowCard({
+  new({
     required this.adaptiveMap,
   }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);

@@ -61,7 +61,7 @@ typedef ElementCreator = Widget Function(Map<String, dynamic> map);
 class CardTypeRegistry {
   /// Creates a registry with optional custom, removed, and action element
   /// types.
-  const CardTypeRegistry({
+  const new({
     this.removedElements = const [],
     this.addedElements = const {},
     this.addedActions = const {},

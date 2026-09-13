@@ -5,7 +5,7 @@ import 'package:flutter_adaptive_cards_fs/src/hostconfig/theme_color_fallbacks.d
 /// default and subtle foreground colors.
 class ForegroundColorsConfig {
   /// Creates foreground color mappings from explicit values.
-  ForegroundColorsConfig({
+  new({
     required this.defaultColor,
     required this.accent,
     required this.dark,
@@ -16,7 +16,7 @@ class ForegroundColorsConfig {
   });
 
   /// Parses `foregroundColors` from HostConfig JSON.
-  factory ForegroundColorsConfig.fromJson(
+  factory fromJson(
     Map<String, dynamic> json, {
     ForegroundColorsConfig? defaults,
   }) {

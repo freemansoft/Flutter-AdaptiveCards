@@ -9,7 +9,7 @@ import 'package:http/http.dart' as http;
 /// `CARD-ACTION-STATUS`).
 class AdaptiveHttpResult {
   /// Creates a result with [statusCode], lower-cased [headers], and [body].
-  const AdaptiveHttpResult({
+  const new({
     required this.statusCode,
     required this.headers,
     required this.body,
@@ -47,10 +47,8 @@ class HttpAdaptiveHttpExecutor implements AdaptiveHttpExecutor {
   ///
   /// [maxResponseBytes] caps the response body length read into memory
   /// (default 1 MiB) to bound exposure to untrusted endpoints.
-  HttpAdaptiveHttpExecutor({
-    http.Client? client,
-    this.maxResponseBytes = 1024 * 1024,
-  }) : _client = client ?? http.Client();
+  new({http.Client? client, this.maxResponseBytes = 1024 * 1024})
+    : _client = client ?? http.Client();
 
   /// Maximum response body length, in bytes.
   final int maxResponseBytes;

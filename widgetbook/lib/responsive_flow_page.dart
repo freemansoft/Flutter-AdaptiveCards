@@ -12,7 +12,7 @@ import 'package:widgetbook_workspace/widgetbook_card_registry.dart';
 /// reflow between vertical stack (narrow) and a wrapping flow (wide). A second
 /// knob picks which responsive sample to render.
 class ResponsiveFlowPage extends StatelessWidget {
-  const ResponsiveFlowPage({super.key});
+  const new({super.key});
 
   /// Selectable responsive samples (label → asset path). Each file is a copy of
   /// the matching `test/samples/responsive/*.json` fixture used by the package

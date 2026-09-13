@@ -20,7 +20,7 @@ class AdaptiveUriPolicy {
   /// rejected. Set [allowLoopback] / [allowPrivateHosts] for dev scenarios, add
   /// schemes to [allowedSchemes] to permit protocols like `mailto`/`tel`, or
   /// pass [allowedHosts] to restrict to an explicit host allowlist.
-  const AdaptiveUriPolicy({
+  const new({
     this.allowedSchemes = const {'https', 'http'},
     this.allowLoopback = false,
     this.allowPrivateHosts = false,

@@ -1,14 +1,14 @@
 /// HostConfig `imageSet` section controlling default ImageSet image dimensions.
 class ImageSetConfig {
   /// Creates ImageSet size defaults from explicit pixel values.
-  ImageSetConfig({
+  new({
     required this.imageSizeSmall,
     required this.imageSizeMedium,
     required this.imageSizeLarge,
   });
 
   /// Parses `imageSet` from HostConfig JSON.
-  factory ImageSetConfig.fromJson(Map<String, dynamic> json) {
+  factory fromJson(Map<String, dynamic> json) {
     return ImageSetConfig(
       imageSizeSmall: json['imageSizeSmall'] ?? 64,
       imageSizeMedium: json['imageSizeMedium'] ?? 64,

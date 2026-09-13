@@ -9,13 +9,13 @@ import 'package:flutter/foundation.dart';
 @immutable
 class Choice {
   /// One ChoiceSet option; [title] is shown, [value] is submitted.
-  const Choice({
+  const new({
     required this.title,
     required this.value,
   });
 
   /// Parses an Adaptive Cards `Input.Choice` object from card JSON.
-  factory Choice.fromJson(Map<String, dynamic> json) {
+  factory fromJson(Map<String, dynamic> json) {
     return Choice(
       title: json['title'] as String? ?? '',
       value: json['value']?.toString() ?? '',

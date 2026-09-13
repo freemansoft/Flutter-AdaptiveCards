@@ -1,7 +1,7 @@
 /// Merged TextBlock JSON properties and HostConfig TextStylesConfig defaults.
 class ResolvedTextAppearance {
   /// Creates resolved typography defaults for a `TextBlock` element.
-  const ResolvedTextAppearance({
+  const new({
     this.size,
     this.weight,
     this.color,

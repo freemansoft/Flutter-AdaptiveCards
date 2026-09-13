@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import 'package:flutter_adaptive_cards_fs/src/models/choice.dart';
@@ -15,7 +16,7 @@ import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 /// choices before the user taps the field).
 class ChoiceFilter extends StatefulWidget {
   /// Creates a searchable choice picker over [data].
-  const ChoiceFilter({super.key, required this.data, required this.callback});
+  const new({super.key, required this.data, required this.callback});
 
   /// Resolved choices at modal open time.
   final List<Choice>? data;

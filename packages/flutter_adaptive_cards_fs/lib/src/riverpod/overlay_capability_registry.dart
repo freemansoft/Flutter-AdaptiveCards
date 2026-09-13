@@ -53,7 +53,7 @@ enum ElementOverlayField {
   extensionPayload('extensionPayload');
 
   /// Creates a field identifier with host [patchKey] name where applicable.
-  const ElementOverlayField(this.patchKey);
+  new(this.patchKey);
 
   /// Key used in `applyUpdatesFromMap` for this field (not used for extension
   /// payload).
@@ -75,7 +75,7 @@ enum ActionOverlayField {
   iconUrl('iconUrl');
 
   /// Creates a field identifier with host [patchKey] name.
-  const ActionOverlayField(this.patchKey);
+  new(this.patchKey);
 
   /// Key used in `applyUpdatesFromMap` for this field.
   final String patchKey;
@@ -88,7 +88,7 @@ enum ActionOverlayField {
 @immutable
 class OverlayCapabilityRegistry {
   /// Creates a registry scoped to optional [overlayExtensions] on the card.
-  const OverlayCapabilityRegistry({
+  const new({
     this.overlayExtensions = const CardOverlayExtensionRegistry(),
   });
 

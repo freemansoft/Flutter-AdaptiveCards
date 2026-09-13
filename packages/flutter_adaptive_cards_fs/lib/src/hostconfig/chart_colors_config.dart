@@ -5,13 +5,13 @@ import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 /// elements (Adaptive Cards 1.6+).
 class ChartColorsConfig {
   /// Creates chart color settings from explicit values.
-  const ChartColorsConfig({
+  const new({
     required this.defaultPalette,
     required this.defaultColor,
   });
 
   /// Parses `chartColors` from HostConfig JSON.
-  factory ChartColorsConfig.fromJson(Map<String, dynamic> json) {
+  factory fromJson(Map<String, dynamic> json) {
     final List<dynamic>? paletteJson = json['defaultPalette'] as List<dynamic>?;
     final List<Color> palette =
         paletteJson

@@ -6,7 +6,7 @@
 /// fetched.
 sealed class AdaptiveUriValidationResult {
   /// Shared constructor for allowed/denied validation outcomes.
-  const AdaptiveUriValidationResult();
+  const new();
 }
 
 /// The validated URL passed every policy check.
@@ -15,7 +15,7 @@ sealed class AdaptiveUriValidationResult {
 /// string, so the value that was validated is the value that is used.
 class AdaptiveUriAllowed extends AdaptiveUriValidationResult {
   /// Wraps the parsed, policy-approved [uri].
-  const AdaptiveUriAllowed(this.uri);
+  const new(this.uri);
 
   /// The parsed URI that passed validation.
   final Uri uri;
@@ -27,7 +27,7 @@ class AdaptiveUriAllowed extends AdaptiveUriValidationResult {
 /// message or log — it never contains secrets.
 class AdaptiveUriDenied extends AdaptiveUriValidationResult {
   /// Records why the URL was rejected.
-  const AdaptiveUriDenied(this.reason);
+  const new(this.reason);
 
   /// Safe-to-log explanation of the rejection.
   final String reason;
@@ -41,7 +41,7 @@ class AdaptiveUriDenied extends AdaptiveUriValidationResult {
 /// present a consistent message.
 class AdaptiveUriPolicyException implements Exception {
   /// Creates an exception describing why a URL was rejected.
-  const AdaptiveUriPolicyException(this.reason);
+  const new(this.reason);
 
   /// Safe-to-log explanation of the rejection.
   final String reason;

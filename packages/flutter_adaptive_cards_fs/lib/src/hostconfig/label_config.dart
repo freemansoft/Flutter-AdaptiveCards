@@ -3,14 +3,14 @@ import 'package:flutter_adaptive_cards_fs/src/hostconfig/input_label_config.dart
 /// HostConfig `inputs.label` section controlling input label appearance.
 class LabelConfig {
   /// Creates input label settings from explicit values.
-  LabelConfig({
+  new({
     required this.inputSpacing,
     required this.requiredInputs,
     required this.optionalInputs,
   });
 
   /// Parses `inputs.label` from HostConfig JSON.
-  factory LabelConfig.fromJson(Map<String, dynamic> json) {
+  factory fromJson(Map<String, dynamic> json) {
     return LabelConfig(
       inputSpacing: json['inputSpacing']?.toString() ?? 'default',
       requiredInputs: InputLabelConfig.fromJson(json['requiredInputs'] ?? {}),

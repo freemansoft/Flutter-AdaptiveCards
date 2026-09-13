@@ -11,10 +11,10 @@ import 'package:flutter_adaptive_cards_fs/src/hostconfig/fallback_configs.dart';
 /// of the official Adaptive Cards HostConfig schema.
 class ChoiceSetConfig {
   /// Creates compact `Input.ChoiceSet` dropdown settings from explicit values.
-  ChoiceSetConfig({required this.enableSearch, this.requestFocusOnTap});
+  new({required this.enableSearch, this.requestFocusOnTap});
 
   /// Parses `inputs.choiceSet` from HostConfig JSON.
-  factory ChoiceSetConfig.fromJson(Map<String, dynamic> json) {
+  factory fromJson(Map<String, dynamic> json) {
     return ChoiceSetConfig(
       enableSearch:
           json['enableSearch'] as bool? ??

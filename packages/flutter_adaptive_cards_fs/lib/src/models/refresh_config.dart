@@ -4,14 +4,14 @@
 /// See [Refresh](https://learn.microsoft.com/en-us/adaptive-cards/schema-explorer/refresh).
 class RefreshConfig {
   /// Creates refresh metadata from parsed JSON fields.
-  const RefreshConfig({
+  const new({
     this.action,
     this.userIds,
     this.expires,
   });
 
   /// Parses a card `refresh` object map.
-  factory RefreshConfig.fromJson(Map<String, dynamic> json) {
+  factory fromJson(Map<String, dynamic> json) {
     Map<String, dynamic>? action;
     final actionRaw = json['action'];
     if (actionRaw is Map) {

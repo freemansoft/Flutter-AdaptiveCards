@@ -14,7 +14,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class AdaptiveCarousel extends ConsumerStatefulWidget
     with AdaptiveElementWidgetMixin {
   /// Creates a carousel from [adaptiveMap] JSON.
-  AdaptiveCarousel({
+  new({
     required this.adaptiveMap,
   }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
@@ -150,12 +150,10 @@ class AdaptiveCarouselState extends ConsumerState<AdaptiveCarousel>
   }
 
   void _goToPage(int index) {
-    unawaited(
-      pageController.animateToPage(
-        index,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-      ),
+    pageController.animateToPage(
+      index,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
     );
   }
 
@@ -276,7 +274,7 @@ class AdaptiveCarouselState extends ConsumerState<AdaptiveCarousel>
 class AdaptiveCarouselPage extends StatefulWidget
     with AdaptiveElementWidgetMixin {
   /// Creates a carousel page from [adaptiveMap] JSON.
-  AdaptiveCarouselPage({
+  new({
     super.key,
     required this.adaptiveMap,
   }) {
@@ -380,7 +378,7 @@ typedef _SizeCallback = void Function(Size size);
 /// Used by [AdaptiveCarousel] to measure each page's natural height so the
 /// carousel can size itself to the tallest page.
 class _MeasureSize extends SingleChildRenderObjectWidget {
-  const _MeasureSize({required this.onChange, required Widget super.child});
+  const new({required this.onChange, required Widget super.child});
 
   final _SizeCallback onChange;
 
@@ -398,7 +396,7 @@ class _MeasureSize extends SingleChildRenderObjectWidget {
 }
 
 class _MeasureSizeRenderObject extends RenderProxyBox {
-  _MeasureSizeRenderObject(this.onChange);
+  new(this.onChange);
 
   _SizeCallback onChange;
   Size? _oldSize;

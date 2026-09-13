@@ -173,7 +173,7 @@ List<Finding> checkVersionStampConsistency(String probesDir) {
 /// One thing wrong, and whether it should fail the build.
 class Finding {
   /// Creates a finding.
-  const Finding({required this.fatal, required this.message});
+  const new({required this.fatal, required this.message});
 
   /// Whether this fails CI rather than merely printing.
   final bool fatal;

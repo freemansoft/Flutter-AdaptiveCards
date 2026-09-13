@@ -12,7 +12,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class AdaptiveToggle extends ConsumerStatefulWidget
     with AdaptiveElementWidgetMixin {
   /// Creates a toggle input from [adaptiveMap] JSON.
-  AdaptiveToggle({
+  new({
     required this.adaptiveMap,
   }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);

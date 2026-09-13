@@ -16,7 +16,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class AdaptiveImageSet extends ConsumerStatefulWidget
     with AdaptiveElementWidgetMixin {
   /// Creates an `ImageSet` from [adaptiveMap].
-  AdaptiveImageSet({
+  new({
     required this.adaptiveMap,
     required this.supportMarkdown,
   }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {

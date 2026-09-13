@@ -3,6 +3,7 @@
 
 import 'dart:convert';
 import 'dart:math' as math;
+
 import 'package:flutter_adaptive_template_fs/src/ast.dart';
 import 'package:flutter_adaptive_template_fs/src/expression_parser.dart';
 import 'package:flutter_adaptive_template_fs/src/resolver.dart';
@@ -11,7 +12,7 @@ import 'package:intl/intl.dart';
 /// template expression evaluator
 class Evaluator {
   /// create a new evaluator
-  Evaluator(this._rootData) {
+  new(this._rootData) {
     _dataStack.add(_rootData);
     _scopeStack.add({r'$root': _rootData});
   }

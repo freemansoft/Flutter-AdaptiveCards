@@ -5,13 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
-
-- chore: removed the Antigravity section and plugin entry from the README development-tools list. Antigravity is no longer a supported agent for this repo.
-
 ## [0.17.0]
 
 - chore: add consumer-minimal `.pubignore` so pub.dev archives exclude `test/` and other non-consumer files.
+- chore: require Dart SDK ^3.13.0 and Flutter 3.47.4 (FVM pin, CI pins, `very_good_analysis` ^11.0.0). Constructors use the Dart 3.13 abbreviated in-body syntax (`new(...)`, `factory(...)`) and the new formatter output, as required by the lints `very_good_analysis` 11 enables.
+- chore: regenerated three macOS goldens (`table_rounded_corners-base`, `v1_6_carousel`, `v1_6_code_block`) whose rounded-border corner anti-aliasing shifted by 86-88 px under the Flutter 3.47.4 engine. No source change is involved; the same three fail on the unmodified tree under the new SDK.
+- chore: removed the Antigravity section and plugin entry from the README development-tools list. Antigravity is no longer a supported agent for this repo.
 
 ## [0.16.0]
 

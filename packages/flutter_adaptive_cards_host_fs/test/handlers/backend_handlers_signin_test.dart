@@ -136,7 +136,7 @@ void main() {
 }
 
 class _FakeBackendClient implements AdaptiveCardBackendClient {
-  _FakeBackendClient(this.response);
+  new(this.response);
 
   final Map<String, dynamic> response;
 

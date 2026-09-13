@@ -70,10 +70,7 @@ Map<String, dynamic> _conversationRow(Conversation conversation) {
 }
 
 /// Operator snapshot of the running server.
-Map<String, dynamic> buildStatus(
-  ConversationStore store,
-  Responder responder,
-) {
+Map<String, dynamic> buildStatus(ConversationStore store, Responder responder) {
   final conversations = store.listConversations();
   return {
     'responder': _describeResponder(responder),

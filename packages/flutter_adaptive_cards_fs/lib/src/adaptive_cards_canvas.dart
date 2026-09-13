@@ -19,7 +19,7 @@ import 'package:http/http.dart' as http;
 /// Implement or use a built-in provider (memory, JSON string, asset, network).
 abstract class AdaptiveCardContentProvider {
   /// Creates a content provider; subclasses supply load behavior.
-  AdaptiveCardContentProvider();
+  new();
 
   /// Called by the canvas on first build; return the parsed root `AdaptiveCard`
   /// map.
@@ -29,7 +29,7 @@ abstract class AdaptiveCardContentProvider {
 /// Synchronous in-memory card source when JSON is already parsed.
 class MemoryAdaptiveCardContentProvider implements AdaptiveCardContentProvider {
   /// Supplies an already-parsed card map without I/O.
-  MemoryAdaptiveCardContentProvider({required this.content}) : super();
+  new({required this.content}) : super();
 
   /// Parsed root card map supplied to [loadAdaptiveCardContent].
   Map<String, dynamic> content;
@@ -43,7 +43,7 @@ class MemoryAdaptiveCardContentProvider implements AdaptiveCardContentProvider {
 /// Card source that decodes a JSON string at load time.
 class JsonAdaptiveCardContentProvider implements AdaptiveCardContentProvider {
   /// Decodes [jsonString] when [loadAdaptiveCardContent] runs.
-  JsonAdaptiveCardContentProvider({required this.jsonString}) : super();
+  new({required this.jsonString}) : super();
 
   /// Root card JSON text decoded on load.
   String jsonString;
@@ -57,7 +57,7 @@ class JsonAdaptiveCardContentProvider implements AdaptiveCardContentProvider {
 /// Card source that reads JSON from the Flutter asset bundle.
 class AssetAdaptiveCardContentProvider implements AdaptiveCardContentProvider {
   /// Loads card JSON from a Flutter asset via [path].
-  AssetAdaptiveCardContentProvider({required this.path}) : super();
+  new({required this.path}) : super();
 
   /// Bundle path passed to `rootBundle.loadString`.
   String path;
@@ -77,7 +77,7 @@ class AssetAdaptiveCardContentProvider implements AdaptiveCardContentProvider {
 class NetworkAdaptiveCardContentProvider
     implements AdaptiveCardContentProvider {
   /// Fetches card JSON from a remote [url] when content is requested.
-  NetworkAdaptiveCardContentProvider({
+  new({
     required this.url,
     this.uriPolicy = AdaptiveUriPolicy.standard,
     this.fetchPolicy = AdaptiveFetchPolicy.standard,
@@ -114,7 +114,7 @@ class NetworkAdaptiveCardContentProvider
 /// [RawAdaptiveCard].
 class AdaptiveCardsCanvas extends StatefulWidget {
   /// Creates a canvas that loads content from [adaptiveCardContentProvider].
-  const AdaptiveCardsCanvas({
+  const new({
     super.key,
     required this.adaptiveCardContentProvider,
     this.placeholder,
@@ -134,7 +134,7 @@ class AdaptiveCardsCanvas extends StatefulWidget {
   ///
   /// [uriPolicy] / [fetchPolicy] guard the remote fetch against SSRF and
   /// oversized responses; they default to the production-safe presets.
-  AdaptiveCardsCanvas.network({
+  new network({
     super.key,
     this.placeholder,
     this.cardTypeRegistry = const CardTypeRegistry(),
@@ -157,7 +157,7 @@ class AdaptiveCardsCanvas extends StatefulWidget {
        );
 
   /// Convenience constructor for asset-backed card JSON.
-  AdaptiveCardsCanvas.asset({
+  new asset({
     super.key,
     this.placeholder,
     this.cardTypeRegistry = const CardTypeRegistry(),
@@ -176,7 +176,7 @@ class AdaptiveCardsCanvas extends StatefulWidget {
        );
 
   /// Renders an in-memory [content] map without asynchronous loading.
-  AdaptiveCardsCanvas.map({
+  new map({
     super.key,
     this.placeholder,
     this.cardTypeRegistry = const CardTypeRegistry(),
@@ -195,7 +195,7 @@ class AdaptiveCardsCanvas extends StatefulWidget {
        );
 
   /// Convenience constructor for inline JSON text.
-  AdaptiveCardsCanvas.json({
+  new json({
     super.key,
     this.placeholder,
     this.cardTypeRegistry = const CardTypeRegistry(),

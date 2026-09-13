@@ -13,7 +13,7 @@ import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 class AdaptiveActionSubmit extends StatefulWidget
     with AdaptiveElementWidgetMixin {
   /// Creates an `Action.Submit` widget from [adaptiveMap].
-  AdaptiveActionSubmit({
+  new({
     required this.adaptiveMap,
   }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);

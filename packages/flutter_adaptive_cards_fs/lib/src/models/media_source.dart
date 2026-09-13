@@ -9,13 +9,13 @@ import 'package:flutter/foundation.dart';
 @immutable
 class MediaSource {
   /// One playback source for a Media element.
-  const MediaSource({
+  const new({
     required this.url,
     this.mimeType,
   });
 
   /// Parses a Media `sources[]` entry from card JSON.
-  factory MediaSource.fromJson(Map<String, dynamic> json) {
+  factory fromJson(Map<String, dynamic> json) {
     return MediaSource(
       url: json['url'] as String? ?? '',
       mimeType: json['mimeType'] as String?,

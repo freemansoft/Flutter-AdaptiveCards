@@ -5,7 +5,7 @@
 /// before materializing an unbounded body, capping memory/DoS exposure.
 class AdaptiveFetchTooLargeException implements Exception {
   /// Creates an exception recording the [maxBytes] cap that was exceeded.
-  const AdaptiveFetchTooLargeException(this.maxBytes);
+  const new(this.maxBytes);
 
   /// The byte cap that the response body exceeded.
   final int maxBytes;
@@ -22,7 +22,7 @@ class AdaptiveFetchTooLargeException implements Exception {
 /// host needs different bounds.
 class AdaptiveFetchPolicy {
   /// Creates a fetch policy with an optional [maxBytes] cap and [timeout].
-  const AdaptiveFetchPolicy({
+  const new({
     this.maxBytes = 1024 * 1024,
     this.timeout = const Duration(seconds: 15),
   });

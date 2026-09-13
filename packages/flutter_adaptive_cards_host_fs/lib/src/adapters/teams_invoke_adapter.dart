@@ -10,7 +10,7 @@ import 'package:flutter_adaptive_cards_host_fs/src/models/invoke_response.dart';
 /// set `TeamsInvokeAdapter.toMap` as `requestAdapter` and
 /// `TeamsInvokeAdapter.responseFromMap` as `responseParser`.
 class TeamsInvokeAdapter {
-  const TeamsInvokeAdapter._();
+  const new _();
 
   static const _adaptiveCardContentType =
       'application/vnd.microsoft.card.adaptive';
@@ -68,9 +68,7 @@ class TeamsInvokeAdapter {
         return {
           'type': 'invoke',
           'name': 'signin/verifyState',
-          'value': {
-            'state': request.value?.toString(),
-          },
+          'value': {'state': request.value?.toString()},
         };
     }
   }

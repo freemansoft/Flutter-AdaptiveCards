@@ -139,9 +139,9 @@ bool _argumentsRender(Map<String, dynamic>? args) {
 Future<void> main(List<String> argv) async {
   final args = parseProbeArgs(argv, defaultSamples: 2);
   final schema = loadCardSchema();
-  final toolPrompt = File(
-    p.join(probeAssetsDir(), 'card_tool_prompt.txt'),
-  ).readAsStringSync().trim();
+  final toolPrompt = File(p.join(probeAssetsDir(), 'card_tool_prompt.txt'))
+      .readAsStringSync()
+      .trim();
   final cardTool = renderCardTool(schema);
   final client = HttpClient()..idleTimeout = const Duration(minutes: 5);
 

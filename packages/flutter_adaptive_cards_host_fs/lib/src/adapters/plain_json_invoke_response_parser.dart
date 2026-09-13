@@ -5,7 +5,7 @@ import 'package:flutter_adaptive_cards_host_fs/src/models/invoke_response.dart';
 
 /// Parses the default PlainJson invoke response contract.
 class PlainJsonInvokeResponseParser {
-  const PlainJsonInvokeResponseParser._();
+  const new _();
 
   static const _responseType = 'adaptiveCard.invokeResponse';
 
@@ -62,12 +62,7 @@ class PlainJsonInvokeResponseParser {
       }
     }
 
-    return [
-      ...patches,
-      ...errors,
-      ...replacements,
-      ...noOps,
-    ];
+    return [...patches, ...errors, ...replacements, ...noOps];
   }
 
   static AdaptiveCardInvokeEffect _effectFromMap(Map<String, dynamic> map) {

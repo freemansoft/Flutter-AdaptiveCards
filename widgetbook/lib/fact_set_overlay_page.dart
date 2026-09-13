@@ -45,7 +45,7 @@ List<Fact>? factsForPreset(FactSetOverlayPreset preset) {
 final factSetOverlayPageKey = GlobalKey<State<FactSetOverlayPage>>();
 
 class FactSetOverlayPage extends StatefulWidget {
-  const FactSetOverlayPage({super.key});
+  const new({super.key});
 
   @override
   State<FactSetOverlayPage> createState() => _FactSetOverlayPageState();

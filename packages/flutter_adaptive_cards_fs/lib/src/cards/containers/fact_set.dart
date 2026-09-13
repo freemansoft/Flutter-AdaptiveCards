@@ -21,7 +21,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class AdaptiveFactSet extends ConsumerStatefulWidget
     with AdaptiveElementWidgetMixin {
   /// Creates a `FactSet` from [adaptiveMap].
-  AdaptiveFactSet({
+  new({
     required this.adaptiveMap,
   }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);

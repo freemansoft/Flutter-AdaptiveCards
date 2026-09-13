@@ -14,7 +14,7 @@ import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 class AdaptiveActionOpenUrlDialog extends StatefulWidget
     with AdaptiveElementWidgetMixin {
   /// Creates an `Action.OpenUrlDialog` widget from [adaptiveMap].
-  AdaptiveActionOpenUrlDialog({
+  new({
     required this.adaptiveMap,
   }) : super(key: generateAdaptiveWidgetKey(adaptiveMap));
 

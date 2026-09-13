@@ -14,7 +14,7 @@ const _nsPerMs = 1000000;
 /// faithful copy.
 class InteractionStats {
   /// Creates a stats record with token counts and timing breakdown.
-  const InteractionStats({
+  const new({
     required this.promptTokens,
     required this.replyTokens,
     required this.totalMs,

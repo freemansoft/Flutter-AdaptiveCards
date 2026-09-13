@@ -10,7 +10,7 @@ class InheritedAdaptiveCardHandlers extends InheritedWidget {
   ///
   /// Wrap an `AdaptiveCardsCanvas` or `RawAdaptiveCard` subtree so action and
   /// input callbacks are delivered to the host application.
-  const InheritedAdaptiveCardHandlers({
+  const new({
     super.key,
 
     required this.onSubmit,
