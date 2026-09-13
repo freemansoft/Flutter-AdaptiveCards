@@ -22,7 +22,7 @@ import 'package:flutter_adaptive_cards_fs/src/hostconfig/text_styles_config.dart
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/theme_color_fallbacks.dart';
 
 /// How RawAdaptiveCard selects between HostConfigs.light and HostConfigs.dark.
-enum AdaptiveCardBrightnessMode() {
+enum AdaptiveCardBrightnessMode {
   /// Follow Theme brightness (default).
   auto,
 

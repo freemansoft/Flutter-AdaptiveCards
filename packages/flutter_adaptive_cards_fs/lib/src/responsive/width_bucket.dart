@@ -5,7 +5,7 @@ import 'dart:developer' as developer;
 ///
 /// Ordered narrowest → widest; the enum index doubles as the comparison rank
 /// for `atLeast:` / `atMost:` relational matching.
-enum WidthBucket() {
+enum WidthBucket {
   /// Narrowest bucket (e.g. compact phone width).
   veryNarrow,
 

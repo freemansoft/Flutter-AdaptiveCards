@@ -34,6 +34,7 @@ immediately after `super()`.
 class AdaptiveFakeClassName({
   @override required final Map<String, dynamic> adaptiveMap,
 }) extends StatefulWidget with AdaptiveElementWidgetMixin {
+  /// Creates the element from [adaptiveMap] JSON.
   this : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
   }

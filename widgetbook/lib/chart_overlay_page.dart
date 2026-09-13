@@ -8,7 +8,7 @@ import 'package:widgetbook/widgetbook.dart';
 import 'package:widgetbook_workspace/overlay_demo_scaffold.dart';
 import 'package:widgetbook_workspace/widgetbook_card_registry.dart';
 
-enum ChartOverlayTitlePreset() {
+enum ChartOverlayTitlePreset {
   baseline,
   updated,
   hidden,

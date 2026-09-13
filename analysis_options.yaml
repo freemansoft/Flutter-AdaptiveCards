@@ -1,0 +1,4 @@
+# Governs tool/ (every package and app has its own analysis_options.yaml).
+linter:
+  rules:
+    use_declaring_parameters: true

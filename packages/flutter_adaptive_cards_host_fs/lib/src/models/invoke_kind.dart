@@ -1,5 +1,5 @@
 /// Kind of host callback serialized for a backend invoke request.
-enum AdaptiveCardInvokeKind() {
+enum AdaptiveCardInvokeKind {
   /// `Action.Submit` or equivalent submit payload.
   submit,
 

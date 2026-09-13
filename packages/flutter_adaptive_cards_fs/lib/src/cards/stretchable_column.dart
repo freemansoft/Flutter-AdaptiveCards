@@ -1,7 +1,3 @@
-// RenderObject fields are private with public getters/setters (the Flutter
-// idiom), so their constructor params cannot be initializing formals (named
-// params cannot be private).
-
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';

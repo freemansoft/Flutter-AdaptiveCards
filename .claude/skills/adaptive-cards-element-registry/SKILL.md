@@ -73,6 +73,7 @@ import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 class AdaptiveMyElement({
   @override required final Map<String, dynamic> adaptiveMap,
 }) extends StatefulWidget with AdaptiveElementWidgetMixin {
+  /// Creates a MyElement from [adaptiveMap] JSON.
   this : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);  // load id after super()
   }
@@ -219,6 +220,7 @@ Every element must set its `key` deterministically from `adaptiveMap`. The
 
 ```dart
 // In the widget's in-body constructor part:
+/// Creates a MyElement from [adaptiveMap] JSON.
 this : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
   id = loadId(adaptiveMap);
 }

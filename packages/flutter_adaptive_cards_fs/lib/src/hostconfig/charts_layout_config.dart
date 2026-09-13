@@ -116,7 +116,7 @@ class const BarChartLayout({
 }
 
 /// Token for bar group alignment (maps to fl_chart `BarChartAlignment`).
-enum BarChartAlignmentToken() {
+enum BarChartAlignmentToken {
   /// Distribute bars with space around them.
   spaceAround,
 

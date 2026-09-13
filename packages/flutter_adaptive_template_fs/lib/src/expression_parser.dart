@@ -1,7 +1,7 @@
 import 'package:flutter_adaptive_template_fs/src/ast.dart';
 
 /// The type of a lexical token.
-enum TokenType() {
+enum TokenType {
   /// An identifier (e.g., variable or function name).
   identifier,
 

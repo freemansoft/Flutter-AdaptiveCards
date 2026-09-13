@@ -19,7 +19,7 @@ class const GaugeSegment({
 }
 
 /// How the gauge center value is formatted.
-enum GaugeValueFormat() {
+enum GaugeValueFormat {
   /// Display as a percentage of the min–max range (for example `75%`).
   percentage,
 

@@ -63,7 +63,7 @@ const Map<String, dynamic> _trivialTool = {
 };
 
 /// How a model handled the tool channel.
-enum ToolVerdict() {
+enum ToolVerdict {
   /// Calls tools, reaches for the card tool, and its arguments render.
   supported,
 

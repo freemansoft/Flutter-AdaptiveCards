@@ -34,7 +34,7 @@ class const ChartColorsConfig({
 }
 
 /// Named chart palette families from the Teams / Adaptive Cards chart color reference.
-enum ChartColorSetName() {
+enum ChartColorSetName {
   /// HostConfig `chartColors.defaultPalette` or built-in categorical palette.
   defaultPalette,
 

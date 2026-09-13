@@ -13,7 +13,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 /// * https://adaptivecards.microsoft.com/?topic=Chart.VerticalBar
 /// * https://adaptivecards.microsoft.com/?topic=Chart.HorizontalBar.Stacked
 /// * https://adaptivecards.microsoft.com/?topic=Chart.VerticalBar.Grouped
-enum BarChartType() {
+enum BarChartType {
   /// Vertical bar chart (`Chart.VerticalBar`).
   vertical,
 

@@ -89,6 +89,7 @@ See [`docs/optional-packages-and-extensions.md`](docs/optional-packages-and-exte
 - **Functions:** short (<20 lines) and single-purpose.
 - **Logging:** `dart:developer` `log`, never `print`.
 - **Serialization:** models are **hand-written** — `factory X.fromJson(Map<String, dynamic>)` + manual `toJson()`. No `json_serializable`/`json_annotation`, no `@JsonSerializable`, no `.g.dart`. The plugin's `flutter-implement-json-serialization` skill is directionally right, but follow this repo's conventions (Adaptive Cards camelCase keys, null-safe defaults, immutable value types) per **`adaptive-cards-flutter-standard-practices`** — which also covers theming elements from HostConfig rather than `ThemeData`. Element theming detail: **`adaptive-cards-hostconfig-theme`**.
+- **Constructors:** Dart 3.13 primary constructors with declaring parameters (`class const X({required final String id, ...})`); `use_declaring_parameters` is enforced, so never write `this.id` in a primary constructor. Field docs go on the declaring parameters; the constructor doc goes on the in-body `this` declaration (`/// Creates ...` above `this;` or `this : super(...)`), which `public_member_api_docs` requires. Pattern and rationale: **`adaptive-cards-element-registry`**.
 
 ## Sibling directory and file naming
 

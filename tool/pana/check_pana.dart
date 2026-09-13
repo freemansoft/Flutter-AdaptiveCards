@@ -146,13 +146,13 @@ Future<ProcessResult> _runPana(String packageDir) {
   ]);
 }
 
-class _Row {
-  _Row(this.package, this.score, this.floor, {this.missingReason});
-
-  final String package;
-  final PanaScore? score;
-  final int floor;
-  final String? missingReason;
+class _Row(
+  final String package,
+  final PanaScore? score,
+  final int floor, {
+  final String? missingReason,
+}) {
+  this;
 
   bool get passes => missingReason == null && score!.granted >= floor;
 }
@@ -242,21 +242,17 @@ PanaScore parsePanaJson(String jsonText) {
 }
 
 /// Aggregate pana result for one package.
-class PanaScore {
-  PanaScore({
-    required this.granted,
-    required this.max,
-    required this.failedSections,
-  });
-
+class PanaScore({
   /// Points pana awarded across all report sections.
-  final int granted;
+  required final int granted,
 
   /// Points available across all report sections (150 with `--no-dartdoc`).
-  final int max;
+  required final int max,
 
   /// Human-readable `id points/max` for each section that did not pass.
-  final List<String> failedSections;
+  required final List<String> failedSections,
+}) {
+  this;
 }
 
 // ---------------------------------------------------------------------------
