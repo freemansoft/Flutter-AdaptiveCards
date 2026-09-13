@@ -70,14 +70,13 @@ AdaptiveCard(
 
 ```dart
 // Core package — a dumb value holder. It does NO locale resolution.
-class AdaptiveStrings {
-  const AdaptiveStrings({
-    this.progressLabel = 'Progress',
-    this.dialogOk = 'OK',
-    // ...
-  });
-  final String progressLabel;
-  final String dialogOk;
+class const AdaptiveStrings({
+  final String progressLabel = 'Progress',
+  final String dialogOk = 'OK',
+  // ...
+}) {
+  /// All strings default to the library's English chrome.
+  this;
 }
 ```
 

@@ -31,16 +31,12 @@ immediately after `super()`.
 ### Standard element (non-input)
 
 ```dart
-class AdaptiveFakeClassName extends StatefulWidget
-    with AdaptiveElementWidgetMixin {
-  AdaptiveFakeClassName({
-    required this.adaptiveMap,
-  }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
+class AdaptiveFakeClassName({
+  @override required final Map<String, dynamic> adaptiveMap,
+}) extends StatefulWidget with AdaptiveElementWidgetMixin {
+  this : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
   }
-
-  @override
-  final Map<String, dynamic> adaptiveMap;
 
   @override
   late final String id;

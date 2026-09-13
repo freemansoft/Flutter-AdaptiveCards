@@ -13,9 +13,7 @@ action dispatch model — for how actions flow from JSON to execution and why th
 1. Implement the abstract `Generic*` interface you need:
 
 ```dart
-class MySubmitAction implements GenericSubmitAction {
-  const MySubmitAction();
-
+class const MySubmitAction() implements GenericSubmitAction {
   @override
   void tap({
     required BuildContext context,
