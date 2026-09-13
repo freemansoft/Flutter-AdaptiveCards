@@ -1,9 +1,5 @@
 # Changelog
 
-## [Unreleased]
-
-- refactor: classes use Dart 3.13 primary constructors with declaring parameters; field docs sit on the parameters in the class header and constructor docs on the in-body `this` declaration. `use_declaring_parameters` is enforced by `analysis_options.yaml`. No behavior change; public constructor signatures are unchanged.
-
 ## [0.17.0]
 
 - chore: add consumer-minimal `.pubignore` so pub.dev archives exclude `test/` and other non-consumer files.
@@ -14,6 +10,7 @@
   classes) so hosts can assert `find.byType(...)` in widget tests or embed a
   chart outside a card. The existing `flutter_adaptive_charts_fs.dart`
   entrypoint is unchanged.
+- refactor: classes use Dart 3.13 primary constructors with declaring parameters; field docs sit on the parameters in the class header and constructor docs on the in-body `this` declaration. `use_declaring_parameters` is enforced by `analysis_options.yaml`. No behavior change; public constructor signatures are unchanged.
 
 ## [0.16.0]
 
