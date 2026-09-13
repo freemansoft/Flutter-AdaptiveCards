@@ -1,7 +1,7 @@
 name: adaptive_chat_server_dart
 description: Dart/shelf backend for the Adaptive Chat SDUI demo.
 publish_to: none
-version: 0.17.0
+version: 0.18.0
 
 environment:
   sdk: ^3.13.0

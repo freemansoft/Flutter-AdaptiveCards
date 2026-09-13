@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.18.0]
+
+- no changes yet
+
 ## [0.17.0]
 
 - chore: add consumer-minimal `.pubignore` so pub.dev archives exclude `test/`, `coverage/`, and other non-consumer files.
