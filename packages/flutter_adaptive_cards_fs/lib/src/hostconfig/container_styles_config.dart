@@ -3,16 +3,27 @@ import 'package:flutter_adaptive_cards_fs/src/hostconfig/theme_color_fallbacks.d
 
 /// HostConfig `containerStyles` section mapping named container styles to
 /// background and foreground colors.
-class ContainerStylesConfig {
+class ContainerStylesConfig({
+  /// Default container style (`containerStyles.default`).
+  required final ContainerStyleConfig defaultStyle,
+
+  /// Emphasis container style (`containerStyles.emphasis`).
+  required final ContainerStyleConfig emphasis,
+
+  /// Good (success) container style (`containerStyles.good`).
+  final ContainerStyleConfig? good,
+
+  /// Attention (error) container style (`containerStyles.attention`).
+  final ContainerStyleConfig? attention,
+
+  /// Warning container style (`containerStyles.warning`).
+  final ContainerStyleConfig? warning,
+
+  /// Accent container style (`containerStyles.accent`).
+  final ContainerStyleConfig? accent,
+}) {
   /// Creates container style variants from explicit configurations.
-  new({
-    required this.defaultStyle,
-    required this.emphasis,
-    this.good,
-    this.attention,
-    this.warning,
-    this.accent,
-  });
+  this;
 
   /// Parses `containerStyles` from HostConfig JSON.
   factory fromJson(
@@ -56,22 +67,4 @@ class ContainerStylesConfig {
             ),
     );
   }
-
-  /// Default container style (`containerStyles.default`).
-  final ContainerStyleConfig defaultStyle;
-
-  /// Emphasis container style (`containerStyles.emphasis`).
-  final ContainerStyleConfig emphasis;
-
-  /// Good (success) container style (`containerStyles.good`).
-  final ContainerStyleConfig? good;
-
-  /// Attention (error) container style (`containerStyles.attention`).
-  final ContainerStyleConfig? attention;
-
-  /// Warning container style (`containerStyles.warning`).
-  final ContainerStyleConfig? warning;
-
-  /// Accent container style (`containerStyles.accent`).
-  final ContainerStyleConfig? accent;
 }

@@ -4,12 +4,15 @@ import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 
 /// HostConfig foreground color pair (`default` and `subtle`) for a semantic
 /// color name.
-class FontColorConfig {
+class FontColorConfig({
+  /// Primary foreground color (`default`).
+  required final Color defaultColor,
+
+  /// Subtle foreground color used when `isSubtle` is true (`subtle`).
+  required final Color subtleColor,
+}) {
   /// Creates a foreground color pair from explicit values.
-  new({
-    required this.defaultColor,
-    required this.subtleColor,
-  });
+  this;
 
   /// Parses a foreground color object from HostConfig JSON.
   factory fromJson(
@@ -30,10 +33,4 @@ class FontColorConfig {
           base.subtleColor,
     );
   }
-
-  /// Primary foreground color (`default`).
-  final Color defaultColor;
-
-  /// Subtle foreground color used when `isSubtle` is true (`subtle`).
-  final Color subtleColor;
 }

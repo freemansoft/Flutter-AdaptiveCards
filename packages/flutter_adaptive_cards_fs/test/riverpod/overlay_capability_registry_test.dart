@@ -103,7 +103,7 @@ void main() {
     });
 
     test('Chart extension enables extensionPayload when registered', () {
-      final chartRegistry = OverlayCapabilityRegistry(
+      const chartRegistry = OverlayCapabilityRegistry(
         overlayExtensions: CardOverlayExtensionRegistry(
           extensions: [_TestChartExtension()],
         ),
@@ -127,7 +127,7 @@ void main() {
     });
 
     test('Chart extension rejects unknown patch keys', () {
-      final chartRegistry = OverlayCapabilityRegistry(
+      const chartRegistry = OverlayCapabilityRegistry(
         overlayExtensions: CardOverlayExtensionRegistry(
           extensions: [_TestChartExtension()],
         ),
@@ -147,7 +147,7 @@ void main() {
   });
 }
 
-class _TestChartExtension extends ElementOverlayExtension {
+class const _TestChartExtension() extends ElementOverlayExtension {
   @override
   String get id => 'charts';
 

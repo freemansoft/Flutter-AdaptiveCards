@@ -14,10 +14,8 @@ import 'package:test/test.dart';
 // conversationId — the actual bearer credential for reading a transcript —
 // from a status poll.
 
-class _StubResponder implements Responder {
-  new(this._describeImpl);
-  final Map<String, dynamic> Function() _describeImpl;
-
+class _StubResponder(final Map<String, dynamic> Function() _describeImpl)
+    implements Responder {
   @override
   Future<Reply> reply(String text, List<(String, String)> history) async =>
       const Reply(text: 'unused');

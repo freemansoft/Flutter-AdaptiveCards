@@ -9,13 +9,18 @@ import 'package:flutter_adaptive_cards_fs/src/responsive/width_bucket.dart';
 /// Each value is the exclusive upper bound of a bucket (`width < veryNarrowMax`
 /// is `veryNarrow`, and so on). Hosts may override these; absent values fall
 /// back to the Adaptive Cards spec defaults.
-class HostWidthsConfig {
+class HostWidthsConfig({
+  /// Upper bound (exclusive) of the `veryNarrow` bucket.
+  required final int veryNarrowMax,
+
+  /// Upper bound (exclusive) of the `narrow` bucket.
+  required final int narrowMax,
+
+  /// Upper bound (exclusive) of the `standard` bucket; at or above is `wide`.
+  required final int standardMax,
+}) {
   /// Creates breakpoints from explicit pixel upper bounds.
-  new({
-    required this.veryNarrowMax,
-    required this.narrowMax,
-    required this.standardMax,
-  });
+  this;
 
   /// Parses `hostWidthBreakpoints` from HostConfig JSON, defaulting any missing
   /// key to the corresponding spec default in
@@ -30,15 +35,6 @@ class HostWidthsConfig {
       standardMax: (json['standard'] as num?)?.toInt() ?? defaults.standardMax,
     );
   }
-
-  /// Upper bound (exclusive) of the `veryNarrow` bucket.
-  final int veryNarrowMax;
-
-  /// Upper bound (exclusive) of the `narrow` bucket.
-  final int narrowMax;
-
-  /// Upper bound (exclusive) of the `standard` bucket; at or above is `wide`.
-  final int standardMax;
 
   /// Resolves a [WidthBucket] for [width] using [config] (or spec defaults when
   /// [config] is null).

@@ -10,17 +10,13 @@ import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 ///
 /// Renders `Action.Execute` as an elevated button and forwards taps to the host
 /// via [GenericExecuteAction].
-class AdaptiveActionExecute extends StatefulWidget
-    with AdaptiveElementWidgetMixin {
+class AdaptiveActionExecute({
+  @override required final Map<String, dynamic> adaptiveMap,
+}) extends StatefulWidget with AdaptiveElementWidgetMixin {
   /// Creates an `Action.Execute` widget from [adaptiveMap].
-  new({
-    required this.adaptiveMap,
-  }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
+  this : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
   }
-
-  @override
-  final Map<String, dynamic> adaptiveMap;
 
   @override
   late final String id;

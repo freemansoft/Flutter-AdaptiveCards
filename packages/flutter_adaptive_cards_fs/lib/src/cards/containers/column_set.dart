@@ -10,24 +10,19 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 /// https://learn.microsoft.com/en-us/adaptive-cards/schema-explorer/column-set
 ///
 /// Renders a `ColumnSet` as a horizontal row of [AdaptiveColumn] children.
-class AdaptiveColumnSet extends ConsumerStatefulWidget
-    with AdaptiveElementWidgetMixin {
+class AdaptiveColumnSet({
+  @override required final Map<String, dynamic> adaptiveMap,
+
+  /// Whether nested text elements may render markdown.
+  required final bool supportMarkdown,
+}) extends ConsumerStatefulWidget with AdaptiveElementWidgetMixin {
   /// Creates a `ColumnSet` from [adaptiveMap].
-  new({
-    required this.adaptiveMap,
-    required this.supportMarkdown,
-  }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
+  this : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
   }
 
   @override
-  final Map<String, dynamic> adaptiveMap;
-
-  @override
   late final String id;
-
-  /// Whether nested text elements may render markdown.
-  final bool supportMarkdown;
 
   @override
   AdaptiveColumnSetState createState() => AdaptiveColumnSetState();

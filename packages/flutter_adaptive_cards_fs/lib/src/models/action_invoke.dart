@@ -21,13 +21,17 @@ String? actionIdFromMap(Map<String, dynamic> actionMap) {
 ///
 /// Contains merged action `data` and input values in `data`, plus optional
 /// author-defined `actionId` from the action JSON.
-class SubmitActionInvoke {
+class const SubmitActionInvoke({
+  /// Merged `Action.Submit.data` and collected input values (inputs win on
+  /// key collision).
+  required final Map<String, dynamic> data,
+
+  /// Author-defined action `id` from card JSON, when present.
+  final String? actionId,
+}) {
   /// Creates a submit callback payload with merged [data] and optional
   /// [actionId].
-  const new({
-    required this.data,
-    this.actionId,
-  });
+  this;
 
   /// Builds from action JSON and collected input [data].
   factory fromActionMap(
@@ -39,27 +43,26 @@ class SubmitActionInvoke {
       actionId: actionIdFromMap(actionMap),
     );
   }
-
-  /// Merged `Action.Submit.data` and collected input values (inputs win on
-  /// key collision).
-  final Map<String, dynamic> data;
-
-  /// Author-defined action `id` from card JSON, when present.
-  final String? actionId;
 }
 
 /// Payload delivered to the host `onRefresh` callback.
 ///
 /// Wraps the nested `refresh.action` map plus merged input values. When no
 /// `onRefresh` handler is installed, the library falls back to `onExecute`.
-class RefreshActionInvoke {
+class const RefreshActionInvoke({
+  /// Merged action `data` and collected input values (inputs win on key
+  /// collision).
+  required final Map<String, dynamic> data,
+
+  /// Verb from the nested `Action.Execute` map.
+  final String? verb,
+
+  /// Author-defined action `id` from the nested action JSON, when present.
+  final String? actionId,
+}) {
   /// Creates a refresh callback payload with merged [data], [verb], and
   /// [actionId].
-  const new({
-    required this.data,
-    this.verb,
-    this.actionId,
-  });
+  this;
 
   /// Builds from `refresh.action` JSON and collected input [data].
   factory fromActionMap(
@@ -72,30 +75,26 @@ class RefreshActionInvoke {
       actionId: actionIdFromMap(actionMap),
     );
   }
-
-  /// Merged action `data` and collected input values (inputs win on key
-  /// collision).
-  final Map<String, dynamic> data;
-
-  /// Verb from the nested `Action.Execute` map.
-  final String? verb;
-
-  /// Author-defined action `id` from the nested action JSON, when present.
-  final String? actionId;
 }
 
 /// Payload delivered to the host `onExecute` callback.
 ///
 /// Contains merged action `data` and input values in `data`, plus optional
 /// `verb` and author-defined `actionId` from the action JSON.
-class ExecuteActionInvoke {
+class const ExecuteActionInvoke({
+  /// Merged `Action.Execute.data` and collected input values (inputs win on
+  /// key collision).
+  required final Map<String, dynamic> data,
+
+  /// Card author-defined verb from action JSON (`verb` property).
+  final String? verb,
+
+  /// Author-defined action `id` from card JSON, when present.
+  final String? actionId,
+}) {
   /// Creates an execute callback payload with merged [data], [verb], and
   /// [actionId].
-  const new({
-    required this.data,
-    this.verb,
-    this.actionId,
-  });
+  this;
 
   /// Builds from action JSON and collected input [data].
   factory fromActionMap(
@@ -108,25 +107,18 @@ class ExecuteActionInvoke {
       actionId: actionIdFromMap(actionMap),
     );
   }
-
-  /// Merged `Action.Execute.data` and collected input values (inputs win on
-  /// key collision).
-  final Map<String, dynamic> data;
-
-  /// Card author-defined verb from action JSON (`verb` property).
-  final String? verb;
-
-  /// Author-defined action `id` from card JSON, when present.
-  final String? actionId;
 }
 
 /// Payload delivered to the host `onOpenUrl` callback.
-class OpenUrlActionInvoke {
+class const OpenUrlActionInvoke({
+  /// URL from action JSON (or `altUrl` when supplied by selectAction routing).
+  required final String url,
+
+  /// Author-defined action `id` from card JSON, when present.
+  final String? actionId,
+}) {
   /// Creates an open-URL callback payload for [url] with optional [actionId].
-  const new({
-    required this.url,
-    this.actionId,
-  });
+  this;
 
   /// Builds from action JSON, using [altUrl] when supplied by selectAction.
   factory fromActionMap(
@@ -139,21 +131,18 @@ class OpenUrlActionInvoke {
       actionId: actionIdFromMap(actionMap),
     );
   }
-
-  /// URL from action JSON (or `altUrl` when supplied by selectAction routing).
-  final String url;
-
-  /// Author-defined action `id` from card JSON, when present.
-  final String? actionId;
 }
 
 /// Payload delivered to the host `onOpenUrlDialog` callback.
-class OpenUrlDialogActionInvoke {
+class const OpenUrlDialogActionInvoke({
+  /// URL from action JSON (or `altUrl` when supplied by selectAction routing).
+  required final String url,
+
+  /// Author-defined action `id` from card JSON, when present.
+  final String? actionId,
+}) {
   /// Creates an open-URL-in-dialog callback payload for [url].
-  const new({
-    required this.url,
-    this.actionId,
-  });
+  this;
 
   /// Builds from action JSON, using [altUrl] when supplied by selectAction.
   factory fromActionMap(
@@ -166,27 +155,21 @@ class OpenUrlDialogActionInvoke {
       actionId: actionIdFromMap(actionMap),
     );
   }
-
-  /// URL from action JSON (or `altUrl` when supplied by selectAction routing).
-  final String url;
-
-  /// Author-defined action `id` from card JSON, when present.
-  final String? actionId;
 }
 
 /// A single HTTP header carried by an [HttpActionInvoke].
 ///
 /// Headers are kept as an ordered list (rather than a map) so author order is
 /// preserved and duplicate header names are allowed.
-class HttpActionHeader {
-  /// Creates a header with [name] and resolved [value].
-  const new({required this.name, required this.value});
-
+class const HttpActionHeader({
   /// Header field name, for example `Content-Type`.
-  final String name;
+  required final String name,
 
   /// Header value, after `{{inputId.value}}` substitution.
-  final String value;
+  required final String value,
+}) {
+  /// Creates a header with [name] and resolved [value].
+  this;
 }
 
 /// Payload delivered to the host `onHttp` callback for `Action.Http`.
@@ -200,16 +183,27 @@ class HttpActionHeader {
 /// delivering this payload, so hosts receive request-ready values and never
 /// re-implement the substitution mini-language. The raw [inputValues] map is
 /// included so hosts can re-derive values if needed.
-class HttpActionInvoke {
+class const HttpActionInvoke({
+  /// HTTP method, upper-cased (`GET` or `POST`).
+  required final String method,
+
+  /// Target URL, after `{{inputId.value}}` substitution.
+  required final String url,
+
+  /// Request headers in author order, with values substituted.
+  required final List<HttpActionHeader> headers,
+
+  /// Raw collected input values, before substitution.
+  required final Map<String, dynamic> inputValues,
+
+  /// Request body, after substitution; `null` when the action has no `body`.
+  final String? body,
+
+  /// Author-defined action `id` from card JSON, when present.
+  final String? actionId,
+}) {
   /// Creates an HTTP action payload with already-resolved request fields.
-  const new({
-    required this.method,
-    required this.url,
-    required this.headers,
-    required this.inputValues,
-    this.body,
-    this.actionId,
-  });
+  this;
 
   /// Builds from `Action.Http` JSON and collected [inputValues].
   ///
@@ -250,24 +244,6 @@ class HttpActionInvoke {
       actionId: actionIdFromMap(actionMap),
     );
   }
-
-  /// HTTP method, upper-cased (`GET` or `POST`).
-  final String method;
-
-  /// Target URL, after `{{inputId.value}}` substitution.
-  final String url;
-
-  /// Request body, after substitution; `null` when the action has no `body`.
-  final String? body;
-
-  /// Request headers in author order, with values substituted.
-  final List<HttpActionHeader> headers;
-
-  /// Raw collected input values, before substitution.
-  final Map<String, dynamic> inputValues;
-
-  /// Author-defined action `id` from card JSON, when present.
-  final String? actionId;
 }
 
 /// Payload delivered to the host `onSignin` callback for a card
@@ -276,13 +252,18 @@ class HttpActionInvoke {
 /// [value] is the sign-in URL the host opens; [connectionName] is the OAuth
 /// connection the host uses to complete sign-in. When no `onSignin` handler is
 /// installed, the library falls back to `onOpenUrl` for an http(s) [value].
-class SigninActionInvoke {
+class const SigninActionInvoke({
+  /// Sign-in URL / action value from the button JSON.
+  required final String value,
+
+  /// OAuth connection name from the parent `authentication` object.
+  final String? connectionName,
+
+  /// Author-defined action `id`, when present. Reserved for future use.
+  final String? actionId,
+}) {
   /// Creates a sign-in callback payload.
-  const new({
-    required this.value,
-    this.connectionName,
-    this.actionId,
-  });
+  this;
 
   /// Builds from an [AuthCardButton] and the parent
   /// [AuthenticationConfig.connectionName].
@@ -295,37 +276,23 @@ class SigninActionInvoke {
       connectionName: connectionName,
     );
   }
-
-  /// Sign-in URL / action value from the button JSON.
-  final String value;
-
-  /// OAuth connection name from the parent `authentication` object.
-  final String? connectionName;
-
-  /// Author-defined action `id`, when present. Reserved for future use.
-  final String? actionId;
 }
 
 /// Payload delivered to the host `onChange` callback when an input value
 /// changes.
-class InputChangeInvoke {
-  /// Creates an input-change callback for [inputId] with the new [value].
-  const new({
-    required this.inputId,
-    required this.value,
-    required this.cardState,
-    this.dataQuery,
-  });
-
+class const InputChangeInvoke({
   /// Input element `id` from card JSON.
-  final String inputId;
+  required final String inputId,
 
   /// New input value (ChoiceSet stores choice `value`, not title).
-  final dynamic value;
-
-  /// Parsed `choices.data` when the input defines a Data.Query.
-  final DataQuery? dataQuery;
+  required final dynamic value,
 
   /// Card state for host APIs such as `applyUpdates`.
-  final RawAdaptiveCardState cardState;
+  required final RawAdaptiveCardState cardState,
+
+  /// Parsed `choices.data` when the input defines a Data.Query.
+  final DataQuery? dataQuery,
+}) {
+  /// Creates an input-change callback for [inputId] with the new [value].
+  this;
 }

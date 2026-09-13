@@ -1,7 +1,6 @@
 // RenderObject fields are private with public getters/setters (the Flutter
 // idiom), so their constructor params cannot be initializing formals (named
 // params cannot be private).
-// ignore_for_file: prefer_initializing_formals
 
 import 'dart:math' as math;
 
@@ -63,18 +62,12 @@ class _StretchParentData extends ContainerBoxParentData<RenderBox> {
   bool stretch = false;
 }
 
-class _StretchColumn extends MultiChildRenderObjectWidget {
-  const new({
-    required this.crossAxisAlignment,
-    required this.mainAxisSize,
-    required this.stretchFlags,
-    required super.children,
-  });
-
-  final CrossAxisAlignment crossAxisAlignment;
-  final MainAxisSize mainAxisSize;
-  final List<bool> stretchFlags;
-
+class const _StretchColumn({
+  required final CrossAxisAlignment crossAxisAlignment,
+  required final MainAxisSize mainAxisSize,
+  required final List<bool> stretchFlags,
+  required super.children,
+}) extends MultiChildRenderObjectWidget {
   @override
   RenderStretchColumn createRenderObject(BuildContext context) =>
       RenderStretchColumn(
@@ -104,24 +97,20 @@ class _StretchColumn extends MultiChildRenderObjectWidget {
 /// Reports intrinsic dimensions (treating stretch children as `auto`), so it is
 /// safe inside `IntrinsicHeight` — the context a plain `LayoutBuilder` cannot
 /// support.
-class RenderStretchColumn extends RenderBox
+class RenderStretchColumn({
+  required var CrossAxisAlignment _crossAxisAlignment,
+  required var MainAxisSize _mainAxisSize,
+  required var List<bool> _stretchFlags,
+  required var TextDirection _textDirection,
+}) extends RenderBox
     with
         ContainerRenderObjectMixin<RenderBox, _StretchParentData>,
         RenderBoxContainerDefaultsMixin<RenderBox, _StretchParentData> {
   /// Creates a stretch-aware vertical stack render object.
-  new({
-    required CrossAxisAlignment crossAxisAlignment,
-    required MainAxisSize mainAxisSize,
-    required List<bool> stretchFlags,
-    required TextDirection textDirection,
-  }) : _crossAxisAlignment = crossAxisAlignment,
-       _mainAxisSize = mainAxisSize,
-       _stretchFlags = stretchFlags,
-       _textDirection = textDirection;
+  this;
 
   /// Horizontal alignment of children (see [Column.crossAxisAlignment]).
   CrossAxisAlignment get crossAxisAlignment => _crossAxisAlignment;
-  CrossAxisAlignment _crossAxisAlignment;
   set crossAxisAlignment(CrossAxisAlignment value) {
     if (_crossAxisAlignment == value) return;
     _crossAxisAlignment = value;
@@ -131,7 +120,6 @@ class RenderStretchColumn extends RenderBox
   /// Whether the stack tries to fill the bounded main axis (see
   /// [Column.mainAxisSize]).
   MainAxisSize get mainAxisSize => _mainAxisSize;
-  MainAxisSize _mainAxisSize;
   set mainAxisSize(MainAxisSize value) {
     if (_mainAxisSize == value) return;
     _mainAxisSize = value;
@@ -140,7 +128,6 @@ class RenderStretchColumn extends RenderBox
 
   /// Per-child `height: "stretch"` flags, index-aligned with the children.
   List<bool> get stretchFlags => _stretchFlags;
-  List<bool> _stretchFlags;
   set stretchFlags(List<bool> value) {
     _stretchFlags = value;
     markNeedsLayout();
@@ -148,7 +135,6 @@ class RenderStretchColumn extends RenderBox
 
   /// Text direction used to resolve cross-axis `start`/`end`.
   TextDirection get textDirection => _textDirection;
-  TextDirection _textDirection;
   set textDirection(TextDirection value) {
     if (_textDirection == value) return;
     _textDirection = value;

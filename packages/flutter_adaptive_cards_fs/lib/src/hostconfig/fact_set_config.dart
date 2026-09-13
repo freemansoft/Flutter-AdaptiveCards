@@ -1,15 +1,28 @@
 /// HostConfig `factSet.title` or `factSet.value` text styling defaults.
-class FactSetTextConfig {
+class FactSetTextConfig({
+  /// Font size token for fact title or value text.
+  required final String size,
+
+  /// Font weight token for fact title or value text.
+  required final String weight,
+
+  /// Foreground color token for fact title or value text.
+  required final String color,
+
+  /// Font family token (`default` or `monospace`).
+  required final String fontType,
+
+  /// Whether fact text uses the subtle color variant.
+  required final bool isSubtle,
+
+  /// Whether fact text wraps to multiple lines.
+  required final bool wrap,
+
+  /// Maximum width in pixels before wrapping; `0` means no limit.
+  required final int maxWidth,
+}) {
   /// Creates fact-set text settings from explicit values.
-  new({
-    required this.size,
-    required this.weight,
-    required this.color,
-    required this.fontType,
-    required this.isSubtle,
-    required this.wrap,
-    required this.maxWidth,
-  });
+  this;
 
   /// Parses a fact-set text object from HostConfig JSON.
   factory fromJson(
@@ -26,38 +39,22 @@ class FactSetTextConfig {
       maxWidth: json['maxWidth'] as int? ?? defaults?.maxWidth ?? 0,
     );
   }
-
-  /// Font size token for fact title or value text.
-  final String size;
-
-  /// Font weight token for fact title or value text.
-  final String weight;
-
-  /// Foreground color token for fact title or value text.
-  final String color;
-
-  /// Font family token (`default` or `monospace`).
-  final String fontType;
-
-  /// Whether fact text uses the subtle color variant.
-  final bool isSubtle;
-
-  /// Whether fact text wraps to multiple lines.
-  final bool wrap;
-
-  /// Maximum width in pixels before wrapping; `0` means no limit.
-  final int maxWidth;
 }
 
 /// HostConfig `factSet` section controlling FactSet title/value typography
 /// and row spacing.
-class FactSetConfig {
+class FactSetConfig({
+  /// Default typography for fact titles (`factSet.title`).
+  required final FactSetTextConfig title,
+
+  /// Default typography for fact values (`factSet.value`).
+  required final FactSetTextConfig value,
+
+  /// Vertical spacing in pixels between fact rows (`factSet.spacing`).
+  required final int spacing,
+}) {
   /// Creates fact-set settings from explicit values.
-  new({
-    required this.title,
-    required this.value,
-    required this.spacing,
-  });
+  this;
 
   /// Parses `factSet` from HostConfig JSON.
   factory fromJson(Map<String, dynamic> json) {
@@ -89,13 +86,4 @@ class FactSetConfig {
       spacing: json['spacing'] as int? ?? 10,
     );
   }
-
-  /// Default typography for fact titles (`factSet.title`).
-  final FactSetTextConfig title;
-
-  /// Default typography for fact values (`factSet.value`).
-  final FactSetTextConfig value;
-
-  /// Vertical spacing in pixels between fact rows (`factSet.spacing`).
-  final int spacing;
 }

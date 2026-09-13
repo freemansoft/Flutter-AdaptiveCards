@@ -1,38 +1,31 @@
 import 'package:flutter/material.dart';
 
 /// One entry in a chart legend row.
-class ChartLegendEntry {
-  /// Creates a legend swatch and label pair.
-  const new({
-    required this.label,
-    required this.color,
-  });
-
+class const ChartLegendEntry({
   /// Display label (series name or slice legend).
-  final String label;
+  required final String label,
 
   /// Swatch color for this legend entry.
-  final Color color;
+  required final Color color,
+}) {
+  /// Creates a legend swatch and label pair.
+  this;
 }
 
 /// Shared title, chart body, and optional legend layout for chart elements.
-class ChartChrome extends StatelessWidget {
-  /// Wraps [chart] with an optional [title] and [legendEntries].
-  const new({
-    required this.chart,
-    this.title,
-    this.legendEntries = const [],
-    super.key,
-  });
+class const ChartChrome({
+  /// The fl_chart (or custom) chart widget.
+  required final Widget chart,
 
   /// Optional chart title from element JSON `title`.
-  final String? title;
-
-  /// The fl_chart (or custom) chart widget.
-  final Widget chart;
+  final String? title,
 
   /// Legend rows shown when `showLegend` is true.
-  final List<ChartLegendEntry> legendEntries;
+  final List<ChartLegendEntry> legendEntries = const [],
+  super.key,
+}) extends StatelessWidget {
+  /// Wraps [chart] with an optional [title] and [legendEntries].
+  this;
 
   @override
   Widget build(BuildContext context) {

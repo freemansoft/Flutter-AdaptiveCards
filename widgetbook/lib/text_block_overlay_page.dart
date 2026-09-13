@@ -16,9 +16,7 @@ final textBlockOverlayPageKey = GlobalKey<State<TextBlockOverlayPage>>();
 
 /// Widgetbook page that applies knob-driven text to the `bodyText` element
 /// via [RawAdaptiveCardState.setText].
-class TextBlockOverlayPage extends StatefulWidget {
-  const new({super.key});
-
+class const TextBlockOverlayPage({super.key}) extends StatefulWidget {
   @override
   State<TextBlockOverlayPage> createState() => _TextBlockOverlayPageState();
 }

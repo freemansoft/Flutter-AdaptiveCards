@@ -10,15 +10,16 @@ import 'package:flutter/material.dart';
 void main() => runApp(const AdaptiveChatApp());
 
 /// Root of the Adaptive Chat SDUI demo.
-class AdaptiveChatApp extends StatelessWidget {
+class const AdaptiveChatApp({
+  /// Locale override, if any.
+  final Locale? locale,
+  super.key,
+}) extends StatelessWidget {
   /// Creates the app.
   ///
   /// [locale] overrides the device locale; tests pass it to force a
   /// deterministic language instead of relying on the test runner's locale.
-  const new({this.locale, super.key});
-
-  /// Locale override, if any.
-  final Locale? locale;
+  this;
 
   @override
   Widget build(BuildContext context) {
@@ -37,9 +38,7 @@ class AdaptiveChatApp extends StatelessWidget {
 /// resolved [Locale] are reachable — i.e. below [MaterialApp] — so the
 /// bubble role labels sent to the backend, and the `language` tag, follow
 /// the app's locale from the very first `startConversation()` call.
-class _ChatHome extends StatefulWidget {
-  const new();
-
+class const _ChatHome() extends StatefulWidget {
   @override
   State<_ChatHome> createState() => _ChatHomeState();
 }

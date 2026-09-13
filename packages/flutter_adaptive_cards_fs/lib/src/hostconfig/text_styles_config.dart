@@ -2,12 +2,15 @@ import 'package:flutter_adaptive_cards_fs/src/hostconfig/text_style_config.dart'
 
 /// HostConfig `textStyles` section mapping named text styles to default
 /// typography.
-class TextStylesConfig {
+class TextStylesConfig({
+  /// Default typography for heading text (`textStyles.heading`).
+  required final TextStyleConfig heading,
+
+  /// Default typography for column header text (`textStyles.columnHeader`).
+  required final TextStyleConfig columnHeader,
+}) {
   /// Creates named text style defaults from explicit values.
-  new({
-    required this.heading,
-    required this.columnHeader,
-  });
+  this;
 
   /// Parses `textStyles` from HostConfig JSON.
   factory fromJson(Map<String, dynamic> json) {
@@ -34,10 +37,4 @@ class TextStylesConfig {
       ),
     );
   }
-
-  /// Default typography for heading text (`textStyles.heading`).
-  final TextStyleConfig heading;
-
-  /// Default typography for column header text (`textStyles.columnHeader`).
-  final TextStyleConfig columnHeader;
 }

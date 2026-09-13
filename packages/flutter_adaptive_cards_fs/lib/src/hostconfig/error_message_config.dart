@@ -1,11 +1,16 @@
 /// HostConfig `inputs.errorMessage` section controlling validation error text.
-class ErrorMessageConfig {
+class ErrorMessageConfig({
+  /// Font size token for input validation error text.
+  required final String size,
+
+  /// Spacing token above/below validation error text.
+  required final String spacing,
+
+  /// Font weight token for validation error text.
+  required final String weight,
+}) {
   /// Creates error-message typography settings from explicit values.
-  new({
-    required this.size,
-    required this.spacing,
-    required this.weight,
-  });
+  this;
 
   /// Parses `inputs.errorMessage` from HostConfig JSON.
   factory fromJson(Map<String, dynamic> json) {
@@ -15,13 +20,4 @@ class ErrorMessageConfig {
       weight: json['weight']?.toString() ?? 'default',
     );
   }
-
-  /// Font size token for input validation error text.
-  final String size;
-
-  /// Spacing token above/below validation error text.
-  final String spacing;
-
-  /// Font weight token for validation error text.
-  final String weight;
 }

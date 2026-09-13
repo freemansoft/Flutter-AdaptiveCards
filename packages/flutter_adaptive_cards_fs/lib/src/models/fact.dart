@@ -8,12 +8,15 @@ import 'package:flutter_adaptive_cards_fs/src/utils/date_time_utils.dart';
 /// * https://adaptivecards.io/explorer/Fact.html
 /// * https://learn.microsoft.com/en-us/adaptive-cards/schema-explorer/fact
 @immutable
-class Fact {
+class const Fact({
+  /// FactSet label column.
+  required final String title,
+
+  /// FactSet value column (displayed and submitted text).
+  required final String value,
+}) {
   /// One FactSet row; [title] is the label column, [value] the value column.
-  const new({
-    required this.title,
-    required this.value,
-  });
+  this;
 
   /// Parses a FactSet fact from card JSON; expands DATE/TIME templates in
   /// strings.
@@ -23,12 +26,6 @@ class Fact {
       value: DateTimeUtils.formatText(json['value'] as String? ?? ''),
     );
   }
-
-  /// FactSet label column.
-  final String title;
-
-  /// FactSet value column (displayed and submitted text).
-  final String value;
 
   /// Serializes for `RawAdaptiveCardState.setFacts` overlays and resolved JSON.
   Map<String, dynamic> toJson() {

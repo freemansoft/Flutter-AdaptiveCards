@@ -17,9 +17,9 @@ import 'package:widgetbook_workspace/widgetbook_card_registry.dart';
 /// - `cornerRadius` (double slider) is used to *construct* the [HostConfig]
 ///   passed to [RawAdaptiveCard.fromMap], proving the radius comes from
 ///   HostConfig rather than being hardcoded per element.
-class RoundedCornersKnobsPage extends StatefulWidget {
+class const RoundedCornersKnobsPage({super.key}) extends StatefulWidget {
   /// Creates the rounded-corners knobs demo page.
-  const new({super.key});
+  this;
 
   @override
   State<RoundedCornersKnobsPage> createState() =>

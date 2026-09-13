@@ -4,9 +4,7 @@ import 'package:flutter_adaptive_cards_host_fs/src/models/invoke_effect.dart';
 import 'package:flutter_adaptive_cards_host_fs/src/models/invoke_response.dart';
 
 /// Parses the default PlainJson invoke response contract.
-class PlainJsonInvokeResponseParser {
-  const new _();
-
+class const PlainJsonInvokeResponseParser._() {
   static const _responseType = 'adaptiveCard.invokeResponse';
 
   /// Converts decoded POST JSON to ordered [AdaptiveCardInvokeEffect]s for

@@ -9,17 +9,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 /// https://adaptivecards.io/explorer/Input.Toggle.html
 /// https://learn.microsoft.com/en-us/adaptive-cards/schema-explorer/input-toggle
 ///
-class AdaptiveToggle extends ConsumerStatefulWidget
-    with AdaptiveElementWidgetMixin {
+class AdaptiveToggle({
+  @override required final Map<String, dynamic> adaptiveMap,
+}) extends ConsumerStatefulWidget with AdaptiveElementWidgetMixin {
   /// Creates a toggle input from [adaptiveMap] JSON.
-  new({
-    required this.adaptiveMap,
-  }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
+  this : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
   }
-
-  @override
-  final Map<String, dynamic> adaptiveMap;
 
   @override
   late final String id;

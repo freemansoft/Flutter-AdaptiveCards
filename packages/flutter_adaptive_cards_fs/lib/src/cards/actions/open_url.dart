@@ -10,17 +10,13 @@ import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 ///
 /// Renders `Action.OpenUrl` as an elevated button and opens the URL via the
 /// host [GenericActionOpenUrl] handler.
-class AdaptiveActionOpenUrl extends StatefulWidget
-    with AdaptiveElementWidgetMixin {
+class AdaptiveActionOpenUrl({
+  @override required final Map<String, dynamic> adaptiveMap,
+}) extends StatefulWidget with AdaptiveElementWidgetMixin {
   /// Creates an `Action.OpenUrl` widget from [adaptiveMap].
-  new({
-    required this.adaptiveMap,
-  }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
+  this : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
   }
-
-  @override
-  final Map<String, dynamic> adaptiveMap;
 
   @override
   late final String id;

@@ -30,46 +30,37 @@ import 'check_results.dart';
 import 'probe_results.dart';
 
 /// One rendered row of the shape-coverage table.
-class ShapeRow {
-  /// Creates a row.
-  const new({
-    required this.model,
-    required this.weights,
-    required this.cold,
-    required this.warm,
-    required this.preSeed,
-    required this.cascade,
-    required this.eroded,
-    this.seedGain = 0,
-  });
-
+class const ShapeRow({
   /// Model tag, as the table prints it.
-  final String model;
+  required final String model,
 
   /// Weight column, carried over verbatim — it comes from Ollama, not a probe.
-  final String weights;
+  required final String weights,
 
   /// Cold-start shapes.
-  final int cold;
+  required final int cold,
 
   /// With-history shapes, the figure the file says to read first.
-  final int warm;
+  required final int warm,
 
   /// With-history shapes without the card seed.
-  final int preSeed;
+  required final int preSeed,
 
   /// Cascade result, already formatted (`3/3`, `n/a`).
-  final String cascade;
+  required final String cascade,
+
+  /// Shapes that pass cold and fail warm, already formatted.
+  required final String eroded,
 
   /// Shapes the seed is worth: with-history seeded minus with-history unaided.
   ///
   /// Its own column because it answers a question the score cannot — whether a
   /// model earned its number or was carried to it. A host deciding whether to
   /// pass `--seed-card-file` reads this, not the score.
-  final int seedGain;
-
-  /// Shapes that pass cold and fail warm, already formatted.
-  final String eroded;
+  final int seedGain = 0,
+}) {
+  /// Creates a row.
+  this;
 }
 
 /// Cases that pass cold-start and fail with history.
@@ -221,22 +212,18 @@ String renderTable(List<ShapeRow> rows) {
 /// derive still has real measured Cascade and Eroded values behind it. Both
 /// are carried through verbatim: rewriting a row must never turn a
 /// measurement somebody took into an em dash.
-class CarriedCells {
-  /// Creates the carried set.
-  const new({
-    required this.weights,
-    required this.cascade,
-    required this.eroded,
-  });
-
+class const CarriedCells({
   /// Weight column.
-  final String weights;
+  required final String weights,
 
   /// Cascade column, as published.
-  final String cascade;
+  required final String cascade,
 
   /// Erosion column, as published.
-  final String eroded;
+  required final String eroded,
+}) {
+  /// Creates the carried set.
+  this;
 }
 
 /// Reads the cells that must survive a rewrite, keyed by model.

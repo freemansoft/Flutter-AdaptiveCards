@@ -11,19 +11,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Applies Adaptive Cards spacing and optional separator above child content in
 /// custom elements.
-class SeparatorElement extends StatelessWidget {
-  /// Applies Adaptive Card `spacing` and optional `separator` above [child].
-  const new({
-    super.key,
-    required this.adaptiveMap,
-    required this.child,
-  });
+class const SeparatorElement({
+  super.key,
 
   /// Element JSON supplying `spacing`, `separator`, and `type`.
-  final Map<String, dynamic> adaptiveMap;
+  required final Map<String, dynamic> adaptiveMap,
 
   /// Content rendered below the separator or spacing inset.
-  final Widget child;
+  required final Widget child,
+}) extends StatelessWidget {
+  /// Applies Adaptive Card `spacing` and optional `separator` above [child].
+  this;
 
   @override
   Widget build(BuildContext context) {
@@ -72,7 +70,16 @@ class SeparatorElement extends StatelessWidget {
 
 /// Wraps any element subtree to honor JSON `selectAction` taps in custom
 /// renderers.
-class AdaptiveTappable extends StatefulWidget with AdaptiveElementWidgetMixin {
+class AdaptiveTappable._({
+  super.key,
+  @override required final Map<String, dynamic> adaptiveMap,
+
+  /// Auto-generated id for tap wrapper widgets without author `id`.
+  @override required final String id,
+
+  /// Visual content that receives the optional tap target.
+  required final Widget child,
+}) extends StatefulWidget with AdaptiveElementWidgetMixin {
   /// Wraps [child] with an [InkWell] when [adaptiveMap] defines `selectAction`.
   ///
   /// The wrapper key is deterministic (`{id}_selectAction`) so element reuse
@@ -94,32 +101,16 @@ class AdaptiveTappable extends StatefulWidget with AdaptiveElementWidgetMixin {
     );
   }
 
-  new _({
-    super.key,
-    required this.adaptiveMap,
-    required this.id,
-    required this.child,
-  });
-
-  /// Visual content that receives the optional tap target.
-  final Widget child;
-
-  @override
-  final Map<String, dynamic> adaptiveMap;
-
-  /// Auto-generated id for tap wrapper widgets without author `id`.
-  @override
-  final String id;
-
   @override
   AdaptiveTappableState createState() => AdaptiveTappableState();
 }
 
 /// State for [AdaptiveTappable] that resolves and invokes `selectAction`.
-class AdaptiveTappableState extends State<AdaptiveTappable>
+class AdaptiveTappableState()
+    extends State<AdaptiveTappable>
     with AdaptiveElementMixin, ProviderScopeMixin {
   /// Creates tap-wrapper state; hosts should not construct this directly.
-  new();
+  this;
 
   /// Resolved handler for `selectAction`, if present in [adaptiveMap].
   GenericAction? action;
@@ -167,20 +158,18 @@ class AdaptiveTappableState extends State<AdaptiveTappable>
 
 /// Pushes container `style` and `horizontalAlignment` inheritance to
 /// descendants via scoped resolver.
-class ChildStyler extends StatelessWidget {
-  /// Pushes container style and alignment context to [child] via a scoped
-  /// resolver.
-  const new({
-    super.key,
-    required this.child,
-    required this.adaptiveMap,
-  });
+class const ChildStyler({
+  super.key,
 
   /// Descendant subtree that inherits the updated [ReferenceResolver].
-  final Widget child;
+  required final Widget child,
 
   /// Container JSON whose `style` and `horizontalAlignment` update inheritance.
-  final Map<String, dynamic> adaptiveMap;
+  required final Map<String, dynamic> adaptiveMap,
+}) extends StatelessWidget {
+  /// Pushes container style and alignment context to [child] via a scoped
+  /// resolver.
+  this;
 
   @override
   Widget build(BuildContext context) {

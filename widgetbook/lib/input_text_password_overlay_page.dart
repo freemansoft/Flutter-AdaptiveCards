@@ -12,9 +12,7 @@ const _passwordId = 'passwordField';
 final inputTextPasswordOverlayPageKey =
     GlobalKey<State<InputTextPasswordOverlayPage>>();
 
-class InputTextPasswordOverlayPage extends StatefulWidget {
-  const new({super.key});
-
+class const InputTextPasswordOverlayPage({super.key}) extends StatefulWidget {
   @override
   State<InputTextPasswordOverlayPage> createState() =>
       _InputTextPasswordOverlayPageState();

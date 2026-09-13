@@ -4,9 +4,17 @@ import 'package:flutter_adaptive_cards_fs/src/hostconfig/fallback_configs.dart';
 ///
 /// **Non-standard:** this is a custom extension to HostConfig and is not part
 /// of the official Adaptive Cards HostConfig schema.
-class TextInputConfig {
+class TextInputConfig({
+  /// Whether `Input.Text` password fields show a show/hide eye-icon toggle.
+  ///
+  /// **Non-standard:** custom extension, not in the official Adaptive Cards
+  /// HostConfig schema.
+  ///
+  /// Host default; a per-element overlay can override this at runtime.
+  required final bool revealPasswordEnabled,
+}) {
   /// Creates `Input.Text` settings from explicit values.
-  new({required this.revealPasswordEnabled});
+  this;
 
   /// Parses `inputs.text` from HostConfig JSON.
   factory fromJson(Map<String, dynamic> json) {
@@ -16,12 +24,4 @@ class TextInputConfig {
           FallbackConfigs.inputsConfig.text.revealPasswordEnabled,
     );
   }
-
-  /// Whether `Input.Text` password fields show a show/hide eye-icon toggle.
-  ///
-  /// **Non-standard:** custom extension, not in the official Adaptive Cards
-  /// HostConfig schema.
-  ///
-  /// Host default; a per-element overlay can override this at runtime.
-  final bool revealPasswordEnabled;
 }

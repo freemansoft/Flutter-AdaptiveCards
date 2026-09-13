@@ -6,16 +6,27 @@ import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 
 /// HostConfig `progressSizes` section mapping size tokens to pixel dimensions
 /// for ProgressBar and ProgressRing elements.
-class ProgressSizesConfig {
+class ProgressSizesConfig({
+  /// Pixel size for the `tiny` progress size token.
+  required final int tiny,
+
+  /// Pixel size for the `small` progress size token.
+  required final int small,
+
+  /// Pixel size for the `medium` progress size token.
+  required final int medium,
+
+  /// Pixel size for the `large` progress size token.
+  required final int large,
+
+  /// Pixel size for the `extraLarge` progress size token.
+  required final int extraLarge,
+
+  /// Pixel size for the `default` progress size token.
+  required final int defaultSize,
+}) {
   /// Creates progress size tokens from explicit pixel values.
-  new({
-    required this.tiny,
-    required this.small,
-    required this.medium,
-    required this.large,
-    required this.extraLarge,
-    required this.defaultSize,
-  });
+  this;
 
   /// Parses `progressSizes` from HostConfig JSON.
   factory fromJson(Map<String, dynamic> json) {
@@ -28,24 +39,6 @@ class ProgressSizesConfig {
       defaultSize: json['default'] as int? ?? 20,
     );
   }
-
-  /// Pixel size for the `tiny` progress size token.
-  final int tiny;
-
-  /// Pixel size for the `small` progress size token.
-  final int small;
-
-  /// Pixel size for the `medium` progress size token.
-  final int medium;
-
-  /// Pixel size for the `large` progress size token.
-  final int large;
-
-  /// Pixel size for the `extraLarge` progress size token.
-  final int extraLarge;
-
-  /// Pixel size for the `default` progress size token.
-  final int defaultSize;
 
   /// Resolves a pixel size for ProgressBar or ProgressRing from a size token.
   static double? resolveProgressSize(
@@ -80,15 +73,24 @@ class ProgressSizesConfig {
 
 /// HostConfig `progressColors` section mapping semantic color names to progress
 /// indicator fill colors.
-class ProgressColorsConfig {
+class ProgressColorsConfig({
+  /// Fill color for the `good` progress color token.
+  required final Color? good,
+
+  /// Fill color for the `warning` progress color token.
+  required final Color? warning,
+
+  /// Fill color for the `attention` progress color token.
+  required final Color? attention,
+
+  /// Fill color for the `accent` progress color token.
+  required final Color? accent,
+
+  /// Fill color for the `default` progress color token.
+  required final Color? defaultColor,
+}) {
   /// Creates progress color mappings from explicit values.
-  new({
-    required this.good,
-    required this.warning,
-    required this.attention,
-    required this.accent,
-    required this.defaultColor,
-  });
+  this;
 
   /// Parses `progressColors` from HostConfig JSON.
   factory fromJson(Map<String, dynamic> json) {
@@ -100,21 +102,6 @@ class ProgressColorsConfig {
       defaultColor: parseHostConfigColor(json['default']),
     );
   }
-
-  /// Fill color for the `good` progress color token.
-  final Color? good;
-
-  /// Fill color for the `warning` progress color token.
-  final Color? warning;
-
-  /// Fill color for the `attention` progress color token.
-  final Color? attention;
-
-  /// Fill color for the `accent` progress color token.
-  final Color? accent;
-
-  /// Fill color for the `default` progress color token.
-  final Color? defaultColor;
 
   /// Resolves a fill color for ProgressBar or ProgressRing from a color token.
   static Color? resolveProgressColor({

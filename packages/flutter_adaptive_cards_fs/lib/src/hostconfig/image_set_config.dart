@@ -1,11 +1,17 @@
 /// HostConfig `imageSet` section controlling default ImageSet image dimensions.
-class ImageSetConfig {
+class ImageSetConfig({
+  /// Pixel width/height for `small` ImageSet images (`imageSet.imageSizeSmall`).
+  required final int imageSizeSmall,
+
+  /// Pixel width/height for `medium` ImageSet images
+  /// (`imageSet.imageSizeMedium`).
+  required final int imageSizeMedium,
+
+  /// Pixel width/height for `large` ImageSet images (`imageSet.imageSizeLarge`).
+  required final int imageSizeLarge,
+}) {
   /// Creates ImageSet size defaults from explicit pixel values.
-  new({
-    required this.imageSizeSmall,
-    required this.imageSizeMedium,
-    required this.imageSizeLarge,
-  });
+  this;
 
   /// Parses `imageSet` from HostConfig JSON.
   factory fromJson(Map<String, dynamic> json) {
@@ -15,16 +21,6 @@ class ImageSetConfig {
       imageSizeLarge: json['imageSizeLarge'] ?? 64,
     );
   }
-
-  /// Pixel width/height for `small` ImageSet images (`imageSet.imageSizeSmall`).
-  final int imageSizeSmall;
-
-  /// Pixel width/height for `medium` ImageSet images
-  /// (`imageSet.imageSizeMedium`).
-  final int imageSizeMedium;
-
-  /// Pixel width/height for `large` ImageSet images (`imageSet.imageSizeLarge`).
-  final int imageSizeLarge;
 
   /// Resolves a pixel size for the given ImageSet size token.
   int imageSize(String sizeDescription) {

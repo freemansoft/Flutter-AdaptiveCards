@@ -5,55 +5,39 @@ import 'package:flutter_adaptive_cards_fs/src/models/action_invoke.dart';
 ///
 /// Wrap your card subtree so [of] resolves handlers for Submit, Execute,
 /// OpenUrl, OpenUrlDialog, Refresh, and input [onChange].
-class InheritedAdaptiveCardHandlers extends InheritedWidget {
-  /// Creates handlers that descendants resolve via [of].
-  ///
-  /// Wrap an `AdaptiveCardsCanvas` or `RawAdaptiveCard` subtree so action and
-  /// input callbacks are delivered to the host application.
-  const new({
-    super.key,
-
-    required this.onSubmit,
-    required this.onExecute,
-    required this.onOpenUrl,
-    required this.onOpenUrlDialog,
-
-    required this.onChange,
-    this.onRefresh,
-    this.onHttp,
-    this.onSignin,
-    required super.child,
-  });
+class const InheritedAdaptiveCardHandlers({
+  super.key,
 
   /// Called when an Action.Submit is pressed and default action handlers run.
   ///
   /// `invoke.data` contains merged action `data` and input values;
   /// `invoke.actionId` is set when the action JSON defines an author `id`.
-  final void Function(SubmitActionInvoke invoke) onSubmit;
+  required final void Function(SubmitActionInvoke invoke) onSubmit,
 
   /// Called when an Action.Execute is pressed and default action handlers run.
   ///
   /// `invoke.data` contains merged action `data` and input values;
   /// `invoke.verb` and `invoke.actionId` come from the action JSON when set.
-  final void Function(ExecuteActionInvoke invoke) onExecute;
+  required final void Function(ExecuteActionInvoke invoke) onExecute,
 
   /// Called when an Action.OpenUrl is pressed and default action handlers run.
   ///
   /// `invoke.url` and optional `invoke.actionId` come from the action JSON.
-  final void Function(OpenUrlActionInvoke invoke) onOpenUrl;
+  required final void Function(OpenUrlActionInvoke invoke) onOpenUrl,
 
   /// Called when an Action.OpenUrlDialog is pressed and default handlers run.
   ///
   /// `invoke.url` and optional `invoke.actionId` come from the action JSON.
-  final void Function(OpenUrlDialogActionInvoke invoke) onOpenUrlDialog;
+  required final void Function(OpenUrlDialogActionInvoke invoke)
+  onOpenUrlDialog,
 
   /// Called when an input value changes (not sourced from an action).
-  final void Function(InputChangeInvoke invoke) onChange;
+  required final void Function(InputChangeInvoke invoke) onChange,
 
   /// Called when the root card `refresh` action fires (manual or auto-expire).
   ///
   /// When null, refresh falls back to [onExecute] with the same payload shape.
-  final void Function(RefreshActionInvoke invoke)? onRefresh;
+  final void Function(RefreshActionInvoke invoke)? onRefresh,
 
   /// Called when an `Action.Http` is pressed and default handlers run.
   ///
@@ -64,14 +48,21 @@ class InheritedAdaptiveCardHandlers extends InheritedWidget {
   /// `{{inputId.value}}` substitution) plus the raw input values. When null,
   /// the action does nothing beyond a debug-mode notice; wire a host handler
   /// (for example `flutter_adaptive_cards_host_fs`) to perform the request.
-  final void Function(HttpActionInvoke invoke)? onHttp;
+  final void Function(HttpActionInvoke invoke)? onHttp,
 
   /// Called when a card `authentication` sign-in button is pressed.
   ///
   /// `invoke.value` is the sign-in URL and `invoke.connectionName` is the OAuth
   /// connection. When null, a button with an http(s) `value` falls back to
   /// [onOpenUrl]; a non-URL value is a no-op.
-  final void Function(SigninActionInvoke invoke)? onSignin;
+  final void Function(SigninActionInvoke invoke)? onSignin,
+  required super.child,
+}) extends InheritedWidget {
+  /// Creates handlers that descendants resolve via [of].
+  ///
+  /// Wrap an `AdaptiveCardsCanvas` or `RawAdaptiveCard` subtree so action and
+  /// input callbacks are delivered to the host application.
+  this;
 
   /// Lookup for host callbacks installed above the card.
   ///

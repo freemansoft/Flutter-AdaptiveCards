@@ -29,26 +29,21 @@ export 'package:adaptive_chat_server_dart/src/seed_card.dart'
 ///
 /// [requiresInput] separates "sent the wrong input widget" from "sent no
 /// input at all", which are different bugs with different fixes.
-class ShapeCase {
-  /// Creates a case.
-  const new({
-    required this.id,
-    required this.prompt,
-    required this.accepted,
-    this.requiresInput = false,
-  });
-
+class const ShapeCase({
   /// Short stable identifier, used by `--only` and in output.
-  final String id;
+  required final String id,
 
   /// The user turn sent to the model.
-  final String prompt;
+  required final String prompt,
 
   /// Element types that count as a correct shape; empty means "expect prose".
-  final Set<String> accepted;
+  required final Set<String> accepted,
 
   /// Whether the reply must contain some `Input.*` element.
-  final bool requiresInput;
+  final bool requiresInput = false,
+}) {
+  /// Creates a case.
+  this;
 }
 
 /// The two prose turns that establish Markdown as the conversation's format.
@@ -241,33 +236,27 @@ const reinforceReminder =
 // `OllamaResponder` sends the same file's bytes unconditionally.
 
 /// How one reply scored against one [ShapeCase].
-class ShapeResult {
-  /// Creates a result.
-  const new({
-    required this.caseId,
-    required this.pass,
-    required this.label,
-    required this.found,
-    required this.wanted,
-  });
-
+class const ShapeResult({
   /// The case this judged.
-  final String caseId;
+  required final String caseId,
 
   /// Whether the reply was the right shape.
-  final bool pass;
+  required final bool pass,
 
   /// One of `ok`, `prose-ok`, `prose`, `no-input`, `wrong-shape`,
   /// `unwanted-card`, or `broken: <reason>`.
-  final String label;
+  required final String label,
 
   /// Every element type the reply actually contained, empty when it was not
   /// a card.
-  final Set<String> found;
+  required final Set<String> found,
 
   /// The case's accepted types, carried so a failure line can show both sides
   /// of the mismatch without the caller re-looking-up the case.
-  final Set<String> wanted;
+  required final Set<String> wanted,
+}) {
+  /// Creates a result.
+  this;
 
   /// A one-line explanation, naming both sides when the shape was wrong.
   ///

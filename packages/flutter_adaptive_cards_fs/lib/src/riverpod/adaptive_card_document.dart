@@ -9,30 +9,24 @@ import 'package:flutter_adaptive_cards_fs/src/models/fact.dart';
 /// maps via resolved element/action providers, not mutate
 /// [baseline] directly.
 @immutable
-class AdaptiveCardDocument {
-  /// Creates a document snapshot.
-  const new({
-    required this.baseline,
-    required this.nodesById,
-    required this.overlaysById,
-    required this.actionOverlaysById,
-    required this.revision,
-  });
-
+class const AdaptiveCardDocument({
   /// Deep-copied card JSON baseline (host input).
-  final Map<String, dynamic> baseline;
+  required final Map<String, dynamic> baseline,
 
   /// Index of baseline nodes by element id (natural ids only).
-  final Map<String, Map<String, dynamic>> nodesById;
+  required final Map<String, Map<String, dynamic>> nodesById,
 
   /// Sparse runtime overlays keyed by element id.
-  final Map<String, ElementOverlay> overlaysById;
+  required final Map<String, ElementOverlay> overlaysById,
 
   /// Sparse runtime overlays keyed by action id.
-  final Map<String, ActionOverlay> actionOverlaysById;
+  required final Map<String, ActionOverlay> actionOverlaysById,
 
   /// Monotonic revision to force provider updates when internals change.
-  final int revision;
+  required final int revision,
+}) {
+  /// Creates a document snapshot.
+  this;
 
   /// Returns a copy with the given fields replaced.
   AdaptiveCardDocument copyWith({
@@ -57,79 +51,61 @@ class AdaptiveCardDocument {
 /// Only non-null fields override the corresponding baseline JSON properties
 /// when merged by `resolvedElementProvider`.
 @immutable
-class ElementOverlay {
-  /// Creates an overlay patch for one element.
-  const new({
-    this.isVisible,
-    this.inputValue,
-    this.choices,
-    this.queryCount,
-    this.querySkip,
-    this.querySearchText,
-    this.errorMessage,
-    this.isInvalid,
-    this.text,
-    this.isRequired,
-    this.url,
-    this.label,
-    this.placeholder,
-    this.facts,
-    this.inlines,
-    this.extensionPayloads,
-    this.revealPasswordEnabled,
-  });
-
+class const ElementOverlay({
   /// Overrides baseline `"isVisible"` when non-null.
-  final bool? isVisible;
+  final bool? isVisible,
 
   /// Overrides baseline `"value"` on input elements when non-null.
-  final Object? inputValue;
+  final Object? inputValue,
 
   /// Overrides baseline `"choices"` on `Input.ChoiceSet` when non-null.
-  final List<Choice>? choices;
+  final List<Choice>? choices,
 
   /// Session override for `choices.data.count` (typeahead pagination).
-  final int? queryCount;
+  final int? queryCount,
 
   /// Session override for `choices.data.skip` (typeahead pagination).
-  final int? querySkip;
+  final int? querySkip,
 
   /// Current typeahead search text; not merged into resolved element JSON.
-  final String? querySearchText;
+  final String? querySearchText,
 
   /// Overrides baseline `"errorMessage"` on input elements when non-null.
-  final String? errorMessage;
+  final String? errorMessage,
 
   /// Host-driven validation flag merged into resolved `"isInvalid"`.
-  final bool? isInvalid;
+  final bool? isInvalid,
 
   /// Overrides baseline `"text"` on elements such as `TextBlock` when non-null.
-  final String? text;
+  final String? text,
 
   /// Overrides baseline `"isRequired"` on input elements when non-null.
-  final bool? isRequired;
+  final bool? isRequired,
 
   /// Overrides baseline `"url"` on `Image` / `Media` when non-null.
-  final String? url;
+  final String? url,
 
   /// Overrides baseline `"label"` on inputs when non-null.
-  final String? label;
+  final String? label,
 
   /// Overrides baseline `"placeholder"` on inputs when non-null.
-  final String? placeholder;
+  final String? placeholder,
 
   /// Overrides baseline `"facts"` on `FactSet` when non-null.
-  final List<Fact>? facts;
+  final List<Fact>? facts,
 
   /// Replaces baseline `"inlines"` on `RichTextBlock` when non-null.
-  final List<Map<String, dynamic>>? inlines;
+  final List<Map<String, dynamic>>? inlines,
 
   /// Optional-package overlay payloads keyed by extension id.
-  final Map<String, Map<String, dynamic>>? extensionPayloads;
+  final Map<String, Map<String, dynamic>>? extensionPayloads,
 
   /// Overrides the host `inputs.text.revealPasswordEnabled` default for one
   /// `Input.Text` password field when non-null.
-  final bool? revealPasswordEnabled;
+  final bool? revealPasswordEnabled,
+}) {
+  /// Creates an overlay patch for one element.
+  this;
 
   /// Returns a copy with the given fields replaced.
   ElementOverlay copyWith({
@@ -202,26 +178,21 @@ class ElementOverlay {
 /// Only non-null fields override the corresponding baseline JSON properties
 /// when merged by the resolved action provider.
 @immutable
-class ActionOverlay {
-  /// Creates an overlay patch for one action.
-  const new({
-    this.isEnabled,
-    this.title,
-    this.tooltip,
-    this.iconUrl,
-  });
-
+class const ActionOverlay({
   /// Overrides baseline `"isEnabled"` when non-null (AC 1.5, default true).
-  final bool? isEnabled;
+  final bool? isEnabled,
 
   /// Overrides baseline `"title"` when non-null.
-  final String? title;
+  final String? title,
 
   /// Overrides baseline `"tooltip"` when non-null.
-  final String? tooltip;
+  final String? tooltip,
 
   /// Overrides baseline `"iconUrl"` when non-null.
-  final String? iconUrl;
+  final String? iconUrl,
+}) {
+  /// Creates an overlay patch for one action.
+  this;
 
   /// Returns a copy with the given fields replaced.
   ActionOverlay copyWith({

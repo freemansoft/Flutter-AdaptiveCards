@@ -21,17 +21,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 /// parsed from JSON and passed to host `onChange` on selection. When
 /// `associatedInputs` is `auto`, sibling input values are merged into
 /// `parameters` before the host callback.
-class AdaptiveChoiceSet extends ConsumerStatefulWidget
-    with AdaptiveElementWidgetMixin {
+class AdaptiveChoiceSet({
+  @override required final Map<String, dynamic> adaptiveMap,
+}) extends ConsumerStatefulWidget with AdaptiveElementWidgetMixin {
   /// Creates a choice-set input from [adaptiveMap] JSON.
-  new({
-    required this.adaptiveMap,
-  }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
+  this : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
   }
-
-  @override
-  final Map<String, dynamic> adaptiveMap;
 
   @override
   late final String id;

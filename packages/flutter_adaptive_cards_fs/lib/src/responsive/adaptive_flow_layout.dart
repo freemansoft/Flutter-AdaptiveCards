@@ -26,23 +26,19 @@ final Set<String> _loggedFillWarnings = <String>{};
 /// [LayoutBuilder]-based element placed *directly* as a flow item) will throw;
 /// give such an item an explicit `itemWidth` (which uses a [SizedBox] and skips
 /// [IntrinsicWidth]) to size it safely.
-class AdaptiveFlowLayout extends StatelessWidget {
-  /// Creates a flow layout from a parsed `Layout.Flow` [layoutMap].
-  const new({
-    required this.layoutMap,
-    required this.styleResolver,
-    required this.children,
-    super.key,
-  });
-
+class const AdaptiveFlowLayout({
   /// The selected `Layout.Flow` object from the container's `layouts` array.
-  final Map<String, dynamic> layoutMap;
+  required final Map<String, dynamic> layoutMap,
 
   /// Resolver used to map spacing tokens to pixel gaps.
-  final ReferenceResolver styleResolver;
+  required final ReferenceResolver styleResolver,
 
   /// The container's item widgets to arrange.
-  final List<Widget> children;
+  required final List<Widget> children,
+  super.key,
+}) extends StatelessWidget {
+  /// Creates a flow layout from a parsed `Layout.Flow` [layoutMap].
+  this;
 
   @override
   Widget build(BuildContext context) {

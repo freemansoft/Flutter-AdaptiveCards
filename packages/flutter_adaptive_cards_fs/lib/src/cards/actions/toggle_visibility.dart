@@ -10,17 +10,13 @@ import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 ///
 /// Renders `Action.ToggleVisibility` as an elevated button and updates element
 /// visibility via [GenericActionToggleVisibility].
-class AdaptiveActionToggleVisibility extends StatefulWidget
-    with AdaptiveElementWidgetMixin {
+class AdaptiveActionToggleVisibility({
+  @override required final Map<String, dynamic> adaptiveMap,
+}) extends StatefulWidget with AdaptiveElementWidgetMixin {
   /// Creates an `Action.ToggleVisibility` widget from [adaptiveMap].
-  new({
-    required this.adaptiveMap,
-  }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
+  this : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
   }
-
-  @override
-  final Map<String, dynamic> adaptiveMap;
 
   @override
   late final String id;

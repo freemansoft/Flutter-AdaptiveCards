@@ -11,15 +11,11 @@ import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 /// Renders `Action.OpenUrlDialog` as an elevated button. On tap, fetches a
 /// card payload from the URL and displays the returned adaptive card in a
 /// dialog via [GenericActionOpenUrlDialog].
-class AdaptiveActionOpenUrlDialog extends StatefulWidget
-    with AdaptiveElementWidgetMixin {
+class AdaptiveActionOpenUrlDialog({
+  @override required final Map<String, dynamic> adaptiveMap,
+}) extends StatefulWidget with AdaptiveElementWidgetMixin {
   /// Creates an `Action.OpenUrlDialog` widget from [adaptiveMap].
-  new({
-    required this.adaptiveMap,
-  }) : super(key: generateAdaptiveWidgetKey(adaptiveMap));
-
-  @override
-  final Map<String, dynamic> adaptiveMap;
+  this : super(key: generateAdaptiveWidgetKey(adaptiveMap));
 
   @override
   late final String id = loadId(adaptiveMap);

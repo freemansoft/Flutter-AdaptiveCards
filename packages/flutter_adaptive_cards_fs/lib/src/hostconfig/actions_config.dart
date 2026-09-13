@@ -1,12 +1,17 @@
 /// HostConfig `actions.showCard` settings controlling ShowCard action
 /// rendering.
-class ShowCardConfig {
+class ShowCardConfig({
+  /// How the revealed card is presented (`inline` or `popup`).
+  required final String actionMode,
+
+  /// Container style applied to the shown card (`default` or `emphasis`).
+  required final String style,
+
+  /// Top margin in pixels when [actionMode] is `inline`.
+  required final int inlineTopMargin,
+}) {
   /// Creates show-card layout settings from explicit values.
-  new({
-    required this.actionMode,
-    required this.style,
-    required this.inlineTopMargin,
-  });
+  this;
 
   /// Parses `actions.showCard` from HostConfig JSON.
   factory fromJson(Map<String, dynamic> json) {
@@ -16,31 +21,37 @@ class ShowCardConfig {
       inlineTopMargin: json['inlineTopMargin'] as int? ?? 16,
     );
   }
-
-  /// How the revealed card is presented (`inline` or `popup`).
-  final String actionMode;
-
-  /// Container style applied to the shown card (`default` or `emphasis`).
-  final String style;
-
-  /// Top margin in pixels when [actionMode] is `inline`.
-  final int inlineTopMargin;
 }
 
 /// HostConfig `actions` section controlling action set layout and button
 /// chrome.
-class ActionsConfig {
+class ActionsConfig({
+  /// Layout direction for action buttons (`horizontal` or `vertical`).
+  required final String actionsOrientation,
+
+  /// How buttons align within the action strip.
+  required final String actionAlignment,
+
+  /// Pixel gap between adjacent action buttons.
+  required final int buttonSpacing,
+
+  /// Maximum number of actions shown before overflow handling.
+  required final int maxActions,
+
+  /// Spacing token applied around the action set.
+  required final String spacing,
+
+  /// ShowCard-specific presentation settings.
+  required final ShowCardConfig showCard,
+
+  /// Where action icons render relative to button title text.
+  required final String iconPlacement,
+
+  /// Icon size in pixels for actions that include an icon.
+  required final int iconSize,
+}) {
   /// Creates action-set layout settings from explicit values.
-  new({
-    required this.actionsOrientation,
-    required this.actionAlignment,
-    required this.buttonSpacing,
-    required this.maxActions,
-    required this.spacing,
-    required this.showCard,
-    required this.iconPlacement,
-    required this.iconSize,
-  });
+  this;
 
   /// Parses `actions` from HostConfig JSON.
   factory fromJson(Map<String, dynamic> json) {
@@ -56,28 +67,4 @@ class ActionsConfig {
       iconSize: json['iconSize'] as int? ?? 30,
     );
   }
-
-  /// Layout direction for action buttons (`horizontal` or `vertical`).
-  final String actionsOrientation;
-
-  /// How buttons align within the action strip.
-  final String actionAlignment;
-
-  /// Pixel gap between adjacent action buttons.
-  final int buttonSpacing;
-
-  /// Maximum number of actions shown before overflow handling.
-  final int maxActions;
-
-  /// Spacing token applied around the action set.
-  final String spacing;
-
-  /// ShowCard-specific presentation settings.
-  final ShowCardConfig showCard;
-
-  /// Where action icons render relative to button title text.
-  final String iconPlacement;
-
-  /// Icon size in pixels for actions that include an icon.
-  final int iconSize;
 }

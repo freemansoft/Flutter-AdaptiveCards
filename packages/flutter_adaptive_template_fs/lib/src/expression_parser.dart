@@ -1,7 +1,7 @@
 import 'package:flutter_adaptive_template_fs/src/ast.dart';
 
 /// The type of a lexical token.
-enum TokenType {
+enum TokenType() {
   /// An identifier (e.g., variable or function name).
   identifier,
 
@@ -37,27 +37,27 @@ enum TokenType {
 }
 
 /// A lexical token produced by the [Lexer].
-class Token {
-  /// Creates a new token.
-  const new(this.type, this.value);
-
+class const Token(
   /// The type of the token.
-  final TokenType type;
+  final TokenType type,
 
   /// The string value of the token.
-  final String value;
+  final String value,
+) {
+  /// Creates a new token.
+  this;
 
   @override
   String toString() => 'Token($type, $value)';
 }
 
 /// A simple lexical analyzer for Adaptive Expressions.
-class Lexer {
-  /// Creates a lexer for the given [input].
-  new(this.input);
-
+class Lexer(
   /// The input string to lex.
-  final String input;
+  final String input,
+) {
+  /// Creates a lexer for the given [input].
+  this;
 
   /// The current position in the input string.
   int pos = 0;
@@ -199,13 +199,13 @@ class Lexer {
 }
 
 /// A recursive-descent parser for Adaptive Expressions.
-class ExpressionParser {
+class ExpressionParser(String input) {
   /// Creates a parser for the given [input].
-  new(String input) : _lexer = Lexer(input) {
+  this {
     _advance(); // read first token
   }
 
-  final Lexer _lexer;
+  final Lexer _lexer = Lexer(input);
   late Token _current;
 
   /// Parses the given [input] string into an [AstNode].

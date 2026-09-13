@@ -12,20 +12,17 @@ import 'package:flutter_adaptive_cards_fs/src/security/adaptive_uri_policy.dart'
 /// the defaults. The `*Of` accessors fall back to the
 /// [AdaptiveUriPolicy.standard] / [AdaptiveFetchPolicy.standard] defaults when
 /// no ancestor is present, so validation is never silently skipped.
-class InheritedAdaptiveCardSecurityPolicy extends InheritedWidget {
-  /// Creates the inherited policy holder wrapping [child].
-  const new({
-    required this.uriPolicy,
-    required this.fetchPolicy,
-    required super.child,
-    super.key,
-  });
-
+class const InheritedAdaptiveCardSecurityPolicy({
   /// Policy governing which card-controlled URLs may be launched/fetched.
-  final AdaptiveUriPolicy uriPolicy;
+  required final AdaptiveUriPolicy uriPolicy,
 
   /// Policy governing size/timeout of card-initiated fetches.
-  final AdaptiveFetchPolicy fetchPolicy;
+  required final AdaptiveFetchPolicy fetchPolicy,
+  required super.child,
+  super.key,
+}) extends InheritedWidget {
+  /// Creates the inherited policy holder wrapping [child].
+  this;
 
   /// Returns the nearest [uriPolicy], or [AdaptiveUriPolicy.standard] if none.
   static AdaptiveUriPolicy uriPolicyOf(BuildContext context) {

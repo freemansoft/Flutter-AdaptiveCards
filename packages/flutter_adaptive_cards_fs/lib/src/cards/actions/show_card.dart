@@ -12,17 +12,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 ///
 /// Renders `Action.ShowCard` as a toggle button that expands or collapses the
 /// nested `card` via [expandedShowCardIdProvider].
-class AdaptiveActionShowCard extends ConsumerStatefulWidget
-    with AdaptiveElementWidgetMixin {
+class AdaptiveActionShowCard({
+  @override required final Map<String, dynamic> adaptiveMap,
+}) extends ConsumerStatefulWidget with AdaptiveElementWidgetMixin {
   /// Creates an `Action.ShowCard` widget from [adaptiveMap].
-  new({
-    required this.adaptiveMap,
-  }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
+  this : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
   }
-
-  @override
-  final Map<String, dynamic> adaptiveMap;
 
   @override
   late final String id;

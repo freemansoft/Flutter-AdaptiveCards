@@ -60,9 +60,7 @@ void main() {
 }
 
 @widgetbook.App()
-class WidgetbookApp extends StatelessWidget {
-  const new({super.key});
-
+class const WidgetbookApp({super.key}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Widgetbook.material(

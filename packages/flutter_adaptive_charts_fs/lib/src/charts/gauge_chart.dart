@@ -12,16 +12,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 ///
 /// See also:
 /// * https://learn.microsoft.com/en-us/microsoftteams/platform/task-modules-and-cards/cards/charts-in-adaptive-cards
-class AdaptiveGaugeChart extends ConsumerStatefulWidget
-    with AdaptiveElementWidgetMixin {
+class AdaptiveGaugeChart({
+  @override required final Map<String, dynamic> adaptiveMap,
+}) extends ConsumerStatefulWidget with AdaptiveElementWidgetMixin {
   /// Creates a gauge chart element from [adaptiveMap].
-  new({required this.adaptiveMap})
-    : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
+  this : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
   }
-
-  @override
-  final Map<String, dynamic> adaptiveMap;
 
   @override
   late final String id;
@@ -163,19 +160,12 @@ class AdaptiveGaugeChartState extends ConsumerState<AdaptiveGaugeChart>
 }
 
 /// Title, chart body, and optional segment legend (inline chrome wrapper).
-class _GaugeChrome extends StatelessWidget {
-  const new({
-    required this.title,
-    required this.showLegend,
-    required this.segments,
-    required this.chart,
-  });
-
-  final String? title;
-  final bool showLegend;
-  final List<GaugeSegment> segments;
-  final Widget chart;
-
+class const _GaugeChrome({
+  required final String? title,
+  required final bool showLegend,
+  required final List<GaugeSegment> segments,
+  required final Widget chart,
+}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final titleText = title;

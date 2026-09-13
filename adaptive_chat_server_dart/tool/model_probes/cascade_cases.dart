@@ -8,22 +8,22 @@ library;
 
 /// One cascade: a first turn that should produce a single-select list, and a
 /// follow-up that should widen the *same* list to multi-select.
-class CascadeCase {
-  /// Creates a case.
-  const new({required this.id, required this.first, required this.second});
-
+class const CascadeCase({
   /// Short identifier used in output.
-  final String id;
+  required final String id,
 
   /// Turn 1 — asks for a list to pick one item from.
-  final String first;
+  required final String first,
 
   /// Turn 2 — asks to widen turn 1's list, without restating its contents.
   ///
   /// Deliberately refers back ("those", "that list") instead of naming the
   /// items again: a model that can only answer by re-deriving the list has
   /// not used the history, which is the thing being measured.
-  final String second;
+  required final String second,
+}) {
+  /// Creates a case.
+  this;
 }
 
 /// The cases. Three is enough to separate a model that cascades from one that

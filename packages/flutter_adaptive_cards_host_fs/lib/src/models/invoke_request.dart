@@ -4,20 +4,37 @@ import 'package:flutter_adaptive_cards_host_fs/src/models/invoke_kind.dart';
 /// Backend-neutral envelope built from library invoke callbacks.
 ///
 /// Serialize with `PlainJsonInvokeAdapter` or `TeamsInvokeAdapter` before POST.
-class AdaptiveCardInvokeRequest {
+class const AdaptiveCardInvokeRequest({
+  /// Callback category being forwarded to the backend.
+  required final AdaptiveCardInvokeKind kind,
+
+  /// Author-defined action `id` from card JSON, when applicable.
+  final String? actionId,
+
+  /// `Action.Execute` verb from card JSON, when applicable.
+  final String? verb,
+
+  /// Merged action `data` and/or sibling input values for invoke payloads.
+  final Map<String, dynamic> data = const {},
+
+  /// Changed input `id` for [AdaptiveCardInvokeKind.inputChange].
+  final String? inputId,
+
+  /// New input value for [AdaptiveCardInvokeKind.inputChange].
+  final Object? value,
+
+  /// Parsed `choices.data` for dynamic ChoiceSet invokes.
+  final DataQuery? dataQuery,
+
+  /// Target URL for open-url invoke kinds.
+  final String? url,
+
+  /// OAuth connection name for [AdaptiveCardInvokeKind.signin].
+  final String? connectionName,
+}) {
   /// Low-level invoke envelope; prefer `fromSubmit`, `fromExecute`, and other
   /// factories built from card callback payloads.
-  const new({
-    required this.kind,
-    this.actionId,
-    this.verb,
-    this.data = const {},
-    this.inputId,
-    this.value,
-    this.dataQuery,
-    this.url,
-    this.connectionName,
-  });
+  this;
 
   /// Maps Submit callback data for backend POST
   /// via `AdaptiveCardBackendHandlers`.
@@ -83,31 +100,4 @@ class AdaptiveCardInvokeRequest {
       value: state,
     );
   }
-
-  /// Callback category being forwarded to the backend.
-  final AdaptiveCardInvokeKind kind;
-
-  /// Author-defined action `id` from card JSON, when applicable.
-  final String? actionId;
-
-  /// `Action.Execute` verb from card JSON, when applicable.
-  final String? verb;
-
-  /// Merged action `data` and/or sibling input values for invoke payloads.
-  final Map<String, dynamic> data;
-
-  /// Changed input `id` for [AdaptiveCardInvokeKind.inputChange].
-  final String? inputId;
-
-  /// New input value for [AdaptiveCardInvokeKind.inputChange].
-  final Object? value;
-
-  /// Parsed `choices.data` for dynamic ChoiceSet invokes.
-  final DataQuery? dataQuery;
-
-  /// Target URL for open-url invoke kinds.
-  final String? url;
-
-  /// OAuth connection name for [AdaptiveCardInvokeKind.signin].
-  final String? connectionName;
 }

@@ -214,18 +214,14 @@ Future<_Harness> _pumpWiredCard(
   return _Harness(handlers, cardKey, fake);
 }
 
-class _Harness {
-  new(this.handlers, this.cardKey, this.client);
+class _Harness(
+  final AdaptiveCardBackendHandlers handlers,
+  final GlobalKey<RawAdaptiveCardState> cardKey,
+  final _FakeBackendClient client,
+);
 
-  final AdaptiveCardBackendHandlers handlers;
-  final GlobalKey<RawAdaptiveCardState> cardKey;
-  final _FakeBackendClient client;
-}
-
-class _FakeBackendClient implements AdaptiveCardBackendClient {
-  new(this.response);
-
-  final Map<String, dynamic> response;
+class _FakeBackendClient(final Map<String, dynamic> response)
+    implements AdaptiveCardBackendClient {
   int postCount = 0;
   Map<String, dynamic>? lastBody;
 

@@ -20,9 +20,9 @@ const chartPropertyKeys = {
 };
 
 /// Overlay merge hook for `Chart.*` element types.
-class ChartElementOverlayExtension extends ElementOverlayExtension {
+class const ChartElementOverlayExtension() extends ElementOverlayExtension {
   /// Creates the chart overlay extension hook.
-  const new();
+  this;
 
   /// Shared chart overlay extension instance for registry injection.
   static const instance = ChartElementOverlayExtension();

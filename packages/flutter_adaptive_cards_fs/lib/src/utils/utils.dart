@@ -6,19 +6,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 /// One-shot fade-out wrapper that removes [child] when the animation completes.
-class FadeAnimation extends StatefulWidget {
-  /// Creates a one-shot fade-out animation around [child].
-  const new({
-    super.key,
-    required this.child,
-    this.duration = const Duration(milliseconds: 500),
-  });
+class const FadeAnimation({
+  super.key,
 
   /// Content shown during the one-shot fade-out effect.
-  final Widget child;
+  required final Widget child,
 
   /// Fade duration before the widget is removed.
-  final Duration duration;
+  final Duration duration = const Duration(milliseconds: 500),
+}) extends StatefulWidget {
+  /// Creates a one-shot fade-out animation around [child].
+  this;
 
   @override
   State<FadeAnimation> createState() => _FadeAnimationState();
@@ -78,21 +76,21 @@ String firstCharacterToLowerCase(String s) =>
     s.isNotEmpty ? s[0].toLowerCase() + s.substring(1) : '';
 
 /// Lightweight two-value holder for internal/extension helpers.
-class Tuple<A, B> {
-  /// Creates a tuple holding [a] and [b].
-  new(this.a, this.b);
-
+class Tuple<A, B>(
   /// First component.
-  final A a;
+  final A a,
 
   /// Second component.
-  final B b;
+  final B b,
+) {
+  /// Creates a tuple holding [a] and [b].
+  this;
 }
 
 /// Rectangular clipper used for person-style image masks in card elements.
-class FullCircleClipper extends CustomClipper<Rect> {
+class const FullCircleClipper() extends CustomClipper<Rect> {
   /// Creates a clipper that fills the child's layout bounds.
-  const new();
+  this;
 
   /// Returns full-bounds clip rect for the child.
   @override
@@ -455,13 +453,11 @@ ValueKey<String> generateTableCellKey(String tableKey, int row, int col) =>
     generateWidgetKeyFromId(tableKey, suffix: '${row}_$col');
 
 /// Shared id generation for elements missing author-supplied `id` values.
-class UUIDGenerator {
+class UUIDGenerator._internal() {
   /// Access the shared [UUIDGenerator] instance used across the library.
   factory() {
     return _instance;
   }
-
-  new _internal();
 
   static final UUIDGenerator _instance = UUIDGenerator._internal();
 

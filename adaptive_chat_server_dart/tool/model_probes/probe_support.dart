@@ -35,21 +35,12 @@ const defaultProbeTimeout = Duration(seconds: 180);
 
 /// Options every probe accepts, so they can be pointed at another model or
 /// host without editing source.
-class ProbeArgs {
-  /// Creates the parsed option set.
-  const new({
-    required this.model,
-    required this.url,
-    required this.samples,
-    this.json,
-    this.timeout = defaultProbeTimeout,
-  });
-
+class const ProbeArgs({
   /// Ollama model tag under test.
-  final String model;
+  required final String model,
 
   /// Base URL of the Ollama server.
-  final String url;
+  required final String url,
 
   /// Runs per case. More samples cost time linearly; 3 is usually enough to
   /// see a deterministic failure repeat.
@@ -62,10 +53,7 @@ class ProbeArgs {
   /// so a coin flip is not quoted as a measurement. The temperature probes
   /// score each run on its own and do not combine them, which is why the
   /// sweep runs them at 1.
-  final int samples;
-
-  /// Per-call ceiling before a reply is scored a timeout.
-  final Duration timeout;
+  required final int samples,
 
   /// Where to write the machine-readable record of this run, if anywhere.
   ///
@@ -73,7 +61,13 @@ class ProbeArgs {
   /// per-script convention — the alternative is what this directory had
   /// before, where the only durable copy of a measurement was whatever
   /// someone pasted into a Markdown table by hand.
-  final String? json;
+  final String? json,
+
+  /// Per-call ceiling before a reply is scored a timeout.
+  final Duration timeout = defaultProbeTimeout,
+}) {
+  /// Creates the parsed option set.
+  this;
 }
 
 /// Parses the common `--model` / `--url` / `--samples` options.
@@ -227,18 +221,7 @@ Object? resolveProbeFormat(String mode) => switch (mode) {
 };
 
 /// One reply, judged exactly as the running server would judge it.
-class ProbeOutcome {
-  /// Creates an outcome.
-  const new({
-    required this.ok,
-    required this.label,
-    required this.chars,
-    required this.ms,
-    required this.hash,
-    required this.reply,
-    this.promptEvalCount,
-  });
-
+class const ProbeOutcome({
   /// Whether the reply was usable — a renderable card, or clean prose.
   ///
   /// Prose counts as a pass: the card system prompt explicitly allows a
@@ -247,29 +230,32 @@ class ProbeOutcome {
   /// renders that as Markdown, so the user sees raw JSON in a code block.
   /// It reads as a tidy Markdown answer and is scored a failure anyway,
   /// because it is the shape users actually report.
-  final bool ok;
+  required final bool ok,
 
   /// Short human-readable verdict, e.g. `card[3]`, `prose`, `broken-card: …`.
-  final String label;
+  required final String label,
 
   /// Reply length in characters.
-  final int chars;
+  required final int chars,
 
   /// Wall-clock round trip, milliseconds.
-  final int ms;
+  required final int ms,
 
   /// Short digest of the reply, for spotting identical outputs across runs.
-  final String hash;
+  required final String hash,
 
   /// The raw reply text, so a caller can score for a specific element rather
   /// than only for "is it broken?".
-  final String reply;
+  required final String reply,
 
   /// Ollama's `prompt_eval_count` for the request that produced this reply,
   /// when the caller supplied one. Null on every path that does not measure
   /// it -- a timeout, an HTTP error, or a caller (most probes) that never
   /// asked.
-  final int? promptEvalCount;
+  final int? promptEvalCount,
+}) {
+  /// Creates an outcome.
+  this;
 }
 
 /// Builds the `/api/chat` message list, mirroring `OllamaResponder`.
@@ -334,17 +320,15 @@ Future<void> evictModel(String url, String model) async {
 /// was ingested archive the identical context figure, so the archive cannot
 /// distinguish a clamped runner from a model that discarded a message it
 /// had room for. See ModelBehavior.md's context-fill section.
-class RunnerStatus {
-  const new({this.contextLength, this.sizeVram});
-
+class const RunnerStatus({
   /// Context the runner actually allocated, or null if this Ollama does not
   /// report it. Null rather than zero on purpose: a zero would read as a
   /// measured clamp to nothing.
-  final int? contextLength;
+  final int? contextLength,
 
   /// Resident VRAM in bytes, or null if absent.
-  final int? sizeVram;
-}
+  final int? sizeVram,
+});
 
 /// Picks [model]'s entry out of an `/api/ps` [body].
 ///

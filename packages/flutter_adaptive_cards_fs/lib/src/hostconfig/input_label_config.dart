@@ -1,14 +1,23 @@
 /// HostConfig input label styling (`inputs.label.requiredInputs` or
 /// `inputs.label.optionalInputs`).
-class InputLabelConfig {
+class InputLabelConfig({
+  /// Foreground color token for the input label.
+  required final String color,
+
+  /// Whether the label uses the subtle color variant.
+  required final bool isSubtle,
+
+  /// Font size token for the input label.
+  required final String size,
+
+  /// Text appended after optional input labels (for example, "(optional)").
+  required final String suffix,
+
+  /// Font weight token for the input label.
+  required final String weight,
+}) {
   /// Creates input label typography settings from explicit values.
-  new({
-    required this.color,
-    required this.isSubtle,
-    required this.size,
-    required this.suffix,
-    required this.weight,
-  });
+  this;
 
   /// Parses an input label object from HostConfig JSON.
   factory fromJson(
@@ -23,19 +32,4 @@ class InputLabelConfig {
       weight: json['weight']?.toString() ?? defaults?.weight ?? 'default',
     );
   }
-
-  /// Foreground color token for the input label.
-  final String color;
-
-  /// Whether the label uses the subtle color variant.
-  final bool isSubtle;
-
-  /// Font size token for the input label.
-  final String size;
-
-  /// Text appended after optional input labels (for example, "(optional)").
-  final String suffix;
-
-  /// Font weight token for the input label.
-  final String weight;
 }

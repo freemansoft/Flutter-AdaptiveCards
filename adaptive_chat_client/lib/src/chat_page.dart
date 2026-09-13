@@ -8,15 +8,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_cards_fs/flutter_adaptive_cards_fs.dart';
 
 /// The chat screen: a scrolling log of server bubbles plus a compose card.
-class ChatPage extends StatefulWidget {
-  /// Creates the page bound to [controller].
-  const new({required this.controller, required this.hostConfigs, super.key});
-
+class const ChatPage({
   /// Chat state and transport.
-  final ConversationController controller;
+  required final ConversationController controller,
 
   /// Light/dark HostConfig used to render every card.
-  final HostConfigs hostConfigs;
+  required final HostConfigs hostConfigs,
+  super.key,
+}) extends StatefulWidget {
+  /// Creates the page bound to [controller].
+  this;
 
   @override
   State<ChatPage> createState() => _ChatPageState();
@@ -205,9 +206,7 @@ class _ChatPageState extends State<ChatPage> {
 }
 
 /// Three-dot "typing" indicator shown while a send is in flight.
-class _PendingBubble extends StatelessWidget {
-  const new({super.key});
-
+class const _PendingBubble({super.key}) extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Align(

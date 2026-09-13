@@ -3,17 +3,30 @@ import 'package:flutter_adaptive_cards_fs/src/hostconfig/theme_color_fallbacks.d
 
 /// HostConfig `foregroundColors` section mapping semantic color names to
 /// default and subtle foreground colors.
-class ForegroundColorsConfig {
+class ForegroundColorsConfig({
+  /// Default foreground colors (`foregroundColors.default`).
+  required final FontColorConfig defaultColor,
+
+  /// Accent foreground colors (`foregroundColors.accent`).
+  required final FontColorConfig accent,
+
+  /// Dark foreground colors (`foregroundColors.dark`).
+  required final FontColorConfig dark,
+
+  /// Light foreground colors (`foregroundColors.light`).
+  required final FontColorConfig light,
+
+  /// Good (success) foreground colors (`foregroundColors.good`).
+  required final FontColorConfig good,
+
+  /// Warning foreground colors (`foregroundColors.warning`).
+  required final FontColorConfig warning,
+
+  /// Attention (error) foreground colors (`foregroundColors.attention`).
+  required final FontColorConfig attention,
+}) {
   /// Creates foreground color mappings from explicit values.
-  new({
-    required this.defaultColor,
-    required this.accent,
-    required this.dark,
-    required this.light,
-    required this.good,
-    required this.warning,
-    required this.attention,
-  });
+  this;
 
   /// Parses `foregroundColors` from HostConfig JSON.
   factory fromJson(
@@ -52,27 +65,6 @@ class ForegroundColorsConfig {
       ),
     );
   }
-
-  /// Default foreground colors (`foregroundColors.default`).
-  final FontColorConfig defaultColor;
-
-  /// Accent foreground colors (`foregroundColors.accent`).
-  final FontColorConfig accent;
-
-  /// Dark foreground colors (`foregroundColors.dark`).
-  final FontColorConfig dark;
-
-  /// Light foreground colors (`foregroundColors.light`).
-  final FontColorConfig light;
-
-  /// Good (success) foreground colors (`foregroundColors.good`).
-  final FontColorConfig good;
-
-  /// Warning foreground colors (`foregroundColors.warning`).
-  final FontColorConfig warning;
-
-  /// Attention (error) foreground colors (`foregroundColors.attention`).
-  final FontColorConfig attention;
 
   /// Resolves a [FontColorConfig] for the given semantic color name token.
   FontColorConfig fontColorConfig(String? colorName) {

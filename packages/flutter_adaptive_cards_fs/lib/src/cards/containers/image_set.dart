@@ -13,24 +13,19 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 ///
 /// Renders an `ImageSet` as a wrapped row of [AdaptiveImage] children sized by
 /// `imageSize`.
-class AdaptiveImageSet extends ConsumerStatefulWidget
-    with AdaptiveElementWidgetMixin {
+class AdaptiveImageSet({
+  @override required final Map<String, dynamic> adaptiveMap,
+
+  /// Whether nested text elements may render markdown.
+  required final bool supportMarkdown,
+}) extends ConsumerStatefulWidget with AdaptiveElementWidgetMixin {
   /// Creates an `ImageSet` from [adaptiveMap].
-  new({
-    required this.adaptiveMap,
-    required this.supportMarkdown,
-  }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
+  this : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
   }
 
   @override
-  final Map<String, dynamic> adaptiveMap;
-
-  @override
   late final String id;
-
-  /// Whether nested text elements may render markdown.
-  final bool supportMarkdown;
 
   @override
   AdaptiveImageSetState createState() => AdaptiveImageSetState();

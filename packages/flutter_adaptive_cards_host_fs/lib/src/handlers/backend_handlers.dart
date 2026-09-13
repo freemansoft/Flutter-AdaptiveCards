@@ -16,28 +16,23 @@ import 'package:flutter_adaptive_cards_host_fs/src/security/bounded_json.dart';
 /// Assign [cardKey] to the same [RawAdaptiveCard] that renders the card.
 /// [InputChangeInvoke] uses [InputChangeInvoke.cardState] directly; Submit and
 /// Execute resolve state from [cardKey].
-class AdaptiveCardBackendHandlers {
-  /// Creates handlers that POST invoke payloads via [client].
-  ///
-  /// Defaults: `PlainJsonInvokeAdapter.toMap` and
-  /// `PlainJsonInvokeResponseParser.parse`. Pass `TeamsInvokeAdapter` methods
-  /// for Bot Framework–shaped JSON.
-  new({
-    required this.client,
-    required this.cardKey,
-    Map<String, dynamic> Function(AdaptiveCardInvokeRequest)? requestAdapter,
-    AdaptiveCardInvokeResponse Function(Map<String, dynamic>)? responseParser,
-    this.onError,
-    this.onOpenUrl,
-    this.onOpenUrlDialog,
-    this.httpExecutor,
-    this.urlOpener,
-    this.onSignin,
-  }) : requestAdapter = requestAdapter ?? PlainJsonInvokeAdapter.toMap,
-       responseParser = responseParser ?? PlainJsonInvokeResponseParser.parse;
-
+class AdaptiveCardBackendHandlers({
   /// Backend transport (HTTP, mock, or custom).
-  final AdaptiveCardBackendClient client;
+  required final AdaptiveCardBackendClient client,
+
+  /// Key shared with [RawAdaptiveCard] for Submit/Execute state lookup.
+  required final GlobalKey<RawAdaptiveCardState> cardKey,
+  Map<String, dynamic> Function(AdaptiveCardInvokeRequest)? requestAdapter,
+  AdaptiveCardInvokeResponse Function(Map<String, dynamic>)? responseParser,
+
+  /// Called when POST or response parsing fails.
+  final void Function(Object error)? onError,
+
+  /// Optional override for `Action.OpenUrl` (defaults to no-op).
+  final void Function(OpenUrlActionInvoke invoke)? onOpenUrl,
+
+  /// Optional override for `Action.OpenUrlDialog` (defaults to no-op).
+  final void Function(OpenUrlDialogActionInvoke invoke)? onOpenUrlDialog,
 
   /// Executor for card-authored `Action.Http` requests.
   ///
@@ -47,34 +42,30 @@ class AdaptiveCardBackendHandlers {
   /// When null, `Action.Http` taps are ignored. Provide
   /// [HttpAdaptiveHttpExecutor] (or a custom [AdaptiveHttpExecutor]) to perform
   /// the GET/POST and honor `CARD-UPDATE-IN-BODY` / `CARD-ACTION-STATUS`.
-  final AdaptiveHttpExecutor? httpExecutor;
-
-  /// Key shared with [RawAdaptiveCard] for Submit/Execute state lookup.
-  final GlobalKey<RawAdaptiveCardState> cardKey;
-
-  /// Serializes [AdaptiveCardInvokeRequest] before `client.post`.
-  final Map<String, dynamic> Function(AdaptiveCardInvokeRequest) requestAdapter;
-
-  /// Parses the JSON returned from `client.post`.
-  final AdaptiveCardInvokeResponse Function(Map<String, dynamic>)
-  responseParser;
-
-  /// Called when POST or response parsing fails.
-  final void Function(Object error)? onError;
-
-  /// Optional override for `Action.OpenUrl` (defaults to no-op).
-  final void Function(OpenUrlActionInvoke invoke)? onOpenUrl;
-
-  /// Optional override for `Action.OpenUrlDialog` (defaults to no-op).
-  final void Function(OpenUrlDialogActionInvoke invoke)? onOpenUrlDialog;
+  final AdaptiveHttpExecutor? httpExecutor,
 
   /// Opens the sign-in URL from a card `authentication` button.
   ///
   /// The app owns the browser/redirect; when null, sign-in taps are ignored.
-  final Future<void> Function(String url)? urlOpener;
+  final Future<void> Function(String url)? urlOpener,
 
   /// Optional override for the sign-in handoff (defaults to [urlOpener]).
-  final void Function(SigninActionInvoke invoke)? onSignin;
+  final void Function(SigninActionInvoke invoke)? onSignin,
+}) {
+  /// Creates handlers that POST invoke payloads via [client].
+  ///
+  /// Defaults: `PlainJsonInvokeAdapter.toMap` and
+  /// `PlainJsonInvokeResponseParser.parse`. Pass `TeamsInvokeAdapter` methods
+  /// for Bot Framework–shaped JSON.
+  this;
+
+  /// Serializes [AdaptiveCardInvokeRequest] before `client.post`.
+  final Map<String, dynamic> Function(AdaptiveCardInvokeRequest)
+  requestAdapter = requestAdapter ?? PlainJsonInvokeAdapter.toMap;
+
+  /// Parses the JSON returned from `client.post`.
+  final AdaptiveCardInvokeResponse Function(Map<String, dynamic>)
+  responseParser = responseParser ?? PlainJsonInvokeResponseParser.parse;
 
   SigninActionInvoke? _pendingSignin;
   void Function(Map<String, dynamic> card)? _onCardReplaced;

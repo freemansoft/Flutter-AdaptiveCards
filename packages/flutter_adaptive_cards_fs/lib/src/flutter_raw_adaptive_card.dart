@@ -26,65 +26,55 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 /// Low-level card renderer when you already have parsed JSON.
 ///
 /// Prefer [AdaptiveCardsCanvas] for loading and host wiring.
-class RawAdaptiveCard extends StatefulWidget {
-  /// Renders [map] with [hostConfigs] and optional registries; ids are injected
-  /// at runtime.
-  const new fromMap({
-    super.key,
-    required this.map,
-    this.cardTypeRegistry = const CardTypeRegistry(),
-    this.actionTypeRegistry = const DefaultActionTypeRegistry(),
-    this.initData,
-    this.onChange,
-    this.listView = false,
-    this.showDebugJson = true,
-    this.brightnessMode = AdaptiveCardBrightnessMode.auto,
-    this.currentUserId,
-    this.uriPolicy,
-    this.fetchPolicy,
-    required this.hostConfigs,
-  });
+class const RawAdaptiveCard.fromMap({
+  super.key,
 
   /// Root Adaptive Card JSON for this subtree (ids injected at runtime).
-  final Map<String, dynamic> map;
-
-  /// Light/dark HostConfig palette used for styling resolution.
-  final HostConfigs hostConfigs;
+  required final Map<String, dynamic> map,
 
   /// Registry that maps element `type` strings to widgets.
-  final CardTypeRegistry cardTypeRegistry;
+  final CardTypeRegistry cardTypeRegistry = const CardTypeRegistry(),
 
   /// Registry that maps action `type` strings to tap handlers.
-  final ActionTypeRegistry actionTypeRegistry;
+  final ActionTypeRegistry actionTypeRegistry =
+      const DefaultActionTypeRegistry(),
 
   /// Optional seed values or patch maps applied to input overlays on load.
-  final Map? initData;
+  final Map? initData,
 
   /// Host callback invoked when an input value changes.
-  final void Function(InputChangeInvoke invoke)? onChange;
-
-  /// When true (debug only), shows a button that displays [map] as JSON.
-  final bool showDebugJson;
+  final void Function(InputChangeInvoke invoke)? onChange,
 
   /// When true, the root card body scrolls as a list.
-  final bool listView;
+  final bool listView = false,
+
+  /// When true (debug only), shows a button that displays [map] as JSON.
+  final bool showDebugJson = true,
 
   /// Selects light vs dark [HostConfigs] when not
   /// [AdaptiveCardBrightnessMode.auto].
-  final AdaptiveCardBrightnessMode brightnessMode;
+  final AdaptiveCardBrightnessMode brightnessMode =
+      AdaptiveCardBrightnessMode.auto,
 
   /// Current user id for root `refresh.userIds` auto-refresh gating.
-  final String? currentUserId;
+  final String? currentUserId,
 
   /// Optional policy for validating card-controlled URLs (`Action.OpenUrl`,
   /// markdown links, media/image sources). When null, an ancestor
   /// [InheritedAdaptiveCardSecurityPolicy] is used, falling back to
   /// [AdaptiveUriPolicy.standard].
-  final AdaptiveUriPolicy? uriPolicy;
+  final AdaptiveUriPolicy? uriPolicy,
 
   /// Optional policy bounding card-initiated fetches. When null, an ancestor
   /// policy is used, falling back to [AdaptiveFetchPolicy.standard].
-  final AdaptiveFetchPolicy? fetchPolicy;
+  final AdaptiveFetchPolicy? fetchPolicy,
+
+  /// Light/dark HostConfig palette used for styling resolution.
+  required final HostConfigs hostConfigs,
+}) extends StatefulWidget {
+  /// Renders [map] with [hostConfigs] and optional registries; ids are injected
+  /// at runtime.
+  this;
 
   @override
   RawAdaptiveCardState createState() => RawAdaptiveCardState();
@@ -92,9 +82,9 @@ class RawAdaptiveCard extends StatefulWidget {
 
 /// Host-facing card state: runtime overlays, validation, and imperative updates
 /// without mutating baseline JSON.
-class RawAdaptiveCardState extends State<RawAdaptiveCard> {
+class RawAdaptiveCardState() extends State<RawAdaptiveCard> {
   /// Creates raw-card state; obtain via [GlobalKey] when calling host APIs.
-  new();
+  this;
 
   ///.  Wrapper around the host config
   late ReferenceResolver _resolver;
@@ -673,17 +663,11 @@ class RawAdaptiveCardState extends State<RawAdaptiveCard> {
 }
 
 /// Registers the card-scoped [ProviderContainer] and seeds [initData] overlays.
-class _AdaptiveCardDocumentLifecycle extends StatefulWidget {
-  const new({
-    required this.cardState,
-    required this.initData,
-    required this.child,
-  });
-
-  final RawAdaptiveCardState cardState;
-  final Map? initData;
-  final Widget child;
-
+class const _AdaptiveCardDocumentLifecycle({
+  required final RawAdaptiveCardState cardState,
+  required final Map? initData,
+  required final Widget child,
+}) extends StatefulWidget {
   @override
   State<_AdaptiveCardDocumentLifecycle> createState() =>
       _AdaptiveCardDocumentLifecycleState();

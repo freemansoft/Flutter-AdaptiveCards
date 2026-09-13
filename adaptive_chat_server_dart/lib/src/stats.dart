@@ -12,20 +12,24 @@ const _nsPerMs = 1000000;
 /// Stores only what Ollama reported. Derived figures (total tokens,
 /// generation speed) are computed in [statsToJson] so this record stays a
 /// faithful copy.
-class InteractionStats {
-  /// Creates a stats record with token counts and timing breakdown.
-  const new({
-    required this.promptTokens,
-    required this.replyTokens,
-    required this.totalMs,
-    required this.loadMs,
-    required this.promptEvalMs,
-    required this.evalMs,
-    this.cachedPromptTokens = 0,
-  });
-
+class const InteractionStats({
   /// Ollama `prompt_eval_count` — tokens sent.
-  final int promptTokens;
+  required final int promptTokens,
+
+  /// Ollama `eval_count` — tokens generated.
+  required final int replyTokens,
+
+  /// `total_duration`, in milliseconds.
+  required final int totalMs,
+
+  /// `load_duration` — model load, ~0 when already warm.
+  required final int loadMs,
+
+  /// `prompt_eval_duration` — time reading the prompt.
+  required final int promptEvalMs,
+
+  /// `eval_duration` — time generating.
+  required final int evalMs,
 
   /// Ollama `prompt_eval_cached_count` — prompt tokens served from the
   /// prefix cache rather than re-evaluated.
@@ -33,22 +37,10 @@ class InteractionStats {
   /// Reported by Ollama 0.33.3 and later; earlier servers omit the field,
   /// which reads as 0 here. Supplementary like the durations: its absence
   /// never discards a record.
-  final int cachedPromptTokens;
-
-  /// Ollama `eval_count` — tokens generated.
-  final int replyTokens;
-
-  /// `total_duration`, in milliseconds.
-  final int totalMs;
-
-  /// `load_duration` — model load, ~0 when already warm.
-  final int loadMs;
-
-  /// `prompt_eval_duration` — time reading the prompt.
-  final int promptEvalMs;
-
-  /// `eval_duration` — time generating.
-  final int evalMs;
+  final int cachedPromptTokens = 0,
+}) {
+  /// Creates a stats record with token counts and timing breakdown.
+  this;
 }
 
 int _ms(Map<String, dynamic> data, String key) {

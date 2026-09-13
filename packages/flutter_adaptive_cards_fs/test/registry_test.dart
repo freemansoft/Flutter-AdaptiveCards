@@ -75,7 +75,7 @@ void main() {
 
   testWidgets('Add element', (tester) async {
     final CardTypeRegistry cardRegistry = CardTypeRegistry(
-      addedElements: {'Test': (map) => _TestAddition()},
+      addedElements: {'Test': (map) => const _TestAddition()},
     );
 
     final element = cardRegistry.getElement(
@@ -113,7 +113,7 @@ void main() {
   });
 }
 
-class _TestAddition extends StatelessWidget {
+class const _TestAddition() extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(home: Text('Test'));

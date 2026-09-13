@@ -2,13 +2,18 @@
 ///
 /// See [Refresh](https://adaptivecards.io/explorer/Refresh.html).
 /// See [Refresh](https://learn.microsoft.com/en-us/adaptive-cards/schema-explorer/refresh).
-class RefreshConfig {
+class const RefreshConfig({
+  /// Nested `Action.Execute` (or compatible) map fired on refresh.
+  final Map<String, dynamic>? action,
+
+  /// When non-empty, auto-refresh only runs for these user ids.
+  final List<String>? userIds,
+
+  /// When in the past, auto-refresh fires once after the first frame.
+  final DateTime? expires,
+}) {
   /// Creates refresh metadata from parsed JSON fields.
-  const new({
-    this.action,
-    this.userIds,
-    this.expires,
-  });
+  this;
 
   /// Parses a card `refresh` object map.
   factory fromJson(Map<String, dynamic> json) {
@@ -36,13 +41,4 @@ class RefreshConfig {
       expires: expires,
     );
   }
-
-  /// Nested `Action.Execute` (or compatible) map fired on refresh.
-  final Map<String, dynamic>? action;
-
-  /// When non-empty, auto-refresh only runs for these user ids.
-  final List<String>? userIds;
-
-  /// When in the past, auto-refresh fires once after the first frame.
-  final DateTime? expires;
 }

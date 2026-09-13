@@ -1,15 +1,24 @@
 import 'package:flutter_adaptive_cards_fs/src/hostconfig/fallback_configs.dart';
 
 /// HostConfig `fontSizes` section mapping size tokens to pixel font sizes.
-class FontSizesConfig {
+class FontSizesConfig({
+  /// Pixel size for the `small` font size token.
+  required final int small,
+
+  /// Pixel size for the `default` font size token.
+  required final int defaultSize,
+
+  /// Pixel size for the `medium` font size token.
+  required final int medium,
+
+  /// Pixel size for the `large` font size token.
+  required final int large,
+
+  /// Pixel size for the `extraLarge` font size token.
+  required final int extraLarge,
+}) {
   /// Creates font size tokens from explicit pixel values.
-  new({
-    required this.small,
-    required this.defaultSize,
-    required this.medium,
-    required this.large,
-    required this.extraLarge,
-  });
+  this;
 
   /// Parses `fontSizes` from HostConfig JSON.
   factory fromJson(Map<String, dynamic> json) {
@@ -22,19 +31,4 @@ class FontSizesConfig {
       extraLarge: json['extraLarge'] as int? ?? fallbackSizes.extraLarge,
     );
   }
-
-  /// Pixel size for the `small` font size token.
-  final int small;
-
-  /// Pixel size for the `default` font size token.
-  final int defaultSize;
-
-  /// Pixel size for the `medium` font size token.
-  final int medium;
-
-  /// Pixel size for the `large` font size token.
-  final int large;
-
-  /// Pixel size for the `extraLarge` font size token.
-  final int extraLarge;
 }

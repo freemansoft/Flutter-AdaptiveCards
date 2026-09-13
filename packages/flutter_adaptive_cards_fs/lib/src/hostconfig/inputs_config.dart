@@ -5,14 +5,27 @@ import 'package:flutter_adaptive_cards_fs/src/hostconfig/text_input_config.dart'
 
 /// HostConfig `inputs` section controlling input label and error message
 /// styling, and `Input.Text`-specific settings (`inputs.text`).
-class InputsConfig {
+class InputsConfig({
+  /// Label typography for required and optional inputs (`inputs.label`).
+  required final LabelConfig label,
+
+  /// Validation error message typography (`inputs.errorMessage`).
+  required final ErrorMessageConfig errorMessage,
+
+  /// `Input.Text`-specific settings (`inputs.text`).
+  ///
+  /// **Non-standard:** `inputs.text` is a custom extension, not part of the
+  /// official Adaptive Cards HostConfig schema.
+  required final TextInputConfig text,
+
+  /// Compact `Input.ChoiceSet` dropdown settings (`inputs.choiceSet`).
+  ///
+  /// **Non-standard:** `inputs.choiceSet` is a custom extension, not part of
+  /// the official Adaptive Cards HostConfig schema.
+  required final ChoiceSetConfig choiceSet,
+}) {
   /// Creates input styling settings from explicit values.
-  new({
-    required this.label,
-    required this.errorMessage,
-    required this.text,
-    required this.choiceSet,
-  });
+  this;
 
   /// Parses `inputs` from HostConfig JSON.
   factory fromJson(Map<String, dynamic> json) {
@@ -23,22 +36,4 @@ class InputsConfig {
       choiceSet: ChoiceSetConfig.fromJson(json['choiceSet'] ?? {}),
     );
   }
-
-  /// Label typography for required and optional inputs (`inputs.label`).
-  final LabelConfig label;
-
-  /// Validation error message typography (`inputs.errorMessage`).
-  final ErrorMessageConfig errorMessage;
-
-  /// `Input.Text`-specific settings (`inputs.text`).
-  ///
-  /// **Non-standard:** `inputs.text` is a custom extension, not part of the
-  /// official Adaptive Cards HostConfig schema.
-  final TextInputConfig text;
-
-  /// Compact `Input.ChoiceSet` dropdown settings (`inputs.choiceSet`).
-  ///
-  /// **Non-standard:** `inputs.choiceSet` is a custom extension, not part of
-  /// the official Adaptive Cards HostConfig schema.
-  final ChoiceSetConfig choiceSet;
 }

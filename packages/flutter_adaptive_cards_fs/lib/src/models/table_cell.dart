@@ -7,25 +7,54 @@ import 'package:flutter/foundation.dart';
 /// * https://adaptivecards.io/explorer/TableCell.html
 /// * https://learn.microsoft.com/en-us/adaptive-cards/schema-explorer/table-cell
 @immutable
-class TableCellModel {
+class const TableCellModel({
+  /// List of AdaptiveCard elements contained in this cell
+  required final List<Map<String, dynamic>> items,
+
+  /// Style hint for the cell
+  final String? style,
+
+  /// Vertical alignment of cell content
+  final String? verticalContentAlignment,
+
+  /// Horizontal alignment of cell content
+  final String? horizontalContentAlignment,
+
+  /// Background image for the cell
+  final dynamic backgroundImage,
+
+  /// Minimum height in pixels
+  final String? minHeight,
+
+  /// Select action when cell is tapped
+  final Map<String, dynamic>? selectAction,
+
+  /// Fallback content
+  final dynamic fallback,
+
+  /// Show separator
+  final bool? separator,
+
+  /// Spacing
+  final String? spacing,
+
+  /// Unique identifier
+  final String? id,
+
+  /// Visibility flag
+  final bool? isVisible,
+
+  /// Requirements
+  final Map<String, String>? requires,
+
+  /// Right-to-left text
+  final bool? rtl,
+
+  /// Optional responsive `layouts` array (e.g. `Layout.Flow`) for this cell.
+  final List<dynamic>? layouts,
+}) {
   /// Creates a table cell from parsed JSON properties.
-  const new({
-    required this.items,
-    this.style,
-    this.verticalContentAlignment,
-    this.horizontalContentAlignment,
-    this.backgroundImage,
-    this.minHeight,
-    this.selectAction,
-    this.fallback,
-    this.separator,
-    this.spacing,
-    this.id,
-    this.isVisible,
-    this.requires,
-    this.rtl,
-    this.layouts,
-  });
+  this;
 
   /// Creates a TableCellModel from JSON map
   factory fromJson(Map<String, dynamic> json) {
@@ -52,51 +81,6 @@ class TableCellModel {
       layouts: json['layouts'] as List<dynamic>?,
     );
   }
-
-  /// List of AdaptiveCard elements contained in this cell
-  final List<Map<String, dynamic>> items;
-
-  /// Style hint for the cell
-  final String? style;
-
-  /// Vertical alignment of cell content
-  final String? verticalContentAlignment;
-
-  /// Horizontal alignment of cell content
-  final String? horizontalContentAlignment;
-
-  /// Background image for the cell
-  final dynamic backgroundImage;
-
-  /// Minimum height in pixels
-  final String? minHeight;
-
-  /// Select action when cell is tapped
-  final Map<String, dynamic>? selectAction;
-
-  /// Fallback content
-  final dynamic fallback;
-
-  /// Show separator
-  final bool? separator;
-
-  /// Spacing
-  final String? spacing;
-
-  /// Unique identifier
-  final String? id;
-
-  /// Visibility flag
-  final bool? isVisible;
-
-  /// Requirements
-  final Map<String, String>? requires;
-
-  /// Right-to-left text
-  final bool? rtl;
-
-  /// Optional responsive `layouts` array (e.g. `Layout.Flow`) for this cell.
-  final List<dynamic>? layouts;
 
   /// Converts TableCellModel to JSON map
   Map<String, dynamic> toJson() {

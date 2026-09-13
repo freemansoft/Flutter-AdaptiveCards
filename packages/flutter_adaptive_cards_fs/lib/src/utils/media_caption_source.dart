@@ -1,22 +1,18 @@
 /// A single closed-caption track descriptor for a `Media` element, parsed
 /// from a `captionSources` entry. Hosts that support caption rendering read
 /// [url] and [mimeType]; [label] is the human-readable track name.
-class CaptionSource {
-  /// Creates a caption source from its parsed fields.
-  const new({
-    required this.mimeType,
-    required this.url,
-    required this.label,
-  });
-
+class const CaptionSource({
   /// MIME type of the caption track (e.g. `vtt`).
-  final String mimeType;
+  required final String mimeType,
 
   /// Absolute or data URL of the caption track.
-  final String url;
+  required final String url,
 
   /// Human-readable track label shown in caption selectors.
-  final String label;
+  required final String label,
+}) {
+  /// Creates a caption source from its parsed fields.
+  this;
 }
 
 /// Parses a `captionSources` JSON array into [CaptionSource]s, skipping any

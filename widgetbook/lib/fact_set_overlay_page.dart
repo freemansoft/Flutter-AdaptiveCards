@@ -8,7 +8,12 @@ import 'package:widgetbook/widgetbook.dart';
 import 'package:widgetbook_workspace/overlay_demo_scaffold.dart';
 import 'package:widgetbook_workspace/widgetbook_card_registry.dart';
 
-enum FactSetOverlayPreset { baseline, colors, cities, foods }
+enum FactSetOverlayPreset() {
+  baseline,
+  colors,
+  cities,
+  foods,
+}
 
 const _factSetId = 'demoFactSet';
 
@@ -44,9 +49,7 @@ List<Fact>? factsForPreset(FactSetOverlayPreset preset) {
 
 final factSetOverlayPageKey = GlobalKey<State<FactSetOverlayPage>>();
 
-class FactSetOverlayPage extends StatefulWidget {
-  const new({super.key});
-
+class const FactSetOverlayPage({super.key}) extends StatefulWidget {
   @override
   State<FactSetOverlayPage> createState() => _FactSetOverlayPageState();
 }

@@ -12,4 +12,5 @@ analyzer:
 
 linter:
   rules:
+    use_declaring_parameters: true
     always_use_package_imports: true

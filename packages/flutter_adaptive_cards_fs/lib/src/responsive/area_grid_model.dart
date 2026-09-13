@@ -1,14 +1,14 @@
 /// A single column track of a `Layout.AreaGrid`: either a percentage of the
 /// available width (`isPercent == true`) or a fixed pixel width.
-class AreaGridTrack {
-  /// Creates a column track with a [value] interpreted per [isPercent].
-  const new({required this.value, required this.isPercent});
-
+class const AreaGridTrack({
   /// The numeric width (percent points when [isPercent], else logical pixels).
-  final double value;
+  required final double value,
 
   /// Whether [value] is a percentage of available width (vs. fixed pixels).
-  final bool isPercent;
+  required final bool isPercent,
+}) {
+  /// Creates a column track with a [value] interpreted per [isPercent].
+  this;
 
   /// Parses one `columns` entry: a number → percent; a `"<n>px"` string →
   /// pixels.
@@ -32,15 +32,24 @@ class AreaGridTrack {
 }
 
 /// A named placement region in a `Layout.AreaGrid`. Indices are 1-based.
-class GridAreaModel {
+class const GridAreaModel({
+  /// Area name; matched against an element's `grid.area`.
+  required final String name,
+
+  /// 1-based start column (clamped to >= 1).
+  required final int column,
+
+  /// Number of columns spanned (clamped to >= 1).
+  required final int columnSpan,
+
+  /// 1-based start row (clamped to >= 1).
+  required final int row,
+
+  /// Number of rows spanned (clamped to >= 1).
+  required final int rowSpan,
+}) {
   /// Creates a named area at a 1-based [column]/[row] with the given spans.
-  const new({
-    required this.name,
-    required this.column,
-    required this.columnSpan,
-    required this.row,
-    required this.rowSpan,
-  });
+  this;
 
   /// Parses one `areas` entry, applying spec defaults (column/row 1, spans 1)
   /// and clamping non-positive values to 1.
@@ -52,21 +61,6 @@ class GridAreaModel {
     rowSpan: _posInt(json['rowSpan'], 1),
   );
 
-  /// Area name; matched against an element's `grid.area`.
-  final String name;
-
-  /// 1-based start column (clamped to >= 1).
-  final int column;
-
-  /// Number of columns spanned (clamped to >= 1).
-  final int columnSpan;
-
-  /// 1-based start row (clamped to >= 1).
-  final int row;
-
-  /// Number of rows spanned (clamped to >= 1).
-  final int rowSpan;
-
   static int _posInt(Object? v, int fallback) {
     final n = v is num ? v.toInt() : fallback;
     return n < 1 ? 1 : n;
@@ -74,14 +68,22 @@ class GridAreaModel {
 }
 
 /// Parsed `Layout.AreaGrid` object (tracks, named areas, spacing tokens).
-class AreaGridLayout {
+class const AreaGridLayout({
+  /// Declared column tracks (may be fewer than the grid's total columns).
+  required final List<AreaGridTrack> columns,
+
+  /// Named areas elements are placed into via `grid.area`.
+  required final List<GridAreaModel> areas,
+
+  /// Spacing token between columns (HostConfig spacing name; resolved by
+  /// widget).
+  required final String? columnSpacing,
+
+  /// Spacing token between rows (HostConfig spacing name; resolved by widget).
+  required final String? rowSpacing,
+}) {
   /// Creates a parsed AreaGrid layout.
-  const new({
-    required this.columns,
-    required this.areas,
-    required this.columnSpacing,
-    required this.rowSpacing,
-  });
+  this;
 
   /// Parses a selected `Layout.AreaGrid` map. Unparseable `columns` entries are
   /// dropped (the solver treats the shortfall as implied equal-share columns).
@@ -104,17 +106,4 @@ class AreaGridLayout {
       rowSpacing: map['rowSpacing'] as String?,
     );
   }
-
-  /// Declared column tracks (may be fewer than the grid's total columns).
-  final List<AreaGridTrack> columns;
-
-  /// Named areas elements are placed into via `grid.area`.
-  final List<GridAreaModel> areas;
-
-  /// Spacing token between columns (HostConfig spacing name; resolved by
-  /// widget).
-  final String? columnSpacing;
-
-  /// Spacing token between rows (HostConfig spacing name; resolved by widget).
-  final String? rowSpacing;
 }

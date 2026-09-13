@@ -12,17 +12,13 @@ export 'package:flutter_adaptive_cards_fs/src/cards/actions/popover_container.da
 ///
 /// Renders `Action.Popover` as an elevated button that opens the nested `card`
 /// payload in a dialog.
-class AdaptiveActionPopover extends StatefulWidget
-    with AdaptiveElementWidgetMixin {
+class AdaptiveActionPopover({
+  @override required final Map<String, dynamic> adaptiveMap,
+}) extends StatefulWidget with AdaptiveElementWidgetMixin {
   /// Creates an `Action.Popover` widget from [adaptiveMap].
-  new({
-    required this.adaptiveMap,
-  }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
+  this : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
   }
-
-  @override
-  final Map<String, dynamic> adaptiveMap;
 
   @override
   late final String id;

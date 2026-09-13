@@ -12,17 +12,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 /// https://adaptivecards.io/explorer/RichTextBlock.html
 /// https://learn.microsoft.com/en-us/adaptive-cards/schema-explorer/rich-text-block
 ///
-class AdaptiveRichTextBlock extends ConsumerStatefulWidget
-    with AdaptiveElementWidgetMixin {
+class AdaptiveRichTextBlock({
+  @override required final Map<String, dynamic> adaptiveMap,
+}) extends ConsumerStatefulWidget with AdaptiveElementWidgetMixin {
   /// Creates a rich text block from [adaptiveMap] JSON.
-  new({
-    required this.adaptiveMap,
-  }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
+  this : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
   }
-
-  @override
-  final Map<String, dynamic> adaptiveMap;
 
   @override
   late final String id;

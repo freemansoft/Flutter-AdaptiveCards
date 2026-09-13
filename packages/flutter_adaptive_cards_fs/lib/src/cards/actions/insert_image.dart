@@ -7,17 +7,13 @@ import 'package:flutter_adaptive_cards_fs/src/utils/utils.dart';
 /// https://adaptivecards.io/explorer/Action.InsertImage.html
 ///
 /// Renders `Action.InsertImage` as an elevated button (stub implementation).
-class AdaptiveActionInsertImage extends StatefulWidget
-    with AdaptiveElementWidgetMixin {
+class AdaptiveActionInsertImage({
+  @override required final Map<String, dynamic> adaptiveMap,
+}) extends StatefulWidget with AdaptiveElementWidgetMixin {
   /// Creates an `Action.InsertImage` widget from [adaptiveMap].
-  new({
-    required this.adaptiveMap,
-  }) : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
+  this : super(key: generateAdaptiveWidgetKey(adaptiveMap)) {
     id = loadId(adaptiveMap);
   }
-
-  @override
-  final Map<String, dynamic> adaptiveMap;
 
   @override
   late final String id;

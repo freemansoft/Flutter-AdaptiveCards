@@ -1,11 +1,14 @@
 /// HostConfig `separator` section controlling Separator element line
 /// appearance.
-class SeparatorConfig {
+class SeparatorConfig({
+  /// Separator line thickness in pixels (`lineThickness`).
+  required final int lineThickness,
+
+  /// Separator line color as a hex string (`lineColor`).
+  required final String lineColor,
+}) {
   /// Creates separator line settings from explicit values.
-  new({
-    required this.lineThickness,
-    required this.lineColor,
-  });
+  this;
 
   /// Parses `separator` from HostConfig JSON.
   factory fromJson(Map<String, dynamic> json) {
@@ -14,10 +17,4 @@ class SeparatorConfig {
       lineColor: json['lineColor']?.toString() ?? '#B2000000',
     );
   }
-
-  /// Separator line thickness in pixels (`lineThickness`).
-  final int lineThickness;
-
-  /// Separator line color as a hex string (`lineColor`).
-  final String lineColor;
 }

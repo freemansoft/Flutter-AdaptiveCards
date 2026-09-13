@@ -13,19 +13,21 @@ void main() {
 }
 
 /// The root widget of the application.
-class AdaptiveExplorerApp extends StatelessWidget {
+class const AdaptiveExplorerApp({
+  super.key,
+
+  /// Optional initial template JSON for testing.
+  final Map<String, dynamic>? initialTemplateJson,
+
+  /// Optional initial data JSON for testing.
+  final Map<String, dynamic>? initialDataJson,
+}) extends StatelessWidget {
   /// Creates a new [AdaptiveExplorerApp].
   /// Two parameters are available for loading initial JSON during tests.
   /// This supports two optional parameters to simplify testing:
   /// * [initialTemplateJson] can be injected as an initial template JSON.
   /// * [initialDataJson] can be injected as an initial data JSON.
-  const new({super.key, this.initialTemplateJson, this.initialDataJson});
-
-  /// Optional initial template JSON for testing.
-  final Map<String, dynamic>? initialTemplateJson;
-
-  /// Optional initial data JSON for testing.
-  final Map<String, dynamic>? initialDataJson;
+  this;
 
   @override
   Widget build(BuildContext context) {
@@ -44,15 +46,17 @@ class AdaptiveExplorerApp extends StatelessWidget {
 }
 
 /// The main page of the application.
-class HomePage extends StatefulWidget {
-  /// Creates a new [HomePage].
-  const new({super.key, this.initialTemplateJson, this.initialDataJson});
+class const HomePage({
+  super.key,
 
   /// Optional initial template JSON so we don't have to open a file every time.
-  final Map<String, dynamic>? initialTemplateJson;
+  final Map<String, dynamic>? initialTemplateJson,
 
   /// Optional initial data JSON so we don't have to open a file every time.
-  final Map<String, dynamic>? initialDataJson;
+  final Map<String, dynamic>? initialDataJson,
+}) extends StatefulWidget {
+  /// Creates a new [HomePage].
+  this;
 
   @override
   State<HomePage> createState() => _HomePageState();

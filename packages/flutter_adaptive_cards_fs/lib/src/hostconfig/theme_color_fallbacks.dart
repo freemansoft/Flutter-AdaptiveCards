@@ -12,17 +12,15 @@ import 'package:flutter_adaptive_cards_fs/src/hostconfig/separator_config.dart';
 ///
 /// Used when HostConfig JSON omits color sections. The resolver receives
 /// a fresh instance from the ambient theme on each build.
-class ThemeColorFallbacks {
+class ThemeColorFallbacks(final ThemeData _theme) {
   /// Builds color fallbacks from [theme]'s [ColorScheme].
-  new(ThemeData theme) : _theme = theme;
+  this;
 
   /// Light-theme fallbacks for HostConfig JSON parsing when no [ThemeData] is
   /// available at parse time.
   static final ThemeColorFallbacks forParsing = ThemeColorFallbacks(
     ThemeData(),
   );
-
-  final ThemeData _theme;
 
   ColorScheme get _cs => _theme.colorScheme;
 

@@ -5,29 +5,28 @@ import 'package:flutter_adaptive_cards_host_fs/src/security/bounded_json.dart';
 import 'package:http/http.dart' as http;
 
 /// HTTP POST implementation of [AdaptiveCardBackendClient].
-class HttpAdaptiveCardBackendClient implements AdaptiveCardBackendClient {
+class HttpAdaptiveCardBackendClient({
+  /// Invoke URL for the flow-service or bot endpoint.
+  required final Uri endpoint,
+  http.Client? client,
+  Map<String, String> headers = const {},
+
+  /// Maximum decoded response body size, in bytes.
+  final int maxResponseBytes = 1024 * 1024,
+}) implements AdaptiveCardBackendClient {
   /// Creates a client that POSTs JSON to [endpoint].
   ///
   /// Optional [client] supports tests; [headers] are merged with
   /// `Content-Type: application/json`. The response body is capped at
   /// [maxResponseBytes] (default 1 MiB) to bound memory use on untrusted
   /// backend responses.
-  new({
-    required this.endpoint,
-    http.Client? client,
-    Map<String, String> headers = const {},
-    this.maxResponseBytes = 1024 * 1024,
-  }) : _client = client ?? http.Client(),
-       _headers = {'Content-Type': 'application/json', ...headers};
+  this;
 
-  /// Invoke URL for the flow-service or bot endpoint.
-  final Uri endpoint;
-
-  /// Maximum decoded response body size, in bytes.
-  final int maxResponseBytes;
-
-  final http.Client _client;
-  final Map<String, String> _headers;
+  final http.Client _client = client ?? http.Client();
+  final Map<String, String> _headers = {
+    'Content-Type': 'application/json',
+    ...headers,
+  };
 
   /// Transport hook for `AdaptiveCardBackendHandlers`; implement to POST invoke
   /// JSON and supply the decoded response map (throws

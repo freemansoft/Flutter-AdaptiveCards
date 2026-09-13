@@ -3,7 +3,11 @@ import 'package:flutter_adaptive_cards_fs/src/models/adaptive_card_update.dart';
 import 'package:flutter_adaptive_cards_fs/src/riverpod/element_overlay_extension.dart';
 
 /// Runtime overlay patch field on an element (`AdaptiveElementUpdate` / host map).
-enum ElementOverlayField {
+enum ElementOverlayField(
+  /// Key used in `applyUpdatesFromMap` for this field (not used for extension
+  /// payload).
+  final String patchKey,
+) {
   /// Overrides baseline `"isVisible"`.
   isVisible('isVisible'),
 
@@ -53,15 +57,14 @@ enum ElementOverlayField {
   extensionPayload('extensionPayload');
 
   /// Creates a field identifier with host [patchKey] name where applicable.
-  new(this.patchKey);
-
-  /// Key used in `applyUpdatesFromMap` for this field (not used for extension
-  /// payload).
-  final String patchKey;
+  this;
 }
 
 /// Runtime overlay patch field on an action (`AdaptiveActionUpdate` / host map).
-enum ActionOverlayField {
+enum ActionOverlayField(
+  /// Key used in `applyUpdatesFromMap` for this field.
+  final String patchKey,
+) {
   /// Overrides baseline `"isEnabled"`.
   isEnabled('isEnabled'),
 
@@ -75,10 +78,7 @@ enum ActionOverlayField {
   iconUrl('iconUrl');
 
   /// Creates a field identifier with host [patchKey] name.
-  new(this.patchKey);
-
-  /// Key used in `applyUpdatesFromMap` for this field.
-  final String patchKey;
+  this;
 }
 
 /// Maps JSON element/action `type` strings to supported overlay fields.
@@ -86,15 +86,14 @@ enum ActionOverlayField {
 /// Hosts use this to discover valid patches (see `docs/overlay-properties-by-type.md`)
 /// and the library uses it for debug validation in `applyUpdates`.
 @immutable
-class OverlayCapabilityRegistry {
-  /// Creates a registry scoped to optional [overlayExtensions] on the card.
-  const new({
-    this.overlayExtensions = const CardOverlayExtensionRegistry(),
-  });
-
+class const OverlayCapabilityRegistry({
   /// Registered overlay extensions (e.g. charts) that add
   /// [ElementOverlayField.extensionPayload].
-  final CardOverlayExtensionRegistry overlayExtensions;
+  final CardOverlayExtensionRegistry overlayExtensions =
+      const CardOverlayExtensionRegistry(),
+}) {
+  /// Creates a registry scoped to optional [overlayExtensions] on the card.
+  this;
 
   static const Set<ElementOverlayField> _visibilityOnly = {
     ElementOverlayField.isVisible,
