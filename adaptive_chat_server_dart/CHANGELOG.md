@@ -2,7 +2,15 @@
 
 ## [0.18.0]
 
-- no changes yet
+- Docs: **the blog writing rules moved from `blog/README.md` into the
+  `adaptive-cards-blog-writing` skill** (`.claude/skills/adaptive-cards-blog-writing/`).
+  Openings, register, cross-article references, attribution, presentation, and
+  the outline for a new article now live in the skill's `SKILL.md` and
+  `references/style-rules.md`, joined by rules from the article 4 revision: one
+  name per concept taken from the code, vendor-qualified mechanism names,
+  headings that state one concrete finding, claims checked against source, and
+  the word-count and figure-diff commands. The README keeps the series plan,
+  Figures, and Terms and units; CLAUDE.md points blog work at the skill.
 
 ## [0.17.0]
 

@@ -210,6 +210,8 @@ Write findings and prose documentation in a flat analytical register — **sound
 - **Write headings as findings, not verdicts.**
 - **End on the last factual sentence.**
 
+Blog articles under `adaptive_chat_server_dart/blog/` follow these rules plus the series rules (no em dashes, no first-person singular, headings, verification commands) in the **`adaptive-cards-blog-writing`** skill.
+
 Wording only: never change a figure, date, or claim while adjusting register — verify by diffing a document's numeric tokens against the previous commit. Strip amplification, not substance: a claim the data supports is not hype, and structural bold on topic sentences is what makes a long file scannable.
 
 ## Analysis Options
