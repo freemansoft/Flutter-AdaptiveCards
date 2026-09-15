@@ -1,73 +1,87 @@
-# The tool channel drove malformed JSON to zero and lost on half the models
+# The Ollama tool channel fixed malformed JSON and still lost on half the models
 
 In
 [`freemansoft/Flutter-AdaptiveCards`](https://github.com/freemansoft/Flutter-AdaptiveCards)
-a demonstration Dart chat server hands a question to a local Ollama model and
+a demonstration Dart chat server hands a question to a local Ollama model. It
 asks for the answer as Adaptive Card JSON, a tree of typed UI components called
-elements (`TextBlock`, `Table`, `Input.ChoiceSet`), which a Flutter client
-renders as interactive UI rather than as text. That card comes back in the
-model's message body: JSON text inside `message.content`, which the server
-parses to recover the card.
+elements (`TextBlock`, `Table`, `Input.ChoiceSet`). A Flutter client renders
+that card as interactive UI rather than as text. By default the card comes back
+in the model's message body, as JSON text inside `message.content`, which the
+chat server parses to recover the card.
+
+Ollama also offers a second route, the tool channel. The request body declares
+a `render_adaptive_card` function and a schema for its arguments, in the
+standard tool-calling format. Nothing ever runs that function. It exists only
+to give the model a schema to answer into. When the model uses it, the response
+carries the card in `message.tool_calls[0].function.arguments`, normally
+already decoded into a structure rather than as text the server has to parse.
+The model, the question, and the requested card are the same on both routes.
+This article asks whether moving the card into the tool call produces better
+cards.
 
 Every figure below comes from
 [`ModelBehavior.md`](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md),
 a lab notebook in that repository.
 
-## The tool channel moves the card out of the message body
+## The Ollama tool channel drove malformed JSON to zero on all eight models
 
-Ollama offers a second route, the tool channel. Declare a
-`render_adaptive_card` function and the model answers by calling it. The card
-arrives as that call's arguments, a structure the runtime has already parsed,
-with no JSON text left for the server to recover. Same model, same question,
-same card. What changes is the slot it travels in.
+Moving the card into the tool call's arguments drove malformed JSON to **zero
+on all eight models that could use the channel**. There were no
+unexpected-character errors, no arrays missing their `[ ]`, no cards truncated
+mid-generation, and no duplicate keys. We sometimes see each of these on the
+prose channel. On four of those same eight models the tool channel still scored
+worse than prose did, and nothing shipped. The reason is a subtraction: the
+channel removed one failure family and added two others, and on four models the
+additions outweighed the removal.
 
-Moving the card into that slot drove malformed JSON to **zero on all eight
-models that could use the channel**. No unexpected-character errors, no arrays
-missing their `[ ]`, no cards truncated mid-generation, no duplicate keys. On
-four of those same eight models the tool channel still scored worse than prose
-did, and nothing shipped. The reason is a subtraction: the channel removed one
-failure family and added two others, and on four models the additions outweighed
-the removal.
+## Terms used in this article
 
-## The same code scores both arms, against the unseeded prose run
+| Term                                | What it means here                                                                                                                                                                                                                                                                                                                                                                      |
+| ----------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Channel**                         | Where the model's reply travels. `prose` puts the card JSON as text in `message.content`. `tool` puts it in the arguments of a `render_adaptive_card` call. The name comes from the `--channel` flag of the probe `shape_ab.dart`; Ollama itself has no name for the distinction.                                                                                                       |
+| **Seeded** and **unseeded**         | Seeded prepends a synthetic two-turn card exchange to the conversation, so a card is already the established format. Unseeded omits it. The Ollama tool channel cannot be seeded, and the next section explains why.                                                                                                                                                                    |
+| **Cold-start** and **with-history** | The question asked first, or asked with ordinary exchanges already in the conversation.                                                                                                                                                                                                                                                                                                 |
+| **Win**, **unaffected**, **loss**   | Verdicts on a model's tool-channel score against its own unseeded prose score, compared separately for cold-start and with-history. Win: better by more than 1 case on at least one condition, and worse on neither. Loss: worse by more than 1 case on at least one condition. Unaffected: neither. Both unaffected rows move by 1 case or less, inside the notebook's ±1 noise floor. |
+
+## Both channels are judged by the same code, against unseeded prose only
 
 [`tool/model_probes/shape_ab.dart`](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/tool/model_probes/shape_ab.dart)
 `--channel tool` runs the same 25 shape cases through a `render_adaptive_card`
 function. It converts the call's arguments into the reply string a prose answer
-would have carried, so the same code judges both arms of the A/B, prose and
-tool. The run took place on 2026-08-21 against the eight models that a separate
+would have carried, so the same code judges both channels, prose and tool. The
+run took place on 2026-08-21 against the eight models that a separate
 capability probe,
 [`tool_call_probe.dart`](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/tool/model_probes/tool_call_probe.dart),
 had rated `supported` out of the roster of fifteen. The first article in this
 series describes the four-way split that produced those eight. Conditions:
-`--samples 2`, `t=0`, cold-start and with-history, and unseeded. Unseeded means
-without the card seed, a synthetic two-turn card exchange the server normally
-prepends to the context so a card is the conversation's established format. A
-case counts as passed only if both of its two runs passed, in both arms.
+`--samples 2`, `t=0`, cold-start and with-history, and unseeded. In each
+channel, a case counts as passed only if both of its two runs passed.
 
 **The probe compares each tool run against that model's recorded `unaided`
-run, the unseeded prose arm, never the seeded one.** The tool arm cannot be
-seeded. The seed's assistant turn holds raw card JSON, which is not what a
-tool-channel history looks like. Scoring the tool arm against a seeded prose
-baseline would hand prose an advantage the tool arm cannot have. Every other
-shape figure in this series is seeded. None of the figures below is.
+run, the unseeded prose channel, never the seeded one.** The Ollama tool
+channel cannot be seeded. The seed is itself a prose-channel artifact: a
+synthetic assistant turn holding raw card JSON as text. Grafted onto a
+tool-call conversation, it would not represent either channel cleanly.
+`shape_ab.dart` turns the seed on by default and refuses `--channel tool`
+unless `--no-seed-card` is also passed. Scoring the tool channel against a
+seeded prose baseline would hand prose an advantage the tool channel cannot
+have. Every other shape figure in this series is seeded. None of the figures
+below is.
 
-A model counts as a **win** only if the tool channel never made it worse on
-either condition.
-
-The two channels are not symmetric in what stands between the model and the
-renderer:
+The probe uses one channel for a whole run, and the server uses only the prose
+channel, so no question goes down both paths. The two paths differ in what
+stands between the model and the renderer:
 
 ```mermaid
 flowchart LR
-  Q["Card-shaped question"]
+  Q{"Card-shaped question\n(one channel per request)"}
 
-  Q --> M1["Model replies in\nmessage.content\n(card JSON as text)"]
+  Q -- "prose channel" --> M1["Model replies in\nmessage.content\n(card JSON as text)"]
   M1 --> DETECT{"card_detect.dart\ntryParseCardBody()"}
   DETECT -- parses --> R["Renderer\n(Flutter client)"]
   DETECT -- "invalid JSON, duplicate key,\ntruncated mid-generation" --> BROKEN["label: broken\ncaught, visible failure"]
 
-  Q --> M2["Model calls render_adaptive_card\nwith structured arguments"]
+  Q -- "tool channel" --> M2["Model calls render_adaptive_card\nwith structured arguments"]
   M2 --> ARGS["tool_calls[0].function.arguments\n(card body, already structured)"]
   ARGS -. "no equivalent gate" .-> R
   ARGS -. "element type that does not exist" .-> SILENT["renders as an\ninvisible blank\nuncaught, silent failure"]
@@ -88,7 +102,8 @@ JSON is not the same as zero broken cards.
 Cold-start and with-history scores are out of 25 cases each, unseeded, `t=0`,
 `--samples 2`, from
 [the tool-channel section](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md#the-tool-channel-measured-against-prose)
-of the notebook.
+of the notebook. The verdict column applies the win, unaffected, and loss rules
+from the terms table.
 
 | Model                        | Tool cold | Prose cold |   Δ | Tool w/ history | Prose w/ history |   Δ | Verdict    |
 | ---------------------------- | --------: | ---------: | --: | --------------: | ---------------: | --: | ---------- |
@@ -110,18 +125,18 @@ from each other and from zero. Only `qwen3-coder:30b`'s +6 and
 large enough to act on.
 
 The table reads as a contradiction. The channel removed a whole failure family
-from every row, and half the rows got worse anyway. Bucketing the failed calls
-resolves it.
+from every row, and half the rows got worse anyway. The failure buckets in the
+next section account for it.
 
-## Every failed call, bucketed by the label the judge already wrote
+## Every failed call, bucketed by its label
 
 The decomposition costs no model calls. It re-scores the same results JSON,
 bucketing every failed call by the `label` the judge wrote at the time. Each
-arm is **100 calls**: 25 cases × 2 samples × cold-start and with-history. Of
-those, 96 ask for a card and 4 are the negative control, the case that wants a
-plain prose answer. The headline `n/25` counts a case as passing only when every
-sample of it passed, so these per-call buckets are a finer view of the same
-runs, not a second metric.
+channel is **100 calls**: 25 cases × 2 samples × cold-start and with-history.
+Of those, 96 ask for a card and 4 are the negative control: one case, run four
+times, that wants a plain prose answer. The headline `n/25` counts a case as
+passing only when every sample of it passed, so these per-call buckets are a
+finer view of the same runs, not a second metric.
 
 Four buckets, by `label` prefix:
 
@@ -131,9 +146,9 @@ Four buckets, by `label` prefix:
 - `infra`: `broken: HTTP 500`, `broken: timeout`. Listed separately because
   the channel does not cause it.
 
-Both tables count failed calls per 100 calls per arm, from
+Both tables count failed calls per 100 calls per channel, from
 [the failure decomposition](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md#why-it-did-not-pay--the-failure-decomposition)
-in the notebook. The prose arm first:
+in the notebook. The prose channel first:
 
 | Model                        | Verdict    | malformed | declined | wrong-shape | infra |
 | ---------------------------- | ---------- | --------: | -------: | ----------: | ----: |
@@ -146,8 +161,8 @@ in the notebook. The prose arm first:
 | `nemotron-3-nano:30b`        | loss       |        10 |        4 |          22 |     0 |
 | `nemotron-3-nano:4b`         | loss       |         6 |       52 |          10 |     0 |
 
-The tool arm, same models and same 100 calls each. The decline rate is the
-`declined` column as a share of the 96 card-asking calls:
+The Ollama tool channel, same models and same 100 calls each. The decline rate
+is the `declined` column as a share of the 96 card-asking calls:
 
 | Model                        | Verdict    | malformed | declined | wrong-shape | infra | Decline rate |
 | ---------------------------- | ---------- | --------: | -------: | ----------: | ----: | -----------: |
@@ -160,10 +175,10 @@ The tool arm, same models and same 100 calls each. The decline rate is the
 | `nemotron-3-nano:30b`        | loss       |         0 |       20 |          34 |     0 |          21% |
 | `nemotron-3-nano:4b`         | loss       |         0 |       48 |          32 |     2 |          50% |
 
-**The `malformed` column is zero on all eight models in the tool arm.** Moving
-the card out of the message body removes the serialization burden. That is the
-effect the channel promised, and it held on every row, including the three
-where prose lost 18, 21, and 10 calls to it.
+**The `malformed` column is zero on all eight models in the tool channel.**
+Moving the card out of the message body removes the serialization burden. That
+is the effect the channel promised, and it held on every row, including the
+three where prose lost 18, 21, and 10 calls to it.
 
 Two costs replace it.
 
@@ -178,12 +193,13 @@ nothing here measures the mechanism. `nemotron-3-nano:30b` gains 12 wrong-shape
 failures, labeled `{TextBlock} want {Chart.Line}`, `{TextBlock} want
 {CodeBlock}`, and `{} want {FactSet, Table}`. `nemotron-3-nano:4b` gains 22.
 
-**The outcome is a subtraction: malformed failures recovered, minus declines
-and shape regressions gained.** That subtraction accounts for all eight rows.
-The two wins are the rows where the recovered column is large and the paid
-column is small. `qwen3-coder:30b` recovers 21 calls and pays 3. The three
-nemotron losses are the reverse, recovering 8, 10, and 6 while paying 22, 28,
-and 18. Neither side is a property of size or family.
+**The outcome is a subtraction: what the channel recovers in malformed
+failures, minus what it pays in declines and wrong-shape failures.** That
+subtraction accounts for all eight rows. The two wins are the rows where the
+recovered column is large and the paid column is small. `qwen3-coder:30b`
+recovers 21 calls and pays 3. The three nemotron losses are the reverse,
+recovering 8, 10, and 6 while paying 22, 28, and 18. Neither side is a property
+of size or family.
 
 The two rows the ±1 noise floor leaves unexplained on the headline numbers fit
 the same subtraction. `qwen3.6:27b-coding-nvfp4` recovers 6 and pays 4, a net
@@ -199,30 +215,39 @@ the right card but fails to serialize it.** It does not help a model whose
 failures are about selecting the wrong card, and it costs a model that is
 reluctant to commit to a card at all.
 
-## Architecture does not separate wins from losses, and the chat template predicts better
+## Model size does not separate wins from losses
 
-`qwen3-coder:30b` (30B, 3B active) is a win. `nemotron-3-nano:30b` (30B, 3B
-active) is a loss. Same architecture class, opposite results. The parameter
-count and the sparsity pattern are not doing the work here.
+`qwen3-coder:30b` is a win and `nemotron-3-nano:30b` is a loss. Both are
+mixture-of-experts models in the same size class: 30B parameters in total, 3B
+of them active for any one token. The pair matches on size, not necessarily on
+the rest of its LLM architecture. It shows that size alone does not separate
+the groups, and it leaves architecture as a whole untested.
 
-The chat template is the better predictor. It is part of a model's packaging,
-not its weights: the per-build text template that formats the conversation into
-the prompt the weights actually see, including how it injects tool definitions
-and how it writes a tool call back out. `nemotron-3-nano:30b` and the
-`hf.co/unsloth/Nemotron-3-Nano-30B-A3B-GGUF:latest` build are the same base
-weights under different packaging.
+The chat template is a better candidate, on the evidence of one pair of builds.
+A chat template ships as part of the model build, in the same download as the
+weights, but it is neither the weights nor the architecture. It is the text
+template that formats the conversation into the prompt the weights see. That
+includes how tool definitions are injected and how a tool call is written back
+out. `nemotron-3-nano:30b` and the
+`hf.co/unsloth/Nemotron-3-Nano-30B-A3B-GGUF:latest` build share the same base
+weights under a different chat template.
 [The tool-calling capability probe](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md#not-a-card-test-the-tool-calling-canary)
-rates one `supported` and the other `supportedButDeclines`, so the packaging
-changed the verdict where the weights did not. Separately,
-`llama3-groq-tool-use:8b`, fine-tuned for tool use, never reaches for the card
-tool.
+rates one `supported` and the other `supportedButDeclines`, so on that probe
+the packaging changed the verdict where the weights did not. The unsloth build
+is not one of the eight in the shape run, so this is evidence about willingness
+to call the tool, not about win or loss.
+
+Fine-tuning for tool use does not guarantee a card-tool call.
+`llama3-groq-tool-use:8b` is fine-tuned for tool use and does not reach for the
+card tool at all.
 
 One variable is still untested. **Every probe in the notebook sends
-`think: false` unconditionally, so all sixteen runs above are thinking-off.** A
-thinking-on arm is the one variant of this measurement not yet run, and the
-notebook lists it as open work.
+`think: false` unconditionally, so all sixteen runs above (eight models × two
+channels) are thinking-off.** That setting switches off the separate reasoning
+pass on models that have one. A thinking-on variant is the one configuration of
+this measurement not yet run, and the notebook lists it as open work.
 
-## A one-request gate over-predicted willingness, and the channel hides what it does not remove
+## A one-request gate over-predicts willingness
 
 **The capability probe over-predicted willingness.** It rated all eight of these
 models `supported` on a single card request. Across 25 cases, four of them
@@ -231,22 +256,24 @@ reach for it reliably" are separate properties, in the same way the probe
 itself found "can call a tool" and "uses it for a card" to be separate. A
 one-request gate measures the weaker of the two.
 
-**The channel also converts detected failures into silent ones.**
+## The Ollama tool channel converts detected failures into silent ones
+
 [`lib/src/card_detect.dart`](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/lib/src/card_detect.dart)
-catches a malformed prose card and surfaces it as `broken`. A tool call
-carrying an invented element type is well-formed arguments that render as an
-invisible blank. `nemotron-3-nano:4b`'s tool arm produced eight calls labeled
+catches a malformed prose card and surfaces it as `broken`. Nothing on the tool
+side runs the equivalent check. A tool call carrying an invented element type
+is well-formed arguments that render as an invisible blank.
+`nemotron-3-nano:4b`'s tool channel produced eight calls labeled
 `no-input: got {Input, TextBlock}`, where `Input` is not an element type. The
 shape probe catches those only because it scores against an expected element
-set. A user would see nothing. **Zero malformed JSON is not the same as zero
-broken cards.**
+set. A user would see nothing.
 
-## The server kept the message-body channel, because the measured value was low
+## The server kept the message-body channel, because the measured value of the Ollama tool channel was low
 
 The server has no `--reply-channel` flag and still asks for card JSON in the
 message body. Half the models that can use the channel get materially worse on
-it, so it could not be the default. Two beneficiaries out of fifteen roster
-models did not justify a second code path through the reply loop.
+it, so it could not be the default. Two wins among the eight models able to use
+the channel, from a roster of fifteen, did not justify a second code path
+through the reply loop.
 
 What ships is the measurement,
 [`tool/model_probes/tool_channel.dart`](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/tool/model_probes/tool_channel.dart)
