@@ -4,19 +4,18 @@ In
 [`freemansoft/Flutter-AdaptiveCards`](https://github.com/freemansoft/Flutter-AdaptiveCards)
 a demonstration Dart chat server hands a question to a local Ollama model and
 asks for the answer as Adaptive Card JSON, a strict, closed-vocabulary schema,
-which a Flutter client renders as interactive UI rather than as text. A
-directory of probes measures which of fifteen local models manage that, how
-well, and how fast. We built the probes on a 64 GB machine. What changes when
-they run on one a quarter that size?
+which a Flutter client renders as interactive UI rather than as text. We built
+a set of test probes that measure how well fifteen local models manage that
+well and how fast. We built the probes on a 64 GB machine and then compared the
+results to a machine with a quarter of the memory.
 
 ## Two machines, one set of test probes
 
-Two Apple machines ran the same probes and the same prompts, with the prompt and
-seed files confirmed byte-identical by checksum: a 64 GB M1 Max MacBook Pro
-14-inch (`MacBookPro18,4`), the host the probe suite was built on, and a fanless
-16 GB M5 MacBook Air (`Mac17,3`) used for comparison. The goal was to validate
-execution and measure performance differences when running the same models on
-two Apple Silicon chips with different memory sizes and bandwidth.
+Two Apple machines ran the same probes and the same prompts on a 64 GB M1 Max
+MacBook Pro 14-inch (`MacBookPro18,4`) and a fanless 16 GB M5 MacBook Air
+(`Mac17,3`) used for comparison. The goal was to validate execution and measure
+performance differences when running the same models on two Apple Silicon chips
+with different memory sizes and bandwidth.
 
 Both hosts ran models back-to-back for hours, so each median below carries
 whatever position in that run its model drew. One control on the M1 Max puts a
@@ -24,7 +23,7 @@ number on that: the same model runs **1.54x** slower right after an eight-hour
 sweep than it does cold, and that single-machine spread is wider than seven of
 the eight host-to-host ratios below. A later section shows the control. Read
 the ratios as a direction, not a per-model figure. The 16 GB recommendation
-rests on fit and shape score.
+rests on fit and response scores.
 
 Every figure below comes from
 [`ModelBehavior.md`](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md),
@@ -74,8 +73,8 @@ decides a model's fit, meaning the size of the model's parameter file, not the
 | `qwen3.6:27b-coding-nvfp4`                          | 18.4 GB | ❌    |
 | `qwen3.8:27b-nvfp4`                                 | 16.9 GB | ❌    |
 
-The marginal model model for 16GB machines is `qwen3.5:9b` at 6.1 GB.
-The other seven do not fully fit in within 16GB at all with their size and quant settings.
+The marginal model for 16GB machines is `qwen3.5:9b` at 6.1 GB. The other seven
+do not fully fit within 16GB at all with their size and quant settings.
 
 Model weights are not the whole memory budget. `gpt-oss:20b` is **12.8 GB**
 against a 16 GB machine and is still a ❌, because those weights share the pool
@@ -123,9 +122,9 @@ decimals. Models are ordered by ratio.
 | `llama3-groq-tool-use:8b` | 4.3 GB | 1.85 s        | 2.67 s    | 1.44x       | 9 min        | 13 min   | 0             | 0         |
 | `llama3-chatqa:8b`        | 4.3 GB | 0.11 s        | 0.25 s    | 2.32x       | 3 min        | 5 min    | 0             | 0         |
 
-Both hosts run the same Ollama line so each model's ratio compares two machines and not
-two runtimes. `qwen3.5:9b` is the model to read carefully even so. Its M1 Max
-figure is the cold arm of the sweep-position control shown later in this
+Both hosts run the same Ollama line so each model's ratio compares two machines
+and not two runtimes. `qwen3.5:9b` is the model to read carefully even so. Its
+M1 Max figure is the cold arm of the sweep-position control shown later in this
 article, taken at position 0 after 29 minutes idle, where the other seven M1
 Max figures are in-sweep measurements. The hot arm of that control would put
 the model below 1.0x instead of at 1.15x.
@@ -138,16 +137,16 @@ xychart-beta horizontal
     bar [1.15, 1.15, 1.22, 1.23, 1.40, 1.43, 1.44, 2.32]
 ```
 
-Every model is slower on the M5 just not as much as I expected. Seven of the eight ratios fall inside
-1.0-1.5x.** Two hardware differences could account for that, compute and
-memory bandwidth, and compute is the less likely.
-[The notebook](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md#performance-by-host-and-runtime)
-puts this 8-core M5 at roughly parity with or ahead of the 32-core M1 Max on
-AI compute, scaling Apple's published core counts and multipliers. Memory
-bandwidth is where the two part: **153 GB/s** on the M5 against **400 GB/s\*\*
-on the M1 Max. Single-stream token generation spends its time streaming the
-model's weights out of memory, not on arithmetic, so it is bandwidth-bound,
-and bandwidth is the ratio consistent with these medians.
+**Every model is slower on the M5 just not as much as I expected. Seven of the
+eight ratios fall inside 1.0-1.5x.** Two hardware differences could account for
+that, compute and memory bandwidth, and compute is the less likely. [The
+notebook](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md#performance-by-host-and-runtime)
+puts this 8-core M5 at roughly parity with or ahead of the 32-core M1 Max on AI
+compute, scaling Apple's published core counts and multipliers. Memory
+bandwidth is where the two part: **153 GB/s** on the M5 against **400 GB/s** on
+the M1 Max. Single-stream token generation spends its time streaming the
+model's weights out of memory, not on arithmetic, so it is bandwidth-bound, and
+bandwidth is the ratio consistent with these medians.
 
 The widest ratio in the table is the least meaningful one. `llama3-chatqa:8b`
 at **2.32x** is 0.11 s against 0.25 s: 140 ms of absolute difference on the
@@ -230,16 +229,16 @@ same exposure, since its eight models come from one sweep that ran 10:27 to
 The fanless MacBook Air is the obvious place to look for a thermal penalty, so
 `granite4.1:8b` was re-run twice to test it. A thermal reading predicts a slow
 hot re-run and a baseline idle one. Instead the idle re-run came nearly as
-slow, with a tight spread: two nominally cold measurements, twelve hours
-apart, differ this much. That reproducibility variance absorbs most
-of the hot re-run's gap. `qwen2.5-coder:7b` moved the other way, slower after
-idling than in-sweep, and two models moving in opposite directions is not a
-machine property. The M1 Max's own hot/cold spread above, on a machine with
-fans, is wider than either M5 figure, so a swing this size does not need a
-fanless chassis to explain it. Throttling is not ruled out, only unmeasured:
-**no run read die temperature or clock frequency**. No figure carries a
-correction. Read the M5 column as one sweep's figures carrying a
-position-dependent bias about the size of its reproducibility floor.
+slow, with a tight spread: two nominally cold measurements, twelve hours apart,
+differ this much. That reproducibility variance absorbs most of the hot
+re-run's gap. `qwen2.5-coder:7b` moved the other way, slower after idling than
+in-sweep, and two models moving in opposite directions is not a machine
+property. The M1 Max's own hot/cold spread above, on a machine with fans, is
+wider than either M5 figure, so a swing this size does not need a fanless
+chassis to explain it. Throttling is not ruled out, only unmeasured: **no run
+read die temperature or clock frequency**. No figure carries a correction. Read
+the M5 column as one sweep's figures carrying a position-dependent bias about
+the size of its reproducibility floor.
 
 ## The eight models that fit in 16 GB pass from 21/25 to 1/25 of the shape cases
 
@@ -257,10 +256,10 @@ hardware.
    data set can be reliably used in later comparisons.
 2. Derive published tables from the recorded runs instead of transcribing
    them; the measurement-hygiene article records what that caught.
-3. When a measurement carries a bias whose size is only roughly known,
-   publish the raw figure and state the bias beside it. The M5 medians are
-   skewed by sweep position by an amount the re-runs bound but do not pin
-   down, so no model test result was multiplied by a guessed factor. A corrected figure
+3. When a measurement carries a bias whose size is only roughly known, publish
+   the raw figure and state the bias beside it. The M5 medians are skewed by
+   sweep position by an amount the re-runs bound but do not pin down, so no
+   model test result was multiplied by a guessed factor. A corrected figure
    would hide that it had been corrected.
 
 The repository is
