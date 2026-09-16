@@ -211,11 +211,13 @@ failures, labeled `{TextBlock} want {Chart.Line}`, `{TextBlock} want
 **The outcome is a subtraction: what the channel recovers in malformed
 failures, minus what it pays in declines and wrong-shape calls.** The last two
 columns carry it. It accounts for all eight rows, including the two the ±1
-noise floor leaves unexplained on the headline numbers. The wins recover far
-more than they pay, `qwen3-coder:30b` 21 against 3, and the three nemotron
-losses reverse that. `qwen3.8:27b-nvfp4` had nothing to recover and still paid
-3, the small loss its "unaffected" absorbs. `gpt-oss:20b` recovers 1 against 7
-and reads as a loss. Neither side is a property of size or family.
+noise floor leaves unexplained on the headline numbers. `qwen3-coder:30b` recovers 21
+against 3 paid, and the three nemotron losses reverse that. `qwen3.5:9b` is the
+narrower win, 18 against 10. Its wrong-shape count rises from 14 to 22, and
+the second-largest malformed column in the set still carries it. That win
+shows only on the with-history condition. `qwen3.8:27b-nvfp4` had nothing to recover and still
+paid 3, the small loss its "unaffected" absorbs. `gpt-oss:20b` recovers 1 against 7 and
+reads as a loss. Neither side is a property of size or family.
 
 As a rule for the next roster: **the tool channel helps a model that selects
 the right card but fails to serialize it.** It does not help a model whose
