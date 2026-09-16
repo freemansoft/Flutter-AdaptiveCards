@@ -1,21 +1,21 @@
 # A full context makes one model stop producing cards and another produce the wrong ones
 
-In
-[`freemansoft/Flutter-AdaptiveCards`](https://github.com/freemansoft/Flutter-AdaptiveCards)
-a demonstration Dart chat server hands a question to a local Ollama model and
-asks for the answer as Adaptive Card JSON, a strict, closed-vocabulary schema
-that a Flutter client renders as interactive UI rather than as text. A directory
-of probes measures which local models manage that and how well, scoring each
-reply on whether it used an element type that would answer the question. Every
-one of those probes had been asking into a nearly empty window: a system prompt,
-one question, and at most a short seed exchange.
+In [`freemansoft/Flutter-AdaptiveCards`](https://github.com/freemansoft/Flutter-AdaptiveCards) a demonstration Dart chat server hands a question to a local Ollama
+model. It asks for the answer as Adaptive Card JSON, a strict,
+closed-vocabulary schema that a Flutter client renders as interactive UI
+rather than as text. A directory of probes measures which local models manage
+that, and how well. The probe scores each reply on whether it used an element
+type that would answer the question. Every one of those probes had been asking
+into a nearly empty window: a system prompt, one question, and at most a short
+seed exchange.
 
-What does a model do when its context is genuinely full? An ongoing conversation
-fills it, so that is the condition a chat user is in. The probe measured eight
-models twice, once with an empty window and once carrying roughly 48,500 tokens
-of history, on an Apple M1 Max with 64 GB running Ollama 0.33.3. Four are
-unaffected. Three lose about a third of their shape coverage, and the two
-largest losses are opposite failures that need different defenses.
+What does a model do when its context is genuinely full? An ongoing
+conversation fills it, so that is the condition a chat user is in. The probe
+measured eight models twice, once with an empty window and once carrying
+roughly 48,500 tokens of history. The host was an Apple M1 Max with 64 GB
+running Ollama 0.33.3. Four are unaffected. Three lose about a third of their
+shape coverage, and the two largest losses are opposite failures that need
+different defenses.
 
 Every figure is transcribed from
 [`ModelBehavior.md`](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md),
@@ -31,13 +31,13 @@ the lab notebook in that repository.
 | **Empty window**        | The same 25 cases with no history at all. It is the comparison column throughout, and it is the condition nearly every published local-model score is measured under.                                                                                                                     |
 
 **Every run below verified its fill size.** Sizing history is harder than it
-looks. The filler is generated text, and the same text runs 4.30 characters per
-token on one tokenizer and 2.74 on another. That gap is enough to overflow a
-window sized for it, and Ollama then discards the whole history silently. A
-companion article covers what Ollama does with context parameters, how it
-removes history that does not fit whole rather than trimming it, and how that
-defect surfaced and got fixed. Every run here reports the token count it
-actually delivered, in the **Prompt tokens** column.
+looks. The filler is generated text, and the same text runs 4.30 characters
+per token on one tokenizer and 2.74 on another. That gap is enough to overflow
+a window sized for it, and Ollama then discards the whole history silently. A
+companion article covers what Ollama does with context parameters, and how it
+removes history that does not fit whole rather than trimming it. That article
+also covers how the defect surfaced and got fixed. Every run here reports the
+token count it actually delivered, in the **Prompt tokens** column.
 
 ## Four models are unaffected and three lose about a third
 
@@ -79,10 +79,10 @@ their coverage for nothing but a full window. `qwen3-coder:30b` gains two cases
 carrying the same load.
 
 `qwen2.5-coder:7b`'s minus three does not belong beside the others. It carries
-24721 tokens where the rest carry about 48,500, because its trained window caps
-it at 32768 and a larger request changes nothing for it. It takes a smaller
-filler instead, running its allocated window about three quarters full. Its bar
-is a smaller experiment, not a smaller model failing harder.
+24721 tokens where the rest carry about 48,500. Its trained window caps it at
+32768, so a larger request changes nothing for it. It takes a smaller filler
+instead, running its allocated window about three quarters full. Its bar is a
+smaller experiment, not a smaller model failing harder.
 
 The Nemotron figures are the ones worth acting on, because they reproduced. An
 earlier run of the same control carried between 42,500 and 46,300 tokens and
@@ -91,8 +91,8 @@ returns 13, 12 and 6 again. Two runs at different prompt sizes landing on the
 same three counts is a stronger reading than either alone. None of the Qwen
 movements reproduce that way.
 
-A later run repeated three of these rows on a second machine, a 16 GB Apple M5,
-which is every model in the table it can hold.
+A later run repeated three of these rows on a second machine, a 16 GB Apple
+M5. Those three are every model in the table it can hold.
 
 | Model                | Prompt tokens | M1 Max | M5    |
 | -------------------- | ------------- | ------ | ----- |
@@ -121,11 +121,15 @@ said turns the two largest losses into two different problems.
 come back as prose. It answers the question in plain text instead of emitting
 card JSON at all. On an empty window it did that once in twenty-five.
 
-`nemotron-3-nano:30b` keeps producing cards and **picks worse elements**. Its
-replies are valid card JSON every time, with a static `TextBlock` substituted
-for the interactive input the question called for: `got {TextBlock} want
-{Input.Time}`, `want {Input.ChoiceSet}`, `want {Input.Toggle}`. The question
-asks it to collect something and it displays something instead.
+`nemotron-3-nano:30b` keeps producing cards and **picks worse elements**. Its replies are valid card JSON every time, with a static `TextBlock` put
+where the question asked for an interactive input:
+
+- `got {TextBlock} want {Input.Time}`, where the question asked for a time.
+- `want {Input.ChoiceSet}`, where it asked the reader to pick from a set.
+- `want {Input.Toggle}`, where it asked for a yes or no.
+
+Each case asks the model to collect something, and it displays something
+instead.
 
 The difference decides which defense works. Any check that asks whether the
 reply parsed as a card catches a model that reverts to prose, and most
@@ -144,12 +148,12 @@ It reverts to prose on three cases while carrying 24721 tokens, roughly half
 what the others carry.
 
 Both patterns look like weakening instruction adherence over a long context.
-Each is a failure to follow the system prompt specifically: the instruction to
-answer as a card in one case, the element palette in the other. Ordinary
-question answering is intact in both, since a prose reply and a `TextBlock` card
-both answer what was asked. These runs do not test that mechanism. Establishing
-it would mean moving the instruction, or sweeping the fill across sizes to see
-whether the loss scales. Neither run exists yet.
+Each is specifically a failure to follow the system prompt. One ignored the
+instruction to answer as a card, the other the element palette. Ordinary
+question answering is intact in both, since a prose reply and a `TextBlock`
+card both answer what was asked. These runs do not test that mechanism.
+Establishing it would mean moving the instruction, or sweeping the fill across
+sizes to see whether the loss scales. Neither run exists yet.
 
 ## A ranking taken on an empty window reorders on a full one
 
@@ -175,13 +179,13 @@ Every figure is a single-sample run. A one-case or two-case movement is noise,
 and only the five-case and seven-case losses are large enough to read.
 
 The shape of the effect is only partly measured. A later run on that same M5
-took the three models it can hold to a second fill level with the window held
-constant, and found no threshold. Pooled coverage falls between a near-empty
-window and a half-filled one, and then not at all between half and full. So the
-cost is neither proportional to how full the window is nor a cliff at some
-particular depth. That covers three models. None of them are the
-30-billion-parameter Nemotron builds that carry the largest losses here, so for
-those the question stands.
+took the three models it can hold to a second fill level, with the window held
+constant. It found no threshold. Pooled coverage falls between a near-empty
+window and a half-filled one, and then not at all between half and full. So
+the cost is neither proportional to how full the window is nor a cliff at some
+particular depth. That covers three models. None of them are the 30-billion-
+parameter Nemotron builds that carry the largest losses here, so for those the
+question stands.
 
 The repository is
 [https://github.com/freemansoft/Flutter-AdaptiveCards](https://github.com/freemansoft/Flutter-AdaptiveCards),

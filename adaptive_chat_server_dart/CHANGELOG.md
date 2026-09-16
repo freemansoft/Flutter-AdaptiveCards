@@ -2,7 +2,32 @@
 
 ## [0.18.0]
 
-- no changes yet
+- Docs: **the blog writing rules moved from `blog/README.md` into the
+  `adaptive-cards-blog-writing` skill** (`.claude/skills/adaptive-cards-blog-writing/`).
+  Openings, register, cross-article references, attribution, presentation, and
+  the outline for a new article now live in the skill's `SKILL.md` and
+  `references/style-rules.md`, joined by rules from the article 4 revision: one
+  name per concept taken from the code, vendor-qualified mechanism names,
+  headings that state one concrete finding, claims checked against source, and
+  the word-count and figure-diff commands. The README keeps the series plan,
+  Figures, and Terms and units; CLAUDE.md points blog work at the skill.
+- Docs: **corrected four claims that the skill's first test runs surfaced.** The
+  filler sample quoted in `ModelBehavior.md` and article 6 read
+  `filler-term123 means concept456.`, which `buildFillerText` cannot produce,
+  since term 123 pairs with concept 861. Article 5 called the two 52-stall
+  sweeps eleven days apart, where 2026-08-20 to 2026-09-01 is twelve. The blog
+  README's prose word counts for articles 6 and 7 were stale, at 1137 and 1106
+  against 1073 and 1290. Article 4 announced its question with "This article
+  asks", which the register rules replace with the question itself.
+- Docs: **recorded that the tool channel and the prose channel do not share a
+  system prompt.** `shape_ab.dart` sends `card_tool_prompt.txt` (70 lines) on
+  the tool channel and `card_system_prompt.txt` (223 lines) on prose, because
+  the prose prompt's instruction that the whole reply be a raw card fragment is
+  false when a tool is offered. The tool-channel section now states it, names
+  the code that selects it, and reads it as an unmeasured confound in the
+  per-model deltas. Found by a review of article 4, which quotes those deltas
+  and describes the two channels as differing only in the field the reply
+  lands in.
 
 ## [0.17.0]
 

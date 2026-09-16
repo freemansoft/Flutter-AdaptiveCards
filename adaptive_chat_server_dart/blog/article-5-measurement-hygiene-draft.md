@@ -64,7 +64,7 @@ that co-residency caused the stalls. A sweep on 2026-09-01 recorded the same
 **52 stalls** on this model with the server log showing one resident runner, in
 a pattern that matches a queue cascade
 ([mechanism below](#twenty-nine-of-thirty-one-recorded-stalls-were-queue-not-model)).
-The exact repeat, 52 both times eleven days apart, has no explanation yet, so
+The exact repeat, 52 both times twelve days apart, has no explanation yet, so
 both accounts stay on the record. Either way, keep **one model resident at a
 time**. It is a correctness requirement, not a performance tip. The notebook's
 [sweep section](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md#the-sweep-and-why-the-unload-step-matters)

@@ -1,20 +1,20 @@
 # Ollama drops an oversized history message whole, and nothing tells you
 
-In
-[`freemansoft/Flutter-AdaptiveCards`](https://github.com/freemansoft/Flutter-AdaptiveCards)
-a demonstration Dart chat server hands a question to a local Ollama model and
-asks for the answer as Adaptive Card JSON, a strict, closed-vocabulary schema
-that a Flutter client renders as interactive UI rather than as text. A directory
-of probes measures which local models manage that and how well. Every one of
-those probes had been asking its question into a nearly empty window: a system
-prompt, one question, and at most a short seed exchange. A real conversation
-fills the window. What changes when it is actually full?
+In [`freemansoft/Flutter-AdaptiveCards`](https://github.com/freemansoft/Flutter-AdaptiveCards) a demonstration Dart chat server hands a question to a local Ollama
+model. It asks for the answer as Adaptive Card JSON, a strict,
+closed-vocabulary schema that a Flutter client renders as interactive UI
+rather than as text. A directory of probes measures which local models manage
+that and how well. Every one of those probes had been asking its question into
+a nearly empty window: a system prompt, one question, and at most a short seed
+exchange. A real conversation fills the window. What changes when it is
+actually full?
 
-Two findings came out of filling it, both on an Apple M1 Max with 64 GB and an
-Apple M5 with 16 GB, both running Ollama 0.33.3. What the runner allocates
-follows one rule with no counterexample in thirty-one runs, and it is often not
-what the request asked for. A model handed more history than its window holds
-does not get a trimmed version of it. It gets none of it, and no error says so.
+Two findings came out of filling it. Both were measured on an Apple M1 Max
+with 64 GB and an Apple M5 with 16 GB, each running Ollama 0.33.3. What the
+runner allocates follows one rule with no counterexample in thirty-one runs,
+and it is often not what the request asked for. A model handed more history
+than its window holds does not get a trimmed version of it. It gets none of
+it, and no error says so.
 
 Both are properties of the runtime, not of any model. What a full window does to
 a model's own behavior is a separate question, and a companion article measures
@@ -37,7 +37,7 @@ the lab notebook in that repository.
 ## The allocated window is `min(requested, trained window)`
 
 The probe asks for a window large enough to hold its filler plus the card
-system prompt, then reads Ollama's `/api/ps` to find out what the runner
+system prompt. It then reads Ollama's `/api/ps` to find out what the runner
 actually gave it. Every row below requested 35851 tokens.
 
 | Model                     | Trained window | Allocated | Clamped |
@@ -118,7 +118,7 @@ some tokenizers and not others.
 
 Three unrelated model families agree at about 4.30. Two Qwen builds render the
 identical text 44% denser, and `nemotron-3-nano:4b` denser still. The filler
-reads `filler-term123 means concept456.`, which is heavy on digits, and
+reads `filler-term123 means concept861.`, which is heavy on digits, and
 tokenizers split digit strings very differently.
 
 So wherever the constant under-counted, the probe sized a window too small for
@@ -146,8 +146,8 @@ crossed it at no cost. So the allocation rule describes what the runner
 allocates, not what it enforces, and on these builds the two come apart. No
 mechanism is established here. Both are `nvfp4` builds, which the notebook
 already records as changing their behavior under Ollama's `format` constraint
-between runtime versions, so a runner-specific difference is consistent with the
-readings without being shown.
+between runtime versions. A runner-specific difference is consistent with the
+readings, without being shown.
 
 ## The prompt token count is the only signal that history was dropped
 
@@ -160,11 +160,11 @@ Four checks, in the order a developer hits them.
 | Measure a model at the context length you will run it at | A full window costs three of eight models measured about a third of their coverage, which the companion article decomposes.         |
 | Size context in tokens, not in characters or bytes       | The same text is 4.30 characters per token on one tokenizer and 2.74 on another, which is enough to overflow a window sized for it. |
 
-Dropping a message that cannot fit is a defensible choice, and trimming one has
-its own failure mode, in which a model answers confidently from the back half of
-an instruction it never saw the front of. What is worth changing is that the
-choice is invisible from the client side unless you go looking for it in a token
-count.
+Dropping a message that cannot fit is a defensible choice, and trimming one
+has its own failure mode. A model answers confidently from the back half of an
+instruction it never saw the front of. What is worth changing is that the
+choice is invisible from the client side unless you go looking for it in a
+token count.
 
 The repository is
 [https://github.com/freemansoft/Flutter-AdaptiveCards](https://github.com/freemansoft/Flutter-AdaptiveCards),

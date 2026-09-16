@@ -600,7 +600,7 @@ The two 8192-window models were always going to drop a 28000-token filler; no to
 | `qwen3.6:27b-coding-nvfp4` | 42538                    | 2.99                 |
 | `nemotron-3-nano:4b`       | 46287                    | 2.74                 |
 
-Three unrelated model families tokenize the filler at 4.29-4.30 characters per token; two Qwen builds render the identical text 44% denser, and `nemotron-3-nano:4b` denser still. The filler text (`filler-term123 means concept456.`) is digit-heavy, and tokenizers split digit strings very differently. Sized against the 4.0 assumption, a filler meant to land at roughly 28000 tokens instead landed at 42,000 to 46,000 tokens for the three larger-window droppers, comfortably over the 35851-token allocation despite the trained window itself being nowhere near the limit. The probe was recording an artifact of its own sizing, not a policy of discarding history that would otherwise fit.
+Three unrelated model families tokenize the filler at 4.29-4.30 characters per token; two Qwen builds render the identical text 44% denser, and `nemotron-3-nano:4b` denser still. The filler text (`filler-term123 means concept861.`) is digit-heavy, and tokenizers split digit strings very differently. Sized against the 4.0 assumption, a filler meant to land at roughly 28000 tokens instead landed at 42,000 to 46,000 tokens for the three larger-window droppers, comfortably over the 35851-token allocation despite the trained window itself being nowhere near the limit. The probe was recording an artifact of its own sizing, not a policy of discarding history that would otherwise fit.
 
 A control confirmed this the direct way: [`m1max-64gb-ollama0333-fitcontrol-calibrated/`](tool/model_probes/context_fill_results/m1max-64gb-ollama0333-fitcontrol-calibrated) sends a short calibration sample first, derives each model's own characters-per-token from `prompt_eval_count`, and sizes the filler to fit the window each model is actually allocated. **All eight models ingested it.** No model dropped a message it had room for; every drop above was a message that genuinely overflowed once sized correctly. The same calibrated control reproduced on the 16 GB M5 to the token and to the case for the three models it can hold.
 
@@ -767,6 +767,18 @@ come out better than one asked for in the message body?
 string a prose answer would have carried, so both arms are scored by
 identical code. Run 2026-08-21 on the 8 `supported` models, `--samples 2`,
 unseeded, `t=0`, cold-start and with-history.
+
+**The two arms do not share a system prompt.** `shape_ab.dart` sends
+`card_system_prompt.txt` (223 lines) on the prose channel and
+`card_tool_prompt.txt` (70 lines) on the tool channel, chosen at
+[`shape_ab.dart`](tool/model_probes/shape_ab.dart) lines 333-341 and recorded
+in each run's asset digests. The two share their opening framing and differ in
+the instruction that decides the reply: the prose prompt says the whole reply
+must be a raw card fragment, which is false when a tool is offered instead, so
+pairing them would measure a contradiction rather than the channel. Holding the
+prompt fixed across the two arms was therefore not available. Nothing here
+separates the channel's effect from the shorter prompt's, so every per-model
+delta below carries that confound.
 
 **Compared against each model's recorded `shape_ab-unaided` run, never the
 seeded one.** The tool arm cannot be seeded — the seed card is a synthetic

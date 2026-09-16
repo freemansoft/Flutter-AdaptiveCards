@@ -1,0 +1,42 @@
+{
+  "skill_name": "adaptive-cards-blog-writing",
+  "evals": [
+    {
+      "id": 0,
+      "name": "review-article-5",
+      "prompt": "examine the blog article article-5-measurement-hygiene-draft.md for style, substance, complexity and wording to make it clearer. Articles 1, 2 and 3 in the same directory were already partially reworked so use them for style guidance. just give me the review, don't edit anything yet",
+      "expected_output": "A review, no edits. Findings ranked by harm with line references and a proposed fix each; claims and figures checked against ModelBehavior.md or the code rather than assumed; prose word count reported with the cap convention, noting how close the article sits to the 3,000-word cap; em dash and first-person checks reported; ends by asking which findings to apply.",
+      "files": [
+        "adaptive_chat_server_dart/blog/article-5-measurement-hygiene-draft.md"
+      ]
+    },
+    {
+      "id": 1,
+      "name": "tighten-article-6-title-and-headings",
+      "prompt": "the title of article-6-context-fill-draft.md and a couple of its section headings read like verdicts or are hard to parse on first read. tighten the title and the headings, and keep anything that has to match the title in sync",
+      "expected_output": "Title and headings each state one concrete finding the section supports, with no figure changed and no hedge lost. The title is checked against how a hurried reader would paraphrase it. The article's row in the blog README status table matches the new title. First sentences are adjusted where a heading now repeats them. Verification output (word count, figure diff, em dashes, format check) is reported.",
+      "files": [
+        "adaptive_chat_server_dart/blog/article-6-context-fill-draft.md",
+        "adaptive_chat_server_dart/blog/README.md"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "clarify-filler-term-article-7",
+      "prompt": "In article-7-full-context-cost-draft.md the terms table says a Filler is \"A block of deterministic nonsense the probe prepends as conversation history, sized to a token target\". what does that actually mean, is it sent as real conversation turns or something else, and would a reader get it? fix the text if they wouldn't",
+      "expected_output": "Answers from the probe's source code and the notebook, not from the draft: how the filler is built, how it is sent (which roles, how many messages), and how it is sized. States whether the article gives an outside reader that answer and, if not, edits the definition without strengthening any claim, while keeping it consistent with article 6's account of the character-sized filler defect. No em dashes added; verification output reported.",
+      "files": [
+        "adaptive_chat_server_dart/blog/article-7-full-context-cost-draft.md"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "review-article-4",
+      "prompt": "review article-4-tool-channel-draft.md for style, substance, complexity and wording. it just went through a revision pass so what I want to know is what is still wrong with it before I publish. just tell me, don't edit anything",
+      "expected_output": "A review, no edits. Findings ranked by harm with line references and a proposed fix each; claims and figures checked against ModelBehavior.md or the probe source rather than taken from the draft; reports prose word count against the 2,000 target, em dash and first-person checks; separates what the recent pass left behind from older problems; ends by asking which findings to apply.",
+      "files": [
+        "adaptive_chat_server_dart/blog/article-4-tool-channel-draft.md"
+      ]
+    }
+  ]
+}
