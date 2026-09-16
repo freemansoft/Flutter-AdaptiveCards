@@ -22,7 +22,7 @@ The generalizable results — the ones that should transfer to any workload aski
 - **A history message that exceeds the allocated window is dropped whole, not trimmed, and nothing says so.** Ollama allocates `min(requested, trained window)`, confirmed on both a 16 GB and a 64 GB host with no counterexample; a message that does not fit inside that allocation is removed in full rather than cut down, and five of eight models measured under one such overflow evaluated only the system prompt and question, between 3819 and 4374 tokens. Sizing history in characters is what causes an overflow to go undetected: the same text tokenizes at 4.30 chars/token on llama, granite and gpt-oss builds and at 2.74 to 2.99 on Qwen and Nemotron ones, so a filler sized to fit one model's tokenizer overflows another's allocation by nearly half. Two `nvfp4` builds are an exception and evaluate thousands of tokens past their own allocation at no cost, so the allocation is enforced inconsistently rather than never. The reply reads as a normal answer to a question asked with no history, so the loss is invisible unless `prompt_eval_count` is checked. See [a filled context](#a-filled-context-an-oversized-history-message-is-dropped-whole-and-a-real-one-costs-some-models-a-third-of-their-shapes).
 - **Redirect a behavior rather than forbidding it.** Asked to explain code, `qwen2.5-coder:7b` emitted a card and then appended the explanation, which makes the whole reply raw text. Telling it harder not to append did not help: it scored the same and stopped producing cards, answering every code question as prose. Telling it where the explanation goes — a `TextBlock` beside the `CodeBlock` — fixed it.
 - **System prompt text moves the failure rate; only the detector makes a shape safe.** Each prompt fix exposes the next failure — once the model sent two elements it began dropping the `[ ]` around them. Prompt wording cut that to near zero at `t=0` but not at `t=0.6`, so `card_detect.dart` repairs the bracketless form as well.
-- **Tool-calling support is per-model and silent when absent, the same as `format` — and "can call a tool" is a separate capability from "uses it correctly for a card."** Measured 2026-08-21 across all fifteen models: 8 return a card through Ollama's tool channel cleanly (`supported`), 3 can call a tool but never reach for the card tool at all (`supportedButDeclines`, including `llama3-groq-tool-use:8b`, a model fine-tuned specifically for tool use), 2 call tools freely enough to leak the card tool onto a plain prose question (`overCalls`), and 2 — including `qwen2.5-coder:7b`, the server's own compiled-in default model — expose no tool-calling path at all under an identical prompt and schema. See [the tool-calling canary](#not-a-card-test-the-tool-calling-canary).
+- **Tool-calling support is per-model and silent when absent, the same as `format` — and it is partly a property of the prompt, not only of the model.** Measured 2026-09-16 across all fifteen models against the shipped tool prompt: 7 return a card through Ollama's tool channel cleanly (`supported`), 3 can call a tool but never reach for the card tool (`supportedButDeclines`, including `llama3-groq-tool-use:8b`, fine-tuned specifically for tool use), 3 leak the card tool onto a plain prose question (`overCalls`), and 2 — including `qwen2.5-coder:7b`, the compiled-in default — expose no tool-calling path at all. **Four of the fifteen moved, in both directions, when only the canary's system prompt changed**, so this table sorts model-and-prompt pairs rather than models. See [the tool-calling canary](#not-a-card-test-the-tool-calling-canary).
 
 ### The tuning ledger — everything tried, and whether it helped
 
@@ -33,22 +33,22 @@ rediscovered. Outcomes track the **Kind** column — which layer of the system a
 change touches — more closely than they track the content of any individual
 change.
 
-| Kind                   | What was changed                                                                                                                                                                                                        | Outcome                                   | Evidence                                                                                                                                                                                                                                                                                                                                                                                                       |
-| ---------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Context assembly**   | Point the server at the **card system prompt** — which describes the element palette and the rules for using it — instead of the Markdown-only prompt, which never mentions cards                                       | **Largest effect measured**               | 0/8 → 8/8 cards, same model and same eight questions. Larger than any model or temperature gap.                                                                                                                                                                                                                                                                                                                |
-| **Context assembly**   | Prepend a **seed card**: a synthetic two-turn exchange — a short pick-one question, and a bare card answering it — inserted ahead of the real history, so a card is the established format before any prose accumulates | **Model-dependent**                       | +10 shapes to −2 across fifteen models. This spread is why it is now opt-in.                                                                                                                                                                                                                                                                                                                                   |
-| **Context assembly**   | Repeat the instructions in a second `system` message placed _after_ the conversation history, instead of only before it                                                                                                 | **No effect / unmeasurable**              | Ollama chat templates vary in whether a second `system` message is delivered to the model at all.                                                                                                                                                                                                                                                                                                              |
-| **Decoding**           | `temperature: 0` — greedy decoding instead of sampling                                                                                                                                                                  | **Helped, promoted**                      | Cleared card failure modes that defeated models outright at their own default temperature.                                                                                                                                                                                                                                                                                                                     |
-| **Decoding**           | `think: false` — suppress the model's chain-of-thought preamble                                                                                                                                                         | **Helped, promoted**                      | `qwen3.5:9b` takes 77 s and invents JSON keys with thinking on; clean and fast with it off.                                                                                                                                                                                                                                                                                                                    |
-| **Decoding**           | `format: json` / `format: schema` — Ollama's own constrained-decoding flag, which is meant to force valid JSON                                                                                                          | **Per-model and per-runtime, unreliable** | Honored by some models, silently ignored by others, and _destructive_ on `gpt-oss:20b`. Two ignores flipped to honored between Ollama 0.32.14 and 0.33.2 — re-check the canary per runtime. On `qwen3.6:27b-coding-nvfp4`, the `schema` arm repaired `ColumnSet` (0/6 → 6/6) and did not repair `Carousel`, and eliminated prose replies; the `json` arm did not complete — the runner wedged partway through. |
-| **System prompt text** | Tell the model **where an explanation goes** — a `TextBlock` beside the `CodeBlock` — instead of forbidding it from appending prose after the card                                                                      | **Helped, promoted**                      | Hard cases 6/10 → 15/15 at `t=0`. The "redirect, don't forbid" result.                                                                                                                                                                                                                                                                                                                                         |
-| **System prompt text** | Re-key the **escape hatch** — the clause permitting a plain Markdown answer — from _confidence_ ("if you are unsure whether a card helps") to _capability_ ("if no element type fits")                                  | **Helped, promoted**                      | Clean on both regression checks; this is the wording shipped today.                                                                                                                                                                                                                                                                                                                                            |
-| **System prompt text** | Teach it that a two-part request ("compare A and B, then tell me which you'd pick") is still a single message                                                                                                           | **Regressed — reverted**                  | 8/8 → 7/8, deterministic on repeat. Caught only by the code A/B set.                                                                                                                                                                                                                                                                                                                                           |
-| **System prompt text** | Restate the element-shape rule again at the **end** of the prompt, for recency                                                                                                                                          | **No effect**                             | One of three wording edits screened against conversational drift. All three failed.                                                                                                                                                                                                                                                                                                                            |
-| **System prompt text** | Make the Markdown-permission section's heading less prominent, so it reads as a narrow exception rather than an available mode                                                                                          | **No effect**                             | Same screening; failed.                                                                                                                                                                                                                                                                                                                                                                                        |
-| **System prompt text** | Narrow the escape-hatch wording further still                                                                                                                                                                           | **No effect**                             | Same screening; failed.                                                                                                                                                                                                                                                                                                                                                                                        |
-| **Server code**        | Repair the bracketless form in `card_detect.dart` — accept two elements emitted without the wrapping `[ ]` that should surround them                                                                                    | **The only durable fix**                  | Prompt wording cut that failure to near zero at `t=0` but not at `t=0.6`; the detector covers both.                                                                                                                                                                                                                                                                                                            |
-| **Output channel**     | Ask for the card through Ollama's **tool channel** — a `render_adaptive_card` function whose arguments carry the body — instead of asking for card JSON in the message body                                             | **Failed — not shipped**                  | On the 8 models that can use it at all: 2 wins, 2 unaffected, 4 losses (two by 5 shapes). Malformed JSON went to zero on every model; [declines and weaker element choice cost more](#why-it-did-not-pay--the-failure-decomposition). No code.                                                                                                                                                                 |
+| Kind                   | What was changed                                                                                                                                                                                                        | Outcome                                   | Evidence                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| ---------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Context assembly**   | Point the server at the **card system prompt** — which describes the element palette and the rules for using it — instead of the Markdown-only prompt, which never mentions cards                                       | **Largest effect measured**               | 0/8 → 8/8 cards, same model and same eight questions. Larger than any model or temperature gap.                                                                                                                                                                                                                                                                                                                                                   |
+| **Context assembly**   | Prepend a **seed card**: a synthetic two-turn exchange — a short pick-one question, and a bare card answering it — inserted ahead of the real history, so a card is the established format before any prose accumulates | **Model-dependent**                       | +10 shapes to −2 across fifteen models. This spread is why it is now opt-in.                                                                                                                                                                                                                                                                                                                                                                      |
+| **Context assembly**   | Repeat the instructions in a second `system` message placed _after_ the conversation history, instead of only before it                                                                                                 | **No effect / unmeasurable**              | Ollama chat templates vary in whether a second `system` message is delivered to the model at all.                                                                                                                                                                                                                                                                                                                                                 |
+| **Decoding**           | `temperature: 0` — greedy decoding instead of sampling                                                                                                                                                                  | **Helped, promoted**                      | Cleared card failure modes that defeated models outright at their own default temperature.                                                                                                                                                                                                                                                                                                                                                        |
+| **Decoding**           | `think: false` — suppress the model's chain-of-thought preamble                                                                                                                                                         | **Helped, promoted**                      | `qwen3.5:9b` takes 77 s and invents JSON keys with thinking on; clean and fast with it off.                                                                                                                                                                                                                                                                                                                                                       |
+| **Decoding**           | `format: json` / `format: schema` — Ollama's own constrained-decoding flag, which is meant to force valid JSON                                                                                                          | **Per-model and per-runtime, unreliable** | Honored by some models, silently ignored by others, and _destructive_ on `gpt-oss:20b`. Two ignores flipped to honored between Ollama 0.32.14 and 0.33.2 — re-check the canary per runtime. On `qwen3.6:27b-coding-nvfp4`, the `schema` arm repaired `ColumnSet` (0/6 → 6/6) and did not repair `Carousel`, and eliminated prose replies; the `json` arm did not complete — the runner wedged partway through.                                    |
+| **System prompt text** | Tell the model **where an explanation goes** — a `TextBlock` beside the `CodeBlock` — instead of forbidding it from appending prose after the card                                                                      | **Helped, promoted**                      | Hard cases 6/10 → 15/15 at `t=0`. The "redirect, don't forbid" result.                                                                                                                                                                                                                                                                                                                                                                            |
+| **System prompt text** | Re-key the **escape hatch** — the clause permitting a plain Markdown answer — from _confidence_ ("if you are unsure whether a card helps") to _capability_ ("if no element type fits")                                  | **Helped, promoted**                      | Clean on both regression checks; this is the wording shipped today.                                                                                                                                                                                                                                                                                                                                                                               |
+| **System prompt text** | Teach it that a two-part request ("compare A and B, then tell me which you'd pick") is still a single message                                                                                                           | **Regressed — reverted**                  | 8/8 → 7/8, deterministic on repeat. Caught only by the code A/B set.                                                                                                                                                                                                                                                                                                                                                                              |
+| **System prompt text** | Restate the element-shape rule again at the **end** of the prompt, for recency                                                                                                                                          | **No effect**                             | One of three wording edits screened against conversational drift. All three failed.                                                                                                                                                                                                                                                                                                                                                               |
+| **System prompt text** | Make the Markdown-permission section's heading less prominent, so it reads as a narrow exception rather than an available mode                                                                                          | **No effect**                             | Same screening; failed.                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| **System prompt text** | Narrow the escape-hatch wording further still                                                                                                                                                                           | **No effect**                             | Same screening; failed.                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| **Server code**        | Repair the bracketless form in `card_detect.dart` — accept two elements emitted without the wrapping `[ ]` that should surround them                                                                                    | **The only durable fix**                  | Prompt wording cut that failure to near zero at `t=0` but not at `t=0.6`; the detector covers both.                                                                                                                                                                                                                                                                                                                                               |
+| **Output channel**     | Ask for the card through Ollama's **tool channel** — a `render_adaptive_card` function whose arguments carry the body — instead of asking for card JSON in the message body                                             | **Helped where used — not shipped**       | Re-measured 2026-09-16 with the system prompt held fixed. On the 7 models that can use it, the reply is better wherever the tool is actually called: 79-100% of calls pass against 62-94% on prose, with 0 malformed JSON across 570 tool calls against 50 on prose. [Adoption is the problem](#tool-adoption-not-card-quality-is-what-the-shape-score-measures) — 4 to 34 calls per 100 never use the tool, and history makes it worse. No code. |
 
 The Kind column groups the outcomes. Two of the three changes to _what the
 model sees before the question_ moved behavior, one of them more than any
@@ -700,61 +700,65 @@ Ollama's **tool channel** instead of the prose channel. Like `format`, tool
 support is per-model and silent when absent, so this is a capability probe,
 not a quality score.
 
-Measured 2026-08-21, `--samples 2`, unseeded, `t=0`, all fifteen models.
-Every model gave the same result on both samples of a given check, so each
-cell below covers 2/2:
+Measured 2026-09-16 on Apple M1 Max / 64 GB under Ollama 0.34.0, `--samples 2`,
+unseeded, `t=0`, all fifteen models, against `card_tool_prompt_matched.txt`.
+Every model gave the same result on both samples of a given check, so each cell
+covers 2/2. The final column is the verdict the same probe recorded under the
+70-line `card_tool_prompt.txt` it used until 2026-09-16; **bold marks a model
+whose verdict moved when only the prompt changed.**
 
-| Model                                               | Verdict                | Trivial tool (discriminator) | Card request      | Prose control     |
-| --------------------------------------------------- | ---------------------- | ---------------------------- | ----------------- | ----------------- |
-| `qwen3-coder:30b`                                   | `supported`            | called                       | tool body renders | answered in prose |
-| `qwen3.8:27b-nvfp4`                                 | `supported`            | called                       | tool body renders | answered in prose |
-| `qwen3.6:27b-coding-nvfp4`                          | `supported`            | called                       | tool body renders | answered in prose |
-| `qwen3.5:9b`                                        | `supported`            | called                       | tool body renders | answered in prose |
-| `gpt-oss:20b`                                       | `supported`            | called                       | tool body renders | answered in prose |
-| `nemotron-3-nano:30b`                               | `supported`            | called                       | tool body renders | answered in prose |
-| `nemotron-3.5-lightning:30b`                        | `supported`            | called                       | tool body renders | answered in prose |
-| `nemotron-3-nano:4b`                                | `supported`            | called                       | tool body renders | answered in prose |
-| `granite4.1:3b`                                     | `supportedButDeclines` | called                       | no tool_calls     | answered in prose |
-| `hf.co/unsloth/Nemotron-3-Nano-30B-A3B-GGUF:latest` | `supportedButDeclines` | called                       | no tool_calls     | answered in prose |
-| `llama3-groq-tool-use:8b`                           | `supportedButDeclines` | called                       | no tool_calls     | answered in prose |
-| `granite4.1:8b`                                     | `overCalls`            | called                       | tool body renders | **over-called**   |
-| `llama3.2:latest`                                   | `overCalls`            | called                       | no tool_calls     | **over-called**   |
-| `qwen2.5-coder:7b`                                  | `unsupported`          | **no tool_calls**            | no tool_calls     | answered in prose |
-| `llama3-chatqa:8b`                                  | `unsupported`          | **no tool_calls**            | no tool_calls     | answered in prose |
+| Model                                               | Verdict                | Trivial tool (discriminator) | Card request      | Prose control        | Was, brief prompt        |
+| --------------------------------------------------- | ---------------------- | ---------------------------- | ----------------- | -------------------- | ------------------------ |
+| `gpt-oss:20b`                                       | `supported`            | called                       | tool body renders | answered in prose    | supported                |
+| `granite4.1:8b`                                     | `supported`            | called                       | tool body renders | answered in prose    | **overCalls**            |
+| `nemotron-3-nano:30b`                               | `supported`            | called                       | tool body renders | answered in prose    | supported                |
+| `nemotron-3.5-lightning:30b`                        | `supported`            | called                       | tool body renders | answered in prose    | supported                |
+| `qwen3-coder:30b`                                   | `supported`            | called                       | tool body renders | answered in prose    | supported                |
+| `qwen3.6:27b-coding-nvfp4`                          | `supported`            | called                       | tool body renders | answered in prose    | supported                |
+| `qwen3.8:27b-nvfp4`                                 | `supported`            | called                       | tool body renders | answered in prose    | supported                |
+| `hf.co/unsloth/Nemotron-3-Nano-30B-A3B-GGUF:latest` | `supportedButDeclines` | called                       | no tool_calls     | answered in prose    | supportedButDeclines     |
+| `llama3-groq-tool-use:8b`                           | `supportedButDeclines` | called                       | no tool_calls     | answered in prose    | supportedButDeclines     |
+| `nemotron-3-nano:4b`                                | `supportedButDeclines` | called                       | no tool_calls     | answered in prose    | **supported**            |
+| `granite4.1:3b`                                     | `overCalls`            | called                       | tool body renders | over-called the tool | **supportedButDeclines** |
+| `llama3.2:latest`                                   | `overCalls`            | called                       | tool body renders | over-called the tool | overCalls                |
+| `qwen3.5:9b`                                        | `overCalls`            | called                       | tool body renders | over-called the tool | **supported**            |
+| `llama3-chatqa:8b`                                  | `unsupported`          | no tool_calls                | no tool_calls     | answered in prose    | unsupported              |
+| `qwen2.5-coder:7b`                                  | `unsupported`          | no tool_calls                | no tool_calls     | answered in prose    | unsupported              |
 
-8 `supported`, 3 `supportedButDeclines`, 2 `overCalls`, 2 `unsupported`.
+7 `supported`, 3 `supportedButDeclines`, 3 `overCalls`, 2 `unsupported`.
+
+**The verdict is partly a property of the prompt, not only of the model and its
+chat template.** Four of fifteen models moved when the canary's system prompt
+was replaced, and they moved in both directions: `granite4.1:8b` stopped
+over-calling and became `supported`, while `qwen3.5:9b` began over-calling and
+`nemotron-3-nano:4b` stopped reaching for the card tool at all. The earlier
+reading of this table, that it sorts models by a fixed capability, was too
+strong. What it sorts is model-and-prompt pairs.
 
 **`qwen2.5-coder:7b` — [`defaultOllamaModel`](lib/src/ollama_responder.dart),
 the model every promotion decision in this file is gated on — is
-`unsupported`.** It produced zero `tool_calls` on any of its six calls,
-including both trivial-tool samples that ask about the current temperature
-in Paris, a question it cannot answer without the tool. That is the
-discriminator failing: this chat template exposes no tool-calling path for
-this model at all, on the server's own compiled-in default.
+`unsupported`,** unchanged across both prompts. It produced zero `tool_calls`
+on any of its six calls, including both trivial-tool samples that ask about the
+current temperature in Paris, a question it cannot answer without the tool.
+That is the discriminator failing: this chat template exposes no tool-calling
+path for this model at all.
 
 **"Can call a tool" and "uses the tool channel correctly for a card" are
-separate capabilities, not one.** `llama3-groq-tool-use:8b` — named and
-fine-tuned specifically for tool use, and one of the weaker card producers
-in [the shape table](#shape-coverage--all-fifteen-models-as-shipped) at
-17/25 — passes the discriminator cleanly (it can call a tool) but never
-once reaches for `render_adaptive_card` on a question that plainly wants
-one; tool-use training did not transfer to this schema. `granite4.1:3b`
-and `hf.co/unsloth/Nemotron-3-Nano-30B-A3B-GGUF:latest` show the identical
-pattern. Meanwhile `granite4.1:8b` and `llama3.2:latest` show the opposite
-failure: both call tools freely enough to leak `render_adaptive_card` onto
-a plain prose question ("What does SDUI stand for?") that has nothing to
-render — `granite4.1:8b` while also rendering a correct card on request,
-`llama3.2:latest` without ever rendering one at all.
+separate capabilities.** `llama3-groq-tool-use:8b` — named and fine-tuned
+specifically for tool use — passes the discriminator cleanly but never once
+reaches for `render_adaptive_card` on a question that plainly wants one.
+`hf.co/unsloth/Nemotron-3-Nano-30B-A3B-GGUF:latest` shows the same pattern, and
+shares base weights with `nemotron-3-nano:30b`, which is `supported`: the
+packaging differs, not the weights. Three models show the opposite failure,
+leaking `render_adaptive_card` onto a plain prose question ("What does SDUI
+stand for?") that has nothing to render.
 
-**The phase-2 gate opened: 8 of 15 models verdict `supported`**, well past
-the two-model threshold. Tool-calling support is exactly as per-model and
-silent-when-absent as `format` support is, and
-"accepts a `tools` array" says nothing about whether a model reaches for it
-appropriately: the same discriminator pass covers a model that renders a
-perfect card, a model that never touches the card tool, and a model that
-fires it where it does not belong. Do not assume a model that can call a
-tool will use it for the right thing, or leave it alone for the wrong one,
-without running this canary first.
+**The gate opens on 7 of 15.** Tool-calling support is as per-model and
+silent-when-absent as `format` support is, and "accepts a `tools` array" says
+nothing about whether a model reaches for it appropriately. Do not assume a
+model that can call a tool will use it for the right thing, or leave it alone
+for the wrong one, without running this canary against the prompt you intend
+to ship.
 
 ### The tool channel, measured against prose
 
@@ -762,165 +766,187 @@ The canary above answered _availability_. This answers the question that
 decides whether to use it: does a card that arrives through the tool channel
 come out better than one asked for in the message body?
 
-`shape_ab.dart --channel tool` runs the same 25 shape cases through a
-`render_adaptive_card` function and converts its arguments into the reply
-string a prose answer would have carried, so both arms are scored by
-identical code. Run 2026-08-21 on the 8 `supported` models, `--samples 2`,
-unseeded, `t=0`, cold-start and with-history.
+**This measurement was run twice, and the first run answered a different
+question than it claimed.** The 2026-09-01 comparison sent
+`card_system_prompt.txt` (223 lines) on the prose arm and a 70-line
+`card_tool_prompt.txt` on the tool arm. That prompt dropped all 21 worked
+element examples along with the raw-JSON-emission mechanics a tool call makes
+false, and it had never been tuned against anything, while the prose prompt
+carries fourteen levers of tuning. Declines and wrong-shape calls, the two
+failure families that run attributed to the channel, are both things the
+worked examples plausibly drive. The earlier claim in this section, that
+holding the prompt fixed "was not available", was wrong: only about 40 of the
+prose prompt's 223 lines are made false by offering a tool. Its figures and the
+prompt that produced them were deleted on 2026-09-16; git history holds them.
 
-**The two arms do not share a system prompt.** `shape_ab.dart` sends
-`card_system_prompt.txt` (223 lines) on the prose channel and
-`card_tool_prompt.txt` (70 lines) on the tool channel, chosen at
-[`shape_ab.dart`](tool/model_probes/shape_ab.dart) lines 333-341 and recorded
-in each run's asset digests. The two share their opening framing and differ in
-the instruction that decides the reply: the prose prompt says the whole reply
-must be a raw card fragment, which is false when a tool is offered instead, so
-pairing them would measure a contradiction rather than the channel. Holding the
-prompt fixed across the two arms was therefore not available. Nothing here
-separates the channel's effect from the shorter prompt's, so every per-model
-delta below carries that confound.
+`assets/card_tool_prompt_matched.txt` replaces it: `card_system_prompt.txt`
+with only the emission mechanics rewritten and a **byte-identical element
+catalogue**, so a prose/tool delta is a property of the channel.
 
-**Compared against each model's recorded `shape_ab-unaided` run, never the
-seeded one.** The tool arm cannot be seeded — the seed card is a synthetic
-assistant turn holding raw card JSON, which is not what a tool-channel
-history looks like — so scoring it against a seeded prose baseline would
-hand prose an advantage the tool arm structurally cannot have.
+Re-measured 2026-09-16 on Apple M1 Max / 64 GB under Ollama 0.34.0, both arms
+fresh, `--samples 2`, `t=0`, unseeded, cold-start and with-history, on the 7
+models the canary rates `supported`. The archived prose baseline could not be
+reused: it was taken under Ollama 0.33.2 against a `card_system_prompt.txt`
+digest since superseded by the `Input.Rating` palette edit.
 
-A model counts as a **win** only if the tool channel never made it worse on
-either condition.
+**Neither arm is seeded.** The seed card is a synthetic assistant turn holding
+raw card JSON, a prose-channel artifact, so the tool arm cannot carry it and
+`shape_ab.dart` refuses the combination.
 
-**Reading the variant names.** Each names one dimension and leaves the other
-implicit: `seeded` and `unaided` are both **prose**-channel runs differing by
-seed, while `channel-tool` is a **tool**-channel run that is always
-**unseeded**. So the pairing here is `channel-tool` against `unaided` — the
-two unseeded arms. That asymmetry is tolerable at two dimensions; a third
-would call for a structured `variant` rather than a longer naming
-convention.
+#### The shape scores are close, and they are not the finding
 
-| Model                        | Tool cold | Prose cold |   Δ | Tool warm | Prose warm |   Δ | Verdict    |
-| ---------------------------- | --------: | ---------: | --: | --------: | ---------: | --: | ---------- |
-| `qwen3-coder:30b`            |        19 |         16 |  +3 |        20 |         14 |  +6 | **win**    |
-| `qwen3.5:9b`                 |        17 |         17 |   0 |        21 |         17 |  +4 | **win**    |
-| `qwen3.6:27b-coding-nvfp4`   |        24 |         23 |  +1 |        24 |         24 |   0 | unaffected |
-| `qwen3.8:27b-nvfp4`          |        22 |         23 |  −1 |        24 |         24 |   0 | unaffected |
-| `nemotron-3.5-lightning:30b` |        18 |         21 |  −3 |         9 |         13 |  −4 | loss       |
-| `gpt-oss:20b`                |        20 |         18 |  +2 |        20 |         25 |  −5 | loss       |
-| `nemotron-3-nano:30b`        |        12 |         16 |  −4 |        11 |         16 |  −5 | loss       |
-| `nemotron-3-nano:4b`         |         4 |          9 |  −5 |         5 |          7 |  −2 | loss       |
+| Model                        | Tool cold | Prose cold |   Δ | Tool warm | Prose warm |   Δ |
+| ---------------------------- | --------: | ---------: | --: | --------: | ---------: | --: |
+| `qwen3.6:27b-coding-nvfp4`   |        25 |         23 |  +2 |        25 |         23 |  +2 |
+| `qwen3.8:27b-nvfp4`          |        24 |         21 |  +3 |        23 |         25 |  -2 |
+| `gpt-oss:20b`                |        18 |         15 |  +3 |        22 |         23 |  -1 |
+| `granite4.1:8b`              |        20 |         20 |  +0 |        21 |         14 |  +7 |
+| `qwen3-coder:30b`            |        22 |         16 |  +6 |        16 |         17 |  -1 |
+| `nemotron-3.5-lightning:30b` |        22 |         22 |  +0 |        13 |          9 |  +4 |
+| `nemotron-3-nano:30b`        |        15 |         14 |  +1 |        15 |         17 |  -2 |
 
-**2 wins, 2 unaffected, 4 losses.**
+Cold-start is positive or flat on all seven. With history the column is mixed,
+and most rows sit inside this file's ±1 noise floor. Read alone, this table
+says the channel is worth little, which is what the 2026-09-01 run concluded.
+It is the wrong table.
 
-The two `unaffected` rows are the same result on either side of an arbitrary
-line: ±1 is inside this file's own noise floor — the 2026-08-20
-re-measurement moved ten of twelve steady models by ±1 with nothing about
-them changing. Only `qwen3-coder:30b`'s +6 and `qwen3.5:9b`'s +4 are gains
-worth relying on, and only the four losses are large enough to act on.
+#### Tool adoption, not card quality, is what the shape score measures
 
-**Nothing shipped.** There is no `--reply-channel` flag and the server still
-asks for card JSON in the message body. Half the models that can use the
-channel get materially worse on it, so it could not be a default, and two
-beneficiaries out of fifteen roster models did not justify a second code
-path through the reply loop. What ships is the measurement:
-`tool/model_probes/tool_channel.dart` and `shape_ab.dart --channel tool`,
-so the finding is re-checkable when models change.
+`shape_ab.dart --channel tool` judges a reply the model wrote into
+`message.content` by the prose rules, and such a reply can pass. Offering a
+tool does not remove the message body. Until 2026-09-16 nothing recorded which
+path a reply took, so every tool-channel figure in this file blended two
+channels at an unmeasured rate. `shape_ab.dart` now records `toolUsed` per
+call.
 
-**Do not re-run this speculatively.** It is ~800 serial model calls across
-eight models, three of them 18–25 GB, and it took hours of wall clock. Re-run
-it when the roster changes materially or a model's tool support does — not to
-re-confirm a result already recorded here.
+Splitting the same runs on it:
 
-#### Why it did not pay — the failure decomposition
+| Model                        |  Prose arm | Tool arm, **via tool** | Tool arm, via message body | Tool adoption |
+| ---------------------------- | ---------: | ---------------------: | -------------------------: | ------------: |
+| `qwen3.6:27b-coding-nvfp4`   | 92% (n=96) |        **100% (n=96)** |                          — |        96/100 |
+| `qwen3.8:27b-nvfp4`          | 94% (n=96) |         **98% (n=92)** |                   0% (n=4) |        92/100 |
+| `gpt-oss:20b`                | 80% (n=96) |         **96% (n=80)** |                  0% (n=16) |        80/100 |
+| `granite4.1:8b`              | 67% (n=96) |         **88% (n=90)** |                   0% (n=6) |        90/100 |
+| `qwen3-coder:30b`            | 67% (n=96) |         **92% (n=76)** |                 25% (n=20) |        78/100 |
+| `nemotron-3.5-lightning:30b` | 62% (n=96) |         **91% (n=68)** |                 14% (n=28) |        68/100 |
+| `nemotron-3-nano:30b`        | 62% (n=96) |         **79% (n=66)** |                 13% (n=30) |        66/100 |
 
-The table above records what happened. This records why. It is a re-scoring
-of the same results JSON, bucketing every failed call by the `label` the
-judge already wrote, so it costs no model calls. Each arm is 100 calls —
-25 cases × 2 samples × cold and with-history — of which 96 ask for a card and
-4 are the negative control. The headline `n/25` counts a case as passing only
-when every sample of it passed, so these per-call buckets are a finer view of
-the same runs, not a second metric.
+Per-call pass rate on the 96 card-asking calls of each arm.
 
-Four buckets, by `label` prefix: `malformed` (`broken: invalid JSON`,
-`broken: duplicate-key`), `declined` (`label == prose` on a case that wanted a
-card), `wrong-shape` (`wrong-shape:`, `no-input:`, `unwanted-card:`), and
-`infra` (`broken: HTTP 500`, `broken: timeout`), which is not attributable to
-the channel and is listed separately for that reason.
+**Where the tool is actually used it wins on every model**, 79-100% against
+62-94% on prose. The blended score looked unremarkable because between 4 and 34
+calls per 100 never used the tool.
 
-| Model                        | Verdict    | Prose mal / dec / shape / infra | Tool mal / dec / shape / infra | Tool decline rate |
-| ---------------------------- | ---------- | ------------------------------: | -----------------------------: | ----------------: |
-| `qwen3-coder:30b`            | win        |                 21 / 0 / 18 / 0 |                 0 / 3 / 18 / 0 |                3% |
-| `qwen3.5:9b`                 | win        |                 18 / 0 / 14 / 0 |                 0 / 2 / 22 / 0 |                2% |
-| `qwen3.6:27b-coding-nvfp4`   | unaffected |                   6 / 0 / 0 / 0 |                  0 / 0 / 4 / 0 |                0% |
-| `qwen3.8:27b-nvfp4`          | unaffected |                   0 / 2 / 3 / 0 |                  0 / 4 / 4 / 0 |                4% |
-| `nemotron-3.5-lightning:30b` | loss       |                  8 / 16 / 8 / 0 |                0 / 30 / 16 / 0 |               31% |
-| `gpt-oss:20b`                | loss       |                   1 / 4 / 3 / 3 |                 0 / 11 / 3 / 5 |               11% |
-| `nemotron-3-nano:30b`        | loss       |                 10 / 4 / 22 / 0 |                0 / 20 / 34 / 0 |               21% |
-| `nemotron-3-nano:4b`         | loss       |                 6 / 52 / 10 / 0 |                0 / 48 / 32 / 2 |               50% |
+The message-body column is a _selected_ subset and should not be read as "the
+fallback is broken": these are the calls where the model judged a card was not
+wanted, so a low shape score is largely the decline itself being scored as a
+failure.
 
-**Malformed JSON went to zero on all eight models.** No unexpected-character
-errors, no arrays missing their `[ ]`, no cards truncated mid-generation, no
-duplicate keys. Moving the card out of the message body removes the
-serialization burden, which is what it was expected to do.
+#### Where the failures are
 
-Two costs replace it:
+Card cases only, per 100 calls. `infra` (`broken: HTTP 500`, `broken: timeout`)
+is not attributable to the channel and is listed separately.
 
-1. **Declining to call the tool.** In the prose channel the model has already
-   committed to emitting something; the tool channel adds a decision point
-   before every card. The four qwen models decline on 0–4% of card cases; the
-   four losses decline on 11%, 21%, 31%, and 50%.
-2. **Weaker element choice.** Filling a schema argument appears to favour the
-   cheapest legal filler. `nemotron-3-nano:30b` gains 12 wrong-shape failures
-   — `{TextBlock} want {Chart.Line}`, `{TextBlock} want {CodeBlock}`,
-   `{} want {FactSet, Table}` — and `nemotron-3-nano:4b` gains 22.
+| Model                        | Prose mal / dec / shape / infra | Tool mal / dec / shape / infra |
+| ---------------------------- | ------------------------------: | -----------------------------: |
+| `qwen3.6:27b-coding-nvfp4`   |                   8 / 0 / 0 / 0 |                  0 / 0 / 0 / 0 |
+| `qwen3.8:27b-nvfp4`          |                   1 / 4 / 1 / 0 |                  0 / 6 / 0 / 0 |
+| `gpt-oss:20b`                |                  1 / 11 / 2 / 5 |                  0 / 7 / 3 / 9 |
+| `granite4.1:8b`              |                  4 / 20 / 4 / 4 |                 0 / 6 / 11 / 0 |
+| `qwen3-coder:30b`            |                 18 / 0 / 14 / 0 |                 7 / 4 / 10 / 0 |
+| `nemotron-3.5-lightning:30b` |                 6 / 14 / 4 / 12 |                 0 / 28 / 2 / 0 |
+| `nemotron-3-nano:30b`        |                 12 / 4 / 20 / 0 |                 0 / 30 / 8 / 2 |
+| **total**                    |           **50 / 53 / 45 / 21** |           **7 / 81 / 34 / 11** |
 
-**The outcome is therefore a subtraction rather than a model category:
-malformed failures recovered, minus declines and shape regressions gained.**
-That accounts for all eight rows, including the two the ±1 noise floor leaves
-unexplained on the headline numbers:
+**Malformed JSON: 50 on prose, 7 on the tool arm, and 0 of the 570 genuine
+tool calls.** Ollama returns tool arguments already decoded, so a tool call
+cannot carry malformed JSON. All 7 are `qwen3-coder:30b` message-body
+fallbacks, reproduced live: the model ignored the tool and wrote two
+top-level JSON objects separated by a newline, the failure the prose prompt's
+"two top-level objects is NOT valid JSON" rule prevents and which the matched
+prompt drops as emission mechanics.
 
-- `qwen3-coder:30b` recovers 21 and pays 3.
-- `qwen3.5:9b` recovers 18 and pays 10.
-- `qwen3.6:27b-coding-nvfp4` recovers 6 and pays 4; the net falls inside the
-  noise floor, which is why it reads as unaffected.
-- `qwen3.8:27b-nvfp4` had no malformed failures in prose, so it has nothing to
-  recover and only costs to pay. Its "unaffected" is a small loss the noise
-  floor absorbs.
-- `gpt-oss:20b` had one, with the same result.
-- The three nemotrons recover 8, 10, and 6 while paying 22, 28, and 18.
+**Valid JSON is not a valid card, and that is now measured rather than
+assumed.** `shape_ab.dart` records `unknownTypes` per call, running the
+server's own `unknownElementTypes()` against the vocabulary in
+`card_schema.json` — the check [`element_types.dart`](lib/src/element_types.dart)
+describes as the one failure users see and no probe could score. An invented
+type parses, passes card detection, and renders as an empty blank. Across
+these runs it is **absent from both arms**. The earlier claim here, that the
+channel converts detected failures into silent ones, rested on
+`nemotron-3-nano:4b`'s eight `no-input: got {Input, TextBlock}` calls in the
+deleted run; that model no longer passes the canary and the effect has no
+counterpart in current data.
 
-As a rule for the next roster: the tool channel helps a model that selects the
-right card but fails to serialize it. It does not help a model whose failures
-are about selecting the wrong card, and it costs a model that is reluctant to
-commit to a card at all.
+**The dominant remaining failure is the wrong element for the question**, 45
+on prose against 34 on the tool arm. That is a prompt-quality problem, not a
+channel one, and it is the honest target for further work.
 
-**Architecture does not separate the two groups.** `qwen3-coder:30b` (30B, 3B
-active) is a win and `nemotron-3-nano:30b` (30B, 3B active) is a loss — same
-architecture class, opposite results. The chat template is the better
-predictor: `nemotron-3-nano:30b` and
-`hf.co/unsloth/Nemotron-3-Nano-30B-A3B-GGUF:latest` are the same base weights
-under different packaging, and [the canary](#not-a-card-test-the-tool-calling-canary)
-rates one `supported` and the other `supportedButDeclines`; separately,
-`llama3-groq-tool-use:8b`, fine-tuned for tool use, does not reach for the
-card tool at all. **Thinking is untested rather than ruled out**: every probe
-in this file sends `think: false` unconditionally, so all sixteen runs above
-are thinking-off. A thinking-on arm is the one variant of this measurement
-not yet covered.
+#### Conversation history suppresses tool-calling, and more than it suppresses cards
 
-**The phase-1 canary over-predicted willingness.** It rated all eight of these
-models `supported` on a single card request; across 25 cases, four of them
-decline on 11–50% of card requests. "Will call the card tool once" and "will
-reach for it reliably" are separate properties, in the same way the canary
-itself found "can call a tool" and "uses it for a card" to be separate. A
-one-request gate measures the weaker of the two.
+Excluding the negative control, which legitimately wants prose, genuine
+declines split by condition:
 
-**The channel also converts detected failures into silent ones**, which is
-worth carrying forward if this is revisited. A malformed prose card is caught
-by [`card_detect.dart`](lib/src/card_detect.dart) and surfaces as `broken`. A
-tool call carrying an invented element type is well-formed arguments that
-render as an invisible blank: `nemotron-3-nano:4b`'s tool arm produced eight
-calls labelled `no-input: got {Input, TextBlock}`, where `Input` is not an
-element type. The shape probe catches it only because it scores against an
-expected element set; a user would see nothing. Zero malformed JSON is not the
-same as zero broken cards.
+| Model                        | Genuine declines | Cold | With history |
+| ---------------------------- | ---------------: | ---: | -----------: |
+| `qwen3.6:27b-coding-nvfp4`   |                0 |    2 |            2 |
+| `qwen3.8:27b-nvfp4`          |                4 |    2 |            6 |
+| `gpt-oss:20b`                |               16 |   12 |            8 |
+| `granite4.1:8b`              |                6 |    8 |            2 |
+| `qwen3-coder:30b`            |               20 |    2 |           20 |
+| `nemotron-3.5-lightning:30b` |               28 |    4 |           28 |
+| `nemotron-3-nano:30b`        |               30 |   14 |           20 |
+
+`qwen3-coder:30b` goes from 2 non-tool calls cold to 20 with history, while its
+prose arm moves +1 across the same boundary and its tool arm drops 6 shapes.
+`nemotron-3.5-lightning:30b` goes 4 to 28. Two ordinary conversational turns
+are enough to make a model stop reaching for a function it used reliably on
+turn one. This file already records that history erodes card _shape_ on the
+prose channel, which is what the seed card exists to counter; the tool channel
+has the same weakness and, on some models, worse. The seed cannot be used
+against it, being a prose-channel artifact.
+
+By question type, the cases that lose the tool most are the ones whose natural
+answer is text: `number`, `codeblock`, and `text` at 10 of 24 calls each,
+against 2 for `carousel`, `badge`, and `choice1`.
+
+#### A prompt that re-arms the fallback was measured and rejected
+
+Offering a tool does not remove the message body, so the emission rules looked
+like a guard for the fallback rather than something the tool makes false. An
+arm restoring them as a conditional (`card_tool_prompt_both.txt`, same 7
+models, 2026-09-16) repaired part of the damage — `qwen3-coder:30b` 7 to 4
+malformed, `nemotron-3-nano:30b` +8 adoption — and cost more elsewhere:
+`nemotron-3.5-lightning:30b` lost 8 adoption and gained the malformed replies
+the arm existed to prevent, 0 to 2. Net over seven models, 7 malformed calls
+repaired against 2 introduced, adoption +10 against −8, every shape score
+inside ±1 except that one. **The rules guard the fallback and also advertise
+it.** The prompt and its results were deleted. The remaining malformed
+fallbacks are better addressed by a retry on parse failure, which fires only
+on the calls that break and cannot move adoption.
+
+#### What ships
+
+**Still nothing.** There is no `--reply-channel` flag and the server still asks
+for card JSON in the message body. The finding now favours the channel, but
+what it favours is _tool adoption_, which is a prompt and strategy problem this
+file has not solved: four of seven models decline on 16-30 calls per 100, and
+history makes it worse. A second code path through the reply loop is not
+justified by a benefit that evaporates two turns into a conversation.
+
+What ships is the measurement: `tool/model_probes/tool_channel.dart`,
+`shape_ab.dart --channel tool`, and
+[`tool_channel_arms.sh`](tool/model_probes/tool_channel_arms.sh), which runs
+the canary over the full roster and both shape arms over whatever it rates
+`supported`.
+
+**Thinking is untested rather than ruled out**: every probe in this file sends
+`think: false` unconditionally, so all of the above is thinking-off.
+
+**Do not re-run this speculatively.** It is roughly 1,400 serial model calls
+plus a 15-model canary, and it took about five hours of wall clock. Re-run it
+when the roster changes materially, when a model's tool support does, or when
+the tool prompt changes — the canary verdicts move with it.
 
 ### What counts as a pass
 
@@ -1152,7 +1178,7 @@ The forward-looking items from the sections above, collected so they are not re-
 - **The seed has never been measured above `t=0`.** Every shape run is greedy, and neither standing regression gate covers seeded sampling — `temperature_stress.dart` and `prompt_ab.dart` send a single turn and no seed history (see [the card-seed costs](#the-card-seed-and-what-it-costs)).
 - **Conditional seeding.** The seed is applied to every request once `--seed-card-file` is named, but its value spans +10 to −2 by model. If a strong-unaided model ever becomes the server default, a per-model seed policy is the mechanism to consider (see [the card-seed section](#the-card-seed-and-what-it-costs)).
 - **The `gpt-oss:20b` swap is worth revisiting, though the reason changed.** Under 0.32.14 it was the strongest unaided model in the file and the only 25/25 under any condition; under 0.33.2 it is still the only 25/25, now under the seeded condition rather than the unaided one, and no longer the top unaided scorer (`qwen3.8:27b-nvfp4` and `qwen3.6:27b-coding-nvfp4` both score higher unaided). It is still not in `launch.json`. The swap is defensible, not settled, on either runtime's figures (see [its per-model notes](#gpt-oss20b)).
-- **A thinking-on arm of the tool-channel comparison.** Every probe sends `think: false` unconditionally, so thinking is untested rather than ruled out as a variable in the tool-channel result (see [the failure decomposition](#why-it-did-not-pay--the-failure-decomposition)).
+- **A thinking-on arm of the tool-channel comparison.** Every probe sends `think: false` unconditionally, so thinking is untested rather than ruled out as a variable in the tool-channel result (see [the tool channel](#the-tool-channel-measured-against-prose)).
 - **Can a runaway generation be cancelled at all, and how.** `keep_alive: 0` did not cancel one in a direct test (an 18 s generation completed at 20.9 s), nor did `ollama stop` (16.3 s), and 53 unloads did not stop a 70-minute generation during `granite4.1:3b`'s after-eviction run. Until a cancellation path is shown to work and the model is re-run behind it, `granite4.1:3b`'s 0.33.2 shape and stall figures stay recorded as cascade-damaged rather than as a model measurement (see [the cascade section](#stalls-are-a-queueing-cascade-not-a-runtime-difference)). The schema-constrained `Carousel` timeouts on `qwen3.6:27b-coding-nvfp4` (see [its per-model notes](#qwen3627b-coding-nvfp4)) add two more occurrences under 0.33.3: both times the client's 180 s timeout left the runner stuck in `ollama ps`'s `Stopping...` state, holding 16-22 GB at roughly 19% CPU for up to an hour, and an explicit `keep_alive: 0` unload that the server acknowledged (`done_reason: "unload"`) did not clear it — only killing the runner process did, with `ollama serve` itself staying up and responsive throughout. No token or character count was captured for the timed-out calls, so a still-generating server-side process is a hypothesis consistent with the evidence, not a confirmed mechanism; what is established is narrower — `evictModel()` prevented the timeouts from cascading into the next probe within this run (`ColumnSet` cold passed immediately after three `Carousel` timeouts) without terminating the generation or freeing the runner. A third instance, on 2026-09-05, wedged the same model under `--json-format json` — the third occurrence under constrained decoding on `qwen3.6:27b-coding-nvfp4`, and again an acknowledged `keep_alive: 0` unload (`done_reason: "unload"`) did not clear it; only killing the runner process did, at a resident 10.6 GB of the 21-22 GB model, alive 1:02:32 at roughly 33% CPU, with `ollama serve` staying responsive throughout. This run wedged sooner, after 6 calls, and produced no comparable pass/fail — every call after the wedge returned `timeout (180s)`, including two cases that score 6/6 in both prior arms, so nothing from it was archived.
 - **Closed 2026-09-11: nothing drops a history message that fits.** This entry asked what discarded an oversized message when the runner had room for it. The [fit control](#a-filled-context-an-oversized-history-message-is-dropped-whole-and-a-real-one-costs-some-models-a-third-of-their-shapes) shows the premise was false: all six models ingested the filler once it fit, and every drop was a message 42426 tokens or larger under a 35851-token window. The probe's fixed `fillerCharsPerToken = 4.0` manufactured the gap by sizing history in characters. Three things it left open have since closed. Per-model calibration shipped on 2026-09-12, so a run no longer sizes its filler from a constant that overflows on dense tokenizers. The M5 archive was re-measured the same week and all eight models carry `runnerContextLength`, putting `min(requested, trained window)` on a memory-constrained host as well. And the filled-context cost has a third fill level on three models, which shows it is neither proportional to occupancy nor a cliff.
 
@@ -1291,7 +1317,7 @@ The vocabulary of this file and of [`tool/model_probes/`](tool/model_probes/READ
 - **cold start / with history** — the two conditions a case runs under: a single turn, versus the same question after prior prose turns replayed the way the server sends history. A model can pass one while failing the other; see [the multi-turn set](#4-multi-turn-set--history-replay).
 - **warm** — context-dependent. In shape figures it means the with-history condition ("24/25 warm"). In latency figures it means a call that is not the first after a model load — a cold first call costs roughly 6-7x a warm one and is excluded from the median.
 - **seed / card seed** — the synthetic two-turn exchange in `assets/seed_card.json` that `--seed-card-file` prepends ahead of the history, so a card is the conversation's established format before any prose accumulates. See [the card seed, and what it costs](#the-card-seed-and-what-it-costs).
-- **seeded / unaided** — run-variant names. Both are prose-channel runs differing only by the seed; `channel-tool` is the tool-channel variant and is always unseeded.
+- **seeded / unaided** — run-variant names. Both are prose-channel runs differing only by the seed; `channel-tool-matched` is the tool-channel variant and is always unseeded; runs archived before 2026-09-16 carry a bare `channel-tool` against a prompt no longer in the tree.
 - **erosion** — the shapes a model loses between cold start and with history; the `Eroded by history` column of the shape table.
 - **cascade** — a follow-up turn editing the card the model just sent. See [the cascade section](#cascade--editing-the-card-the-model-just-sent).
 - **stall** — a call that exceeds the probe's per-call `--timeout` and is scored a failure. See [the timeout note](#a-note-on-the-per-call-timeout).
