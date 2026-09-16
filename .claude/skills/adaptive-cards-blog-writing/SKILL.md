@@ -308,7 +308,7 @@ t = re.sub(r'^#.*$', '', t, flags=re.M)
 t = re.sub(r'\(https?://[^)]*\)', '', t)
 sents = []
 for para in re.split(r'\n\s*\n', t):           # paragraph first, so a table or
-    for x in re.split(r'(?<=[.!?])\s+', para):  # diagram intro ending in a colon
+    for x in re.split(r'(?<=[.!?])[*`"\)]*\s+', para):  # intro ending in a colon
         x = ' '.join(x.split())                 # does not swallow what follows
         if len(x.split()) > 2:
             sents.append(x)

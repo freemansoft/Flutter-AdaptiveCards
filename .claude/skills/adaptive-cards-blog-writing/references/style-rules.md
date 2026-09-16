@@ -408,6 +408,14 @@ following them wants the current file, not an archived one.
   readings, provenance caveats and mechanism discussion, not the tables that
   carry the finding. A figure that appears in both places has to be updated in
   both.
+- **The article carries the story, the notebook carries the depth.** A reader
+  cannot open the notebook mid-paragraph and most never open it at all, so the
+  article states what was measured, how it was measured, and why that answers
+  the question, and then points. Method is not depth: cutting how a measurement
+  was made in order to save words leaves a reader who cannot judge the figures
+  that follow. What defers is per-run readings, provenance caveats, and
+  mechanism discussion the finding does not rest on. When a cut pass proposes
+  removing a method section because the notebook has it, that is the wrong cut.
 - **Converting prose into a table costs nothing against the cap,** because the
   word count excludes table rows. A passage that enumerates readings, such as
   rules paired with the measurement behind each, per-run figures, or a list of
