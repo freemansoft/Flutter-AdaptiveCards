@@ -48,13 +48,17 @@ const expectedProbes = {
 
 /// Probes only some models can run, and the recorded fact that decides it.
 ///
-/// `shape_ab-channel-tool` sends the card request through Ollama's tool
+/// `shape_ab-channel-tool-*` sends the card request through Ollama's tool
 /// channel, which a model whose chat template has no tool support simply
 /// cannot answer — `qwen2.5-coder:7b`, the compiled-in default, is one such
 /// model. Demanding it of every launched model would report a permanent
 /// missing result for a run that can never exist, so the expectation is
 /// gated on that model's own `tool_call_probe` verdict.
-const conditionalProbes = {'shape_ab-channel-tool': 'supported'};
+///
+/// Runs recorded before 2026-09-15 carry the un-suffixed
+/// `shape_ab-channel-tool`, measured against a tool prompt that no longer
+/// exists and is not comparable to this one; those directories are closed.
+const conditionalProbes = {'shape_ab-channel-tool-matched': 'supported'};
 
 /// The host whose runs the shape-coverage table in `ModelBehavior.md`
 /// reports.

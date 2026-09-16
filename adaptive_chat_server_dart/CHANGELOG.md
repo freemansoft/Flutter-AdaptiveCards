@@ -2,6 +2,90 @@
 
 ## [0.18.0]
 
+- Probes: **a tool-channel run now records whether each call actually used the
+  tool.** `probeOnceViaTool` sets `toolUsed` on every judged reply and
+  `shape_ab.dart` writes it per call and prints a per-condition total.
+  Offering a tool does not oblige a model to use one: a model that ignores it
+  and writes card JSON into `message.content` is judged by the prose rules and
+  can score a pass, so a tool-arm pass rate was partly a statement about the
+  message body. On the pre-instrumentation 0.34.0 runs the calls that
+  provably never used the tool reached 74 per 100 on `nemotron-3-nano:4b`, 30
+  on `nemotron-3-nano:30b`, and 28 on `nemotron-3.5-lightning:30b`, and those
+  were lower bounds, since a fallback that emitted valid card JSON is
+  indistinguishable from a tool answer in the recorded verdict. The defect
+  predates the matched-prompt work and applies equally to the 2026-09-01 run
+  and to the figures article 4 quotes from it.
+
+- Probes: **replaced the tool-channel system prompt with
+  `assets/card_tool_prompt_matched.txt` and deleted the old one.** The
+  2026-09-01 run compared the tool channel against prose across two prompts
+  that differ by more than the channel: the 70-line `card_tool_prompt.txt`
+  dropped all 21 worked element examples along with the raw-JSON-emission
+  mechanics a tool call makes false. Declines and wrong-shape calls, the two
+  failure families that run attributed to the channel, are both things those
+  examples plausibly drive. The deeper problem is that the brief prompt was
+  never tuned against anything, while `card_system_prompt.txt` carries 14
+  levers of tuning, so the comparison measured a tuned prompt against a guess
+  rather than a channel. The replacement is `card_system_prompt.txt` with only
+  the emission mechanics rewritten and a byte-identical element catalogue.
+  The design spec for the original work
+  (`docs/superpowers/specs/2026-08-21-card-reliability-levers-design.md`)
+  raised this as an open question and recommended the minimal edit; the
+  implementation shipped the rewrite instead.
+- Probes: **measured and rejected a tool prompt that kept the
+  raw-JSON-emission rules.** Offering a tool does not remove the message body,
+  so those rules looked like a guard for the fallback path rather than
+  something the tool makes false; stripping them is how `qwen3-coder:30b`
+  produced 7 malformed fallbacks per 100 calls under the matched prompt. An
+  arm restoring them as a conditional (`card_tool_prompt_both.txt`, 7 models,
+  2026-09-16) repaired part of that — `qwen3-coder:30b` 7 to 4 malformed, and
+  `nemotron-3-nano:30b` gained 8 tool calls per 100 — but cost more elsewhere:
+  `nemotron-3.5-lightning:30b` lost 8 tool calls per 100 and gained the
+  malformed replies the arm existed to prevent, going 0 to 2. Net over the 7
+  models, 7 malformed calls repaired against 2 introduced, and adoption +10
+  against −8. Every shape score moved inside the ±1 noise floor except that
+  one. The rules do guard the fallback, and they also advertise it. The prompt
+  and its results were deleted; git history before 2026-09-16 holds them. The
+  4 remaining malformed fallbacks are better addressed by a retry on parse
+  failure, which fires only on the calls that break and cannot move adoption.
+- Probes: **`shape_ab.dart` records unrenderable element types per call.**
+  `unknownTypes` runs the server's own `unknownElementTypes()` against the
+  vocabulary in `card_schema.json`, so "the reply was a card" and "the card
+  was renderable" stay separable. Valid JSON is not a valid card: an invented
+  type parses, passes card detection, and renders as an empty blank, which
+  `element_types.dart` describes as the one failure a user sees and no probe
+  could score. Null means there was no card to check, empty means every type
+  renders. Measured on the rejected arm only; the prose and matched arms
+  predate it and their figures are derived from judge labels.
+- Probes: **deleted every result measured against the brief tool prompt**, 33
+  files: the 8 `shape_ab-channel-tool.json` arms and 15 `tool_call_probe.json`
+  runs in `results-m1max-64gb-ollama0332/`, and 2 arms plus 8 canaries in
+  `results-m5-16gb-ollama0331/`. They measured a prompt that no longer exists
+  and that was never tuned, so they cannot be compared against anything in the
+  tree. Git history before 2026-09-16 holds them. The M5 canaries have no
+  replacement, since that host is not available here, so the cross-host canary
+  comparison is gone rather than superseded.
+- Probes: **`tool_call_probe.dart` sends the matched prompt, and the roster is
+  re-measured rather than assumed.** `tool_channel_arms.sh` runs the canary
+  over all 15 models and gives a shape arm only to those it rates
+  `supported`. Which models can answer on the tool channel is a measurement,
+  and the canary's own prompt changed, so carrying over the eight that passed
+  under the deleted prompt would assume the answer.
+- Probes: **`shape_ab.dart` records which tool prompt a run sent.** The
+  `variant` is now `channel-tool-matched` rather than `channel-tool`, and the
+  recorded asset digest follows `--baseline` rather than a hardcoded name.
+  Runs archived before 2026-09-15 carry the bare `channel-tool` against a
+  prompt no longer in the tree, and the suffix is what stops the two being
+  read as one series. `sweep.sh` and `check_results.dart` follow.
+- Probes: **added `tool/model_probes/tool_channel_arms.sh`**, which runs the
+  canary and the two shape arms (`unaided`, `channel-tool-matched`) one model
+  resident at a time, without the rest of the probe battery.
+- Probes: **added `tool/model_probes/results-m1max-64gb-ollama0340/`.** The
+  M1 Max moved to Ollama 0.34.0, and both prompts the 2026-09-01 comparison
+  sent have changed digest since (`card_system_prompt.txt` `4bfa327067f8` to
+  `8cbfde243266` via the `Input.Rating` palette edit), so neither archived arm
+  could serve as the baseline for a re-measured tool arm.
+
 - Docs: **the blog writing rules moved from `blog/README.md` into the
   `adaptive-cards-blog-writing` skill** (`.claude/skills/adaptive-cards-blog-writing/`).
   Openings, register, cross-article references, attribution, presentation, and

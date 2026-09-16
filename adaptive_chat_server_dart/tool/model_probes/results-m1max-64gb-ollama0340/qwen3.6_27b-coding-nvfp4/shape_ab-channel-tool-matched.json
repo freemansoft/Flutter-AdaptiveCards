@@ -1,0 +1,920 @@
+{
+  "probe": "shape_ab",
+  "model": "qwen3.6:27b-coding-nvfp4",
+  "variant": "channel-tool-matched",
+  "measuredAt": "2026-09-16",
+  "machine": "Apple M1 Max / 64 GB",
+  "ollama": "0.34.0",
+  "samples": 2,
+  "temperature": 0.0,
+  "assets": {
+    "card_tool_prompt_matched.txt": "04ad9465586e"
+  },
+  "summary": {
+    "cases": 25,
+    "coldStart": 25,
+    "withHistory": 25
+  },
+  "calls": [
+    {
+      "case": "date",
+      "sample": 0,
+      "pass": true,
+      "label": "Input.Date, TextBlock",
+      "condition": "cold",
+      "ms": 44675,
+      "toolUsed": true
+    },
+    {
+      "case": "date",
+      "sample": 1,
+      "pass": true,
+      "label": "Input.Date, TextBlock",
+      "condition": "cold",
+      "ms": 5718,
+      "toolUsed": true
+    },
+    {
+      "case": "time",
+      "sample": 0,
+      "pass": true,
+      "label": "Input.Time, TextBlock",
+      "condition": "cold",
+      "ms": 6221,
+      "toolUsed": true
+    },
+    {
+      "case": "time",
+      "sample": 1,
+      "pass": true,
+      "label": "Input.Time, TextBlock",
+      "condition": "cold",
+      "ms": 5927,
+      "toolUsed": true
+    },
+    {
+      "case": "toggle",
+      "sample": 0,
+      "pass": true,
+      "label": "Input.Toggle",
+      "condition": "cold",
+      "ms": 4585,
+      "toolUsed": true
+    },
+    {
+      "case": "toggle",
+      "sample": 1,
+      "pass": true,
+      "label": "Input.Toggle",
+      "condition": "cold",
+      "ms": 4431,
+      "toolUsed": true
+    },
+    {
+      "case": "text",
+      "sample": 0,
+      "pass": true,
+      "label": "Input.Text, TextBlock",
+      "condition": "cold",
+      "ms": 6153,
+      "toolUsed": true
+    },
+    {
+      "case": "text",
+      "sample": 1,
+      "pass": true,
+      "label": "Input.Text, TextBlock",
+      "condition": "cold",
+      "ms": 5782,
+      "toolUsed": true
+    },
+    {
+      "case": "number",
+      "sample": 0,
+      "pass": true,
+      "label": "Input.Number, TextBlock",
+      "condition": "cold",
+      "ms": 5929,
+      "toolUsed": true
+    },
+    {
+      "case": "number",
+      "sample": 1,
+      "pass": true,
+      "label": "Input.Number, TextBlock",
+      "condition": "cold",
+      "ms": 5723,
+      "toolUsed": true
+    },
+    {
+      "case": "choice1",
+      "sample": 0,
+      "pass": true,
+      "label": "Input.ChoiceSet, TextBlock",
+      "condition": "cold",
+      "ms": 10244,
+      "toolUsed": true
+    },
+    {
+      "case": "choice1",
+      "sample": 1,
+      "pass": true,
+      "label": "Input.ChoiceSet, TextBlock",
+      "condition": "cold",
+      "ms": 10004,
+      "toolUsed": true
+    },
+    {
+      "case": "choice2",
+      "sample": 0,
+      "pass": true,
+      "label": "Input.ChoiceSet, TextBlock",
+      "condition": "cold",
+      "ms": 16982,
+      "toolUsed": true
+    },
+    {
+      "case": "choice2",
+      "sample": 1,
+      "pass": true,
+      "label": "Input.ChoiceSet, TextBlock",
+      "condition": "cold",
+      "ms": 18505,
+      "toolUsed": true
+    },
+    {
+      "case": "choice3",
+      "sample": 0,
+      "pass": true,
+      "label": "Input.ChoiceSet, TextBlock",
+      "condition": "cold",
+      "ms": 10248,
+      "toolUsed": true
+    },
+    {
+      "case": "choice3",
+      "sample": 1,
+      "pass": true,
+      "label": "Input.ChoiceSet, TextBlock",
+      "condition": "cold",
+      "ms": 10046,
+      "toolUsed": true
+    },
+    {
+      "case": "choice4",
+      "sample": 0,
+      "pass": true,
+      "label": "Input.ChoiceSet, TextBlock",
+      "condition": "cold",
+      "ms": 12197,
+      "toolUsed": true
+    },
+    {
+      "case": "choice4",
+      "sample": 1,
+      "pass": true,
+      "label": "Input.ChoiceSet, TextBlock",
+      "condition": "cold",
+      "ms": 11936,
+      "toolUsed": true
+    },
+    {
+      "case": "choice5",
+      "sample": 0,
+      "pass": true,
+      "label": "Input.ChoiceSet, TextBlock",
+      "condition": "cold",
+      "ms": 18258,
+      "toolUsed": true
+    },
+    {
+      "case": "choice5",
+      "sample": 1,
+      "pass": true,
+      "label": "Input.ChoiceSet, TextBlock",
+      "condition": "cold",
+      "ms": 18170,
+      "toolUsed": true
+    },
+    {
+      "case": "choice6",
+      "sample": 0,
+      "pass": true,
+      "label": "Input.ChoiceSet, TextBlock",
+      "condition": "cold",
+      "ms": 10035,
+      "toolUsed": true
+    },
+    {
+      "case": "choice6",
+      "sample": 1,
+      "pass": true,
+      "label": "Input.ChoiceSet, TextBlock",
+      "condition": "cold",
+      "ms": 9806,
+      "toolUsed": true
+    },
+    {
+      "case": "pie",
+      "sample": 0,
+      "pass": true,
+      "label": "Chart.Pie",
+      "condition": "cold",
+      "ms": 10379,
+      "toolUsed": true
+    },
+    {
+      "case": "pie",
+      "sample": 1,
+      "pass": true,
+      "label": "Chart.Pie",
+      "condition": "cold",
+      "ms": 10163,
+      "toolUsed": true
+    },
+    {
+      "case": "bar",
+      "sample": 0,
+      "pass": true,
+      "label": "Chart.VerticalBar",
+      "condition": "cold",
+      "ms": 11369,
+      "toolUsed": true
+    },
+    {
+      "case": "bar",
+      "sample": 1,
+      "pass": true,
+      "label": "Chart.VerticalBar",
+      "condition": "cold",
+      "ms": 10983,
+      "toolUsed": true
+    },
+    {
+      "case": "line",
+      "sample": 0,
+      "pass": true,
+      "label": "Chart.Line",
+      "condition": "cold",
+      "ms": 14122,
+      "toolUsed": true
+    },
+    {
+      "case": "line",
+      "sample": 1,
+      "pass": true,
+      "label": "Chart.Line",
+      "condition": "cold",
+      "ms": 13867,
+      "toolUsed": true
+    },
+    {
+      "case": "gauge",
+      "sample": 0,
+      "pass": true,
+      "label": "Chart.Gauge",
+      "condition": "cold",
+      "ms": 10015,
+      "toolUsed": true
+    },
+    {
+      "case": "gauge",
+      "sample": 1,
+      "pass": true,
+      "label": "Chart.Gauge",
+      "condition": "cold",
+      "ms": 9788,
+      "toolUsed": true
+    },
+    {
+      "case": "rating_show",
+      "sample": 0,
+      "pass": true,
+      "label": "Rating, TextBlock",
+      "condition": "cold",
+      "ms": 6804,
+      "toolUsed": true
+    },
+    {
+      "case": "rating_show",
+      "sample": 1,
+      "pass": true,
+      "label": "Rating, TextBlock",
+      "condition": "cold",
+      "ms": 6504,
+      "toolUsed": true
+    },
+    {
+      "case": "rating_ask",
+      "sample": 0,
+      "pass": true,
+      "label": "Input.Rating, TextBlock",
+      "condition": "cold",
+      "ms": 6098,
+      "toolUsed": true
+    },
+    {
+      "case": "rating_ask",
+      "sample": 1,
+      "pass": true,
+      "label": "Input.Rating, TextBlock",
+      "condition": "cold",
+      "ms": 5872,
+      "toolUsed": true
+    },
+    {
+      "case": "carousel",
+      "sample": 0,
+      "pass": true,
+      "label": "Carousel, CarouselPage, TextBlock",
+      "condition": "cold",
+      "ms": 23685,
+      "toolUsed": true
+    },
+    {
+      "case": "carousel",
+      "sample": 1,
+      "pass": true,
+      "label": "Carousel, CarouselPage, TextBlock",
+      "condition": "cold",
+      "ms": 23369,
+      "toolUsed": true
+    },
+    {
+      "case": "table",
+      "sample": 0,
+      "pass": true,
+      "label": "Table, TableCell, TableRow, TextBlock",
+      "condition": "cold",
+      "ms": 49006,
+      "toolUsed": true
+    },
+    {
+      "case": "table",
+      "sample": 1,
+      "pass": true,
+      "label": "Table, TableCell, TableRow, TextBlock",
+      "condition": "cold",
+      "ms": 48907,
+      "toolUsed": true
+    },
+    {
+      "case": "facts",
+      "sample": 0,
+      "pass": true,
+      "label": "FactSet",
+      "condition": "cold",
+      "ms": 14706,
+      "toolUsed": true
+    },
+    {
+      "case": "facts",
+      "sample": 1,
+      "pass": true,
+      "label": "FactSet",
+      "condition": "cold",
+      "ms": 14425,
+      "toolUsed": true
+    },
+    {
+      "case": "columnset",
+      "sample": 0,
+      "pass": true,
+      "label": "Column, ColumnSet, TextBlock",
+      "condition": "cold",
+      "ms": 14083,
+      "toolUsed": true
+    },
+    {
+      "case": "columnset",
+      "sample": 1,
+      "pass": true,
+      "label": "Column, ColumnSet, TextBlock",
+      "condition": "cold",
+      "ms": 13859,
+      "toolUsed": true
+    },
+    {
+      "case": "codeblock",
+      "sample": 0,
+      "pass": true,
+      "label": "CodeBlock, TextBlock",
+      "condition": "cold",
+      "ms": 15494,
+      "toolUsed": true
+    },
+    {
+      "case": "codeblock",
+      "sample": 1,
+      "pass": true,
+      "label": "CodeBlock, TextBlock",
+      "condition": "cold",
+      "ms": 15244,
+      "toolUsed": true
+    },
+    {
+      "case": "progress",
+      "sample": 0,
+      "pass": true,
+      "label": "ProgressBar, TextBlock",
+      "condition": "cold",
+      "ms": 5820,
+      "toolUsed": true
+    },
+    {
+      "case": "progress",
+      "sample": 1,
+      "pass": true,
+      "label": "ProgressBar, TextBlock",
+      "condition": "cold",
+      "ms": 5574,
+      "toolUsed": true
+    },
+    {
+      "case": "badge",
+      "sample": 0,
+      "pass": true,
+      "label": "Badge",
+      "condition": "cold",
+      "ms": 4795,
+      "toolUsed": true
+    },
+    {
+      "case": "badge",
+      "sample": 1,
+      "pass": true,
+      "label": "Badge",
+      "condition": "cold",
+      "ms": 4541,
+      "toolUsed": true
+    },
+    {
+      "case": "prose",
+      "sample": 0,
+      "pass": true,
+      "label": "prose-ok",
+      "condition": "cold",
+      "ms": 6058,
+      "toolUsed": false
+    },
+    {
+      "case": "prose",
+      "sample": 1,
+      "pass": true,
+      "label": "prose-ok",
+      "condition": "cold",
+      "ms": 5502,
+      "toolUsed": false
+    },
+    {
+      "case": "date",
+      "sample": 0,
+      "pass": true,
+      "label": "Input.Date, TextBlock",
+      "condition": "warm",
+      "ms": 6557,
+      "toolUsed": true
+    },
+    {
+      "case": "date",
+      "sample": 1,
+      "pass": true,
+      "label": "Input.Date, TextBlock",
+      "condition": "warm",
+      "ms": 5668,
+      "toolUsed": true
+    },
+    {
+      "case": "time",
+      "sample": 0,
+      "pass": true,
+      "label": "Input.Time, TextBlock",
+      "condition": "warm",
+      "ms": 6921,
+      "toolUsed": true
+    },
+    {
+      "case": "time",
+      "sample": 1,
+      "pass": true,
+      "label": "Input.Time, TextBlock",
+      "condition": "warm",
+      "ms": 6004,
+      "toolUsed": true
+    },
+    {
+      "case": "toggle",
+      "sample": 0,
+      "pass": true,
+      "label": "Input.Toggle",
+      "condition": "warm",
+      "ms": 4618,
+      "toolUsed": true
+    },
+    {
+      "case": "toggle",
+      "sample": 1,
+      "pass": true,
+      "label": "Input.Toggle",
+      "condition": "warm",
+      "ms": 4390,
+      "toolUsed": true
+    },
+    {
+      "case": "text",
+      "sample": 0,
+      "pass": true,
+      "label": "Input.Text, TextBlock",
+      "condition": "warm",
+      "ms": 7163,
+      "toolUsed": true
+    },
+    {
+      "case": "text",
+      "sample": 1,
+      "pass": true,
+      "label": "Input.Text, TextBlock",
+      "condition": "warm",
+      "ms": 6948,
+      "toolUsed": true
+    },
+    {
+      "case": "number",
+      "sample": 0,
+      "pass": true,
+      "label": "Input.Number, TextBlock",
+      "condition": "warm",
+      "ms": 5976,
+      "toolUsed": true
+    },
+    {
+      "case": "number",
+      "sample": 1,
+      "pass": true,
+      "label": "Input.Number, TextBlock",
+      "condition": "warm",
+      "ms": 6470,
+      "toolUsed": true
+    },
+    {
+      "case": "choice1",
+      "sample": 0,
+      "pass": true,
+      "label": "Input.ChoiceSet, TextBlock",
+      "condition": "warm",
+      "ms": 10288,
+      "toolUsed": true
+    },
+    {
+      "case": "choice1",
+      "sample": 1,
+      "pass": true,
+      "label": "Input.ChoiceSet, TextBlock",
+      "condition": "warm",
+      "ms": 10052,
+      "toolUsed": true
+    },
+    {
+      "case": "choice2",
+      "sample": 0,
+      "pass": true,
+      "label": "Input.ChoiceSet, TextBlock",
+      "condition": "warm",
+      "ms": 15806,
+      "toolUsed": true
+    },
+    {
+      "case": "choice2",
+      "sample": 1,
+      "pass": true,
+      "label": "Input.ChoiceSet, TextBlock",
+      "condition": "warm",
+      "ms": 15592,
+      "toolUsed": true
+    },
+    {
+      "case": "choice3",
+      "sample": 0,
+      "pass": true,
+      "label": "Input.ChoiceSet, TextBlock",
+      "condition": "warm",
+      "ms": 10315,
+      "toolUsed": true
+    },
+    {
+      "case": "choice3",
+      "sample": 1,
+      "pass": true,
+      "label": "Input.ChoiceSet, TextBlock",
+      "condition": "warm",
+      "ms": 10057,
+      "toolUsed": true
+    },
+    {
+      "case": "choice4",
+      "sample": 0,
+      "pass": true,
+      "label": "Input.ChoiceSet, TextBlock",
+      "condition": "warm",
+      "ms": 12198,
+      "toolUsed": true
+    },
+    {
+      "case": "choice4",
+      "sample": 1,
+      "pass": true,
+      "label": "Input.ChoiceSet, TextBlock",
+      "condition": "warm",
+      "ms": 11963,
+      "toolUsed": true
+    },
+    {
+      "case": "choice5",
+      "sample": 0,
+      "pass": true,
+      "label": "Input.ChoiceSet, TextBlock",
+      "condition": "warm",
+      "ms": 20733,
+      "toolUsed": true
+    },
+    {
+      "case": "choice5",
+      "sample": 1,
+      "pass": true,
+      "label": "Input.ChoiceSet, TextBlock",
+      "condition": "warm",
+      "ms": 20506,
+      "toolUsed": true
+    },
+    {
+      "case": "choice6",
+      "sample": 0,
+      "pass": true,
+      "label": "Input.ChoiceSet, TextBlock",
+      "condition": "warm",
+      "ms": 9904,
+      "toolUsed": true
+    },
+    {
+      "case": "choice6",
+      "sample": 1,
+      "pass": true,
+      "label": "Input.ChoiceSet, TextBlock",
+      "condition": "warm",
+      "ms": 9696,
+      "toolUsed": true
+    },
+    {
+      "case": "pie",
+      "sample": 0,
+      "pass": true,
+      "label": "Chart.Pie",
+      "condition": "warm",
+      "ms": 10144,
+      "toolUsed": true
+    },
+    {
+      "case": "pie",
+      "sample": 1,
+      "pass": true,
+      "label": "Chart.Pie",
+      "condition": "warm",
+      "ms": 9918,
+      "toolUsed": true
+    },
+    {
+      "case": "bar",
+      "sample": 0,
+      "pass": true,
+      "label": "Chart.VerticalBar",
+      "condition": "warm",
+      "ms": 11154,
+      "toolUsed": true
+    },
+    {
+      "case": "bar",
+      "sample": 1,
+      "pass": true,
+      "label": "Chart.VerticalBar",
+      "condition": "warm",
+      "ms": 10946,
+      "toolUsed": true
+    },
+    {
+      "case": "line",
+      "sample": 0,
+      "pass": true,
+      "label": "Chart.Line",
+      "condition": "warm",
+      "ms": 13955,
+      "toolUsed": true
+    },
+    {
+      "case": "line",
+      "sample": 1,
+      "pass": true,
+      "label": "Chart.Line",
+      "condition": "warm",
+      "ms": 13763,
+      "toolUsed": true
+    },
+    {
+      "case": "gauge",
+      "sample": 0,
+      "pass": true,
+      "label": "Chart.Gauge",
+      "condition": "warm",
+      "ms": 9974,
+      "toolUsed": true
+    },
+    {
+      "case": "gauge",
+      "sample": 1,
+      "pass": true,
+      "label": "Chart.Gauge",
+      "condition": "warm",
+      "ms": 9642,
+      "toolUsed": true
+    },
+    {
+      "case": "rating_show",
+      "sample": 0,
+      "pass": true,
+      "label": "Rating, TextBlock",
+      "condition": "warm",
+      "ms": 5643,
+      "toolUsed": true
+    },
+    {
+      "case": "rating_show",
+      "sample": 1,
+      "pass": true,
+      "label": "Rating, TextBlock",
+      "condition": "warm",
+      "ms": 5359,
+      "toolUsed": true
+    },
+    {
+      "case": "rating_ask",
+      "sample": 0,
+      "pass": true,
+      "label": "Input.Rating, TextBlock",
+      "condition": "warm",
+      "ms": 6290,
+      "toolUsed": true
+    },
+    {
+      "case": "rating_ask",
+      "sample": 1,
+      "pass": true,
+      "label": "Input.Rating, TextBlock",
+      "condition": "warm",
+      "ms": 6076,
+      "toolUsed": true
+    },
+    {
+      "case": "carousel",
+      "sample": 0,
+      "pass": true,
+      "label": "Carousel, CarouselPage, TextBlock",
+      "condition": "warm",
+      "ms": 18906,
+      "toolUsed": true
+    },
+    {
+      "case": "carousel",
+      "sample": 1,
+      "pass": true,
+      "label": "Carousel, CarouselPage, TextBlock",
+      "condition": "warm",
+      "ms": 18658,
+      "toolUsed": true
+    },
+    {
+      "case": "table",
+      "sample": 0,
+      "pass": true,
+      "label": "Table, TableCell, TableRow, TextBlock",
+      "condition": "warm",
+      "ms": 47200,
+      "toolUsed": true
+    },
+    {
+      "case": "table",
+      "sample": 1,
+      "pass": true,
+      "label": "Table, TableCell, TableRow, TextBlock",
+      "condition": "warm",
+      "ms": 46833,
+      "toolUsed": true
+    },
+    {
+      "case": "facts",
+      "sample": 0,
+      "pass": true,
+      "label": "FactSet",
+      "condition": "warm",
+      "ms": 13278,
+      "toolUsed": true
+    },
+    {
+      "case": "facts",
+      "sample": 1,
+      "pass": true,
+      "label": "FactSet",
+      "condition": "warm",
+      "ms": 14351,
+      "toolUsed": true
+    },
+    {
+      "case": "columnset",
+      "sample": 0,
+      "pass": true,
+      "label": "Column, ColumnSet, TextBlock",
+      "condition": "warm",
+      "ms": 10224,
+      "toolUsed": true
+    },
+    {
+      "case": "columnset",
+      "sample": 1,
+      "pass": true,
+      "label": "Column, ColumnSet, TextBlock",
+      "condition": "warm",
+      "ms": 9962,
+      "toolUsed": true
+    },
+    {
+      "case": "codeblock",
+      "sample": 0,
+      "pass": true,
+      "label": "CodeBlock, TextBlock",
+      "condition": "warm",
+      "ms": 13661,
+      "toolUsed": true
+    },
+    {
+      "case": "codeblock",
+      "sample": 1,
+      "pass": true,
+      "label": "CodeBlock, TextBlock",
+      "condition": "warm",
+      "ms": 13534,
+      "toolUsed": true
+    },
+    {
+      "case": "progress",
+      "sample": 0,
+      "pass": true,
+      "label": "ProgressBar, TextBlock",
+      "condition": "warm",
+      "ms": 5089,
+      "toolUsed": true
+    },
+    {
+      "case": "progress",
+      "sample": 1,
+      "pass": true,
+      "label": "ProgressBar, TextBlock",
+      "condition": "warm",
+      "ms": 4871,
+      "toolUsed": true
+    },
+    {
+      "case": "badge",
+      "sample": 0,
+      "pass": true,
+      "label": "Badge",
+      "condition": "warm",
+      "ms": 4871,
+      "toolUsed": true
+    },
+    {
+      "case": "badge",
+      "sample": 1,
+      "pass": true,
+      "label": "Badge",
+      "condition": "warm",
+      "ms": 4638,
+      "toolUsed": true
+    },
+    {
+      "case": "prose",
+      "sample": 0,
+      "pass": true,
+      "label": "prose-ok",
+      "condition": "warm",
+      "ms": 3584,
+      "toolUsed": false
+    },
+    {
+      "case": "prose",
+      "sample": 1,
+      "pass": true,
+      "label": "prose-ok",
+      "condition": "warm",
+      "ms": 3362,
+      "toolUsed": false
+    }
+  ]
+}

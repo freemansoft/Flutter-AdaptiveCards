@@ -253,6 +253,17 @@ class const ProbeOutcome({
   /// it -- a timeout, an HTTP error, or a caller (most probes) that never
   /// asked.
   final int? promptEvalCount,
+
+  /// Whether the reply arrived as a tool call, on a probe that offered one.
+  ///
+  /// Null on the prose channel, where the question does not arise. It matters
+  /// because offering a tool does not oblige a model to use one: a model that
+  /// ignores the tool and writes card JSON into `message.content` is scored
+  /// here by the same rules as a prose reply, and can pass. Without this
+  /// flag a tool-channel run silently mixes the two channels it exists to
+  /// tell apart, and a pass rate reads as "the tool channel works" when some
+  /// of it measures the message body instead.
+  final bool? toolUsed,
 }) {
   /// Creates an outcome.
   this;

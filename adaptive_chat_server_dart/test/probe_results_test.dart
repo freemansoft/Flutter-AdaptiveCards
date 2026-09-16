@@ -234,6 +234,46 @@ void main() {
       expect(back.calls.single.condition, 'cold');
     });
 
+    test('carries toolUsed, and omits it on a prose-channel call', () {
+      // The distinction the field exists for: a tool-channel call that the
+      // model answered in message.content records `false`, not absence, so a
+      // reader can tell "the model declined the tool" from "no tool was
+      // offered". A prose-channel call omits the key entirely.
+      final run = ProbeRun(
+        probe: 'shape_ab',
+        model: 'qwen3-coder:30b',
+        variant: 'channel-tool-matched',
+        measuredAt: '2026-09-16',
+        samples: 2,
+        assets: const {'card_tool_prompt_matched.txt': 'abc123def456'},
+        summary: const <String, dynamic>{},
+        calls: [
+          ProbeCall(
+            caseId: 'choice1',
+            sample: 0,
+            pass: false,
+            label: 'prose',
+            toolUsed: false,
+          ),
+          ProbeCall(
+            caseId: 'table',
+            sample: 0,
+            pass: true,
+            label: 'card[2]',
+            toolUsed: true,
+          ),
+          call('date'),
+        ],
+      );
+      final back = ProbeRun.fromJson(run.toJson());
+      expect(back.toJson(), run.toJson());
+      expect(back.calls[0].toolUsed, isFalse);
+      expect(back.calls[1].toolUsed, isTrue);
+      expect(back.calls[2].toolUsed, isNull);
+      expect(run.calls[0].toJson()['toolUsed'], false);
+      expect(run.calls[2].toJson().containsKey('toolUsed'), isFalse);
+    });
+
     test('reads a run recorded before the version was stamped', () {
       // The archive holds 113 of these. A new field must not make them
       // unreadable, or check_results.dart stops being able to police them.

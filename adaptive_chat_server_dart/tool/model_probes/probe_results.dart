@@ -50,6 +50,23 @@ class const ProbeCall({
 
   /// Wall-clock for the call, including a model load on the first one.
   final int? ms,
+
+  /// Whether this call's reply arrived as a tool call, where one was offered.
+  ///
+  /// Null on the prose channel. On a tool-channel run, false means the model
+  /// ignored the tool and answered in `message.content`, which the judge
+  /// scores by the prose rules -- so a run's pass rate is only a statement
+  /// about the tool channel for the calls where this is true.
+  final bool? toolUsed,
+
+  /// `type` values in this reply that the client cannot render, sorted.
+  ///
+  /// Valid JSON is not a valid card. An invented or misspelled type parses,
+  /// passes card detection, and then renders as an empty blank, so it is the
+  /// one failure a user sees and a pass/fail score does not. Null when the
+  /// reply was not a card at all or the vocabulary could not be loaded;
+  /// empty when the reply was checked and every type is renderable.
+  final List<String>? unknownTypes,
 }) {
   /// Creates a call record.
   this;
@@ -63,6 +80,8 @@ class const ProbeCall({
     condition: json['condition'] as String?,
     setting: json['setting'] as String?,
     ms: json['ms'] as int?,
+    toolUsed: json['toolUsed'] as bool?,
+    unknownTypes: (json['unknownTypes'] as List?)?.cast<String>(),
   );
 
   /// Whether the reply was a card rather than prose.
@@ -87,6 +106,8 @@ class const ProbeCall({
     if (condition != null) 'condition': condition,
     if (setting != null) 'setting': setting,
     if (ms != null) 'ms': ms,
+    if (toolUsed != null) 'toolUsed': toolUsed,
+    if (unknownTypes != null) 'unknownTypes': unknownTypes,
   };
 }
 
@@ -449,9 +470,9 @@ const defaultProbeAssetNames = ['card_system_prompt.txt', 'seed_card.json'];
 ///
 /// [assetNames] defaults to [defaultProbeAssetNames] — the pair every probe
 /// except `tool_call_probe` sends. `tool_call_probe` runs unseeded against
-/// `card_tool_prompt.txt` instead, so it passes its own list; without that,
-/// a recorded digest would name assets the run never sent and omit the one
-/// it did, which is what happened before this parameter existed.
+/// `card_tool_prompt_matched.txt` instead, so it passes its own list; without
+/// that, a recorded digest would name assets the run never sent and omit the
+/// one it did, which is what happened before this parameter existed.
 ///
 /// Read from the same place the server reads them, so a recorded digest is a
 /// fact about what was actually sent.

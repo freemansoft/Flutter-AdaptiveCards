@@ -27,6 +27,10 @@ library;
 
 import 'dart:io';
 
+import 'package:adaptive_chat_server_dart/src/card_detect.dart'
+    show tryParseCardBody;
+import 'package:adaptive_chat_server_dart/src/element_types.dart'
+    show loadKnownElementTypes, unknownElementTypes;
 import 'package:args/args.dart';
 import 'package:path/path.dart' as p;
 
@@ -76,12 +80,16 @@ Future<Set<String>> runCondition({
   required ProbeArgs args,
   required HttpClient client,
   required String channel,
+  required Set<String> knownTypes,
   required Map<String, dynamic> cardTool,
   required Object? format,
   List<ProbeCall>? collect,
 }) async {
   stdout.writeln('\n########## $label ##########');
   final passing = <String>{};
+  // `collect` accumulates across every condition in the run, so this block's
+  // own calls are the ones appended from here on.
+  final firstCall = collect?.length ?? 0;
   for (final c in cases) {
     var allPassed = true;
     for (var i = 0; i < args.samples; i++) {
@@ -125,6 +133,12 @@ Future<Set<String>> runCondition({
           label: result.describe(),
           condition: withHistory ? 'warm' : 'cold',
           ms: outcome.ms,
+          toolUsed: outcome.toolUsed,
+          // Valid JSON is not a valid card: a type outside the client's
+          // vocabulary parses and then renders as a blank. Recorded per call
+          // so "the reply was a card" and "the card was renderable" stay
+          // separable, which a pass/fail label alone cannot express.
+          unknownTypes: unrenderableTypes(outcome.reply, knownTypes),
         ),
       );
       stdout.writeln(
@@ -137,6 +151,14 @@ Future<Set<String>> runCondition({
   stdout.writeln(
     '== ${label.padRight(14)} shapes ${passing.length}/${cases.length} ==',
   );
+  if (channel == 'tool' && collect != null) {
+    final mine = collect.skip(firstCall);
+    final tool = mine.where((c) => c.toolUsed ?? false).length;
+    stdout.writeln(
+      '== ${label.padRight(14)} answered via the tool: $tool/${mine.length} '
+      '(the rest answered in message.content and are judged as prose) ==',
+    );
+  }
   return passing;
 }
 
@@ -150,6 +172,7 @@ Future<void> runPrompt({
   required ProbeArgs args,
   required HttpClient client,
   required String channel,
+  required Set<String> knownTypes,
   required Map<String, dynamic> cardTool,
   required Object? format,
   List<ProbeCall>? collect,
@@ -172,6 +195,7 @@ Future<void> runPrompt({
     args: args,
     client: client,
     channel: channel,
+    knownTypes: knownTypes,
     cardTool: cardTool,
     format: format,
     collect: collect,
@@ -185,6 +209,7 @@ Future<void> runPrompt({
     seedTurns: seedTurns,
     args: args,
     channel: channel,
+    knownTypes: knownTypes,
     cardTool: cardTool,
     format: format,
     client: client,
@@ -199,6 +224,31 @@ Future<void> runPrompt({
   );
 }
 
+/// The unrenderable `type` values in [reply], or null if it is not a card.
+///
+/// Null and empty mean different things and the caller records both: null is
+/// "there was no card to check", empty is "checked, every type renders".
+List<String>? unrenderableTypes(String reply, Set<String> known) {
+  if (known.isEmpty) return null;
+  final body = tryParseCardBody(reply);
+  if (body == null) return null;
+  return unknownElementTypes(body, known).toList()..sort();
+}
+
+/// The `variant` for a tool-channel run, taken from the prompt it sent.
+///
+/// Named after the prompt rather than fixed at `channel-tool` for two
+/// reasons. A run under a different `--baseline` is a different measurement
+/// and must not overwrite this one. And the runs archived before 2026-09-15
+/// carry the bare `channel-tool`, recorded against a prompt that no longer
+/// exists, so the suffix is what stops the two being read as one series.
+String toolVariant(String promptPath) {
+  const prefix = 'card_tool_prompt_';
+  final base = p.basenameWithoutExtension(promptPath);
+  return 'channel-tool-'
+      '${base.startsWith(prefix) ? base.substring(prefix.length) : base}';
+}
+
 Future<void> main(List<String> argv) async {
   final parser = ArgParser()
     ..addOption(
@@ -206,8 +256,7 @@ Future<void> main(List<String> argv) async {
       help:
           'System prompt treated as the shipped one. Defaults to '
           'card_system_prompt.txt on the prose channel and '
-          'card_tool_prompt.txt on the tool channel — the two are not '
-          'interchangeable, since only the latter mentions the tool.',
+          'card_tool_prompt_matched.txt on the tool channel.',
     )
     ..addOption('candidate', help: 'A second system prompt to compare.')
     ..addOption('only', help: 'Comma-separated case ids to run.')
@@ -332,17 +381,29 @@ Future<void> main(List<String> argv) async {
   }
   // The prose-channel prompt tells the model the entire reply must be raw
   // JSON, which is false when a tool is offered instead — pairing them would
-  // measure a contradiction, not the tool channel. Resolved via
-  // probeAssetsDir() rather than a path relative to the working directory,
-  // so this default works regardless of where the probe is run from — the
-  // same resolution the digest block below already uses.
+  // measure a contradiction, not the tool channel. The tool default is
+  // card_tool_prompt_matched.txt, which is card_system_prompt.txt with only
+  // the raw-JSON-emission mechanics replaced and a byte-identical element
+  // catalogue, so a prose/tool delta is a property of the channel rather than
+  // of two differently written prompts. Resolved via probeAssetsDir() rather
+  // than a path relative to the working directory, so this default works
+  // regardless of where the probe is run from — the same resolution the
+  // digest block below already uses.
   final defaultPrompt = p.join(
     probeAssetsDir(),
-    channel == 'tool' ? 'card_tool_prompt.txt' : 'card_system_prompt.txt',
+    channel == 'tool'
+        ? 'card_tool_prompt_matched.txt'
+        : 'card_system_prompt.txt',
   );
   final baselinePath = parsed.wasParsed('baseline')
       ? parsed['baseline'] as String
       : defaultPrompt;
+  // Read from the shipped schema, the same source the server reads, so the
+  // check tracks what the client actually renders rather than a list kept
+  // here. An empty set disables it, which `unrenderableTypes` reports as null.
+  final knownTypes = loadKnownElementTypes(
+    p.join(probeAssetsDir(), 'card_schema.json'),
+  );
   final collect = <ProbeCall>[];
   await runPrompt(
     label: 'baseline',
@@ -353,6 +414,7 @@ Future<void> main(List<String> argv) async {
     args: args,
     client: client,
     channel: channel,
+    knownTypes: knownTypes,
     cardTool: cardTool,
     format: probeFormat,
     collect: collect,
@@ -368,6 +430,7 @@ Future<void> main(List<String> argv) async {
       args: args,
       client: client,
       channel: channel,
+      knownTypes: knownTypes,
       cardTool: cardTool,
       format: probeFormat,
     );
@@ -391,7 +454,7 @@ Future<void> main(List<String> argv) async {
       probe: 'shape_ab',
       model: args.model,
       variant: switch (channel) {
-        'tool' => 'channel-tool',
+        'tool' => toolVariant(baselinePath),
         // The format mode is part of the identity of a run: an unconstrained
         // arm and a schema-constrained one are different measurements, and
         // sync_shape_table.dart selects the canonical row by an exact
@@ -409,7 +472,7 @@ Future<void> main(List<String> argv) async {
       assets: currentAssetDigests(
         probeAssetsDir(),
         assetNames: channel == 'tool'
-            ? const ['card_tool_prompt.txt']
+            ? [p.basename(baselinePath)]
             : defaultProbeAssetNames,
       ),
       summary: {

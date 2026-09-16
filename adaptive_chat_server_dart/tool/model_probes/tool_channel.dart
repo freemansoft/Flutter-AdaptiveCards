@@ -190,5 +190,23 @@ Future<ProbeOutcome> probeOnceViaTool({
       reply: rawBody,
     );
   }
-  return judgeReply(replyEquivalent(message, 'render_adaptive_card'), ms);
+  // Recorded even when the reply passes: a model that ignored the tool and
+  // wrote card JSON into `content` is judged by the prose rules and can score
+  // a pass, so "did the tool channel answer this" is not recoverable from the
+  // verdict afterwards.
+  final used = toolCallArguments(message, 'render_adaptive_card') != null;
+  final outcome = judgeReply(
+    replyEquivalent(message, 'render_adaptive_card'),
+    ms,
+  );
+  return ProbeOutcome(
+    ok: outcome.ok,
+    label: outcome.label,
+    chars: outcome.chars,
+    ms: outcome.ms,
+    hash: outcome.hash,
+    reply: outcome.reply,
+    promptEvalCount: outcome.promptEvalCount,
+    toolUsed: used,
+  );
 }

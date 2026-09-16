@@ -12,3 +12,10 @@ prompt the tree ships today.
 
 Superseded by the `Input.Rating` palette addition on 2026-09-07, which moved
 `card_system_prompt.txt` from `4bfa327067f8` to `8cbfde243266`.
+
+The tool-channel runs and the tool-call canaries were deleted on 2026-09-16,
+for the reason given in
+[`../results-m1max-64gb-ollama0332/HISTORICAL.md`](../results-m1max-64gb-ollama0332/HISTORICAL.md).
+This host has no re-measurement: it is not available, so the cross-host canary
+comparison is gone rather than superseded. Git history before 2026-09-16 holds
+the deleted runs.
