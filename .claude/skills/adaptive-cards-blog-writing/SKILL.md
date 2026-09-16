@@ -76,6 +76,13 @@ checklist finds violations and misses shape.
   structure and wording.
 - **Make each finding actionable.** Cite the line, quote the text, say how it
   misleads a reader, and propose the fix.
+- **On an article that compares two configurations, diff the arms before
+  reading the prose.** Open the probe that produced the figures and list every
+  input that differs between the two, not just the one the article is about. A
+  difference nobody mentioned is invisible to a sentence-by-sentence check, and
+  this is how article 4's two system prompts went unnoticed through a revision
+  and a review. See "When an article compares two configurations" in the style
+  rules.
 - **Propose the shape, not only the faults.** Where the order is wrong, give the
   section order you would use, one line per section saying what it holds and
   what moves into it. "This section holds two findings" is half a finding; the
@@ -278,6 +285,12 @@ grep -v '^|' "$A" | grep -o '—' | wc -l
 
 # First-person singular. Review each hit: a quoted reader question may use "I".
 grep -nwE 'I|me|my' "$A"
+
+# Comparison articles: inputs the probe picks by the variable under comparison.
+# Each hit is a difference between the arms that the article either names or
+# carries as an unmeasured confound. Point it at the probe behind the figures.
+grep -nE "== '(tool|prose)'|\? *'[A-Za-z0-9_]+\.(txt|json)'" \
+  adaptive_chat_server_dart/tool/model_probes/shape_ab.dart
 
 # Sentences past 25 words, against the 12 to 20 word target. A hint, not a rule:
 # a long sentence carrying one idea is fine, one carrying three is not.

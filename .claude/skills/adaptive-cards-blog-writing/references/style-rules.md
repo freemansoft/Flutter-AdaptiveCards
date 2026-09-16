@@ -54,6 +54,20 @@ mechanism, a default, a flag, or a model is a claim the article vouches for.
   separates the per-call accounting (measured), the mechanism (an inference
   from labels), and what was never run (thinking-on). The article's wording
   carries the same split: "appears to favor", "on the evidence of one pair".
+- **When an article compares two configurations, enumerate what differs.** This
+  is the one check a sentence-by-sentence pass cannot make, because the claim is
+  an absence: no sentence in the draft points at the thing nobody mentioned.
+  Article 4 says the model, the question and the requested card are the same on
+  both routes, and that what changes is which field the reply lands in. The
+  probe also sends a different system prompt per channel, 70 lines against 223,
+  selected at `shape_ab.dart` lines 333-341. Two reviews ran on that draft: the
+  one that checked each sentence against a source missed it, and the one that
+  opened the probe and listed its inputs found it. So open the probe's entry
+  point for both arms and list every input that differs: system prompt, flags,
+  seed, temperature, `num_ctx`, timeout, and the model set. Each difference is
+  either named in the article or is an unmeasured confound that earns a
+  sentence. This is the same move that produced the series' own sweep-position
+  control.
 - **A figure is not only a number.** A claim about what a log showed, what a run
   recorded, or how many runners were resident traces to the notebook the same
   way a figure does, and those claims are the ones a check by numeric token
