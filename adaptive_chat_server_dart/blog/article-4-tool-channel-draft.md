@@ -25,10 +25,9 @@ a lab notebook in that repository.
 
 ## The Ollama tool channel drove malformed JSON to zero on all eight models
 
-Moving the card into the tool call's arguments drove malformed JSON to **zero
-on all eight models that could use the channel**. There were no
-unexpected-character errors, no arrays missing their `[ ]`, no cards truncated
-mid-generation, and no duplicate keys. We sometimes see each of these on the
+Across the 800 calls those eight models made through the tool channel, not one
+set of arguments failed to parse. No unexpected-character errors, no arrays
+missing their `[ ]`, no cards truncated mid-generation, and no duplicate keys. We sometimes see each of these on the
 prose channel. On four of those same eight models the tool channel still scored
 worse than prose did, and nothing shipped. The reason is a subtraction: the
 channel removed one failure family and added two others, and on four models the
@@ -39,6 +38,7 @@ additions outweighed the removal.
 | Term                                | What it means here                                                                                                                                                                                                                                                                                                                                                                      |
 | ----------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Channel**                         | Where the model's reply travels. `prose` puts the card JSON as text in `message.content`. `tool` puts it in the arguments of a `render_adaptive_card` call. The name comes from the `--channel` flag of the probe `shape_ab.dart`; Ollama itself has no name for the distinction.                                                                                                       |
+| **Shape case**, `n/25`              | 25 questions, each paired with the Adaptive Card element types that would answer it. A case passes when the reply uses one of them, so the score measures shape coverage rather than accuracy: a model can answer correctly in prose and still score low.                                                                                                                               |
 | **Seeded** and **unseeded**         | Seeded prepends a synthetic two-turn card exchange to the conversation, so a card is already the established format. Unseeded omits it. The Ollama tool channel cannot be seeded, and the next section explains why.                                                                                                                                                                    |
 | **Cold-start** and **with-history** | The question asked first, or asked with ordinary exchanges already in the conversation.                                                                                                                                                                                                                                                                                                 |
 | **Win**, **unaffected**, **loss**   | Verdicts on a model's tool-channel score against its own unseeded prose score, compared separately for cold-start and with-history. Win: better by more than 1 case on at least one condition, and worse on neither. Loss: worse by more than 1 case on at least one condition. Unaffected: neither. Both unaffected rows move by 1 case or less, inside the notebook's ±1 noise floor. |
@@ -72,8 +72,8 @@ carries both. None of the figures below is seeded.
 The two channels also do not share a system prompt. The probe sends
 [`card_system_prompt.txt`](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/assets/card_system_prompt.txt) on the prose channel and
 the shorter [`card_tool_prompt.txt`](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/assets/card_tool_prompt.txt) on the tool
-channel, because the prose prompt's instruction that the whole reply be a raw
-card fragment is false when a tool is offered. Nothing here separates the
+channel. The prose prompt says the whole reply must be a raw card fragment,
+which is false when a tool is offered. Nothing here separates the
 channel's effect from the shorter prompt's, so every delta below carries that
 difference.
 
@@ -171,18 +171,20 @@ in the notebook. The prose channel first:
 | `nemotron-3-nano:4b`         | loss       |         6 |       52 |          10 |     0 |
 
 The Ollama tool channel, same models and same 100 calls each. The decline rate
-is the `declined` column as a share of the 96 card-asking calls:
+is the `declined` column as a share of the 96 card-asking calls. Recovered is
+the malformed calls prose lost and the tool channel did not; paid is what it
+added in declines and wrong-shape calls:
 
-| Model                        | Verdict    | malformed | declined | wrong-shape | infra | Decline rate |
-| ---------------------------- | ---------- | --------: | -------: | ----------: | ----: | -----------: |
-| `qwen3-coder:30b`            | win        |         0 |        3 |          18 |     0 |           3% |
-| `qwen3.5:9b`                 | win        |         0 |        2 |          22 |     0 |           2% |
-| `qwen3.6:27b-coding-nvfp4`   | unaffected |         0 |        0 |           4 |     0 |           0% |
-| `qwen3.8:27b-nvfp4`          | unaffected |         0 |        4 |           4 |     0 |           4% |
-| `nemotron-3.5-lightning:30b` | loss       |         0 |       30 |          16 |     0 |          31% |
-| `gpt-oss:20b`                | loss       |         0 |       11 |           3 |     5 |          11% |
-| `nemotron-3-nano:30b`        | loss       |         0 |       20 |          34 |     0 |          21% |
-| `nemotron-3-nano:4b`         | loss       |         0 |       48 |          32 |     2 |          50% |
+| Model                        | Verdict    | malformed | declined | wrong-shape | infra | Decline rate | Recovered | Paid |
+| ---------------------------- | ---------- | --------: | -------: | ----------: | ----: | -----------: | --------: | ---: |
+| `qwen3-coder:30b`            | win        |         0 |        3 |          18 |     0 |           3% |        21 |    3 |
+| `qwen3.5:9b`                 | win        |         0 |        2 |          22 |     0 |           2% |        18 |   10 |
+| `qwen3.6:27b-coding-nvfp4`   | unaffected |         0 |        0 |           4 |     0 |           0% |         6 |    4 |
+| `qwen3.8:27b-nvfp4`          | unaffected |         0 |        4 |           4 |     0 |           4% |         0 |    3 |
+| `nemotron-3.5-lightning:30b` | loss       |         0 |       30 |          16 |     0 |          31% |         8 |   22 |
+| `gpt-oss:20b`                | loss       |         0 |       11 |           3 |     5 |          11% |         1 |    7 |
+| `nemotron-3-nano:30b`        | loss       |         0 |       20 |          34 |     0 |          21% |        10 |   28 |
+| `nemotron-3-nano:4b`         | loss       |         0 |       48 |          32 |     2 |          50% |         6 |   18 |
 
 **The `malformed` column is zero on all eight models in the tool channel.**
 Moving the card out of the message body removes the serialization burden. That
@@ -207,21 +209,14 @@ failures, labeled `{TextBlock} want {Chart.Line}`, `{TextBlock} want
 {CodeBlock}`, and `{} want {FactSet, Table}`. `nemotron-3-nano:4b` gains 22.
 
 **The outcome is a subtraction: what the channel recovers in malformed
-failures, minus what it pays in declines and wrong-shape failures.** That
-subtraction accounts for all eight rows. The two wins are the rows where the
-recovered column is large and the paid column is small. `qwen3-coder:30b`
-recovers 21 calls and pays 3. The three nemotron losses are the reverse,
-recovering 8, 10, and 6 while paying 22, 28, and 18. Neither side is a property
-of size or family.
-
-The two rows the ±1 noise floor leaves unexplained on the headline numbers fit
-the same subtraction. `qwen3.6:27b-coding-nvfp4` recovers 6 and pays 4, a net
-inside the noise floor, which is why it reads as unaffected.
-`qwen3.8:27b-nvfp4` had no malformed failures in prose at all, so it has
-nothing to recover and only costs to pay. Its "unaffected" is a small loss the
-noise floor absorbs. `gpt-oss:20b` is the same shape with one malformed failure
-to recover, and it pays enough that the noise floor does not absorb it. That
-row reads as a loss.
+failures, minus what it pays in declines and wrong-shape calls.** The last two
+columns carry it, and it accounts for all eight rows, including the two the ±1
+noise floor leaves unexplained on the headline numbers. The wins recover far
+more than they pay, `qwen3-coder:30b` 21 against 3, and the three nemotron
+losses reverse that. `qwen3.8:27b-nvfp4` had nothing to recover and still paid
+3, which is the small loss its "unaffected" absorbs, while `gpt-oss:20b`
+recovers 1 against 7 and reads as a loss. Neither side is a property of size or
+family.
 
 As a rule for the next roster: **the tool channel helps a model that selects
 the right card but fails to serialize it.** It does not help a model whose
@@ -237,13 +232,12 @@ the rest of its LLM architecture. It shows that size alone does not separate
 the groups, and it leaves architecture as a whole untested.
 
 The chat template is a better candidate, on the evidence of one pair of builds.
-A chat template ships as part of the model build, in the same download as the
-weights, but it is neither the weights nor the architecture. It is the text
-template that formats the conversation into the prompt the weights see. That
-includes how tool definitions are injected and how a tool call is written back
-out. `nemotron-3-nano:30b` and the
-`hf.co/unsloth/Nemotron-3-Nano-30B-A3B-GGUF:latest` build share the same base
-weights under a different chat template.
+It ships as part of the model build, in the same download as the weights. It is
+neither the weights nor the architecture. It is the text template that formats
+the conversation into the prompt the weights see, and it decides how tool
+definitions go in and how a tool call comes back out. `nemotron-3-nano:30b` and
+the `hf.co/unsloth/Nemotron-3-Nano-30B-A3B-GGUF:latest` build share base weights
+under different templates.
 [The tool-calling capability probe](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md#not-a-card-test-the-tool-calling-canary)
 rates one `supported` and the other `supportedButDeclines`, so on that probe
 the packaging changed the verdict where the weights did not. The unsloth build
@@ -262,8 +256,8 @@ this measurement not yet run, and the notebook lists it as open work.
 
 ## A one-request gate over-predicts willingness
 
-**The capability probe over-predicted willingness.** It rated all eight of these
-models `supported` on a single card request. Across 25 cases, four of them
+The capability probe rated all eight of these models `supported` on a single
+card request. Across 25 cases, four of them
 decline on 11–50% of card requests. "Will call the card tool once" and "will
 reach for it reliably" are separate properties, in the same way the probe
 itself found "can call a tool" and "uses it for a card" to be separate. A
@@ -283,7 +277,7 @@ set. A user would see nothing.
 ## The server kept the message-body channel, because the measured value of the Ollama tool channel was low
 
 The server has no `--reply-channel` flag and still asks for card JSON in the
-message body. Half the models that can use the channel get materially worse on
+message body. Four of the eight models that can use the channel score worse on
 it, so it could not be the default. Two wins among the eight models able to use
 the channel, from a roster of fifteen, did not justify a second code path
 through the reply loop.
