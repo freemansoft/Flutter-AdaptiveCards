@@ -284,8 +284,10 @@ Habits to cut on sight, all of which survived into first drafts:
   use screenshots from the demo client, saved as `blog-N-<name>.png` beside the
   drafts.
 - **Image and chart placeholders are HTML comments** describing what the visual
-  should show, including any data it needs. Article 3's chart placeholder
-  carried its eight data pairs and its required caption.
+  should show, including any data it needs. Article 3 no longer has one: its
+  chart is a mermaid block carrying the eight ratio pairs, which
+  `to_blogger.dart` emits as preformatted source, so it has to be rendered to
+  an image before publishing.
 
 ## 9. Cross-article references
 
