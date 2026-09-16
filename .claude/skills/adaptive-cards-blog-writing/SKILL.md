@@ -200,6 +200,44 @@ running it:
 - **Re-point the notebook links** to the commit the figures were read at (see
   Attribution in the style rules).
 
+## Using subagents
+
+Most of this work parallelizes, because articles are independent files and the
+analyses of one article are independent of each other. Fan out when the work
+splits cleanly, and keep the judgment in one place.
+
+**Worth delegating:**
+
+- **One article per agent** when a notebook change touches several drafts, or
+  when several articles need the same sweep, such as a term renamed across the
+  series.
+- **One analysis per agent** on a single long article: claims and figures
+  against the notebook and the code, structure and section order, register and
+  wording. These read the same file and produce separate findings, so they do
+  not collide.
+- **A second opinion on a high-stakes article.** Running one reviewer with this
+  skill and one without it found different things on article 5: four unsourced
+  figures against five, and only the run with the skill resolved a sentence
+  that described a rounding defect backwards. A review costs roughly 120k to
+  210k tokens and 3 to 10 minutes, so a second pass is cheap against publishing
+  a wrong figure.
+
+**Keep with the coordinator:**
+
+- Deciding which findings to apply, and asking the user.
+- Every edit to a file in the repo. A subagent that writes to a shared draft
+  races the next one; give each agent a scratch copy, or have it report rather
+  than edit.
+- The verification block, run once over the finished state.
+- Commits, which need the user anyway.
+
+**Briefing an agent:** name the exact files, say the repo is read-only and
+where to write output, and say which analysis it owns so two agents do not
+produce the same list. A subagent's report is a claim, not a result: check what
+it says against the notebook or the code before repeating it to the user or
+acting on it. One review in this repo asserted that two models share an
+architecture, which the notebook does not say.
+
 ## Verification
 
 Run from the repo root. Set `A` to the article and `BASE` to the branch point.
