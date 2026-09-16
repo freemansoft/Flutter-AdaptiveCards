@@ -242,6 +242,14 @@ still carries one idea. Outside that, treat 25 as a split point rather than a
 judgment call. Every long sentence argues that it carries a single idea, and
 the ones inspected in this series each turned out to hold two.
 
+Splitting adds a word or three each time, so this rule and the length target in
+Presentation pull against each other. The ceiling wins. Take the length out of
+content, by dropping a finding or deferring detail to the notebook, never by
+packing two ideas back into one sentence to save three words. Article 4 is the
+worked case: 12 sentences past 25 words against a prose count already 565 over
+target, where the splits cost about 30 words and the length has to come from
+somewhere else.
+
 Measured across the series in September 2026, the drafts run from 14.4 to 21.9
 words per sentence: article 5 at 14.4, articles 6 and 7 at 15.5 and 16.0,
 article 4 at 17.0, articles 1 and 3 at 19.4, and article 2 at 21.9 with 41
