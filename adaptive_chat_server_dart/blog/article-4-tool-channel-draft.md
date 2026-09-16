@@ -12,12 +12,12 @@ chat server parses to recover the card.
 Ollama also offers a second route, the tool channel. The request body declares
 a `render_adaptive_card` function and a schema for its arguments, in the
 standard tool-calling format. Nothing ever runs that function. It exists only
-to give the model a schema to answer into. When the model uses it, the response
-carries the card in `message.tool_calls[0].function.arguments`, normally
-already decoded into a structure rather than as text the server has to parse.
-The model, the question, and the requested card are the same on both routes.
-Does a card that arrives through the tool call come out better than one asked
-for in the message body?
+to give the model a schema to answer into. When the model uses it, the
+response carries the card in `message.tool_calls[0].function.arguments`. Those
+arguments normally arrive already decoded into a structure, rather than as
+text the server has to parse. The model, the question, and the requested card
+are the same on both routes. Does a card that arrives through the tool call
+come out better than one asked for in the message body?
 
 Every figure below comes from
 [`ModelBehavior.md`](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md),
@@ -144,7 +144,7 @@ bucketing every failed call by the `label` the judge wrote at the time. Each
 channel is **100 calls**: 25 cases × 2 samples × cold-start and with-history.
 Of those, 96 ask for a card and 4 are the negative control: one case, run four
 times, that wants a plain prose answer. The headline `n/25` counts a case as
-passing only when every sample of it passed, so these per-call buckets are a
+passing only when every sample of it passed. These per-call buckets are a
 finer view of the same runs, not a second metric.
 
 Four buckets, by `label` prefix:
@@ -188,8 +188,8 @@ added in declines and wrong-shape calls:
 
 **The `malformed` column is zero on all eight models in the tool channel.**
 Moving the card out of the message body removes the serialization burden. That
-is the effect the channel promised, and it held on every row, including the
-three where prose lost 18, 21, and 10 calls to it.
+is the effect the channel promised. It held on every row, including the three
+where prose lost 18, 21, and 10 calls to it.
 
 Two costs replace it.
 
@@ -198,8 +198,8 @@ model has already committed to emitting something. The tool channel adds a
 decision point ahead of every card. The four qwen models decline on 0–4% of
 card cases. Three of the four losses decline more often on the tool channel
 than in prose: 16 calls per 100 to 30, 4 to 11, and 4 to 20.
-`nemotron-3-nano:4b` is the exception, declining on 48 tool calls against 52 in
-prose, so the channel added no declines there and its loss comes from element
+`nemotron-3-nano:4b` is the exception, declining on 48 tool calls against 52
+in prose. The channel added no declines there, and its loss comes from element
 choice instead.
 
 The second is **weaker element choice**. Filling a schema argument appears to
@@ -210,17 +210,16 @@ failures, labeled `{TextBlock} want {Chart.Line}`, `{TextBlock} want
 
 **The outcome is a subtraction: what the channel recovers in malformed
 failures, minus what it pays in declines and wrong-shape calls.** The last two
-columns carry it, and it accounts for all eight rows, including the two the ±1
+columns carry it. It accounts for all eight rows, including the two the ±1
 noise floor leaves unexplained on the headline numbers. The wins recover far
 more than they pay, `qwen3-coder:30b` 21 against 3, and the three nemotron
 losses reverse that. `qwen3.8:27b-nvfp4` had nothing to recover and still paid
-3, which is the small loss its "unaffected" absorbs, while `gpt-oss:20b`
-recovers 1 against 7 and reads as a loss. Neither side is a property of size or
-family.
+3, the small loss its "unaffected" absorbs. `gpt-oss:20b` recovers 1 against 7
+and reads as a loss. Neither side is a property of size or family.
 
 As a rule for the next roster: **the tool channel helps a model that selects
 the right card but fails to serialize it.** It does not help a model whose
-failures are about selecting the wrong card, and it costs a model that is
+failures are about selecting the wrong card. It costs a model that is
 reluctant to commit to a card at all.
 
 ## Model size does not separate wins from losses
@@ -231,18 +230,21 @@ of them active for any one token. The pair matches on size, not necessarily on
 the rest of its LLM architecture. It shows that size alone does not separate
 the groups, and it leaves architecture as a whole untested.
 
-The chat template is a better candidate, on the evidence of one pair of builds.
-It ships as part of the model build, in the same download as the weights. It is
-neither the weights nor the architecture. It is the text template that formats
-the conversation into the prompt the weights see, and it decides how tool
-definitions go in and how a tool call comes back out. `nemotron-3-nano:30b` and
-the `hf.co/unsloth/Nemotron-3-Nano-30B-A3B-GGUF:latest` build share base weights
-under different templates.
-[The tool-calling capability probe](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md#not-a-card-test-the-tool-calling-canary)
-rates one `supported` and the other `supportedButDeclines`, so on that probe
-the packaging changed the verdict where the weights did not. The unsloth build
-is not one of the eight in the shape run, so this is evidence about willingness
-to call the tool, not about win or loss.
+The chat template is a better candidate, on the evidence of one pair of
+builds. It ships as part of the model build, in the same download as the
+weights. It is neither the weights nor the architecture. It is the text
+template that formats the conversation into the prompt the weights see. It
+also decides how tool definitions go in and how a tool call comes back out.
+`nemotron-3-nano:30b` and the
+`hf.co/unsloth/Nemotron-3-Nano-30B-A3B-GGUF:latest` build share base weights
+under different templates. [The tool-calling capability
+probe](https://github.com/freemansoft/Flutter-
+AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md#not-a-card-
+test-the-tool-calling-canary) rates one `supported` and the other
+`supportedButDeclines`, so on that probe the packaging changed the verdict
+where the weights did not. The unsloth build is not one of the eight in the
+shape run. That makes it evidence about willingness to call the tool, not
+about win or loss.
 
 Fine-tuning for tool use does not guarantee a card-tool call.
 `llama3-groq-tool-use:8b` is fine-tuned for tool use and does not reach for the
@@ -257,11 +259,11 @@ this measurement not yet run, and the notebook lists it as open work.
 ## A one-request gate over-predicts willingness
 
 The capability probe rated all eight of these models `supported` on a single
-card request. Across 25 cases, four of them
-decline on 11–50% of card requests. "Will call the card tool once" and "will
-reach for it reliably" are separate properties, in the same way the probe
-itself found "can call a tool" and "uses it for a card" to be separate. A
-one-request gate measures the weaker of the two.
+card request. Across 25 cases, four of them decline on 11–50% of card
+requests. "Will call the card tool once" and "will reach for it reliably" are
+separate properties. The probe itself found the same split between "can call a
+tool" and "uses it for a card". A one-request gate measures the weaker of the
+two.
 
 ## The Ollama tool channel converts detected failures into silent ones
 
@@ -278,9 +280,9 @@ set. A user would see nothing.
 
 The server has no `--reply-channel` flag and still asks for card JSON in the
 message body. Four of the eight models that can use the channel score worse on
-it, so it could not be the default. Two wins among the eight models able to use
-the channel, from a roster of fifteen, did not justify a second code path
-through the reply loop.
+it, so it could not be the default. Two of the eight models able to use the
+channel won, out of a roster of fifteen. That did not justify a second code
+path through the reply loop.
 
 What ships is the measurement,
 [`tool/model_probes/tool_channel.dart`](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/tool/model_probes/tool_channel.dart)
