@@ -256,7 +256,8 @@ A=adaptive_chat_server_dart/blog/article-4-tool-channel-draft.md; BASE=main
 # Length. Prose excludes fenced blocks, table rows and URLs: aim for 1,500,
 # justify past 2,000 in the README ownership entry, hard cap 3,000. The on-page
 # figure adds the tables back, which is what the reader scrolls, soft ceiling
-# 3,500. Published articles are not retrofitted to the target.
+# 3,500. Published articles are not retrofitted, and a walkthrough or how-to is
+# paced by its steps rather than by this target.
 python3 - "$A" <<'EOF'
 import re, sys
 raw = open(sys.argv[1]).read()

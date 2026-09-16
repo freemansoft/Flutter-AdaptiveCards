@@ -378,6 +378,13 @@ following them wants the current file, not an archived one.
 
   The target governs unpublished drafts and new articles. Articles 1, 2 and 3
   are published and are not retrofitted to it.
+- **A walkthrough or a how-to is paced by its steps, not by the target.** The
+  1,500 figure is for a findings article, which earns its length by the number
+  of findings it carries and can usually shed prose without losing one. A
+  walkthrough is read with the repo open, and a step cut to save words leaves a
+  reader stuck, so judge one by whether every step earns its place and watch
+  the on-page ceiling instead. Record the kind in the article's README
+  ownership entry, so a later cut pass measures it against the right number.
 - **Watch the on-page count too, with a soft ceiling near 3,500.** The prose
   figure excludes tables, and this series keeps every table, so it understates
   what the reader scrolls by 300 to 1,000 words. Article 3 is 2,038 prose
