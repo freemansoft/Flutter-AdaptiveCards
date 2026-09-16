@@ -47,7 +47,7 @@ which article 3 now says in its own caveat list.
 They were drafted as one article and split the same day, on topic rather than on
 length: the draft was 1823 prose words, well inside the cap. The split separates
 a runtime finding from a model finding, which a reader may want separately.
-Article 6 is 1137 prose words and article 7 is 1106.
+Article 6 is 1073 prose words and article 7 is 1290.
 
 **Audience:** developers running local models on Ollama who need structured
 output. Secondary: Flutter and server-driven-UI readers.

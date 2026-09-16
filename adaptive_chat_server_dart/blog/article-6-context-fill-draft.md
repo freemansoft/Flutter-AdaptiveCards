@@ -118,7 +118,7 @@ some tokenizers and not others.
 
 Three unrelated model families agree at about 4.30. Two Qwen builds render the
 identical text 44% denser, and `nemotron-3-nano:4b` denser still. The filler
-reads `filler-term123 means concept456.`, which is heavy on digits, and
+reads `filler-term123 means concept861.`, which is heavy on digits, and
 tokenizers split digit strings very differently.
 
 So wherever the constant under-counted, the probe sized a window too small for

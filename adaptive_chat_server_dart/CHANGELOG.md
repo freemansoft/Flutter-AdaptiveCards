@@ -11,6 +11,14 @@
   headings that state one concrete finding, claims checked against source, and
   the word-count and figure-diff commands. The README keeps the series plan,
   Figures, and Terms and units; CLAUDE.md points blog work at the skill.
+- Docs: **corrected four claims that the skill's first test runs surfaced.** The
+  filler sample quoted in `ModelBehavior.md` and article 6 read
+  `filler-term123 means concept456.`, which `buildFillerText` cannot produce,
+  since term 123 pairs with concept 861. Article 5 called the two 52-stall
+  sweeps eleven days apart, where 2026-08-20 to 2026-09-01 is twelve. The blog
+  README's prose word counts for articles 6 and 7 were stale, at 1137 and 1106
+  against 1073 and 1290. Article 4 announced its question with "This article
+  asks", which the register rules replace with the question itself.
 
 ## [0.17.0]
 

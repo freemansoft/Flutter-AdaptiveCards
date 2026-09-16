@@ -16,8 +16,8 @@ to give the model a schema to answer into. When the model uses it, the response
 carries the card in `message.tool_calls[0].function.arguments`, normally
 already decoded into a structure rather than as text the server has to parse.
 The model, the question, and the requested card are the same on both routes.
-This article asks whether moving the card into the tool call produces better
-cards.
+Does a card that arrives through the tool call come out better than one asked
+for in the message body?
 
 Every figure below comes from
 [`ModelBehavior.md`](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md),
