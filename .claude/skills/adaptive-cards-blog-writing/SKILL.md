@@ -292,18 +292,29 @@ grep -nwE 'I|me|my' "$A"
 grep -nE "== '(tool|prose)'|\? *'[A-Za-z0-9_]+\.(txt|json)'" \
   adaptive_chat_server_dart/tool/model_probes/shape_ab.dart
 
-# Sentences past 25 words, against the 12 to 20 word target. A hint, not a rule:
-# a long sentence carrying one idea is fine, one carrying three is not.
+# Sentence length: aim for a mean near 14, repair anything past 25. The count
+# past 25 matters more than the mean, which hides a few 40-word sentences inside
+# otherwise short prose. Measured baselines are in the style rules under Register.
 python3 - "$A" <<'EOF'
-import re, sys
+import re, statistics, sys
 t = open(sys.argv[1]).read()
 t = re.sub(r'```.*?```', '', t, flags=re.S)
 t = re.sub(r'^\|.*$', '', t, flags=re.M)
 t = re.sub(r'^#.*$', '', t, flags=re.M)
-for sent in re.split(r'(?<=[.!?])\s+', t):
-    n = len(sent.split())
+t = re.sub(r'\(https?://[^)]*\)', '', t)
+sents = []
+for para in re.split(r'\n\s*\n', t):           # paragraph first, so a table or
+    for x in re.split(r'(?<=[.!?])\s+', para):  # diagram intro ending in a colon
+        x = ' '.join(x.split())                 # does not swallow what follows
+        if len(x.split()) > 2:
+            sents.append(x)
+lens = [len(x.split()) for x in sents]
+print(f'sentences {len(lens)}  mean {statistics.mean(lens):.1f}  '
+      f'median {statistics.median(lens):.0f}  '
+      f'over 20: {sum(n > 20 for n in lens)}  over 25: {sum(n > 25 for n in lens)}')
+for n, x in sorted(zip(lens, sents), reverse=True)[:10]:
     if n > 25:
-        print(n, sent.strip()[:90])
+        print(n, x[:90])
 EOF
 
 # The reversal tic ("It was not.", "They are not."). Count before fixing one.
@@ -347,6 +358,7 @@ Section order and article shape)
 **Register** (Register)
 
 - [ ] No em dashes, first-person singular, amplifiers, or closing flourish.
+- [ ] Sentence mean near 14 words, and nothing past 25 that does not earn it.
 
 **Visuals, tables, sources** (Diagrams and images; Presentation; Attribution;
 Cross-article references)

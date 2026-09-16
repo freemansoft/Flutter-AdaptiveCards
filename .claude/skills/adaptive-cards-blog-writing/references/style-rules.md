@@ -222,11 +222,27 @@ Counts are measured; the explanation for them usually is not. Report negative
 results as plainly as wins. Articles 2 and 4 are substantially negative results
 and they must not read as apologies.
 
-**Write a technical blog post, not a research paper.** Active voice, sentences
-of about 12 to 20 words, and one idea per sentence. The published posts on the
+**Write a technical blog post, not a research paper.** Active voice, and one idea
+per sentence at the lengths below. The published posts on the
 target blog are the register to match. A paper hides the actor behind a passive
 ("eight models were measured", "the filler is sized in characters", "that group
 was written up as unexplained"); a post names it. Do not name it as a person.
+
+**Sentence length: aim for 14 words, fix anything past 25.** The Flesch-Kincaid
+reading tests treat 20 words as the upper end of comfortable, so 14 leaves room
+to exceed it where one idea genuinely needs the space. A sentence past 25 words
+is nearly always two ideas wanting a period between them, and in these drafts
+the usual cause is a definition wedged between a subject and its verb. This is
+an average to steer by and a ceiling to repair against, not a rule to apply
+mechanically: a 30-word sentence carrying one idea beats two clumsy short ones.
+
+Measured across the series in September 2026, the drafts run from 14.4 to 21.9
+words per sentence: article 5 at 14.4, articles 6 and 7 at 15.5 and 16.0,
+article 4 at 17.0, articles 1 and 3 at 19.4, and article 2 at 21.9 with 41
+sentences past 25 words. No draft yet sits at 14. The count past 25 is the more
+useful figure, because a mean hides a handful of 40 and 50 word sentences
+inside otherwise short prose, and those are what a reader stops on. The command
+under Verification in `SKILL.md` prints both, and lists the longest ten.
 
 **No first-person singular.** No "I", "me", or "my" anywhere in an article, even
 though the blog's older, hand-written posts use them. An article drafted with an
