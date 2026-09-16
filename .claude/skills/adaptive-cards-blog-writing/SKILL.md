@@ -88,9 +88,21 @@ answering a guessed completion.
 ### Revise
 
 - **Treat each request as an instance of a rule.** "Say the chat server, not
-  the server" is the rule "name the actor precisely"; apply it wherever it
-  holds. When literal application would repeat a word many times, confirm the
-  scope first (every occurrence, or first mention per section).
+  the server" is the rule "name the actor precisely"; apply it everywhere it
+  holds **in the files the request named**.
+- **An edit that reaches a file the request did not name gets confirmed
+  first.** Say what you found and what you would change, and leave the file
+  alone until the user answers. This holds in every mode, including a clarify
+  request that turns into an edit, and it covers the notebook, the README, and
+  any sibling article. A test run of this skill was asked to clarify one term
+  in article 7 and rewrote the identical row in article 6 as well, which nobody
+  had asked for; the run without the skill reported that row instead, which is
+  the behavior to copy. Two exceptions, because omitting them breaks the change
+  that was asked for: the README status row quoting a title you just changed,
+  and a cross-reference your own edit invalidated.
+- **When a rule would repeat a word many times,** confirm the scope before
+  applying it, such as every occurrence against the first mention in each
+  section.
 - **Wording edits never change a figure, and clarifying a claim never
   strengthens it.** Keep every hedge the paragraph had.
 - **A title change updates the article's row in the README status table.**
