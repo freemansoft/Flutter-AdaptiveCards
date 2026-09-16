@@ -141,9 +141,12 @@ drops it, because it reads as an emission mechanic.
 Valid JSON is not a valid card, and the two need separate checks. An invented
 element type parses, clears the detector, and renders as an invisible blank
 that no pass-or-fail score catches. The server has always run a vocabulary
-check for this; no probe did until 2026-09-16. Now that `shape_ab.dart` runs
-it, unrenderable types are **absent from both arms** across all 1,400 calls.
-The structured path does not trade a caught failure for a silent one.
+check for this. No probe did, which is why the check now runs inside
+`shape_ab.dart` too.
+
+Counting these runs the slower way, from the element types each judged reply
+recorded, unrenderable types are **absent from both arms** across all 1,400
+calls. The structured path does not trade a caught failure for a silent one.
 
 The failure that remains is picking the wrong element for the question, 45 on
 prose against 34 on tool. That is a prompt-quality problem rather than a

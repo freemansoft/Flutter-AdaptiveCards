@@ -866,13 +866,20 @@ top-level JSON objects separated by a newline, the failure the prose prompt's
 "two top-level objects is NOT valid JSON" rule prevents and which the matched
 prompt drops as emission mechanics.
 
-**Valid JSON is not a valid card, and that is now measured rather than
-assumed.** `shape_ab.dart` records `unknownTypes` per call, running the
-server's own `unknownElementTypes()` against the vocabulary in
-`card_schema.json` — the check [`element_types.dart`](lib/src/element_types.dart)
-describes as the one failure users see and no probe could score. An invented
-type parses, passes card detection, and renders as an empty blank. Across
-these runs it is **absent from both arms**. The earlier claim here, that the
+**Valid JSON is not a valid card, and the two need separate checks.** An
+invented type parses, passes card detection, and renders as an empty blank,
+which [`element_types.dart`](lib/src/element_types.dart) describes as the one
+failure users see and no probe could score. `shape_ab.dart` now records
+`unknownTypes` per call, running the server's own `unknownElementTypes()`
+against the vocabulary in `card_schema.json`, so future runs measure it.
+
+**The figure for the two arms above is derived from the judge's labels, not
+from that field**, because both arms were recorded before it existed. It is
+exact for these runs rather than approximate: every one of the 1,600 calls
+carries a label naming the element types it saw, with no opaque `card[n]`
+among them, so the derivation has full coverage. On that basis unrenderable
+types are **absent from both arms**. A later run will measure it directly and
+should be compared against this. The earlier claim here, that the
 channel converts detected failures into silent ones, rested on
 `nemotron-3-nano:4b`'s eight `no-input: got {Input, TextBlock}` calls in the
 deleted run; that model no longer passes the canary and the effect has no
