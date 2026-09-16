@@ -16,15 +16,15 @@ When the notebook and a draft disagree, the notebook wins.
 
 ## The articles
 
-| #   | Article                                                                                | File                              | Status                                                                       |
-| --- | -------------------------------------------------------------------------------------- | --------------------------------- | ---------------------------------------------------------------------------- |
-| 1   | An SDUI demo that turned into a local-model benchmark                                  | `article-1-origin-story-*`        | Drafted, revised 2026-09-08, screenshot added                                |
-| 2   | We tried 14 levers to get reliable card JSON from a local model                        | `article-2-tuning-process-*`      | Drafted, revised 2026-09-08, screenshots added                               |
-| 3   | Running local models for Adaptive Card JSON on a 64 GB M1 Max and a 16 GB M5           | `article-3-m1max-vs-m5-*`         | Drafted, revised 2026-09-08, mermaid chart added, register pass 2026-09-12   |
-| 4   | The tool channel drove malformed JSON to zero and lost on half the models              | `article-4-tool-channel-*`        | Drafted, revised 2026-09-08, mermaid diagram added, register pass 2026-09-12 |
-| 5   | The measurement was wrong, in a way that looked exactly like a slow model              | `article-5-measurement-hygiene-*` | Drafted, revised 2026-09-08, register pass 2026-09-12                        |
-| 6   | Ollama drops an oversized history message whole, and nothing tells you                 | `article-6-context-fill-*`        | Drafted 2026-09-12, split 2026-09-12, no visual, register pass 2026-09-12    |
-| 7   | A full context makes one model stop producing cards and another produce the wrong ones | `article-7-full-context-cost-*`   | Split from 6 on 2026-09-12, mermaid chart, register pass 2026-09-12          |
+| #   | Article                                                                                | File                              | Status                                                                                          |
+| --- | -------------------------------------------------------------------------------------- | --------------------------------- | ----------------------------------------------------------------------------------------------- |
+| 1   | An SDUI demo that turned into a local-model benchmark                                  | `article-1-origin-story-*`        | Drafted, revised 2026-09-08, screenshot added                                                   |
+| 2   | We tried 14 levers to get reliable card JSON from a local model                        | `article-2-tuning-process-*`      | Drafted, revised 2026-09-08, screenshots added                                                  |
+| 3   | Running local models for Adaptive Card JSON on a 64 GB M1 Max and a 16 GB M5           | `article-3-m1max-vs-m5-*`         | Drafted, revised 2026-09-08, mermaid chart added, register pass 2026-09-12, cut pass 2026-09-14 |
+| 4   | The tool channel drove malformed JSON to zero and lost on half the models              | `article-4-tool-channel-*`        | Drafted, revised 2026-09-08, mermaid diagram added, register pass 2026-09-12                    |
+| 5   | The measurement was wrong, in a way that looked exactly like a slow model              | `article-5-measurement-hygiene-*` | Drafted, revised 2026-09-08, register pass 2026-09-12                                           |
+| 6   | Ollama drops an oversized history message whole, and nothing tells you                 | `article-6-context-fill-*`        | Drafted 2026-09-12, split 2026-09-12, no visual, register pass 2026-09-12                       |
+| 7   | A full context makes one model stop producing cards and another produce the wrong ones | `article-7-full-context-cost-*`   | Split from 6 on 2026-09-12, mermaid chart, register pass 2026-09-12                             |
 
 Articles 1 to 5 are drafted and have their visuals: articles 3 and 4 carry
 mermaid diagrams in place of image placeholders (article 5 already had one),
@@ -521,8 +521,10 @@ archived one.
   Removing a caveat can silently promote an inferred mechanism to an
   established one.
 - Image and chart placeholders are HTML comments describing what the visual
-  should show, including any data it needs. Article 3's chart placeholder
-  carries its eight data pairs and its required caption.
+  should show, including any data it needs. Article 3 no longer has one: its
+  chart is a mermaid block carrying the eight ratio pairs, which
+  `to_blogger.dart` emits as preformatted source, so it has to be rendered to
+  an image before publishing.
 
 ## Writing a new article
 
