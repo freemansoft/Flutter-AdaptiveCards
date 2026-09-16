@@ -65,8 +65,17 @@ tool-call conversation, it would not represent either channel cleanly.
 `shape_ab.dart` turns the seed on by default and refuses `--channel tool`
 unless `--no-seed-card` is also passed. Scoring the tool channel against a
 seeded prose baseline would hand prose an advantage the tool channel cannot
-have. Every other shape figure in this series is seeded. None of the figures
-below is.
+have. Shape figures elsewhere in this series are seeded unless they say
+otherwise, and the second article, which measures what the seed is worth,
+carries both. None of the figures below is seeded.
+
+The two channels also do not share a system prompt. The probe sends
+[`card_system_prompt.txt`](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/assets/card_system_prompt.txt) on the prose channel and
+the shorter [`card_tool_prompt.txt`](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/assets/card_tool_prompt.txt) on the tool
+channel, because the prose prompt's instruction that the whole reply be a raw
+card fragment is false when a tool is offered. Nothing here separates the
+channel's effect from the shorter prompt's, so every delta below carries that
+difference.
 
 The probe uses one channel for a whole run, and the server uses only the prose
 channel, so no question goes down both paths. The two paths differ in what
@@ -185,7 +194,11 @@ Two costs replace it.
 The first is **declining to call the tool at all**. In the prose channel the
 model has already committed to emitting something. The tool channel adds a
 decision point ahead of every card. The four qwen models decline on 0–4% of
-card cases. The four losses decline on 11%, 21%, 31%, and 50%.
+card cases. Three of the four losses decline more often on the tool channel
+than in prose: 16 calls per 100 to 30, 4 to 11, and 4 to 20.
+`nemotron-3-nano:4b` is the exception, declining on 48 tool calls against 52 in
+prose, so the channel added no declines there and its loss comes from element
+choice instead.
 
 The second is **weaker element choice**. Filling a schema argument appears to
 favor the cheapest legal filler. That is an inference from the labels, and
