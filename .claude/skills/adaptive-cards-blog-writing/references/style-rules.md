@@ -228,13 +228,19 @@ target blog are the register to match. A paper hides the actor behind a passive
 ("eight models were measured", "the filler is sized in characters", "that group
 was written up as unexplained"); a post names it. Do not name it as a person.
 
-**Sentence length: aim for 14 words, fix anything past 25.** The Flesch-Kincaid
-reading tests treat 20 words as the upper end of comfortable, so 14 leaves room
-to exceed it where one idea genuinely needs the space. A sentence past 25 words
-is nearly always two ideas wanting a period between them, and in these drafts
-the usual cause is a definition wedged between a subject and its verb. This is
-an average to steer by and a ceiling to repair against, not a rule to apply
-mechanically: a 30-word sentence carrying one idea beats two clumsy short ones.
+**Sentence length: aim for 14 words, split anything past 25.** The
+Flesch-Kincaid reading tests treat 20 words as the upper end of comfortable, so
+a mean near 14 leaves room for the occasional longer sentence without the
+average drifting past that. A sentence past 25 words is nearly always two ideas
+wanting a period between them, and in these drafts the usual cause is a
+definition wedged between a subject and its verb.
+
+One kind of sentence earns the length: a list, where the words come from items
+rather than clauses. "No unexpected-character errors, no arrays missing their
+`[ ]`, no cards truncated mid-generation, and no duplicate keys" runs long and
+still carries one idea. Outside that, treat 25 as a split point rather than a
+judgment call. Every long sentence argues that it carries a single idea, and
+the ones inspected in this series each turned out to hold two.
 
 Measured across the series in September 2026, the drafts run from 14.4 to 21.9
 words per sentence: article 5 at 14.4, articles 6 and 7 at 15.5 and 16.0,
