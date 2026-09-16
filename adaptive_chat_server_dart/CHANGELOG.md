@@ -19,6 +19,15 @@
   README's prose word counts for articles 6 and 7 were stale, at 1137 and 1106
   against 1073 and 1290. Article 4 announced its question with "This article
   asks", which the register rules replace with the question itself.
+- Docs: **recorded that the tool channel and the prose channel do not share a
+  system prompt.** `shape_ab.dart` sends `card_tool_prompt.txt` (70 lines) on
+  the tool channel and `card_system_prompt.txt` (223 lines) on prose, because
+  the prose prompt's instruction that the whole reply be a raw card fragment is
+  false when a tool is offered. The tool-channel section now states it, names
+  the code that selects it, and reads it as an unmeasured confound in the
+  per-model deltas. Found by a review of article 4, which quotes those deltas
+  and describes the two channels as differing only in the field the reply
+  lands in.
 
 ## [0.17.0]
 

@@ -768,6 +768,18 @@ string a prose answer would have carried, so both arms are scored by
 identical code. Run 2026-08-21 on the 8 `supported` models, `--samples 2`,
 unseeded, `t=0`, cold-start and with-history.
 
+**The two arms do not share a system prompt.** `shape_ab.dart` sends
+`card_system_prompt.txt` (223 lines) on the prose channel and
+`card_tool_prompt.txt` (70 lines) on the tool channel, chosen at
+[`shape_ab.dart`](tool/model_probes/shape_ab.dart) lines 333-341 and recorded
+in each run's asset digests. The two share their opening framing and differ in
+the instruction that decides the reply: the prose prompt says the whole reply
+must be a raw card fragment, which is false when a tool is offered instead, so
+pairing them would measure a contradiction rather than the channel. Holding the
+prompt fixed across the two arms was therefore not available. Nothing here
+separates the channel's effect from the shorter prompt's, so every per-model
+delta below carries that confound.
+
 **Compared against each model's recorded `shape_ab-unaided` run, never the
 seeded one.** The tool arm cannot be seeded — the seed card is a synthetic
 assistant turn holding raw card JSON, which is not what a tool-channel
