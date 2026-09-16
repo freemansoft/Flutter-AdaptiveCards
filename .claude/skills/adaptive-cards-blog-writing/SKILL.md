@@ -120,7 +120,10 @@ them in the same change. Update attributions and qualifiers to what was
 measured, not to what a plan predicted. An addition to an article near the
 cap is paid for with a trim in the same edit.
 
-### Write a new article
+### Draft a new article
+
+Check the ownership map first. If another article already owns the topic, the
+new one links to it rather than re-explaining it.
 
 Draft from an outline, then delete the outline once the draft is verified; a
 second description of an existing article is drift waiting to happen. The
@@ -134,8 +137,28 @@ outline carries:
   not to write. These caught more errors than any other part of the outlines.
 - Where the three attributions go, and which visuals are needed.
 
-Check the ownership map before drafting so no other article already owns the
-topic, and add the new article to the README status table and ownership map.
+Then draft in this order, because each step constrains the next:
+
+1. **Name the finding in one sentence.** Everything in the article supports it.
+   If it takes two sentences, that is either two articles or one article and a
+   deferral.
+2. **Collect the figures and copy the notebook's tables in verbatim.** Every
+   figure carries its test set and its condition and names the probe that
+   produced it. Table rows do not count against the length cap, so a table is
+   cheaper than the prose that would replace it.
+3. **Lay out the sections, one finding each.** Section order is part of the
+   argument, so read Section order and article shape in the style rules before
+   fixing the order.
+4. **Draft the body before the opening.** Tables first, then the commentary
+   each table needs, then the intro, and the title last, because the title has
+   to survive the paraphrase test against what the draft actually says.
+5. **Add a terms table** if the article uses more than a few terms a reader
+   outside the repo would not know, and define each of them only there.
+6. **Review the draft against the checklist below** and run the verification
+   commands, before showing it to anyone.
+7. **Register it:** add the row to the README status table and an entry to the
+   ownership map saying what the article owns and what it defers. Update any
+   sibling article whose deferral now points at it.
 
 ### Publish to Blogger
 
@@ -217,10 +240,13 @@ One line per rule. The section named in parentheses in
 - [ ] Actors named precisely; each term says what kind of thing it is.
 - [ ] Mechanisms described by direction and data; exclusive alternatives stated.
 
-**Structure** (Openings; Headings and titles; Terms tables and definitions)
+**Structure** (Openings; Headings and titles; Terms tables and definitions;
+Section order and article shape)
 
 - [ ] Framing paragraph first, with the setup the finding depends on.
 - [ ] Each heading states one finding in concrete words and matches its section.
+- [ ] Section order carries the argument: one thread per section, mechanism
+      before verdict, no incident told twice.
 - [ ] Title survives the paraphrase test; README status row matches it.
 - [ ] Each term defined once; every cross-reference resolves.
 

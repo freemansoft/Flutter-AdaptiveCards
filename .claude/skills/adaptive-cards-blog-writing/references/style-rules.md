@@ -19,6 +19,7 @@ this file.
 9. Cross-article references
 10. Attribution
 11. Presentation
+12. Section order and article shape
 
 ## 1. Verifying claims
 
@@ -373,3 +374,36 @@ following them wants the current file, not an archived one.
   size; a prompt describes its difficulty, and the gap between "What size shirt
   should I order?" and a nine-field expense form is the argument the prose was
   making anyway.
+
+## 12. Section order and article shape
+
+A reader meets the sections in the order they are written, so the order is part
+of the argument. Article 5 is the worked example of getting it wrong: it states
+the 52-stall incident, offers co-residency as the cause, walks that back, and
+forward-links to a mechanism three sections away, leaving the reader holding an
+open question for about sixty lines.
+
+- **One thread per section.** A section carrying two findings joined by
+  "because" or "and" is two sections, or one section and a sentence that
+  belongs elsewhere.
+- **The mechanism comes before the verdict.** A section that opens on "It was
+  not" before the cause is known asks the reader to accept a conclusion they
+  have no way to check yet.
+- **Tell an incident once.** Where it appears in the intro and again in the
+  first section, the intro keeps the setup and the section keeps the account.
+- **Group the sections so the close echoes the body.** An article ending on a
+  rules table orders those rows the way the body ordered the findings behind
+  them.
+- **Give each table its configuration** when the article spans more than one:
+  host, runtime version, and test set. Article 5 names five Ollama versions and
+  most of its tables do not say which one a row came from.
+- **A definition sits where the reader first needs it.** A term defined three
+  sections after its first use was never defined.
+- **A section that outgrows its budget has usually split its own subject.**
+  That is where to divide it. Measure before deciding, since only prose counts
+  against the cap and table rows are free.
+
+When reviewing rather than drafting, structure findings are worth as much as
+wording findings and are easier to leave vague. Name the order you would use
+and what each section would then hold, rather than reporting only that the
+order is wrong.
