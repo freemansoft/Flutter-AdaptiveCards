@@ -54,6 +54,11 @@ mechanism, a default, a flag, or a model is a claim the article vouches for.
   separates the per-call accounting (measured), the mechanism (an inference
   from labels), and what was never run (thinking-on). The article's wording
   carries the same split: "appears to favor", "on the evidence of one pair".
+- **A figure is not only a number.** A claim about what a log showed, what a run
+  recorded, or how many runners were resident traces to the notebook the same
+  way a figure does, and those claims are the ones a check by numeric token
+  misses. One review of article 5 found four unsourced figures by checking
+  numbers; the other found a fifth, a sentence about what a server log showed.
 - **Report a confirmed narrow hypothesis as confirmed, and the net result
   separately.** Malformed JSON going to zero was the expected effect and it
   held. Four losses were a separate result. Neither makes the channel "a bust"

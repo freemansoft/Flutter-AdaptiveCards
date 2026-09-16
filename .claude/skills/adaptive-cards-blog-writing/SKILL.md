@@ -60,12 +60,38 @@ carries their blog-specific form.
 Triggered by requests like "examine this article for style, substance,
 complexity and wording". Produce findings; edit only if asked.
 
+**Read the draft twice.** The first pass hunts defects against the checklist.
+The second reads it straight through as a reader who arrived from a search
+result, and that pass is where the problems no checklist item names turn up: an
+incident told three times before its cause arrives, a term doing two jobs, five
+runtime versions that no table attributes. A review assembled only from the
+checklist finds violations and misses shape.
+
+- **Open with three or four lines of orientation.** What the article does well,
+  and the few things keeping it from reading like the most recently reworked
+  drafts. Then the ranked findings.
 - **Rank by harm.** Claims the notebook or code does not support come first,
   then contradictions (a definition that does not fit its table, a
   cross-reference that no longer resolves), then register violations, then
   structure and wording.
 - **Make each finding actionable.** Cite the line, quote the text, say how it
   misleads a reader, and propose the fix.
+- **Propose the shape, not only the faults.** Where the order is wrong, give the
+  section order you would use, one line per section saying what it holds and
+  what moves into it. "This section holds two findings" is half a finding; the
+  other half is where the second one goes. See Section order and article shape
+  in the style rules.
+- **Count a recurring habit instead of fixing one instance of it.** When a tic
+  appears more than twice, say how many times and list the lines. "Five
+  reversals, at these lines" tells the author it is a habit; one flagged
+  sentence reads as a one-off.
+- **Rewrite the worst two or three passages in full.** The densest paragraph and
+  any headings you would change earn finished prose, because a described fix for
+  a tangled paragraph is not checkable. Everything else stays a described fix: a
+  review that rewrites the whole article is a revision nobody asked for.
+- **Forecast the length** when the article is over the 2,000-word target. Say
+  what the proposed changes would leave it at, and which cost nothing because
+  they move prose into table rows.
 - **When reviewing edits made earlier in the session, separate the errors those
   edits introduced from pre-existing ones**, and say which are which.
 - **Show what was checked.** Paste the output of the Verification commands.
@@ -214,6 +240,23 @@ grep -v '^|' "$A" | grep -o '—' | wc -l
 
 # First-person singular. Review each hit: a quoted reader question may use "I".
 grep -nwE 'I|me|my' "$A"
+
+# Sentences past 25 words, against the 12 to 20 word target. A hint, not a rule:
+# a long sentence carrying one idea is fine, one carrying three is not.
+python3 - "$A" <<'EOF'
+import re, sys
+t = open(sys.argv[1]).read()
+t = re.sub(r'```.*?```', '', t, flags=re.S)
+t = re.sub(r'^\|.*$', '', t, flags=re.M)
+t = re.sub(r'^#.*$', '', t, flags=re.M)
+for sent in re.split(r'(?<=[.!?])\s+', t):
+    n = len(sent.split())
+    if n > 25:
+        print(n, sent.strip()[:90])
+EOF
+
+# The reversal tic ("It was not.", "They are not."). Count before fixing one.
+grep -nE '\b(It|They|That|This|The [a-z]+) (is|are|was|were) not\.' "$A"
 
 # Markdown format gate. adaptive_chat_server_dart/** is covered by check:md:chat,
 # not by check:md. Fix with npm run format:md:chat.
