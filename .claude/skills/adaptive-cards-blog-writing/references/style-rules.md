@@ -235,12 +235,22 @@ average drifting past that. A sentence past 25 words is nearly always two ideas
 wanting a period between them, and in these drafts the usual cause is a
 definition wedged between a subject and its verb.
 
-One kind of sentence earns the length: a list, where the words come from items
-rather than clauses. "No unexpected-character errors, no arrays missing their
+One kind of sentence earns the length: a short list, where the words come from
+items rather than clauses and no item needs explaining. "No unexpected-character errors, no arrays missing their
 `[ ]`, no cards truncated mid-generation, and no duplicate keys" runs long and
 still carries one idea. Outside that, treat 25 as a split point rather than a
 judgment call. Every long sentence argues that it carries a single idea, and
 the ones inspected in this series each turned out to hold two.
+
+**A list whose items want explaining belongs in bullets.** Inside a sentence
+each item gets a comma and nothing else, so a reader who needs to know what an
+item means has nowhere to look. Bullets give each one a line and room for the
+clause that explains it, and they cannot be broken across lines by a wrapper the
+way an inline list can. Article 7 listed three wrong-shape labels inside a
+sentence, `got {TextBlock} want {Input.Time}` and two more, where a reader could
+not tell what each question had asked for. As three bullets each label carries
+the case behind it. Keep the inline form only where the items are bare figures
+that speak for themselves, as in 16 calls per 100 to 30, 4 to 11, and 4 to 20.
 
 Splitting adds a word or three each time, so this rule and the length target in
 Presentation pull against each other. The ceiling wins. Take the length out of
