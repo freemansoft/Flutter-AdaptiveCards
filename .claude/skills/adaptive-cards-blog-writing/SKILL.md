@@ -253,16 +253,20 @@ Paste the output when reporting; a summary without numbers is not a check.
 ```bash
 A=adaptive_chat_server_dart/blog/article-4-tool-channel-draft.md; BASE=main
 
-# Prose words, using the cap convention: fenced blocks, table rows, and URLs
-# excluded. Target about 2,000, hard cap 3,000. The raw file reads 5-10% higher.
+# Length. Prose excludes fenced blocks, table rows and URLs: aim for 1,500,
+# justify past 2,000 in the README ownership entry, hard cap 3,000. The on-page
+# figure adds the tables back, which is what the reader scrolls, soft ceiling
+# 3,500. Published articles are not retrofitted to the target.
 python3 - "$A" <<'EOF'
 import re, sys
-t = open(sys.argv[1]).read()
-t = re.sub(r'```.*?```', '', t, flags=re.S)
+raw = open(sys.argv[1]).read()
+t = re.sub(r'```.*?```', '', raw, flags=re.S)
 t = re.sub(r'^\|.*$', '', t, flags=re.M)
 t = re.sub(r'\(https?://[^)]*\)', '', t)
 t = re.sub(r'https?://\S+', '', t)
-print('prose words:', len(t.split()))
+onpage = re.sub(r'\(https?://[^)]*\)', '', raw)
+onpage = re.sub(r'https?://\S+', '', onpage)
+print('prose words:', len(t.split()), '  on-page words:', len(onpage.split()))
 EOF
 
 # Figures: compare numeric token counts, not presence. A trim once dropped a
@@ -353,6 +357,8 @@ Section order and article shape)
 - [ ] Section order carries the argument: one thread per section, mechanism
       before verdict, no incident told twice.
 - [ ] Title survives the paraphrase test; README status row matches it.
+- [ ] Prose near 1,500 words, with any excess past 2,000 justified in the
+      README, and the on-page count under about 3,500.
 - [ ] Each term defined once; every cross-reference resolves.
 
 **Register** (Register)

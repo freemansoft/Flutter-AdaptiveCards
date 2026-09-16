@@ -368,11 +368,24 @@ following them wants the current file, not an archived one.
 
 ## 11. Presentation
 
-- **Target length: about 2,000 words of prose per article, hard cap 3,000.**
+- **Length: aim for 1,500 prose words, justify past 2,000, hard cap 3,000.**
   Prose excludes fenced code and diagram blocks, table rows, and link URLs;
   measure with the command in `SKILL.md`, not `wc -w` on the raw file, which
-  runs 5 to 10% higher. An article that outgrows the cap gets trimmed or split,
-  with the README ownership map updated if split.
+  runs 5 to 10% higher. An article between 2,000 and the cap needs its reason
+  recorded in its README ownership entry, such as owning a fourteen-lever
+  ledger or eleven rules. One that outgrows the cap gets trimmed or split, with
+  the ownership map updated if split.
+
+  The target governs unpublished drafts and new articles. Articles 1, 2 and 3
+  are published and are not retrofitted to it.
+- **Watch the on-page count too, with a soft ceiling near 3,500.** The prose
+  figure excludes tables, and this series keeps every table, so it understates
+  what the reader scrolls by 300 to 1,000 words. Article 3 is 2,038 prose
+  against 3,002 on the page, and article 2 is 2,877 against 3,677, the only
+  breach. Prose can be trimmed to target while the article gets longer on
+  screen, which is why both numbers are worth reading. Measured 2026-09-15:
+  1 at 2,209, 2 at 2,877, 3 at 2,038, 4 at 2,127, 5 at 2,492, 6 at 1,073, and
+  7 at 1,290.
 - **Prefer a table to a prose list** anywhere a section compares more than two
   things.
 - **A table section runs intro, table, then commentary.** The intro is one or
