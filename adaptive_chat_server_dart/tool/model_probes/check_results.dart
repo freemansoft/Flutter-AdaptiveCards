@@ -48,13 +48,17 @@ const expectedProbes = {
 
 /// Probes only some models can run, and the recorded fact that decides it.
 ///
-/// `shape_ab-channel-tool` sends the card request through Ollama's tool
+/// `shape_ab-channel-tool-*` sends the card request through Ollama's tool
 /// channel, which a model whose chat template has no tool support simply
 /// cannot answer — `qwen2.5-coder:7b`, the compiled-in default, is one such
 /// model. Demanding it of every launched model would report a permanent
 /// missing result for a run that can never exist, so the expectation is
 /// gated on that model's own `tool_call_probe` verdict.
-const conditionalProbes = {'shape_ab-channel-tool': 'supported'};
+///
+/// Runs recorded before 2026-09-15 carry the un-suffixed
+/// `shape_ab-channel-tool`, measured against a tool prompt that no longer
+/// exists and is not comparable to this one; those directories are closed.
+const conditionalProbes = {'shape_ab-channel-tool-matched': 'supported'};
 
 /// The host whose runs the shape-coverage table in `ModelBehavior.md`
 /// reports.
@@ -308,9 +312,12 @@ List<Finding> check({
 
   // Checks 1 and 2 run over every host: a run that disagrees with its own
   // calls, or was measured against a prompt the tree no longer has, is wrong
-  // on any machine. Checks 3 and 4 are scoped to [tableHost], because the
-  // shape table and the launch-set coverage expectation both describe one
-  // machine.
+  // on any machine. Check 3 is scoped to [tableHost], because the shape table
+  // describes one machine. Check 4 is not: "has this model been measured at
+  // all" is a question about the model, not about one directory, and scoping
+  // it to the shape table's directory made it report a launched model as
+  // uncovered whenever its only run lived elsewhere. That is what happened
+  // when the tool-call canaries moved to a newer runtime's directory.
   // A run that never recorded its host is included rather than skipped. Older
   // runs predate the stamp, and silently dropping them from the table check
   // would turn a missing field into missing coverage -- the failure mode this
@@ -452,16 +459,22 @@ List<Finding> check({
   // 4. Coverage. Not fatal — the matrix is filled in over time, and a gap is
   //    an invitation rather than a defect. It is reported so the gap has to
   //    be looked at rather than discovered by accident.
+  //
+  //    Reads every directory rather than [canonical]: a model is covered if
+  //    some archive holds the run, wherever that archive is. The conditional
+  //    verdict below is read the same way, so a capability measured on the
+  //    current runtime gates the expectation even when the shape table still
+  //    points at an older one.
   for (final model in launched) {
     final have = {
-      for (final r in canonical.where((r) => r.model == model))
+      for (final r in results.where((r) => r.model == model))
         '${r.probe}${r.variant == null ? '' : '-${r.variant}'}',
     };
     // Conditional probes join the expectation only for models whose
     // recorded capability verdict says the run is possible at all.
     final expected = {...expectedProbes};
     for (final entry in conditionalProbes.entries) {
-      final verdict = canonical
+      final verdict = results
           .where((r) => r.model == model && r.probe == 'tool_call_probe')
           .map((r) => r.summary['verdict'])
           .firstOrNull;

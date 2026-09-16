@@ -320,7 +320,7 @@ For scale, the next most-missed cases are `carousel` (8 of 15 models), `text`
 (7), then `time` and `table` (6). Failure concentrates in nested shapes, and it
 usually arrives as invalid JSON rather than as a wrong choice of element.
 
-## The tool channel removed malformed JSON and cost more elsewhere
+## The tool channel helped wherever models used it, and they often did not
 
 The tool channel is Ollama's
 [function-calling API](https://github.com/ollama/ollama/blob/main/docs/api.md):
@@ -329,17 +329,19 @@ card JSON as text in the message body the model answers by calling that
 function, with the card as the call's structured arguments. That is JSON the
 runtime has already parsed.
 
-| What was changed                                                                       | Outcome             | Evidence                                                                                                                                                                            |
-| -------------------------------------------------------------------------------------- | ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ask for the card through Ollama's tool channel, instead of as JSON in the message body | Failed, not shipped | On the 8 models that can use it at all: 2 wins, 2 unaffected, 4 losses (two by 5 shapes). Malformed JSON went to zero on every model; declines and weaker element choice cost more. |
+| What was changed                                                                       | Outcome                        | Evidence                                                                                                                                                                                                           |
+| -------------------------------------------------------------------------------------- | ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Ask for the card through Ollama's tool channel, instead of as JSON in the message body | Helped where used, not shipped | On the 7 models that can use it at all, replies that actually came through the tool passed 79% to 100% of the time against 62% to 94% on prose, with no malformed JSON in 570 tool calls. Adoption is the problem. |
 
-Moving the card into the arguments of a `render_adaptive_card` function drove
-malformed JSON to **zero on all eight models that could use the channel**, and
-still lost on half of them, to declined calls and weaker element choice. One
-caveat stops the zero from reading as an unqualified win: zero malformed JSON
-is not zero broken cards. `nemotron-3-nano:4b`'s tool arm produced eight calls
-with well-formed arguments naming an element type that does not exist, which
-renders as an invisible blank. A later article carries the full decomposition.
+Offering a tool does not oblige a model to use one. A model can ignore it and
+write card JSON into the message body as before, so a tool-channel score
+describes the channel only for the calls that actually went through it.
+Between 4 and 34 calls per 100 did not.
+
+Conversation history makes that worse: one model goes from 2 non-tool calls
+cold to 20 once two ordinary turns precede the question. Nothing shipped,
+because a second code path is hard to justify on a benefit that fades two
+turns into a conversation. A later article carries the full decomposition.
 
 ## Write the prompt first, then change what the model sees around it
 

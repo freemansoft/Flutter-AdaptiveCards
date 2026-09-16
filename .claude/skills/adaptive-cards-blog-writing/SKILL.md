@@ -40,9 +40,13 @@ carries their blog-specific form.
 
 1. **Branch first.** Create `docs/article-N-<pass>` (for example
    `docs/article-4-cut-pass`) from `main` before the first edit. Never commit
-   or push until the user has seen the diff and said to proceed; this is the
-   CLAUDE.md commit gate, and it holds even when the request sounds like it
-   covers the whole job.
+   or push until the user has **read the changed prose itself** and said to
+   proceed. A `git diff` is the wrong artifact here and `git diff --stat` is
+   worse: a diff of a rewritten section is unreadable, and a line count says
+   nothing about whether the writing is any good. Print the new text. This is
+   the CLAUDE.md commit gate in its stricter form for `blog/`, and it holds
+   even when the request sounds like it covers the whole job, including an
+   instruction like "commit these and then write the articles".
 2. **Read the whole article**, its entry under "What each article owns" in the
    README, and the README's Figures and Terms and units sections.
 3. **Calibrate on the most recently reworked drafts.** The README status column

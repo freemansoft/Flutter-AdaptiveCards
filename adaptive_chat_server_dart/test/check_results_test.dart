@@ -433,6 +433,43 @@ void main() {
       expect(note, isNot(contains('shape_ab-seeded')));
     });
 
+    test('counts a run recorded outside the shape table\'s directory', () {
+      // The regression: coverage borrowed the shape table's single-directory
+      // scoping, so a launched model whose only tool_call_probe lived in a
+      // newer runtime's directory was reported as never probed. `results`
+      // holds every directory; `tableResults` is the shape table's one.
+      // Passing them apart is what main() does, and coverage must read the
+      // former.
+      final canary = ProbeRun(
+        probe: 'tool_call_probe',
+        model: 'm:1',
+        measuredAt: '2026-09-16',
+        samples: 2,
+        assets: const {'card_system_prompt.txt': 'aaaaaaaaaaaa'},
+        summary: const {'verdict': 'unsupported'},
+        calls: const [],
+      );
+      final table = shapeRun(
+        model: 'm:1',
+        variant: 'seeded',
+        cold: 24,
+        warm: 23,
+      );
+      final findings = check(
+        results: [table, canary],
+        tableResults: [table],
+        launched: const ['m:1'],
+        currentAssets: currentAssets,
+        markdown: tableWith(cold: 24, warm: 23, preSeed: 22),
+      );
+      final note = findings.firstWhere((f) => !f.fatal).message;
+      expect(note, isNot(contains('tool_call_probe')));
+      // The conditional arm is read from the same place, so an `unsupported`
+      // verdict recorded elsewhere still suppresses the tool-channel
+      // expectation rather than being invisible.
+      expect(note, isNot(contains('shape_ab-channel-tool-matched')));
+    });
+
     test('does not block the build', () {
       // A launched model with zero recorded runs is the extreme case of a
       // coverage gap. It must still only report, not fail — the matrix is

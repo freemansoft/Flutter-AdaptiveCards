@@ -219,14 +219,19 @@ nothing in the scores above predicts where a model lands.
 
 | Models | Offered the card function, the model     | What comes back                   |
 | ------ | ---------------------------------------- | --------------------------------- |
-| **8**  | calls it                                 | A parsed card, no JSON to recover |
+| **7**  | calls it                                 | A parsed card, no JSON to recover |
 | **3**  | can call functions, but never picks it   | An ordinary text reply            |
-| **2**  | calls it even when the question is prose | A card nobody asked for           |
+| **3**  | calls it even when the question is prose | A card nobody asked for           |
 | **2**  | cannot call functions at all             | An ordinary text reply            |
 
 One of the three that never picks the card function was trained specifically for
 tool use. One of the two that cannot call functions at all is the model the
 server ships as its default.
+
+The split is not a fixed property of a model either. Re-running the probe after
+rewording the system prompt, with the same schema and the same question, moved
+four of the fifteen models between rows, in both directions. A model that can
+be talked into calling the function can be talked out of it again.
 
 For low-memory machines, the best-performing model
 is `granite4.1:8b`: 21/25 with history in 5.0 GB. Hardware is the

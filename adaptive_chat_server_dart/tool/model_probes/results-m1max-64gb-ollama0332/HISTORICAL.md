@@ -10,3 +10,11 @@ figures remain valid for the prompt and runtime they name.
 
 Superseded by the `Input.Rating` palette addition on 2026-09-07, which moved
 `card_system_prompt.txt` from `4bfa327067f8` to `8cbfde243266`.
+
+The tool-channel runs and the tool-call canaries were deleted on 2026-09-16.
+Both were measured against a 70-line `card_tool_prompt.txt` that has since
+been deleted: it was never tuned, and pairing it with the tuned
+`card_system_prompt.txt` measured the gap between a tuned prompt and a guess
+rather than the channel. `card_tool_prompt_matched.txt` replaces it, and
+`results-m1max-64gb-ollama0340/` holds the re-measurement. Git history before
+2026-09-16 holds the deleted runs.

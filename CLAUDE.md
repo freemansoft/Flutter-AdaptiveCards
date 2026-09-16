@@ -134,6 +134,8 @@ records of what the tree was called at the time, not references that must resolv
 
 This holds even when the task description appears to authorize the full workflow (e.g. "tag and push a release"). A broad task authorizes the _work_; each commit and push still needs a moment-of-action confirmation.
 
+**Prose is reviewed as prose.** For changes under `adaptive_chat_server_dart/blog/`, step 1 means showing the changed text itself, never `git diff --stat` and rarely a raw diff — a rewritten section does not read as a diff, and a line count says nothing about the writing. Commit the code and notebook work, then stop and print the article.
+
 **Standing exception — subagent-driven plan execution.** When an approved plan (`docs/superpowers/plans/`) is executed via subagents (`superpowers:subagent-driven-development` or similar), each subagent may commit its completed, verified task to the current feature branch without per-commit confirmation. This covers `git commit` to the feature branch only — not `git push`, merging, force-push, or anything touching `main`.
 
 ## Local tooling permissions

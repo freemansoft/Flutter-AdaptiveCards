@@ -17,15 +17,24 @@ When the notebook and a draft disagree, the notebook wins.
 
 ## The articles
 
-| #   | Article                                                                                | File                              | Status                                                                                          |
-| --- | -------------------------------------------------------------------------------------- | --------------------------------- | ----------------------------------------------------------------------------------------------- |
-| 1   | An SDUI demo that turned into a local-model benchmark                                  | `article-1-origin-story-*`        | Drafted, revised 2026-09-08, screenshot added                                                   |
-| 2   | We tried 14 levers to get reliable card JSON from a local model                        | `article-2-tuning-process-*`      | Drafted, revised 2026-09-08, screenshots added                                                  |
-| 3   | Running local models for Adaptive Card JSON on a 64 GB M1 Max and a 16 GB M5           | `article-3-m1max-vs-m5-*`         | Drafted, revised 2026-09-08, mermaid chart added, register pass 2026-09-12, cut pass 2026-09-14 |
-| 4   | The Ollama tool channel fixed malformed JSON and still lost on half the models         | `article-4-tool-channel-*`        | Drafted, revised 2026-09-08, mermaid diagram added, register pass 2026-09-12                    |
-| 5   | The measurement was wrong, in a way that looked exactly like a slow model              | `article-5-measurement-hygiene-*` | Drafted, revised 2026-09-08, register pass 2026-09-12                                           |
-| 6   | Ollama drops an oversized history message whole, and nothing tells you                 | `article-6-context-fill-*`        | Drafted 2026-09-12, split 2026-09-12, no visual, register pass 2026-09-12                       |
-| 7   | A full context makes one model stop producing cards and another produce the wrong ones | `article-7-full-context-cost-*`   | Split from 6 on 2026-09-12, mermaid chart, register pass 2026-09-12                             |
+| #   | Article                                                                                | File                              | Status                                                                                               |
+| --- | -------------------------------------------------------------------------------------- | --------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| 1   | An SDUI demo that turned into a local-model benchmark                                  | `article-1-origin-story-*`        | **Published.** Revised 2026-09-08, screenshot added                                                  |
+| 2   | We tried 14 levers to get reliable card JSON from a local model                        | `article-2-tuning-process-*`      | **Published.** Revised 2026-09-08, screenshots added. Its tool-channel row is superseded — see below |
+| 3   | Running local models for Adaptive Card JSON on a 64 GB M1 Max and a 16 GB M5           | `article-3-m1max-vs-m5-*`         | **Published.** Revised 2026-09-08, mermaid chart, register pass 2026-09-12, cut pass 2026-09-14      |
+| 4   | Ollama's tool channel produces better cards, when the model remembers to use it        | `article-4-tool-channel-*`        | Not published. Rewritten 2026-09-16 against the re-measurement                                       |
+| 5   | The measurement was wrong, in a way that looked exactly like a slow model              | `article-5-measurement-hygiene-*` | Not published. Drafted, revised 2026-09-08, register pass 2026-09-12                                 |
+| 6   | Ollama drops an oversized history message whole, and nothing tells you                 | `article-6-context-fill-*`        | Not published. Drafted 2026-09-12, split 2026-09-12, no visual, register pass 2026-09-12             |
+| 7   | A full context makes one model stop producing cards and another produce the wrong ones | `article-7-full-context-cost-*`   | Not published. Split from 6 on 2026-09-12, mermaid chart, register pass 2026-09-12                   |
+
+**Articles 1, 2 and 3 are published; 4 to 7 are not.** What is published cannot
+be silently corrected, so a finding that moves under re-measurement is tracked
+here rather than only in the draft it came from. One is open now: article 2's
+tool-channel row and article 4's whole subject rest on a 2026-09-01 comparison
+that sent a different system prompt down each channel, which
+[`ModelBehavior.md`](../ModelBehavior.md) now records as a confound. Article 4
+is unpublished and is being rewritten against the re-measurement. Article 2 is
+published and needs a correction to its tool-channel row.
 
 Articles 1 to 5 are drafted and have their visuals: articles 3 and 4 carry
 mermaid diagrams in place of image placeholders (article 5 already had one),
@@ -135,18 +144,21 @@ What the runner allocates and what happens to history
 that does not fit, to article 6. What a full context costs a model's coverage,
 to article 7.
 
-**Article 4: the tool channel.** How the two arms are paired, including why the
-tool arm is scored against the unseeded prose run. The eight-model comparison.
-The failure decomposition: malformed JSON recovered, minus declines and shape
-regressions gained, and why that subtraction accounts for all eight rows
-including the two the noise floor leaves unexplained. Architecture not
-separating wins from losses, and the chat template predicting better. The
-phase-1 canary over-predicting willingness. The channel converting detected
-failures into silent ones.
+**Article 4: the tool channel.** Why the first version of this measurement
+compared two prompts rather than two channels, and what a prompt built by
+deleting only what a tool makes false changes about the answer. That offering a
+tool does not oblige a model to use one, so a tool-arm score blends two
+channels until something records which path a reply took. The per-call split
+once it does: the tool wins on every model where it is actually called, and
+adoption is what the shape score was measuring. Malformed JSON as the bulk of
+the gain, and why a tool call structurally cannot carry it. History suppressing
+tool-calling harder than it suppresses card shape. The rejected prompt that
+re-armed the fallback's rules.
 
-_Defers:_ the canary's four-way split to article 1, recapping it in one sentence
-as setup. Its figures are the only unseeded shape figures in the series, which
-it states rather than assumes.
+_Defers:_ the capability probe's four-way split to article 1, recapping it in
+one sentence as setup. Its figures are the only unseeded shape figures in the
+series, which it states rather than assumes. Its per-call rates are the only
+per-call figures in the series; every other article quotes `n/25` cases.
 
 **Article 5: measurement hygiene.** The `granite4.1:3b` stall-signature
 account in full, which article 1 names in one sentence and article 3 names in

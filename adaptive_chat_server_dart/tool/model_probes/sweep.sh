@@ -122,10 +122,15 @@ for M in $MODELS; do
   # can answer here at all, so skip the rest rather than record a run that
   # was never possible. Always unseeded — the seed is a prose-channel
   # artifact and cannot be sent down this channel.
+  #
+  # The tool prompt is card_system_prompt.txt with only the raw-JSON-emission
+  # mechanics replaced, so this arm differs from `shapes-unaided` above in the
+  # channel alone. See tool_channel_arms.sh, which runs the pair without the
+  # rest of the battery.
   if grep -q '"verdict": "supported"' "$D/tool_call_probe.json" 2>/dev/null; then
-    run "$M shapes-channel-tool" "$D/shape_ab-channel-tool.json" \
+    run "$M shapes-channel-tool-matched" "$D/shape_ab-channel-tool-matched.json" \
       tool/model_probes/shape_ab.dart --model "$M" --samples 2 --timeout 120 \
-      --channel tool --no-seed-card
+      --channel tool --no-seed-card --baseline assets/card_tool_prompt_matched.txt
   fi
   run "$M cascade" "$D/cascade_ab.json" \
     tool/model_probes/cascade_ab.dart --model "$M" --samples 2 --timeout 120
