@@ -184,7 +184,7 @@ malformed JSON. Across the 570 calls that went through the tool, none did. All
 of those calls by hand shows what happened. The model ignored the tool and
 wrote two top-level JSON objects separated by a newline, which is not valid
 JSON. The prose prompt has a rule against exactly that. The tool prompt
-drops it, because it reads as an emission mechanic.
+drops it because it reads as an emission mechanic.
 
 Valid JSON is not a valid card. An invented element type parses, clears the
 detector, and renders as an invisible blank that no pass-or-fail score catches.
@@ -193,7 +193,7 @@ exactly this. No probe did, so that check now runs inside `shape_ab.dart` too. C
 element types each judged reply recorded, unrenderable types are **absent from
 both arms** across all 1,400 calls.
 
-The failure that remains is picking the wrong element for the question, 45 on
+The remaining failure is picking the wrong element for the question, 45 on
 prose against 34 on tool. That is a prompt-quality problem rather than a
 channel one.
 
@@ -258,8 +258,8 @@ support changes, or when the tool prompt changes, because the capability
 verdicts move with the prompt. Between them, it is roughly 2,700 serial model
 calls.
 
-One variable stays untested. Every probe in the notebook sends `think: false`,
-so all of the above is thinking turned off.
+Every probe in the notebook sends `think: false`,
+so all of the above is thinking turned off. Enabling thinking may give different results.
 
 The repo is
 [https://github.com/freemansoft/Flutter-AdaptiveCards](https://github.com/freemansoft/Flutter-AdaptiveCards),
