@@ -176,9 +176,9 @@ cold, and `qwen3.6:27b-coding-nvfp4` never declines.
 
 This series has already documented that history erodes card shape on the prose
 channel, which the seed card exists to counter. On three of seven models
-history erodes tool adoption the same way, and on `qwen3-coder:30b` by far
-more than it erodes prose shape: 16 tool calls lost against one case gained.
-The seed cannot help here, being a prose-channel artifact.
+history erodes tool adoption the same way. On `qwen3-coder:30b` it erodes far
+more than prose shape: 16 tool calls lost against one case gained. The seed
+cannot help here, being a prose-channel artifact.
 
 The cases that lose the tool most are the ones whose natural answer is text.
 Each case gets 28 calls across the seven models. `text` went without the tool
@@ -267,9 +267,9 @@ tool channel.
 
 The arm measurement favors the tool channel, but what it favors is bounded by
 adoption. Four of seven models decline on 16 to 30 of their 96 card-asking
-calls, and on three of them history makes it worse. A second code path through
-the reply loop is hard to justify on a benefit that, on those models, fades
-two turns into a conversation.
+calls, and on three of them, history makes it worse. A second code path
+through the reply loop is hard to justify on a benefit that, on those models,
+fades two turns into a conversation.
 
 The retry is the narrower change. It pays on a model that both breaks on prose
 and answers a tool with a card in it when offered one. `qwen2.5-coder:7b`, the
@@ -278,7 +278,6 @@ retry-probe calls, and no tool calls on the canary. That argues for a
 per-model setting rather than a default, and it bears on the choice of model
 rather than on the reply loop.
 
-The probe scripts are in the repo.
 [`tool_channel_arms.sh`](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/tool/model_probes/tool_channel_arms.sh)
 runs the canary over all 15 models, then both shape arms over the models it
 rated `supported`.
