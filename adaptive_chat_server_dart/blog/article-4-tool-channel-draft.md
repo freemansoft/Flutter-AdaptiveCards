@@ -124,9 +124,9 @@ channel.
 | prose |    **50** |                53 |            45 |    21 |
 | tool  |     **7** |                81 |            34 |    11 |
 
-The tool arm fails 36 fewer times in total. Malformed JSON falls by 43, wrong
-element by 11 and infra by 10, while prose answers rise by 28. The malformed
-drop is the whole gain, and declines give most of it back.
+The tool arm fails 36 fewer times. Malformed JSON falls by 43, wrong element
+by 11 and infra by 10, a gross reduction of 64. Prose answers rise by 28 and
+offset part of it. Malformed JSON is two thirds of the gross reduction.
 
 Ollama returns tool arguments already decoded, so a tool call cannot carry
 malformed JSON. Across the 570 calls that went through the tool, none did. All
