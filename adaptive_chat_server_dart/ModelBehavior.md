@@ -1253,6 +1253,32 @@ The forward-looking items from the sections above, collected so they are not re-
 - **Conditional seeding.** The seed is applied to every request once `--seed-card-file` is named, but its value spans +10 to −2 by model. If a strong-unaided model ever becomes the server default, a per-model seed policy is the mechanism to consider (see [the card-seed section](#the-card-seed-and-what-it-costs)).
 - **The `gpt-oss:20b` swap is worth revisiting, though the reason changed.** Under 0.32.14 it was the strongest unaided model in the file and the only 25/25 under any condition; under 0.33.2 it is still the only 25/25, now under the seeded condition rather than the unaided one, and no longer the top unaided scorer (`qwen3.8:27b-nvfp4` and `qwen3.6:27b-coding-nvfp4` both score higher unaided). It is still not in `launch.json`. The swap is defensible, not settled, on either runtime's figures (see [its per-model notes](#gpt-oss20b)).
 - **A thinking-on arm of the tool-channel comparison.** Every probe sends `think: false` unconditionally, so thinking is untested rather than ruled out as a variable in the tool-channel result (see [the tool channel](#the-tool-channel-measured-against-prose)).
+- **Two zero-cost repairs are untried ahead of the tool-channel retry, and the
+  archive bounds what each is worth.** The
+  [retry](#a-retry-on-parse-failure-recovers-43-of-99-broken-cards-and-the-misses-split-two-ways)
+  recovers 43 of 99 parse failures at one extra model call each, but two
+  cheaper steps sit in front of it and neither is implemented or measured.
+  First, `card_detect.dart`'s bracket repair rescues `{…},{…}` and not
+  `{…}\n{…}`: all 7 of `qwen3-coder:30b`'s tool-arm malformed calls and 18 of
+  the retry probe's 99 prose parse failures carry the
+  `Unexpected character (at line 2, character 1)` signature that a second
+  top-level object produces. Splitting concatenated top-level values on brace
+  depth outside strings and joining them inside `[ ]`, kept only when the
+  result parses to element maps, would recover about that many at no model
+  call; the archive keeps reason strings rather than raw replies, so the exact
+  count needs a re-run, and `qwen3-coder:30b` through
+  `shape_ab.dart --channel tool` (200 calls) is the cheapest one. Second, 18 of
+  the 24 tool-answered retries that failed were calls to `render_adaptive_card`
+  with no card in the arguments; treating an empty `body` as a decline and
+  falling through to `message.content` costs nothing, but whether those
+  replies carried anything in the message body was not recorded and also needs
+  a re-run. Truncation (`Unexpected end of input`, 20 of the prose arm's 50
+  malformed calls) is out of reach of both, being a generation limit rather
+  than a formatting fault. The order to try is repair, then empty-call
+  fallthrough, then retry on what remains, and each step's yield is measurable
+  before the next is built. When one is picked, it gets a brainstorm and a plan
+  under `docs/superpowers/plans/`.
+
 - **Can a runaway generation be cancelled at all, and how.** `keep_alive: 0` did not cancel one in a direct test (an 18 s generation completed at 20.9 s), nor did `ollama stop` (16.3 s), and 53 unloads did not stop a 70-minute generation during `granite4.1:3b`'s after-eviction run. Until a cancellation path is shown to work and the model is re-run behind it, `granite4.1:3b`'s 0.33.2 shape and stall figures stay recorded as cascade-damaged rather than as a model measurement (see [the cascade section](#stalls-are-a-queueing-cascade-not-a-runtime-difference)). The schema-constrained `Carousel` timeouts on `qwen3.6:27b-coding-nvfp4` (see [its per-model notes](#qwen3627b-coding-nvfp4)) add two more occurrences under 0.33.3: both times the client's 180 s timeout left the runner stuck in `ollama ps`'s `Stopping...` state, holding 16-22 GB at roughly 19% CPU for up to an hour, and an explicit `keep_alive: 0` unload that the server acknowledged (`done_reason: "unload"`) did not clear it — only killing the runner process did, with `ollama serve` itself staying up and responsive throughout. No token or character count was captured for the timed-out calls, so a still-generating server-side process is a hypothesis consistent with the evidence, not a confirmed mechanism; what is established is narrower — `evictModel()` prevented the timeouts from cascading into the next probe within this run (`ColumnSet` cold passed immediately after three `Carousel` timeouts) without terminating the generation or freeing the runner. A third instance, on 2026-09-05, wedged the same model under `--json-format json` — the third occurrence under constrained decoding on `qwen3.6:27b-coding-nvfp4`, and again an acknowledged `keep_alive: 0` unload (`done_reason: "unload"`) did not clear it; only killing the runner process did, at a resident 10.6 GB of the 21-22 GB model, alive 1:02:32 at roughly 33% CPU, with `ollama serve` staying responsive throughout. This run wedged sooner, after 6 calls, and produced no comparable pass/fail — every call after the wedge returned `timeout (180s)`, including two cases that score 6/6 in both prior arms, so nothing from it was archived.
 - **Closed 2026-09-11: nothing drops a history message that fits.** This entry asked what discarded an oversized message when the runner had room for it. The [fit control](#a-filled-context-an-oversized-history-message-is-dropped-whole-and-a-real-one-costs-some-models-a-third-of-their-shapes) shows the premise was false: all six models ingested the filler once it fit, and every drop was a message 42426 tokens or larger under a 35851-token window. The probe's fixed `fillerCharsPerToken = 4.0` manufactured the gap by sizing history in characters. Three things it left open have since closed. Per-model calibration shipped on 2026-09-12, so a run no longer sizes its filler from a constant that overflows on dense tokenizers. The M5 archive was re-measured the same week and all eight models carry `runnerContextLength`, putting `min(requested, trained window)` on a memory-constrained host as well. And the filled-context cost has a third fill level on three models, which shows it is neither proportional to occupancy nor a cliff.
 

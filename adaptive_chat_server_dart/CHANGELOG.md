@@ -17,6 +17,9 @@
   reading that adoption alone separates the retry's halves was narrowed:
   `nemotron-3.5-lightning:30b` answers 6 of 8 retries through the tool with
   an empty call every time. Article 4 was revised to match.
+  The open-questions section gains an entry for the two untried repairs
+  ahead of the retry, a concatenated-object repair in `card_detect.dart` and
+  an empty-tool-call fallthrough, with the archive figures that bound each.
 
 - Probes: **a tool-channel run now records whether each call actually used the
   tool.** `probeOnceViaTool` sets `toolUsed` on every judged reply and
