@@ -83,6 +83,43 @@ mechanism, a default, a flag, or a model is a claim the article vouches for.
 Most of the rewriting these drafts needed was a term doing two jobs at once, or
 two terms doing one job.
 
+- **Name the thing rather than pointing at it.** The author resolves every
+  referent instantly, because the code is in front of them; the reader has only
+  the sentence. Four shapes recur, all of them from article 4's own draft:
+
+  - A pronoun or demonstrative standing for a noun more than a clause away.
+    "The tool arm's arguments are converted back into **one**" means back into
+    a string, said eight words earlier. "The results are read through **that
+    flag**" names no flag; the code calls it `toolUsed`.
+  - A category noun with its domain left off, where the article spans more than
+    one. "decoded into a **structure**" is a JSON object. "which **element**
+    answers which question" is an Adaptive Card element.
+  - A figure whose antecedent lives only in a heading. "**The average** hides
+    the useful part" followed a heading carrying the 43 of 99, after the
+    sentence that repeated it was cut.
+  - A positional reference to something that has a name. "the judge **described
+    above**" is that same judge; "the same variable **as before**" is adoption.
+
+  This one cannot be grepped, because pronouns are ordinary English and only
+  some are unresolvable. It is found by reading, and best by someone who cannot
+  see the repository.
+
+- **Where two of a thing exist, never name one of them bare.** Article 4 has a
+  prose channel and a tool channel, and five sentences said "the channel"
+  meaning the tool one. A reader just told there are two has no way to pick,
+  and the writer cannot see it because they know which one they meant.
+
+  Before a register pass, list what the article has two or more of: channels,
+  arms, prompts, passes, probes, runs, hosts, runtimes, measurements. Each of
+  those nouns then gets a qualifier at every use. Two exceptions, both narrow.
+  A sentence defining the category itself stays bare, as the terms table's "an
+  arm is a whole run, a channel is where one reply travelled" does. And a
+  pronoun in the sentence immediately after an unambiguous mention is fine.
+
+  The same defect produced "the first" and "the second" meaning both the two
+  measurements and the two passes of one of them, four sentences apart, and
+  "pays" meaning both "yields a benefit" and "incurs a cost" in the same
+  paragraph. Count the senses, not the words.
 - **One name per concept, taken from the code or API.** Article 4 used "arm" and
   "channel" for the same thing. Ollama's API has no name for it: the reply is in
   `message.content` or in `message.tool_calls`. The probe's flag is `--channel`,
@@ -184,6 +221,16 @@ compares. A terms table defined later is not a reason to hold the setup back.
   channel hides what it does not remove"). Name the thing instead: "Every
   failed call, bucketed by its label"; "The Ollama tool channel converts
   detected failures into silent ones". The same test applies to sentences.
+- **A heading is active, and names the thing that acts.** The same rule as the
+  prose, applied to nine words with no room to hide. "A tool call cannot carry
+  malformed JSON, and that is most of the gain" trails a verdict behind a
+  comma; "Malformed JSON accounts for most of the gain" states it. "Where the
+  tool is used, it wins on every model" opens on a subordinate clause and
+  demotes the subject to "it"; "The tool wins on every model that calls it"
+  does not. A passive participle usually marks the spot: *used*, *built*,
+  *asked*, *measured*, *taken*. A `## Terms used in this article` heading is
+  the standing exception, because it labels a table rather than stating a
+  finding, and the series shares the wording.
 - **A heading does not repeat its section's bold first sentence.** When a
   heading is rewritten to state the finding, rewrite the first sentence so it
   adds information.
@@ -227,6 +274,17 @@ per sentence at the lengths below. The published posts on the
 target blog are the register to match. A paper hides the actor behind a passive
 ("eight models were measured", "the filler is sized in characters", "that group
 was written up as unexplained"); a post names it. Do not name it as a person.
+
+**Lead a paragraph with its subject, not a subordinate clause.** A paragraph
+that opens on "Because", "Since", "While", "Although", "When" or "Given" makes
+the reader carry a condition before they know what it qualifies, and the main
+clause that follows almost always arrives with a pronoun doing the work. It is
+the passive rule's cousin: the actor is present but demoted. "Because the retry
+fires only on a reply that already failed, it cannot depress adoption on the
+calls that worked" hides both the actor and the finding. "Only the middle
+branch costs a second call. A reply that parses first time never reaches the
+retry" names them, and splits one long sentence into two short ones. The same
+applies mid-paragraph when the leading clause runs past about eight words.
 
 **Sentence length: aim for 14 words, split anything past 25.** The
 Flesch-Kincaid reading tests treat 20 words as the upper end of comfortable, so

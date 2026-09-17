@@ -917,35 +917,34 @@ By question type, the cases that lose the tool most are the ones whose natural
 answer is text: `number`, `codeblock`, and `text` at 10 of 24 calls each,
 against 2 for `carousel`, `badge`, and `choice1`.
 
-#### A prompt that re-arms the fallback was measured and rejected
-
-Offering a tool does not remove the message body, so the emission rules looked
-like a guard for the fallback rather than something the tool makes false. An
-arm restoring them as a conditional (`card_tool_prompt_both.txt`, same 7
-models, 2026-09-16) repaired part of the damage — `qwen3-coder:30b` 7 to 4
-malformed, `nemotron-3-nano:30b` +8 adoption — and cost more elsewhere:
-`nemotron-3.5-lightning:30b` lost 8 adoption and gained the malformed replies
-the arm existed to prevent, 0 to 2. Net over seven models, 7 malformed calls
-repaired against 2 introduced, adoption +10 against −8, every shape score
-inside ±1 except that one. **The rules guard the fallback and also advertise
-it.** The prompt and its results were deleted. The remaining malformed
-fallbacks are better addressed by a retry on parse failure, which fires only
-on the calls that break and cannot move adoption.
-
 #### What ships
 
 **Still nothing.** There is no `--reply-channel` flag and the server still asks
-for card JSON in the message body. The finding now favours the channel, but
-what it favours is _tool adoption_, which is a prompt and strategy problem this
-file has not solved: four of seven models decline on 16-30 calls per 100, and
-history makes it worse. A second code path through the reply loop is not
-justified by a benefit that evaporates two turns into a conversation.
+for card JSON in the message body. The finding favours the channel, but what it
+favours is _tool adoption_, which is a prompt and strategy problem this file has
+not solved: four of seven models decline on 16-30 calls per 100, and history
+makes it worse. A second code path through the reply loop is not justified by a
+benefit that evaporates two turns into a conversation.
+
+**The retry is worth having, conditionally, and the condition is per-model.**
+It recovers 43 of 99 broken cards across fourteen models, but the average hides
+the split: of the ten models with any parse failures, five recover half or more
+(33 of their 45) and five recover 10 of 54. What separates them is whether the
+retry actually goes through the tool, the same variable that bounds the channel
+itself. So the tool channel earns its place exactly where the prose channel is
+failing _and_ the model answers a tool when offered one, both of which are
+measurable on a model before deciding.
+
+`qwen2.5-coder:7b` has neither property, so this is an argument for a per-model
+setting rather than a default, and it bears on the model choice rather than on
+the reply loop.
 
 What ships is the measurement: `tool/model_probes/tool_channel.dart`,
 `shape_ab.dart --channel tool`, and
 [`tool_channel_arms.sh`](tool/model_probes/tool_channel_arms.sh), which runs
 the canary over the full roster and both shape arms over whatever it rates
-`supported`.
+`supported`, plus [`retry_sweep.sh`](tool/model_probes/retry_sweep.sh) for the
+retry arm.
 
 **Thinking is untested rather than ruled out**: every probe in this file sends
 `think: false` unconditionally, so all of the above is thinking-off.

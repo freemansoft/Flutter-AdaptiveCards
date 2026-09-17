@@ -17,6 +17,8 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:adaptive_chat_server_dart/src/card_detect.dart';
+import 'package:adaptive_chat_server_dart/src/element_types.dart'
+    show unknownElementTypes;
 import 'package:adaptive_chat_server_dart/src/ollama_responder.dart';
 import 'package:args/args.dart';
 import 'package:crypto/crypto.dart';
@@ -267,6 +269,17 @@ class const ProbeOutcome({
 }) {
   /// Creates an outcome.
   this;
+}
+
+/// The unrenderable `type` values in [reply], or null if it is not a card.
+///
+/// Null and empty mean different things and the caller records both: null is
+/// "there was no card to check", empty is "checked, every type renders".
+List<String>? unrenderableTypes(String reply, Set<String> known) {
+  if (known.isEmpty) return null;
+  final body = tryParseCardBody(reply);
+  if (body == null) return null;
+  return unknownElementTypes(body, known).toList()..sort();
 }
 
 /// Builds the `/api/chat` message list, mirroring `OllamaResponder`.

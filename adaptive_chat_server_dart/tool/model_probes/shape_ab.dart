@@ -27,10 +27,8 @@ library;
 
 import 'dart:io';
 
-import 'package:adaptive_chat_server_dart/src/card_detect.dart'
-    show tryParseCardBody;
 import 'package:adaptive_chat_server_dart/src/element_types.dart'
-    show loadKnownElementTypes, unknownElementTypes;
+    show loadKnownElementTypes;
 import 'package:args/args.dart';
 import 'package:path/path.dart' as p;
 
@@ -222,17 +220,6 @@ Future<void> runPrompt({
         ? '\n== eroded by history: none =='
         : '\n== eroded by history: ${eroded.join(', ')} (${eroded.length}) ==',
   );
-}
-
-/// The unrenderable `type` values in [reply], or null if it is not a card.
-///
-/// Null and empty mean different things and the caller records both: null is
-/// "there was no card to check", empty is "checked, every type renders".
-List<String>? unrenderableTypes(String reply, Set<String> known) {
-  if (known.isEmpty) return null;
-  final body = tryParseCardBody(reply);
-  if (body == null) return null;
-  return unknownElementTypes(body, known).toList()..sort();
 }
 
 /// The `variant` for a tool-channel run, taken from the prompt it sent.

@@ -246,16 +246,15 @@ void main() {
         measuredAt: '2026-09-16',
         samples: 2,
         assets: const {'card_tool_prompt_matched.txt': 'abc123def456'},
-        summary: const <String, dynamic>{},
         calls: [
-          ProbeCall(
+          const ProbeCall(
             caseId: 'choice1',
             sample: 0,
             pass: false,
             label: 'prose',
             toolUsed: false,
           ),
-          ProbeCall(
+          const ProbeCall(
             caseId: 'table',
             sample: 0,
             pass: true,

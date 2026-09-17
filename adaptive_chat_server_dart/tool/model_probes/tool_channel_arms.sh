@@ -20,12 +20,10 @@
 #
 # so a delta between them is a property of the channel.
 #
-# A third arm was measured on 2026-09-16 and rejected: it restored the
-# raw-JSON-emission rules to the tool prompt, on the theory that they guard the
-# message-body fallback rather than being made false by the tool. They do guard
-# it, and they also advertise it -- tool adoption fell 8 calls per 100 on
-# nemotron-3.5-lightning:30b, which also gained the malformed replies the arm
-# existed to prevent. See the CHANGELOG entry for 0.18.0.
+# A third arm restoring the raw-JSON-emission rules to the tool prompt was
+# measured on 2026-09-16 and rejected. Its prompt and its results were deleted
+# before being committed, so its figures are not re-derivable and are not
+# quoted anywhere; git history before 2026-09-16 holds the prompt.
 #
 # The canary runs over the FULL roster, not just the models expected to pass
 # it. Which models can use the tool channel is a measurement, and it moved when

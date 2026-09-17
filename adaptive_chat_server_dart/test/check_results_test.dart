@@ -433,21 +433,21 @@ void main() {
       expect(note, isNot(contains('shape_ab-seeded')));
     });
 
-    test('counts a run recorded outside the shape table\'s directory', () {
+    test("counts a run recorded outside the shape table's directory", () {
       // The regression: coverage borrowed the shape table's single-directory
       // scoping, so a launched model whose only tool_call_probe lived in a
       // newer runtime's directory was reported as never probed. `results`
       // holds every directory; `tableResults` is the shape table's one.
       // Passing them apart is what main() does, and coverage must read the
       // former.
-      final canary = ProbeRun(
+      const canary = ProbeRun(
         probe: 'tool_call_probe',
         model: 'm:1',
         measuredAt: '2026-09-16',
         samples: 2,
-        assets: const {'card_system_prompt.txt': 'aaaaaaaaaaaa'},
-        summary: const {'verdict': 'unsupported'},
-        calls: const [],
+        assets: {'card_system_prompt.txt': 'aaaaaaaaaaaa'},
+        summary: {'verdict': 'unsupported'},
+        calls: [],
       );
       final table = shapeRun(
         model: 'm:1',

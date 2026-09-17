@@ -32,12 +32,6 @@ with-history:
 emission mechanics rewritten; its element catalogue is byte-identical. A delta
 between the two arms is therefore a property of the channel.
 
-A third arm, `shape_ab-channel-tool-both.json`, was measured on 2026-09-16 and
-deleted with its prompt. It restored the raw-JSON-emission rules to the tool
-prompt to guard the message-body fallback; it repaired 7 malformed calls and
-introduced 2, and cost `nemotron-3.5-lightning:30b` 8 tool calls per 100. The
-rules guard the fallback and also advertise it.
-
 `tool_call_probe.json` is here for all 15 models, not only the ones that pass
 it. The canary now sends the matched prompt too, so which models can answer on
 the tool channel is re-measured rather than carried over from the deleted

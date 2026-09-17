@@ -38,16 +38,17 @@
   something the tool makes false; stripping them is how `qwen3-coder:30b`
   produced 7 malformed fallbacks per 100 calls under the matched prompt. An
   arm restoring them as a conditional (`card_tool_prompt_both.txt`, 7 models,
-  2026-09-16) repaired part of that — `qwen3-coder:30b` 7 to 4 malformed, and
-  `nemotron-3-nano:30b` gained 8 tool calls per 100 — but cost more elsewhere:
-  `nemotron-3.5-lightning:30b` lost 8 tool calls per 100 and gained the
-  malformed replies the arm existed to prevent, going 0 to 2. Net over the 7
-  models, 7 malformed calls repaired against 2 introduced, and adoption +10
-  against −8. Every shape score moved inside the ±1 noise floor except that
-  one. The rules do guard the fallback, and they also advertise it. The prompt
-  and its results were deleted; git history before 2026-09-16 holds them. The
-  4 remaining malformed fallbacks are better addressed by a retry on parse
-  failure, which fires only on the calls that break and cannot move adoption.
+  2026-09-16) repaired some malformed calls on one model and cost tool
+  adoption on another, for no net gain, so the prompt was rejected.
+
+  **Its figures are not quoted anywhere, because they cannot be re-derived.**
+  Neither the prompt nor its results were ever committed, so git history does
+  not hold them either; they existed only in the working tree. The account of
+  the arm was removed from `ModelBehavior.md`, article 4 and the results
+  directory's README for that reason. What replaces it is the retry on parse
+  failure, which fires only on the calls that break and so cannot move
+  adoption at all.
+
 - Probes: **`shape_ab.dart` records unrenderable element types per call.**
   `unknownTypes` runs the server's own `unknownElementTypes()` against the
   vocabulary in `card_schema.json`, so "the reply was a card" and "the card
