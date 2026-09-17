@@ -5,7 +5,7 @@ In
 a demonstration Dart chat server hands a question to a local Ollama model. It
 asks for the answer as Adaptive Card JSON, a tree of typed UI components called
 elements (`TextBlock`, `Table`, `Input.ChoiceSet`). A Flutter client renders
-that card as interactive UI rather than as text. By default the card comes back
+that card as interactive UI rather than as text. By default, the card comes back
 in the model's message body, as JSON text inside `message.content`, which the
 chat server parses to recover the card.
 
@@ -14,18 +14,17 @@ a `render_adaptive_card` function and a schema for its arguments, in the
 standard tool-calling format. Nothing ever runs that function. It exists only
 to give the model a schema to answer into. When the model uses it, the card
 arrives in `message.tool_calls[0].function.arguments`, already decoded into a
-structure rather than as text the server has to parse.
+JSON object rather than as text the server has to parse.
 
 Two measurements follow. One asks whether the tool channel is worth anything
 on its own. A card that never has to survive being written as text should fail
 less often. The probe puts the same 25 questions down each route and scores
 both runs the same way.
 
-The other measurement only matters if the tool channel helps, and the first
-one shows that it does. It tries a two-pass shape a server could actually
-run. Ask in the message body as usual, and reach for the tool only on a
-reply that failed to parse. The retry fires on about one call in fourteen,
-so most questions never cost a second round trip.
+The other asks whether the tool channel can rescue what the prose channel
+got wrong. It tries a two-pass shape a server could actually run. Ask in the message body
+as usual, then reach for the tool only when that reply fails to parse. The second pass fires on about one call in fourteen, so most
+questions never cost a second round trip.
 
 Every figure below comes from
 [`ModelBehavior.md`](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md),
@@ -47,20 +46,21 @@ a lab notebook in that repository.
 
 [`tool/model_probes/shape_ab.dart`](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/tool/model_probes/shape_ab.dart)
 `--channel tool` runs the 25 shape cases through a `render_adaptive_card`
-function. Every scoring rule in the probe directory is written against a reply
-string, so the tool arm's structured arguments are converted back into one.
+function. Every scoring rule in the probe directory is written against a reply string.
+The tool arm's JSON arguments are converted back to a string before scoring.
 That way a single judge scores both arms, rather than two sets of rules that
 could drift apart.
 
 The two arms also share a system prompt, as far as they can. The tool arm's
 prompt is the prose prompt with a byte-identical element catalogue. Only the
-raw-JSON-emission rules are rewritten, the ones a tool call makes false. Every instruction about which element answers which question is
-word for word the same. A gap between the arms is therefore a property of the
+raw-JSON-emission rules are rewritten, the ones a tool call makes false. Every
+instruction about which Adaptive Card element answers which question is
+word for word the same. Any gap between the arms is a property of the
 channel rather than of two differently written prompts.
 
 Measured 2026-09-16 on an Apple M1 Max with 64 GB under Ollama 0.34.0,
 `--samples 2` at
-`t=0`. The 7 models are those a capability probe rates able to use the tool
+`t=0`. The 7 models are those a capability probe rates as able to use the tool
 channel at all, which the first article covers.
 
 Neither arm is seeded. The seed is a synthetic assistant turn holding raw card
@@ -69,13 +69,13 @@ are seeded; none below is.
 
 Declaring a function does not remove the message body, so a model can ignore
 the tool and write card JSON into `message.content` as before. Both routes
-then meet the judge described above. A reply that arrived in the message
+then meet that same judge. A reply that arrived in the message
 body is scored by the same rules and can pass. It counts toward the tool
 arm's score exactly as a tool call would.
 
 A tool-arm score is therefore a blend of two channels unless something records
-which route each reply took. `shape_ab.dart` records it per call, and the
-results below are read through that flag.
+which route each reply took. `shape_ab.dart` records it per call as `toolUsed`, and
+every result below is read through that field.
 
 The retry is measured separately, by a second probe with a different shape. It
 asks every card case in prose first, then retries only the replies that fail
@@ -104,7 +104,7 @@ flowchart TD
 ```
 
 Only the `invalid JSON` branch reaches the retry, so only those calls cost a
-second round trip. A reply that parses first time is done at the `card
+second round trip. A reply that parses the first time is done at the `card
 rendered` node. That is why the retry cannot depress the success rate of calls
 that already worked: it never sees them.
 
@@ -129,7 +129,7 @@ level with prose on `qwen3.8:27b-nvfp4` and `gpt-oss:20b`, and below it on
 `nemotron-3-nano:30b`. The fourth column is the same runs, counting only the
 calls that used the tool.
 
-**Where the tool is actually used it wins on every model**, 79% to 100%
+**Where the tool is actually used, it wins on every model**, 79% to 100%
 against 62% to 94% on prose. What the blended column measures is adoption.
 Between 4 and 34 calls per 100 never used the tool, and those calls drag the
 arm back toward its prose score.
@@ -140,8 +140,8 @@ counted as a failure, not evidence that the fallback path is broken.
 
 ## A retry on parse failure recovers 43 of 99 broken cards
 
-The average hides the useful part. Ten of the fourteen models had parse
-failures at all, and among those the retry splits in two. Five of them recover
+That 43 of 99 is an average, and it hides the useful part. Ten of the fourteen
+models had parse failures at all, and among those the retry splits in two. Five of them recover
 half or more, **33 of their 45** between them. That group holds the three
 models that recover every failure they have. It also holds `qwen3-coder:30b`,
 which recovers 12 of 18 and had the worst prose serialization in the set. The other
@@ -160,7 +160,7 @@ five recover 10 of 54.
 | unsloth Nemotron             | `supportedButDeclines` |             12 |         0 |
 | `nemotron-3.5-lightning:30b` | `supported`            |              8 |         0 |
 
-What separates the halves is the same variable as before. Of the 99 retries,
+What separates the halves is adoption again. Of the 99 retries,
 63 went through the tool and succeeded 62% of the time. The 36 where the model
 ignored the tool a second time succeeded 11% of the time, recovering 4 cards.
 
@@ -180,15 +180,16 @@ and is not attributable to either channel.
 
 Ollama returns tool arguments already decoded, so a tool call cannot carry
 malformed JSON. Across the 570 calls that went through the tool, none did. All
-7 in the tool arm are `qwen3-coder:30b` message-body fallbacks. Reproducing one directly shows the mechanism. The model ignored the
-tool and wrote two top-level JSON objects separated by a newline, which is not
-valid JSON. The prose prompt has a rule against exactly that. The tool prompt
+7 in the tool arm are `qwen3-coder:30b` message-body fallbacks. Re-issuing one
+of those calls by hand shows what happened. The model ignored the tool and
+wrote two top-level JSON objects separated by a newline, which is not valid
+JSON. The prose prompt has a rule against exactly that. The tool prompt
 drops it, because it reads as an emission mechanic.
 
 Valid JSON is not a valid card. An invented element type parses, clears the
 detector, and renders as an invisible blank that no pass-or-fail score catches.
-The server has always checked its element vocabulary for this and no probe did,
-so that check now runs inside `shape_ab.dart` too. Counting these runs from the
+The chat server has always checked replies against its element vocabulary for
+exactly this. No probe did, so that check now runs inside `shape_ab.dart` too. Counting these runs from the
 element types each judged reply recorded, unrenderable types are **absent from
 both arms** across all 1,400 calls.
 
@@ -213,7 +214,7 @@ calls where a model declined the tool split sharply by condition.
 
 `qwen3-coder:30b` goes from 2 non-tool calls cold to 20 with history, while
 its prose score moves by a single case, 16 to 17. Two ordinary
-conversational turns are enough to stop a model reaching for a function it
+conversational turns are enough to stop a model from reaching for a function it
 used reliably on turn one.
 
 This series has already documented that history erodes card shape on the
@@ -228,7 +229,7 @@ The cases that lose the tool most are the ones whose natural answer is text.
 ## The chat server in the repo uses neither the tool channel nor the retry
 
 Nothing measured here is integrated into the code. The chat server runs
-exactly as it did before this work: it asks for card JSON in the message body,
+exactly as it did before this work. It asks for card JSON in the message body,
 parses what comes back, and falls back to Markdown when that fails. There is
 no flag to turn either change on.
 
@@ -237,8 +238,9 @@ adoption. Four of seven models decline on 16 to 30 calls per 100, and
 history makes it worse. A second code path through the reply loop is hard to
 justify on a benefit that fades two turns into a conversation.
 
-The retry is the narrower form that does pay, on a model that both breaks on
-prose and answers a tool when offered one. Those are properties you can measure
+The retry is the narrower change, short of switching the whole reply loop. It
+does pay, on a model that both breaks on prose and answers a tool when offered
+one. Those are properties you can measure
 before deciding. `qwen2.5-coder:7b`, the model this chat server ships, has
 neither: no parse failures in 96 calls, and no tool calls at all. That argues
 for a per-model setting rather than a default, and it bears on the choice of
@@ -252,11 +254,11 @@ whatever it rates supported.
 [`retry_sweep.sh`](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/tool/model_probes/retry_sweep.sh)
 runs the retry. Re-run them when the roster changes, when a model's tool
 support changes, or when the tool prompt changes, because the capability
-verdicts move with the prompt. Between them it is roughly 2,700 serial model
+verdicts move with the prompt. Between them, it is roughly 2,700 serial model
 calls.
 
 One variable stays untested. Every probe in the notebook sends `think: false`,
-so all of the above is thinking-off.
+so all of the above is thinking turned off.
 
 The repo is
 [https://github.com/freemansoft/Flutter-AdaptiveCards](https://github.com/freemansoft/Flutter-AdaptiveCards),
