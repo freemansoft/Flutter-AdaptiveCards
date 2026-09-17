@@ -16,11 +16,16 @@ to give the model a schema to answer into. When the model uses it, the card
 arrives in `message.tool_calls[0].function.arguments`, already decoded into a
 structure rather than as text the server has to parse.
 
-Two measurements follow. The first asks the same 25 questions twice, once down
-each route, and scores both runs the same way. The second tries a two-pass
-shape that a server could actually run: ask in the message body as usual, and
-reach for the tool only on a reply that failed to parse. The second pass fires
-on about one call in fourteen, so most questions never pay for it.
+Two measurements follow. One asks whether the tool channel is worth anything
+on its own. A card that never has to survive being written as text should fail
+less often. The probe puts the same 25 questions down each route and scores
+both runs the same way.
+
+The other measurement only matters if the tool channel helps, and the first
+one shows that it does. It tries a two-pass shape a server could actually
+run. Ask in the message body as usual, and reach for the tool only on a
+reply that failed to parse. The retry fires on about one call in fourteen,
+so most questions never cost a second round trip.
 
 Every figure below comes from
 [`ModelBehavior.md`](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md),
@@ -38,18 +43,6 @@ a lab notebook in that repository.
 | **Cold-start**, **with-history** | The question asked first, or asked with two ordinary conversational turns already in the conversation.                                                                                                                                                                                                                                                                                                                                                                                                                        |
 | **Adoption**                     | How often a model actually called the tool when one was offered, out of 100 calls. Recorded per call by `shape_ab.dart`.                                                                                                                                                                                                                                                                                                                                                                                                      |
 
-## Two questions share one set of 25 cases
-
-The first is whether the channel is worth anything on its own. A card that
-never has to survive being written as text should fail less often. Testing
-that means asking the same questions down each route and scoring the answers
-the same way.
-
-The second matters only if the first pays. Malformed JSON cannot occur in a
-tool call, so the channel may be worth reaching for at the moment the message
-body has already failed. That is a claim about a retry, and it needs a
-different measurement.
-
 ## How the probes build both measurements
 
 [`tool/model_probes/shape_ab.dart`](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/tool/model_probes/shape_ab.dart)
@@ -60,20 +53,19 @@ That way a single judge scores both arms, rather than two sets of rules that
 could drift apart.
 
 The two arms also share a system prompt, as far as they can. The tool arm's
-prompt is the prose prompt with only the raw-JSON-emission rules rewritten,
-the ones a tool call genuinely makes false, and a byte-identical element
-catalogue. Every instruction about which element answers which question is
+prompt is the prose prompt with a byte-identical element catalogue. Only the
+raw-JSON-emission rules are rewritten, the ones a tool call makes false. Every instruction about which element answers which question is
 word for word the same. A gap between the arms is therefore a property of the
 channel rather than of two differently written prompts.
 
-Measured 2026-09-16 on an Apple M1 Max under Ollama 0.34.0, `--samples 2` at
-`t=0`. The 7 models are those a capability probe rates able to use the channel
-at all, which the first article covers.
+Measured 2026-09-16 on an Apple M1 Max with 64 GB under Ollama 0.34.0,
+`--samples 2` at
+`t=0`. The 7 models are those a capability probe rates able to use the tool
+channel at all, which the first article covers.
 
 Neither arm is seeded. The seed is a synthetic assistant turn holding raw card
-JSON, which is a prose-channel artifact, so the tool arm cannot carry it.
-Shape figures elsewhere in this series are seeded unless they say otherwise.
-None of the figures below is.
+JSON, so the tool arm cannot carry it. Shape figures elsewhere in this series
+are seeded; none below is.
 
 Declaring a function does not remove the message body, so a model can ignore
 the tool and write card JSON into `message.content` as before. Both routes
@@ -89,7 +81,7 @@ The retry is measured separately, by a second probe with a different shape. It
 asks every card case in prose first, then retries only the replies that fail
 to parse. The retry offers `render_adaptive_card` and discards the broken
 reply. Showing the model its own bad output would measure self-correction as
-well as the channel, which is a second variable. That probe covers fourteen of
+well as the tool channel, which is a second variable. That probe covers fourteen of
 the fifteen models. One wedged its runner mid-run and was abandoned rather
 than recorded as failures.
 
@@ -148,8 +140,6 @@ counted as a failure, not evidence that the fallback path is broken.
 
 ## A retry on parse failure recovers 43 of 99 broken cards
 
-It recovered **43 of 99** broken cards.
-
 The average hides the useful part. Ten of the fourteen models had parse
 failures at all, and among those the retry splits in two. Five of them recover
 half or more, **33 of their 45** between them. That group holds the three
@@ -178,11 +168,6 @@ Even a tool-answered retry can fail, and 24 did. In 18 of those the model
 called the function with no card in it at all. A tool call cannot carry
 malformed JSON, but it can carry nothing.
 
-So the tool channel is worth reaching for exactly when the prose channel is
-failing, on a model that answers the tool when offered it. Both halves of that
-are properties you can measure on a model before deciding, rather than
-assumptions to carry into production.
-
 ## Malformed JSON accounts for most of the gain
 
 Failed calls per 100, card cases only. `infra` covers HTTP 500s and timeouts
@@ -200,15 +185,12 @@ tool and wrote two top-level JSON objects separated by a newline, which is not
 valid JSON. The prose prompt has a rule against exactly that. The tool prompt
 drops it, because it reads as an emission mechanic.
 
-Valid JSON is not a valid card, and the two need separate checks. An invented
-element type parses, clears the detector, and renders as an invisible blank
-that no pass-or-fail score catches. The server has always run a vocabulary
-check for this. No probe did, which is why the check now runs inside
-`shape_ab.dart` too.
-
-Counting these runs the slower way, from the element types each judged reply
-recorded, unrenderable types are **absent from both arms** across all 1,400
-calls. The structured path does not trade a caught failure for a silent one.
+Valid JSON is not a valid card. An invented element type parses, clears the
+detector, and renders as an invisible blank that no pass-or-fail score catches.
+The server has always checked its element vocabulary for this and no probe did,
+so that check now runs inside `shape_ab.dart` too. Counting these runs from the
+element types each judged reply recorded, unrenderable types are **absent from
+both arms** across all 1,400 calls.
 
 The failure that remains is picking the wrong element for the question, 45 on
 prose against 34 on tool. That is a prompt-quality problem rather than a
@@ -243,41 +225,27 @@ The cases that lose the tool most are the ones whose natural answer is text.
 `number`, `codeblock`, and `text` each go 10 of 24 calls, against 2 for
 `carousel` and `badge`.
 
-## The emission rules guard the fallback and also advertise it
+## The chat server in the repo uses neither the tool channel nor the retry
 
-The message body is still live, so the emission rules look like a guard for it
-rather than something a tool makes false. A third prompt restored them as a
-conditional, measured on the same 7 models. It repaired part of the damage,
-taking `qwen3-coder:30b` from 7 malformed calls to 4 and lifting
-`nemotron-3-nano:30b`'s adoption by 8. It cost more elsewhere:
-`nemotron-3.5-lightning:30b` lost 8 adoption and gained the malformed replies
-the change existed to prevent, going from 0 to 2.
+Nothing measured here is integrated into the code. The chat server runs
+exactly as it did before this work: it asks for card JSON in the message body,
+parses what comes back, and falls back to Markdown when that fails. There is
+no flag to turn either change on.
 
-Net across seven models: 7 malformed calls repaired against 2 introduced, and
-adoption +10 against −8. Every shape score moved inside the noise floor except
-that one. Spelling out how to write a card into the message body reads as
-permission to do it, so the prompt was rejected.
+The measurement favors the tool channel, but what it favors is bounded by
+adoption. Four of seven models decline on 16 to 30 calls per 100, and
+history makes it worse. A second code path through the reply loop is hard to
+justify on a benefit that fades two turns into a conversation.
 
-## The measurement shipped, the change did not
+The retry is the narrower form that does pay, on a model that both breaks on
+prose and answers a tool when offered one. Those are properties you can measure
+before deciding. `qwen2.5-coder:7b`, the model this chat server ships, has
+neither: no parse failures in 96 calls, and no tool calls at all. That argues
+for a per-model setting rather than a default, and it bears on the choice of
+model rather than on the reply loop.
 
-The chat server runs exactly as it did before this work. It asks for card JSON
-in the message body, parses what comes back, and falls back to Markdown when
-that fails. Neither the tool channel nor the retry is wired into the reply
-loop, and there is no flag to turn either on.
-
-The measurement favors the channel, but what it favors is bounded by adoption.
-Four of seven models decline on 16 to 30 calls per 100, and history makes it
-worse. A second code path through the reply loop is hard to justify on a
-benefit that fades two turns into a conversation.
-
-The retry is the narrower form that does pay, on the models that need it. It
-is not worth reaching for on the model this chat server ships.
-`qwen2.5-coder:7b` recorded no parse failures in 96 calls, matching its
-archives, and produces no tool calls at all. It has neither the problem nor
-the means. That argues for a per-model setting rather than a default, and it
-bears on the choice of model rather than on the reply loop.
-
-What did land is the measurement itself, as two scripts anyone can re-run.
+The probe scripts are in the repo, ready to point at the next model worth
+considering.
 [`tool_channel_arms.sh`](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/tool/model_probes/tool_channel_arms.sh)
 runs the capability probe over the full roster, then both shape arms over
 whatever it rates supported.
