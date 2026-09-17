@@ -329,6 +329,10 @@ EOF
 # The reversal tic ("It was not.", "They are not."). Count before fixing one.
 grep -nE '\b(It|They|That|This|The [a-z]+) (is|are|was|were) not\.' "$A"
 
+# Paragraphs opening on a subordinate clause. Each one demotes its actor to a
+# pronoun in the clause that follows; lead with the subject instead.
+grep -nE '^(Because|Since|While|Although|When|Given|If|After|Once) ' "$A"
+
 # Markdown format gate. adaptive_chat_server_dart/** is covered by check:md:chat,
 # not by check:md. Fix with npm run format:md:chat.
 npm run check:md:chat
@@ -369,6 +373,7 @@ Section order and article shape)
 **Register** (Register)
 
 - [ ] No em dashes, first-person singular, amplifiers, or closing flourish.
+- [ ] Active voice, and no paragraph opening on a subordinate clause.
 - [ ] Sentence mean near 14 words, and nothing past 25 that does not earn it.
 
 **Visuals, tables, sources** (Diagrams and images; Presentation; Attribution;

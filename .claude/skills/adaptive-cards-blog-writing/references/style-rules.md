@@ -184,6 +184,16 @@ compares. A terms table defined later is not a reason to hold the setup back.
   channel hides what it does not remove"). Name the thing instead: "Every
   failed call, bucketed by its label"; "The Ollama tool channel converts
   detected failures into silent ones". The same test applies to sentences.
+- **A heading is active, and names the thing that acts.** The same rule as the
+  prose, applied to nine words with no room to hide. "A tool call cannot carry
+  malformed JSON, and that is most of the gain" trails a verdict behind a
+  comma; "Malformed JSON accounts for most of the gain" states it. "Where the
+  tool is used, it wins on every model" opens on a subordinate clause and
+  demotes the subject to "it"; "The tool wins on every model that calls it"
+  does not. A passive participle usually marks the spot: *used*, *built*,
+  *asked*, *measured*, *taken*. A `## Terms used in this article` heading is
+  the standing exception, because it labels a table rather than stating a
+  finding, and the series shares the wording.
 - **A heading does not repeat its section's bold first sentence.** When a
   heading is rewritten to state the finding, rewrite the first sentence so it
   adds information.
@@ -227,6 +237,17 @@ per sentence at the lengths below. The published posts on the
 target blog are the register to match. A paper hides the actor behind a passive
 ("eight models were measured", "the filler is sized in characters", "that group
 was written up as unexplained"); a post names it. Do not name it as a person.
+
+**Lead a paragraph with its subject, not a subordinate clause.** A paragraph
+that opens on "Because", "Since", "While", "Although", "When" or "Given" makes
+the reader carry a condition before they know what it qualifies, and the main
+clause that follows almost always arrives with a pronoun doing the work. It is
+the passive rule's cousin: the actor is present but demoted. "Because the retry
+fires only on a reply that already failed, it cannot depress adoption on the
+calls that worked" hides both the actor and the finding. "Only the middle
+branch costs a second call. A reply that parses first time never reaches the
+retry" names them, and splits one long sentence into two short ones. The same
+applies mid-paragraph when the leading clause runs past about eight words.
 
 **Sentence length: aim for 14 words, split anything past 25.** The
 Flesch-Kincaid reading tests treat 20 words as the upper end of comfortable, so
