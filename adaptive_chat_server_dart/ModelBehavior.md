@@ -932,20 +932,102 @@ it.** The prompt and its results were deleted. The remaining malformed
 fallbacks are better addressed by a retry on parse failure, which fires only
 on the calls that break and cannot move adoption.
 
+#### A retry through the tool channel rescues 43 of 99 broken cards, and none on the shipped model
+
+The channel's own result points at a narrower use. Malformed JSON is the prose
+channel's largest failure, and a tool call cannot carry one, but the channel
+did not ship because models decline the tool on 16 to 30 calls per 100 and
+history makes that worse. A retry sidesteps that: it fires only on a reply that
+already failed to parse, so it cannot depress adoption on the calls that
+worked. Whether it rescues the broken ones is what
+[`retry_probe.dart`](tool/model_probes/retry_probe.dart) measures.
+
+Each card case runs in prose first. A reply the server's own detector cannot
+parse is retried once, discarding the broken reply and re-asking with
+`render_adaptive_card` offered. Showing the model its own broken output would
+measure self-correction as well as the channel, which is a separate question.
+Measured 2026-09-16 on Apple M1 Max / 64 GB under Ollama 0.34.0, `--samples 2`,
+`t=0`, unseeded, 24 card cases per condition.
+
+**The roster is the full fifteen**, not the models a retry is expected to help,
+because the verdict that would have gated it was measured for a different
+question. `llama3.2:latest` is the one gap: its runner wedged mid-run and every
+call returned `broken: timeout (120s)`, so it was killed and left unmeasured
+rather than recorded as failures.
+
+| Model                                               | Canary                 | Parse failures | Rescued | Retry used the tool | Retry fell back to the body |
+| --------------------------------------------------- | ---------------------- | -------------: | ------: | ------------------: | --------------------------: |
+| `qwen3-coder:30b`                                   | `supported`            |             18 |      12 |               10/10 |                         2/8 |
+| `nemotron-3-nano:30b`                               | `supported`            |             14 |       4 |                4/12 |                         0/2 |
+| `nemotron-3.5-lightning:30b`                        | `supported`            |              8 |       0 |                 0/6 |                         0/2 |
+| `qwen3.6:27b-coding-nvfp4`                          | `supported`            |              7 |       7 |                 7/7 |                           — |
+| `granite4.1:8b`                                     | `supported`            |              4 |       4 |                 4/4 |                           — |
+| `gpt-oss:20b`                                       | `supported`            |              2 |       2 |                 2/2 |                           — |
+| `qwen3.8:27b-nvfp4`                                 | `supported`            |              0 |       0 |                   — |                           — |
+| `hf.co/unsloth/Nemotron-3-Nano-30B-A3B-GGUF:latest` | `supportedButDeclines` |             12 |       0 |                   — |                        0/12 |
+| `nemotron-3-nano:4b`                                | `supportedButDeclines` |              6 |       2 |                   — |                         2/6 |
+| `llama3-groq-tool-use:8b`                           | `supportedButDeclines` |              0 |       0 |                   — |                           — |
+| `qwen3.5:9b`                                        | `overCalls`            |             14 |       8 |                8/14 |                           — |
+| `granite4.1:3b`                                     | `overCalls`            |             14 |       4 |                 4/8 |                         0/6 |
+| `llama3-chatqa:8b`                                  | `unsupported`          |              0 |       0 |                   — |                           — |
+| `qwen2.5-coder:7b`                                  | `unsupported`          |              0 |       0 |                   — |                           — |
+| **total, 14 models**                                |                        |         **99** |  **43** |           **39/63** |                    **4/36** |
+
+**The retry works when it fires through the tool, and mostly fails when it does
+not**: 62% of tool-answered retries passed against 11% of those that fell back
+to the message body. The overall rate, 43%, is the product of those two and of
+how often the model reached for the tool on the second attempt.
+
+**The canary verdict predicts availability, not success.** Three `supported`
+models rescue every failure they have (7/7, 4/4, 2/2) and a fourth rescues
+none (`nemotron-3.5-lightning:30b`, 0 of 8, six of them tool-answered). Both
+`supportedButDeclines` models behave as the verdict implies, never reaching for
+the tool on the retry, though `nemotron-3-nano:4b` still recovered 2 by
+re-emitting parseable prose. Knowing a model can call the tool does not say
+whether a retry will help it.
+
+**24 tool-answered retries still failed, and 18 of them called the tool with
+nothing in it.** `replyEquivalent` turns a tool call carrying no `body`
+argument into an empty reply, which the judge then labels `prose`. That is a
+distinct failure from answering in prose, and the label hides it. A tool call
+cannot carry _malformed_ JSON, but it can carry _no_ card, and this file's
+earlier framing did not separate the two. The other 6 were the wrong element.
+
+**On the model the server actually ships the retry has nothing to do.**
+`qwen2.5-coder:7b` recorded 0 parse failures across 96 card calls, matching its
+archives (0/100 unaided on two hosts, 2/100 seeded). It is also `unsupported`
+on the canary and emits no `tool_calls` at all, so it could not use a retry in
+any case. The 50-per-100 malformed rate quoted above is a property of the seven
+tool-capable models, not of the prose channel in the shipped configuration.
+
 #### What ships
 
 **Still nothing.** There is no `--reply-channel` flag and the server still asks
-for card JSON in the message body. The finding now favours the channel, but
-what it favours is _tool adoption_, which is a prompt and strategy problem this
-file has not solved: four of seven models decline on 16-30 calls per 100, and
-history makes it worse. A second code path through the reply loop is not
-justified by a benefit that evaporates two turns into a conversation.
+for card JSON in the message body. The finding favours the channel, but what it
+favours is _tool adoption_, which is a prompt and strategy problem this file has
+not solved: four of seven models decline on 16-30 calls per 100, and history
+makes it worse. A second code path through the reply loop is not justified by a
+benefit that evaporates two turns into a conversation.
+
+**The retry is worth having, conditionally, and the condition is per-model.**
+It recovers 43 of 99 broken cards across fourteen models, but the average hides
+the split: of the ten models with any parse failures, five recover half or more
+(33 of their 45) and five recover 10 of 54. What separates them is whether the
+retry actually goes through the tool, the same variable that bounds the channel
+itself. So the tool channel earns its place exactly where the prose channel is
+failing _and_ the model answers a tool when offered one, both of which are
+measurable on a model before deciding.
+
+`qwen2.5-coder:7b` has neither property, so this is an argument for a per-model
+setting rather than a default, and it bears on the model choice rather than on
+the reply loop.
 
 What ships is the measurement: `tool/model_probes/tool_channel.dart`,
 `shape_ab.dart --channel tool`, and
 [`tool_channel_arms.sh`](tool/model_probes/tool_channel_arms.sh), which runs
 the canary over the full roster and both shape arms over whatever it rates
-`supported`.
+`supported`, plus [`retry_sweep.sh`](tool/model_probes/retry_sweep.sh) for the
+retry arm.
 
 **Thinking is untested rather than ruled out**: every probe in this file sends
 `think: false` unconditionally, so all of the above is thinking-off.
