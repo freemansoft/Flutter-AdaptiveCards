@@ -22,7 +22,7 @@ When the notebook and a draft disagree, the notebook wins.
 | 1   | An SDUI demo that turned into a local-model benchmark                                  | `article-1-origin-story-*`        | **Published**, republished 2026-09-16 with the corrected four-way split                          |
 | 2   | We tried 14 levers to get reliable card JSON from a local model                        | `article-2-tuning-process-*`      | **Published**, republished 2026-09-16. One further fix in the repo awaits a republish, see below |
 | 3   | Running local models for Adaptive Card JSON on a 64 GB M1 Max and a 16 GB M5           | `article-3-m1max-vs-m5-*`         | **Published.** Revised 2026-09-08, mermaid chart, register pass 2026-09-12, cut pass 2026-09-14  |
-| 4   | Ollama's tool channel produces better cards, when the model remembers to use it        | `article-4-tool-channel-*`        | Not published. Rewritten 2026-09-16 against the re-measurement                                   |
+| 4   | Ollama's tool channel produces better cards, when the model remembers to use it        | `article-4-tool-channel-*`        | Not published. Rewritten 2026-09-16 against the re-measurement, review pass 2026-09-17           |
 | 5   | The measurement was wrong, in a way that looked exactly like a slow model              | `article-5-measurement-hygiene-*` | Not published. Drafted, revised 2026-09-08, register pass 2026-09-12                             |
 | 6   | Ollama drops an oversized history message whole, and nothing tells you                 | `article-6-context-fill-*`        | Not published. Drafted 2026-09-12, split 2026-09-12, no visual, register pass 2026-09-12         |
 | 7   | A full context makes one model stop producing cards and another produce the wrong ones | `article-7-full-context-cost-*`   | Not published. Split from 6 on 2026-09-12, mermaid chart, register pass 2026-09-12               |
@@ -155,7 +155,7 @@ every model where it is actually called, and adoption is what the shape score
 was measuring. Malformed JSON as the bulk of the gain, and why a tool call
 structurally cannot carry it. History suppressing tool-calling harder than it
 suppresses card shape.
-The retry on parse failure: 43 of 99 recovered, why the average hides a split
+The retry on parse failure: 43 of 99 recovered, why the total hides a split
 between models, and why the shipped model needs neither half of it.
 
 _Defers:_ the capability probe's four-way split to article 1, recapping it in

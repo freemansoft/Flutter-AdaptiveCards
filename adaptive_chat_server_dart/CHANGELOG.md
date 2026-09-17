@@ -2,6 +2,22 @@
 
 ## [0.18.0]
 
+- Notebook: **the retry-on-parse-failure measurement now has its own section,
+  and three tool-channel figures were corrected against the archive.** The
+  per-model retry table, the 63/36 split by whether the retry used the tool,
+  and the 18 empty tool calls were in article 4 but not in `ModelBehavior.md`;
+  they are now recorded there with the probe that produced them. The
+  history-declines table counted the negative control in its condition
+  columns but not in its total, putting every row four over; the condition
+  columns now exclude it. "1,600 calls" for the unrenderable-type check was
+  1,400 (7 models × 2 arms × 100). The by-case decline counts, given as "10
+  of 24", did not reproduce from the archive and now read 14, 12 and 12 of 28. The per-call table gains a "prose arm, same calls" column scoring the
+  prose arm on the calls the tool arm answered through the tool, since the
+  via-tool subset is model-selected; the tool still leads on every row. The
+  reading that adoption alone separates the retry's halves was narrowed:
+  `nemotron-3.5-lightning:30b` answers 6 of 8 retries through the tool with
+  an empty call every time. Article 4 was revised to match.
+
 - Probes: **a tool-channel run now records whether each call actually used the
   tool.** `probeOnceViaTool` sets `toolUsed` on every judged reply and
   `shape_ab.dart` writes it per call and prints a per-condition total.
