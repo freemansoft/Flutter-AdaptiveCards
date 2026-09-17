@@ -318,7 +318,7 @@ count above is the pre-fix figure.
 
 For scale, the next most-missed cases are `carousel` (8 of 15 models), `text`
 (7), then `time` and `table` (6). Failure concentrates in nested shapes, and it
-usually arrives as invalid JSON rather than as a wrong choice of element.
+splits about evenly between invalid JSON and a wrong choice of element.
 
 ## The tool channel helped wherever models used it, and they often did not
 

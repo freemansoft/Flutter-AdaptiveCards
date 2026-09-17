@@ -144,16 +144,15 @@ What the runner allocates and what happens to history
 that does not fit, to article 6. What a full context costs a model's coverage,
 to article 7.
 
-**Article 4: the tool channel.** Why the first version of this measurement
-compared two prompts rather than two channels, and what a prompt built by
-deleting only what a tool makes false changes about the answer. That offering a
-tool does not oblige a model to use one, so a tool-arm score blends two
-channels until something records which path a reply took. The per-call split
-once it does: the tool wins on every model where it is actually called, and
-adoption is what the shape score was measuring. Malformed JSON as the bulk of
-the gain, and why a tool call structurally cannot carry it. History suppressing
-tool-calling harder than it suppresses card shape. The rejected prompt that
-re-armed the fallback's rules.
+**Article 4: the tool channel.** That offering a tool does not oblige a model
+to use one, so a tool-arm score blends two channels until something records
+which path a reply took. The per-call split once it does: the tool wins on
+every model where it is actually called, and adoption is what the shape score
+was measuring. Malformed JSON as the bulk of the gain, and why a tool call
+structurally cannot carry it. History suppressing tool-calling harder than it
+suppresses card shape. The rejected prompt that re-armed the fallback's rules.
+The retry on parse failure: 43 of 99 recovered, why the average hides a split
+between models, and why the shipped model needs neither half of it.
 
 _Defers:_ the capability probe's four-way split to article 1, recapping it in
 one sentence as setup. Its figures are the only unseeded shape figures in the
