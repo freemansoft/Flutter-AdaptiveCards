@@ -175,9 +175,10 @@ uniform: `gpt-oss:20b` and `granite4.1:8b` decline less with history than
 cold, and `qwen3.6:27b-coding-nvfp4` never declines.
 
 This series has already documented that history erodes card shape on the prose
-channel, which the seed card exists to counter. The tool channel has the same
-weakness on three of seven models, and on those a worse one. The seed cannot
-help, being a prose-channel artifact.
+channel, which the seed card exists to counter. On three of seven models
+history erodes tool adoption the same way, and on `qwen3-coder:30b` by far
+more than it erodes prose shape: 16 tool calls lost against one case gained.
+The seed cannot help here, being a prose-channel artifact.
 
 The cases that lose the tool most are the ones whose natural answer is text.
 Each case gets 28 calls across the seven models. `text` went without the tool

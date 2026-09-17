@@ -921,10 +921,7 @@ prose arm moves +1 across the same boundary and its tool arm drops 6 shapes.
 are enough to make those models stop reaching for a function they used reliably
 on turn one. The effect is not uniform: `gpt-oss:20b` and `granite4.1:8b`
 decline less with history than cold, and `qwen3.6:27b-coding-nvfp4` never
-declines. This file already records that history erodes card _shape_ on the
-prose channel, which is what the seed card exists to counter; the tool channel
-has the same weakness on three of seven models and, on those, worse. The seed
-cannot be used against it, being a prose-channel artifact.
+declines. This file already records that history erodes card _shape_ on the prose channel, which is what the seed card exists to counter. On three of seven models history erodes tool adoption the same way, and on `qwen3-coder:30b` by far more than it erodes prose shape: 16 tool calls lost against one case gained. The seed cannot be used against it, being a prose-channel artifact.
 
 By question type, the cases that lose the tool most are the ones whose natural
 answer is text. Counting the calls that did not use the tool across the seven
