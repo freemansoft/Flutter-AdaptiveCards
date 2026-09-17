@@ -226,12 +226,13 @@ The cases that lose the tool most are the ones whose natural answer is text.
 `number`, `codeblock`, and `text` each go 10 of 24 calls, against 2 for
 `carousel` and `badge`.
 
-## The chat server in the repo uses neither the tool channel nor the retry
+## The repository chat server does not implement the tool channel
 
-Nothing measured here is integrated into the code. The chat server runs
-exactly as it did before this work. It asks for card JSON in the message body,
-parses what comes back, and falls back to Markdown when that fails. There is
-no flag to turn either change on.
+This tool channel is not implemented in the code.
+The chat server runs exactly as it did before this work. It asks for card JSON
+in the message body, parses what comes back, and falls back to Markdown when
+that fails. There is no flag to turn the tool channel on, and the retry needs
+the tool channel. Today, neither is in the implemented reply loop.
 
 The measurement favors the tool channel, but what it favors is bounded by
 adoption. Four of seven models decline on 16 to 30 calls per 100, and
@@ -249,10 +250,10 @@ model rather than on the reply loop.
 The probe scripts are in the repo, ready to point at the next model worth
 considering.
 [`tool_channel_arms.sh`](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/tool/model_probes/tool_channel_arms.sh)
-runs the capability probe over the full roster, then both shape arms over
-whatever it rates supported.
+runs the capability probe over all 15 models. It then runs both shape arms
+over the models that probe rated `supported`.
 [`retry_sweep.sh`](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/tool/model_probes/retry_sweep.sh)
-runs the retry. Re-run them when the roster changes, when a model's tool
+runs the retry. Re-run them when the roster of models changes, when a model's tool
 support changes, or when the tool prompt changes, because the capability
 verdicts move with the prompt. Between them, it is roughly 2,700 serial model
 calls.
