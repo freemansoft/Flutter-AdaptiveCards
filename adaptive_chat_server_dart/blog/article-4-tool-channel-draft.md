@@ -113,8 +113,8 @@ those passed.
 
 ## Malformed JSON accounts for most of the gain
 
-Every failed call in each arm, bucketed by the judge's label and summed over
-the 7 models' 672 card-asking calls. The figures are from [the failures
+Every failed call in each arm, bucketed by how the judge scored it and summed
+over the 7 models' 672 card-asking calls. The figures are from [the failures
 section](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md#where-the-failures-are)
 of the notebook. `infra` covers HTTP 500s and timeouts and belongs to neither
 channel.
@@ -126,7 +126,7 @@ channel.
 
 The tool arm fails 36 fewer times. Malformed JSON falls by 43, wrong element
 by 11 and infra by 10, a gross reduction of 64. Prose answers rise by 28 and
-offset part of it. Malformed JSON is two thirds of the gross reduction.
+offset part of it. Malformed JSON is two-thirds of the gross reduction.
 
 Ollama returns tool arguments already decoded, so a tool call cannot carry
 malformed JSON. Across the 570 calls that went through the tool, none did. All
@@ -139,16 +139,17 @@ rather than the choice of channel.
 
 Valid JSON is not a valid card. An element type outside the client's
 vocabulary parses, passes card detection and renders as a blank, and no
-pass-or-fail score sees it. The chat server has checked for that since August;
-the probes did not, so `shape_ab.dart` now records it per call. For these runs
-the check was applied afterwards to the element types each judged reply
-recorded. No unrenderable type appears in either arm across all 1,400 calls.
+pass-or-fail score sees it. The chat server has checked for that since August.
+The probes did not, so `shape_ab.dart` now records it per call. These runs
+predate that field, but the judge already records the element types each reply
+contained. None of the 1,400 records in either arm names a type the client
+cannot render.
 
 The remaining failure is picking the wrong element for the question, 45 on
 prose against 34 on tool. That is a prompt-quality problem rather than a
 channel one.
 
-## Two conversational turns stop three models calling the tool
+## Two conversational turns stop three models from calling the tool
 
 The calls where a model did not use the tool, split by condition, from [the
 history
@@ -213,8 +214,7 @@ under the tool prompt, keeps the same history, and discards the broken reply.
 Showing the model its own bad output would add self-correction as a second
 variable. `llama3.2:latest` wedged its runner mid-run and was abandoned rather
 than recorded as failures, so the probe covers fourteen models. The retry
-fires on 99 of their 1,344 prose calls, about one in fourteen. Most questions
-never cost a second round trip.
+fires on 99 of their 1,344 prose calls, about one in fourteen.
 
 Only the `invalid JSON` branch reaches the retry. A reply that parses the
 first time is done at the `card rendered` node. Prose answers and wrong
