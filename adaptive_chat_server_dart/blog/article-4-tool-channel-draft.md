@@ -149,10 +149,11 @@ The remaining failure is picking the wrong element for the question, 45 on
 prose against 34 on tool. That is a prompt-quality problem rather than a
 channel one.
 
-## Two conversational turns stop three models from calling the tool
+## Conversation history suppresses tool-calling
 
-The calls where a model did not use the tool, split by condition, from [the
-history
+Two ordinary conversational turns are enough to stop three of the seven models
+from calling the tool. The table shows the calls where a model did not use the
+tool, split by condition, from [the history
 section](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md#conversation-history-suppresses-tool-calling-and-more-than-it-suppresses-cards)
 of the notebook. All three columns exclude the negative control, so the two
 condition columns sum to the first.
@@ -170,9 +171,8 @@ condition columns sum to the first.
 `qwen3-coder:30b` goes from 2 non-tool calls cold to 18 with history, and
 `nemotron-3.5-lightning:30b` from 2 to 26. Over the same boundary
 `qwen3-coder:30b`'s prose case score moves by one, 16 to 17 of 25, inside the
-noise floor. Two ordinary conversational turns are enough to stop those models
-reaching for a function they used reliably on turn one. The effect is not
-uniform: `gpt-oss:20b` and `granite4.1:8b` decline less with history than
+noise floor. Both models used the function reliably on turn one. The effect is
+not uniform: `gpt-oss:20b` and `granite4.1:8b` decline less with history than
 cold, and `qwen3.6:27b-coding-nvfp4` never declines.
 
 This series has already documented that history erodes card shape on the prose
