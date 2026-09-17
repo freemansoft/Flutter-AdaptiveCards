@@ -64,9 +64,9 @@ carries their blog-specific form.
 Triggered by requests like "examine this article for style, substance,
 complexity and wording". Produce findings; edit only if asked.
 
-**Read the draft twice.** The first pass hunts defects against the checklist.
-The second reads it straight through as a reader who arrived from a search
-result, and that pass is where the problems no checklist item names turn up: an
+**Read the draft twice, and let something else read it once.** The first pass
+hunts defects against the checklist. The second reads it straight through as a
+reader who arrived from a search result, and that pass is where the problems no checklist item names turn up: an
 incident told three times before its cause arrives, a term doing two jobs, five
 runtime versions that no table attributes. A review assembled only from the
 checklist finds violations and misses shape.
@@ -192,7 +192,9 @@ Then draft in this order, because each step constrains the next:
 5. **Add a terms table** if the article uses more than a few terms a reader
    outside the repo would not know, and define each of them only there.
 6. **Review the draft against the checklist below** and run the verification
-   commands, before showing it to anyone.
+   commands, before showing it to anyone. Send it for a referent pass as well,
+   to an agent holding the draft and no repository: the checks above cannot
+   catch a reference that resolves only for someone who has the source.
 7. **Register it:** add the row to the README status table and an entry to the
    ownership map saying what the article owns and what it defers. Update any
    sibling article whose deferral now points at it.
@@ -226,6 +228,14 @@ splits cleanly, and keep the judgment in one place.
   against the notebook and the code, structure and section order, register and
   wording. These read the same file and produce separate findings, so they do
   not collide.
+- **A referent pass, run by an agent with no repository access.** Give it the
+  draft text and nothing else, and ask one question: for every pronoun,
+  demonstrative and bare category noun, what would a reader substitute? The
+  author cannot run this on their own draft, because they resolve each
+  reference from context they are carrying and the reader is not. On article 4
+  a cold read found eight unresolvable references in prose its author had
+  re-read a dozen times, including a figure whose only antecedent was a
+  heading. Brief it to report, not to edit, and to quote each sentence.
 - **A second opinion on a high-stakes article.** Running one reviewer with this
   skill and one without it found different things on article 5: four unsourced
   figures against five, and only the run with the skill resolved a sentence
@@ -356,6 +366,9 @@ One line per rule. The section named in parentheses in
 **Names** (Terminology; Describing mechanisms)
 
 - [ ] One name per concept, taken from the code or API.
+- [ ] Every pronoun, demonstrative and bare category noun resolves for a
+      reader with no repo access: no "converted back into one", no "that flag",
+      no "the structure", no "described above".
 - [ ] Where the article has two of something, neither is ever named bare:
       not "the channel" where a prose and a tool channel both exist, nor "the
       prompt", "the arm", "the pass", "the probe" or "the run".

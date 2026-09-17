@@ -83,6 +83,27 @@ mechanism, a default, a flag, or a model is a claim the article vouches for.
 Most of the rewriting these drafts needed was a term doing two jobs at once, or
 two terms doing one job.
 
+- **Name the thing rather than pointing at it.** The author resolves every
+  referent instantly, because the code is in front of them; the reader has only
+  the sentence. Four shapes recur, all of them from article 4's own draft:
+
+  - A pronoun or demonstrative standing for a noun more than a clause away.
+    "The tool arm's arguments are converted back into **one**" means back into
+    a string, said eight words earlier. "The results are read through **that
+    flag**" names no flag; the code calls it `toolUsed`.
+  - A category noun with its domain left off, where the article spans more than
+    one. "decoded into a **structure**" is a JSON object. "which **element**
+    answers which question" is an Adaptive Card element.
+  - A figure whose antecedent lives only in a heading. "**The average** hides
+    the useful part" followed a heading carrying the 43 of 99, after the
+    sentence that repeated it was cut.
+  - A positional reference to something that has a name. "the judge **described
+    above**" is that same judge; "the same variable **as before**" is adoption.
+
+  This one cannot be grepped, because pronouns are ordinary English and only
+  some are unresolvable. It is found by reading, and best by someone who cannot
+  see the repository.
+
 - **Where two of a thing exist, never name one of them bare.** Article 4 has a
   prose channel and a tool channel, and five sentences said "the channel"
   meaning the tool one. A reader just told there are two has no way to pick,
