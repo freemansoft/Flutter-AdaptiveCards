@@ -333,6 +333,9 @@ grep -nE '\b(It|They|That|This|The [a-z]+) (is|are|was|were) not\.' "$A"
 # pronoun in the clause that follows; lead with the subject instead.
 grep -nE '^(Because|Since|While|Although|When|Given|If|After|Once) ' "$A"
 
+# One of a pair named bare. Point it at whatever the article has two of.
+grep -nE '\b(the|a|that|this) channel\b' "$A" | grep -vE 'tool channel|prose channel'
+
 # Markdown format gate. adaptive_chat_server_dart/** is covered by check:md:chat,
 # not by check:md. Fix with npm run format:md:chat.
 npm run check:md:chat
@@ -353,6 +356,9 @@ One line per rule. The section named in parentheses in
 **Names** (Terminology; Describing mechanisms)
 
 - [ ] One name per concept, taken from the code or API.
+- [ ] Where the article has two of something, neither is ever named bare:
+      not "the channel" where a prose and a tool channel both exist, nor "the
+      prompt", "the arm", "the pass", "the probe" or "the run".
 - [ ] Vendor-specific mechanisms qualified in the title and at the first mention
       in each `##` section.
 - [ ] Actors named precisely; each term says what kind of thing it is.

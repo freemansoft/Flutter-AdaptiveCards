@@ -83,6 +83,22 @@ mechanism, a default, a flag, or a model is a claim the article vouches for.
 Most of the rewriting these drafts needed was a term doing two jobs at once, or
 two terms doing one job.
 
+- **Where two of a thing exist, never name one of them bare.** Article 4 has a
+  prose channel and a tool channel, and five sentences said "the channel"
+  meaning the tool one. A reader just told there are two has no way to pick,
+  and the writer cannot see it because they know which one they meant.
+
+  Before a register pass, list what the article has two or more of: channels,
+  arms, prompts, passes, probes, runs, hosts, runtimes, measurements. Each of
+  those nouns then gets a qualifier at every use. Two exceptions, both narrow.
+  A sentence defining the category itself stays bare, as the terms table's "an
+  arm is a whole run, a channel is where one reply travelled" does. And a
+  pronoun in the sentence immediately after an unambiguous mention is fine.
+
+  The same defect produced "the first" and "the second" meaning both the two
+  measurements and the two passes of one of them, four sentences apart, and
+  "pays" meaning both "yields a benefit" and "incurs a cost" in the same
+  paragraph. Count the senses, not the words.
 - **One name per concept, taken from the code or API.** Article 4 used "arm" and
   "channel" for the same thing. Ollama's API has no name for it: the reply is in
   `message.content` or in `message.tool_calls`. The probe's flag is `--channel`,
