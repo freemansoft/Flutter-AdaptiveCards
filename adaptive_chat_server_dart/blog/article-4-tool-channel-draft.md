@@ -17,12 +17,12 @@ arrives in `message.tool_calls[0].function.arguments`. Ollama has already
 decoded it into a JSON object, so there is no text for the chat server to
 parse.
 
-Two measurements follow. One asks whether the tool channel is worth anything
-on its own. The hypothesis is that a card which never has to be written as
-text should fail less often. The other asks whether a tool-channel retry can
-rescue a reply the prose channel got wrong. That is a two-pass design a server
-could run. Ask in the message body as usual, and offer the tool only when that
-reply fails to parse.
+We measure the tool channel two ways. The first asks whether it is worth
+anything on its own. The hypothesis is that a card which never has to be
+written as text should fail less often. The second asks whether a tool-channel
+retry can rescue a reply the prose channel got wrong. That is a two-pass
+design a server could run. Ask in the message body as usual, and offer the
+tool only when that reply fails to parse.
 
 Every figure below comes from
 [`ModelBehavior.md`](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md),
