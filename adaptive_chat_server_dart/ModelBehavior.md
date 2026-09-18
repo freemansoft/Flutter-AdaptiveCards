@@ -943,8 +943,8 @@ over the full roster of fifteen regardless of canary verdict, because an
 over-caller may be a good retry candidate: a retry fires only where a card was
 wanted. `llama3.2:latest` has no archived run; its runner wedged mid-run and
 the run was abandoned rather than recorded as failures. Four models had no
-parse failures in their 96 calls and so no retries: `qwen2.5-coder:7b`,
-`qwen3.8:27b-nvfp4`, `llama3-chatqa:8b` and `llama3-groq-tool-use:8b`.
+parse failures in their 96 calls and so no retries; they close the table
+with `n/a` in the retry columns.
 
 | Model                                               | Canary                 | Parse failures | Retried via tool | Recovered |
 | --------------------------------------------------- | ---------------------- | -------------: | ---------------: | --------: |
@@ -958,6 +958,10 @@ parse failures in their 96 calls and so no retries: `qwen2.5-coder:7b`,
 | `nemotron-3-nano:30b`                               | `supported`            |             14 |               12 |         4 |
 | `hf.co/unsloth/Nemotron-3-Nano-30B-A3B-GGUF:latest` | `supportedButDeclines` |             12 |                0 |         0 |
 | `nemotron-3.5-lightning:30b`                        | `supported`            |              8 |                6 |         0 |
+| `qwen3.8:27b-nvfp4`                                 | `supported`            |              0 |              n/a |       n/a |
+| `llama3-groq-tool-use:8b`                           | `supportedButDeclines` |              0 |              n/a |       n/a |
+| `qwen2.5-coder:7b`                                  | `unsupported`          |              0 |              n/a |       n/a |
+| `llama3-chatqa:8b`                                  | `unsupported`          |              0 |              n/a |       n/a |
 
 Of the 99 retries, 63 went through the tool and 39 of those recovered, 62%.
 The 36 answered in the message body recovered 4, 11%, two each on
