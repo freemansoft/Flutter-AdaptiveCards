@@ -17,9 +17,10 @@ arrives in `message.tool_calls[0].function.arguments`. Ollama has already
 decoded it into a JSON object, so there is no text for the chat server to
 parse.
 
-Two measurements follow. One asks whether the tool channel is worth anything
-on its own. The hypothesis is that a card which never has to be written as
-text should fail less often. The other asks whether a tool-channel retry can
+We measure the tool channel two ways. The first compares asking for card JSON
+in the message body against the same ask with `render_adaptive_card` offered
+as well. The hypothesis is that a card which never has to be written as text
+should fail less often. The second asks whether a tool-channel retry can
 rescue a reply the prose channel got wrong. That is a two-pass design a server
 could run. Ask in the message body as usual, and offer the tool only when that
 reply fails to parse.
@@ -34,7 +35,7 @@ a lab notebook in that repository.
 | -------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Channel**                      | Where the model's reply travels. `prose` puts card JSON as text in `message.content`. `tool` puts it in the arguments of a `render_adaptive_card` call. The name comes from the `--channel` flag of the probe `shape_ab.dart`.                                                                                                                                                                                                                                                                                                |
 | **Arm**                          | One complete run of the 25 cases in one configuration, and the unit this comparison is built from. That is 100 calls: 25 cases × 2 samples × 2 conditions, so every question is asked twice cold and twice with history. The prose arm asks for the card in the message body; the tool arm offers `render_adaptive_card`. An arm is not the same as a channel: an arm is a whole run, a channel is where one reply travelled, which is why the tool arm turns out to contain replies that came back through the message body. |
-| **Roster**                       | The 15 local models this series measures. The tool arm ran on the 7 the canary rates `supported`. The retry ran on all 15, and its table shows the 10 that had any parse failures.                                                                                                                                                                                                                                                                                                                                            |
+| **Roster**                       | The 15 local models this series measures. The tool arm ran on the 7 the canary rates `supported`. The retry ran on all 15, and its table shows the 14 that completed.                                                                                                                                                                                                                                                                                                                                                         |
 | **Canary**                       | The capability probe `tool_call_probe.dart`, which sorts each model by what it does when offered a tool. `supported` calls it on a card question and answers a prose question in prose. `supportedButDeclines` can call a tool but never reaches for `render_adaptive_card`. `overCalls` reaches for it on the prose question too. `unsupported` never produces a tool call. The first article covers the split.                                                                                                              |
 | **Shape case**, `n/25`           | 25 questions, each paired with the Adaptive Card element types that would answer it. A case passes when the reply uses one of them, so the score measures shape coverage rather than accuracy. One case is a negative control whose right answer is prose, so 96 of an arm's 100 calls ask for a card.                                                                                                                                                                                                                        |
 | **`--samples 2`**                | Every case runs twice. A case score out of 25 passes only if both runs passed, so one borderline call takes the whole case, and the notebook's noise floor on that score is ±1 case. Most figures here are per-call rates instead, where a difference of a few calls in 96 is not a ranking either.                                                                                                                                                                                                                           |
@@ -75,22 +76,23 @@ which channel each reply took. `shape_ab.dart` records it per call as
 
 ## The tool wins on every model that calls it
 
-Per-call pass rate on the 96 card-asking calls in each arm, from [the
-tool-adoption
+This is the first of the two measurements: the prose-only run against the run
+where every request also declares `render_adaptive_card`. Per-call pass rate
+on the 96 card-asking calls in each arm, from [the tool-adoption
 section](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md#tool-adoption-not-card-quality-is-what-the-shape-score-measures)
 of the notebook. The model chooses which calls go through the tool. The "same
 calls" column therefore scores the prose arm on the case, sample and condition
 triples where the tool arm used the tool.
 
-| Model                        | Prose arm | Prose arm, same calls | Tool arm, all calls | Tool arm, via tool | Tool arm, via message body | Adoption |
-| ---------------------------- | --------: | --------------------: | ------------------: | -----------------: | -------------------------: | -------: |
-| `qwen3.6:27b-coding-nvfp4`   |       92% |                   92% |                100% |    **100%** (n=96) |                          — |   96/100 |
-| `qwen3.8:27b-nvfp4`          |       94% |                   93% |                 94% |     **98%** (n=92) |                   0% (n=4) |   92/100 |
-| `gpt-oss:20b`                |       80% |                   80% |                 80% |     **96%** (n=80) |                  0% (n=16) |   80/100 |
-| `granite4.1:8b`              |       67% |                   69% |                 82% |     **88%** (n=90) |                   0% (n=6) |   90/100 |
-| `qwen3-coder:30b`            |       67% |                   74% |                 78% |     **92%** (n=76) |                 25% (n=20) |   78/100 |
-| `nemotron-3.5-lightning:30b` |       62% |                   79% |                 69% |     **91%** (n=68) |                 14% (n=28) |   68/100 |
-| `nemotron-3-nano:30b`        |       62% |                   67% |                 58% |     **79%** (n=66) |                 13% (n=30) |   66/100 |
+| Model                        | Prose only | Prose only, same calls | Tool declared, all calls | Tool declared, via tool | Tool declared, via message body | Adoption |
+| ---------------------------- | ---------: | ---------------------: | -----------------------: | ----------------------: | ------------------------------: | -------: |
+| `qwen3.6:27b-coding-nvfp4`   |        92% |                    92% |                     100% |         **100%** (n=96) |                               — |   96/100 |
+| `qwen3.8:27b-nvfp4`          |        94% |                    93% |                      94% |          **98%** (n=92) |                        0% (n=4) |   92/100 |
+| `gpt-oss:20b`                |        80% |                    80% |                      80% |          **96%** (n=80) |                       0% (n=16) |   80/100 |
+| `granite4.1:8b`              |        67% |                    69% |                      82% |          **88%** (n=90) |                        0% (n=6) |   90/100 |
+| `qwen3-coder:30b`            |        67% |                    74% |                      78% |          **92%** (n=76) |                      25% (n=20) |   78/100 |
+| `nemotron-3.5-lightning:30b` |        62% |                    79% |                      69% |          **91%** (n=68) |                      14% (n=28) |   68/100 |
+| `nemotron-3-nano:30b`        |        62% |                    67% |                      58% |          **79%** (n=66) |                      13% (n=30) |   66/100 |
 
 The "all calls" column is what a comparison reports when it ignores which
 channel each reply took. It is level with prose on `qwen3.8:27b-nvfp4` and
@@ -206,7 +208,9 @@ flowchart TD
   style BAD fill:#f66,stroke:#900,color:#000
 ```
 
-The retry is measured by a second probe,
+The retry exists because declaring the tool on every call costs declines.
+Firing it only on a parse failure leaves the calls prose already answered
+untouched. It is measured by a second probe,
 [`retry_probe.dart`](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/tool/model_probes/retry_probe.dart),
 with a different design. It asks every card case in prose first, then retries
 only the replies that fail to parse. The retry offers `render_adaptive_card`
@@ -224,9 +228,9 @@ malformed JSON two to one.
 The 43 of 99 is a total, and the per-model table below is where the useful
 reading is. It comes from [the retry
 section](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md#a-retry-on-parse-failure-recovers-43-of-99-broken-cards-and-the-misses-split-two-ways)
-of the notebook. Ten of the fourteen models had any parse failures. Five
-recover half or more, **33 of their 45**, and three of those recover every
-failure. The other five recover 10 of 54.
+of the notebook. Ten of the fourteen models had parse failures; the four
+with none have nothing to retry. Five recover half or more, **33 of their
+45**, and three of those recover every failure. The other five recover 10 of 54.
 
 | Model                        | Canary                 | Parse failures | Retried via tool | Recovered |
 | ---------------------------- | ---------------------- | -------------: | ---------------: | --------: |
@@ -240,6 +244,10 @@ failure. The other five recover 10 of 54.
 | `nemotron-3-nano:30b`        | `supported`            |             14 |               12 |         4 |
 | unsloth Nemotron 30B         | `supportedButDeclines` |             12 |                0 |         0 |
 | `nemotron-3.5-lightning:30b` | `supported`            |              8 |                6 |         0 |
+| `qwen3.8:27b-nvfp4`          | `supported`            |              0 |              n/a |       n/a |
+| `llama3-groq-tool-use:8b`    | `supportedButDeclines` |              0 |              n/a |       n/a |
+| `qwen2.5-coder:7b`           | `unsupported`          |              0 |              n/a |       n/a |
+| `llama3-chatqa:8b`           | `unsupported`          |              0 |              n/a |       n/a |
 
 The unsloth row is `hf.co/unsloth/Nemotron-3-Nano-30B-A3B-GGUF:latest`, a
 second packaging of the same weights as `nemotron-3-nano:30b`.
