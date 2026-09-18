@@ -228,7 +228,7 @@ malformed JSON two to one.
 The 43 of 99 is a total, and the per-model table below is where the useful
 reading is. It comes from [the retry
 section](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md#a-retry-on-parse-failure-recovers-43-of-99-broken-cards-and-the-misses-split-two-ways)
-of the notebook. Ten of the fourteen models had any parse failures; the four
+of the notebook. Ten of the fourteen models had parse failures; the four
 with none have nothing to retry. Five recover half or more, **33 of their
 45**, and three of those recover every failure. The other five recover 10 of 54.
 
