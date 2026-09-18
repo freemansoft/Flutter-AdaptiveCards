@@ -821,21 +821,28 @@ call.
 
 Splitting the same runs on it:
 
-| Model                        |  Prose arm | Tool arm, **via tool** | Tool arm, via message body | Tool adoption |
-| ---------------------------- | ---------: | ---------------------: | -------------------------: | ------------: |
-| `qwen3.6:27b-coding-nvfp4`   | 92% (n=96) |        **100% (n=96)** |                          — |        96/100 |
-| `qwen3.8:27b-nvfp4`          | 94% (n=96) |         **98% (n=92)** |                   0% (n=4) |        92/100 |
-| `gpt-oss:20b`                | 80% (n=96) |         **96% (n=80)** |                  0% (n=16) |        80/100 |
-| `granite4.1:8b`              | 67% (n=96) |         **88% (n=90)** |                   0% (n=6) |        90/100 |
-| `qwen3-coder:30b`            | 67% (n=96) |         **92% (n=76)** |                 25% (n=20) |        78/100 |
-| `nemotron-3.5-lightning:30b` | 62% (n=96) |         **91% (n=68)** |                 14% (n=28) |        68/100 |
-| `nemotron-3-nano:30b`        | 62% (n=96) |         **79% (n=66)** |                 13% (n=30) |        66/100 |
+| Model                        |  Prose arm | Prose arm, same calls | Tool arm, **via tool** | Tool arm, via message body | Tool adoption |
+| ---------------------------- | ---------: | --------------------: | ---------------------: | -------------------------: | ------------: |
+| `qwen3.6:27b-coding-nvfp4`   | 92% (n=96) |                   92% |        **100% (n=96)** |                          — |        96/100 |
+| `qwen3.8:27b-nvfp4`          | 94% (n=96) |                   93% |         **98% (n=92)** |                   0% (n=4) |        92/100 |
+| `gpt-oss:20b`                | 80% (n=96) |                   80% |         **96% (n=80)** |                  0% (n=16) |        80/100 |
+| `granite4.1:8b`              | 67% (n=96) |                   69% |         **88% (n=90)** |                   0% (n=6) |        90/100 |
+| `qwen3-coder:30b`            | 67% (n=96) |                   74% |         **92% (n=76)** |                 25% (n=20) |        78/100 |
+| `nemotron-3.5-lightning:30b` | 62% (n=96) |                   79% |         **91% (n=68)** |                 14% (n=28) |        68/100 |
+| `nemotron-3-nano:30b`        | 62% (n=96) |                   67% |         **79% (n=66)** |                 13% (n=30) |        66/100 |
 
-Per-call pass rate on the 96 card-asking calls of each arm.
+Per-call pass rate on the 96 card-asking calls of each arm. The via-tool
+column is a subset the model selected, since it chose which calls to answer
+through the tool, so the second column scores the prose arm on exactly those
+calls: the same case, sample and condition. Both columns are derived from the
+archived per-call records.
 
 **Where the tool is actually used it wins on every model**, 79-100% against
-62-94% on prose. The blended score looked unremarkable because between 4 and 34
-calls per 100 never used the tool.
+62-94% on the whole prose arm and 67-93% on the matched calls. The calls a
+model routes through the tool are easier ones on the three models that decline
+most, where the matched prose rate runs 5 to 17 points above the whole-arm
+rate, and the tool still leads on every row. The blended score looked
+unremarkable because between 4 and 34 calls per 100 never used the tool.
 
 The message-body column is a _selected_ subset and should not be read as "the
 fallback is broken": these are the calls where the model judged a card was not
@@ -875,7 +882,7 @@ against the vocabulary in `card_schema.json`, so future runs measure it.
 
 **The figure for the two arms above is derived from the judge's labels, not
 from that field**, because both arms were recorded before it existed. It is
-exact for these runs rather than approximate: every one of the 1,600 calls
+exact for these runs rather than approximate: every one of the 1,400 calls
 carries a label naming the element types it saw, with no opaque `card[n]`
 among them, so the derivation has full coverage. On that basis unrenderable
 types are **absent from both arms**. A later run will measure it directly and
@@ -896,26 +903,84 @@ declines split by condition:
 
 | Model                        | Genuine declines | Cold | With history |
 | ---------------------------- | ---------------: | ---: | -----------: |
-| `qwen3.6:27b-coding-nvfp4`   |                0 |    2 |            2 |
-| `qwen3.8:27b-nvfp4`          |                4 |    2 |            6 |
-| `gpt-oss:20b`                |               16 |   12 |            8 |
-| `granite4.1:8b`              |                6 |    8 |            2 |
-| `qwen3-coder:30b`            |               20 |    2 |           20 |
-| `nemotron-3.5-lightning:30b` |               28 |    4 |           28 |
-| `nemotron-3-nano:30b`        |               30 |   14 |           20 |
+| `qwen3.6:27b-coding-nvfp4`   |                0 |    0 |            0 |
+| `qwen3.8:27b-nvfp4`          |                4 |    0 |            4 |
+| `gpt-oss:20b`                |               16 |   10 |            6 |
+| `granite4.1:8b`              |                6 |    6 |            0 |
+| `qwen3-coder:30b`            |               20 |    2 |           18 |
+| `nemotron-3.5-lightning:30b` |               28 |    2 |           26 |
+| `nemotron-3-nano:30b`        |               30 |   12 |           18 |
 
-`qwen3-coder:30b` goes from 2 non-tool calls cold to 20 with history, while its
+All three columns exclude the negative control, so the two condition columns
+sum to the first. An earlier version of this table counted the negative
+control's four calls in the condition columns, which put every row four over.
+
+`qwen3-coder:30b` goes from 2 non-tool calls cold to 18 with history, while its
 prose arm moves +1 across the same boundary and its tool arm drops 6 shapes.
-`nemotron-3.5-lightning:30b` goes 4 to 28. Two ordinary conversational turns
-are enough to make a model stop reaching for a function it used reliably on
-turn one. This file already records that history erodes card _shape_ on the
-prose channel, which is what the seed card exists to counter; the tool channel
-has the same weakness and, on some models, worse. The seed cannot be used
-against it, being a prose-channel artifact.
+`nemotron-3.5-lightning:30b` goes 2 to 26. Two ordinary conversational turns
+are enough to make those models stop reaching for a function they used reliably
+on turn one. The effect is not uniform: `gpt-oss:20b` and `granite4.1:8b`
+decline less with history than cold, and `qwen3.6:27b-coding-nvfp4` never
+declines. This file already records that history erodes card _shape_ on the prose channel, which is what the seed card exists to counter. On three of seven models history erodes tool adoption the same way, and on `qwen3-coder:30b` by far more than it erodes prose shape: 16 tool calls lost against one case gained. The seed cannot be used against it, being a prose-channel artifact.
 
 By question type, the cases that lose the tool most are the ones whose natural
-answer is text: `number`, `codeblock`, and `text` at 10 of 24 calls each,
-against 2 for `carousel`, `badge`, and `choice1`.
+answer is text. Counting the calls that did not use the tool across the seven
+models, out of 28 per case: `text` 14, `number` 12 and `codeblock` 12, against
+2 each for `carousel`, `badge` and `choice1`.
+
+#### A retry on parse failure recovers 43 of 99 broken cards, and the misses split two ways
+
+[`retry_probe.dart`](tool/model_probes/retry_probe.dart) asks every card case
+in prose under `card_system_prompt.txt`, and re-asks only a reply whose label
+is `broken: invalid JSON` or `broken: duplicate-key`, discarding the broken
+reply and offering `render_adaptive_card` under
+`card_tool_prompt_matched.txt` with the same history. Showing the model its own
+bad output would measure self-correction as well as the tool channel, so the
+retry does not. Measured 2026-09-16 on Apple M1 Max / 64 GB under Ollama
+0.34.0, `--samples 2`, `t=0`, unseeded, both conditions, 96 card-asking prose
+calls per model. [`retry_sweep.sh`](tool/model_probes/retry_sweep.sh) ran it
+over the full roster of fifteen regardless of canary verdict, because an
+over-caller may be a good retry candidate: a retry fires only where a card was
+wanted. `llama3.2:latest` has no archived run; its runner wedged mid-run and
+the run was abandoned rather than recorded as failures. Four models had no
+parse failures in their 96 calls and so no retries: `qwen2.5-coder:7b`,
+`qwen3.8:27b-nvfp4`, `llama3-chatqa:8b` and `llama3-groq-tool-use:8b`.
+
+| Model                                               | Canary                 | Parse failures | Retried via tool | Recovered |
+| --------------------------------------------------- | ---------------------- | -------------: | ---------------: | --------: |
+| `qwen3.6:27b-coding-nvfp4`                          | `supported`            |              7 |                7 |     **7** |
+| `granite4.1:8b`                                     | `supported`            |              4 |                4 |     **4** |
+| `gpt-oss:20b`                                       | `supported`            |              2 |                2 |     **2** |
+| `qwen3-coder:30b`                                   | `supported`            |             18 |               10 |    **12** |
+| `qwen3.5:9b`                                        | `overCalls`            |             14 |               14 |     **8** |
+| `nemotron-3-nano:4b`                                | `supportedButDeclines` |              6 |                0 |         2 |
+| `granite4.1:3b`                                     | `overCalls`            |             14 |                8 |         4 |
+| `nemotron-3-nano:30b`                               | `supported`            |             14 |               12 |         4 |
+| `hf.co/unsloth/Nemotron-3-Nano-30B-A3B-GGUF:latest` | `supportedButDeclines` |             12 |                0 |         0 |
+| `nemotron-3.5-lightning:30b`                        | `supported`            |              8 |                6 |         0 |
+
+Of the 99 retries, 63 went through the tool and 39 of those recovered, 62%.
+The 36 answered in the message body recovered 4, 11%, two each on
+`qwen3-coder:30b` and `nemotron-3-nano:4b`. The 24 tool-answered retries that
+failed split 18 to 6: in 18 the model called the function with arguments
+holding no card (label `prose`), on `nemotron-3-nano:30b` 6,
+`nemotron-3.5-lightning:30b` 6, `qwen3.5:9b` 4 and `granite4.1:3b` 2; the other
+6 are `wrong-shape` on the `carousel` case.
+
+**The misses are two different failures, and adoption alone does not separate
+the halves.** Five models recover half or more, 33 of their 45, and five
+recover 10 of 54. Two of the bottom five never call the tool on retry
+(`hf.co/unsloth/…` and `nemotron-3-nano:4b`). The other three do, and
+`nemotron-3.5-lightning:30b` is the clearest case: 6 of its 8 retries went
+through the tool and every one carried an empty call, against a 91% pass rate
+where it used the tool in the shape arm. A model can answer the tool and still
+have nothing in it, and the canary verdict does not predict which:
+`qwen3.5:9b` is `overCalls` and recovers 8 of 14.
+
+The prose phase of this probe is a fresh run, not the shape arm above. Its
+parse failures on the seven `supported` models sum to 53 against the shape
+arm's 50 malformed calls, which is the run-to-run spread of two `t=0` runs of
+the same prompt on the same day.
 
 #### What ships
 
@@ -927,13 +992,15 @@ makes it worse. A second code path through the reply loop is not justified by a
 benefit that evaporates two turns into a conversation.
 
 **The retry is worth having, conditionally, and the condition is per-model.**
-It recovers 43 of 99 broken cards across fourteen models, but the average hides
+It recovers 43 of 99 broken cards across fourteen models, but the total hides
 the split: of the ten models with any parse failures, five recover half or more
-(33 of their 45) and five recover 10 of 54. What separates them is whether the
-retry actually goes through the tool, the same variable that bounds the channel
-itself. So the tool channel earns its place exactly where the prose channel is
-failing _and_ the model answers a tool when offered one, both of which are
-measurable on a model before deciding.
+(33 of their 45) and five recover 10 of 54. What separates them is partly
+whether the retry goes through the tool, the same variable that bounds the
+channel itself, and partly whether the tool call carries a card at all, which
+`nemotron-3.5-lightning:30b` shows it need not. So the tool channel earns its
+place where the prose channel is failing _and_ the model answers a tool with a
+card in it when offered one, both of which are measurable on a model before
+deciding.
 
 `qwen2.5-coder:7b` has neither property, so this is an argument for a per-model
 setting rather than a default, and it bears on the model choice rather than on
@@ -950,7 +1017,8 @@ retry arm.
 `think: false` unconditionally, so all of the above is thinking-off.
 
 **Do not re-run this speculatively.** It is roughly 1,400 serial model calls
-plus a 15-model canary, and it took about five hours of wall clock. Re-run it
+plus a 15-model canary, and it took about five hours of wall clock; the retry
+sweep adds roughly 1,450 more. Re-run it
 when the roster changes materially, when a model's tool support does, or when
 the tool prompt changes — the canary verdicts move with it.
 
@@ -1185,6 +1253,32 @@ The forward-looking items from the sections above, collected so they are not re-
 - **Conditional seeding.** The seed is applied to every request once `--seed-card-file` is named, but its value spans +10 to −2 by model. If a strong-unaided model ever becomes the server default, a per-model seed policy is the mechanism to consider (see [the card-seed section](#the-card-seed-and-what-it-costs)).
 - **The `gpt-oss:20b` swap is worth revisiting, though the reason changed.** Under 0.32.14 it was the strongest unaided model in the file and the only 25/25 under any condition; under 0.33.2 it is still the only 25/25, now under the seeded condition rather than the unaided one, and no longer the top unaided scorer (`qwen3.8:27b-nvfp4` and `qwen3.6:27b-coding-nvfp4` both score higher unaided). It is still not in `launch.json`. The swap is defensible, not settled, on either runtime's figures (see [its per-model notes](#gpt-oss20b)).
 - **A thinking-on arm of the tool-channel comparison.** Every probe sends `think: false` unconditionally, so thinking is untested rather than ruled out as a variable in the tool-channel result (see [the tool channel](#the-tool-channel-measured-against-prose)).
+- **Two zero-cost repairs are untried ahead of the tool-channel retry, and the
+  archive bounds what each is worth.** The
+  [retry](#a-retry-on-parse-failure-recovers-43-of-99-broken-cards-and-the-misses-split-two-ways)
+  recovers 43 of 99 parse failures at one extra model call each, but two
+  cheaper steps sit in front of it and neither is implemented or measured.
+  First, `card_detect.dart`'s bracket repair rescues `{…},{…}` and not
+  `{…}\n{…}`: all 7 of `qwen3-coder:30b`'s tool-arm malformed calls and 18 of
+  the retry probe's 99 prose parse failures carry the
+  `Unexpected character (at line 2, character 1)` signature that a second
+  top-level object produces. Splitting concatenated top-level values on brace
+  depth outside strings and joining them inside `[ ]`, kept only when the
+  result parses to element maps, would recover about that many at no model
+  call; the archive keeps reason strings rather than raw replies, so the exact
+  count needs a re-run, and `qwen3-coder:30b` through
+  `shape_ab.dart --channel tool` (200 calls) is the cheapest one. Second, 18 of
+  the 24 tool-answered retries that failed were calls to `render_adaptive_card`
+  with no card in the arguments; treating an empty `body` as a decline and
+  falling through to `message.content` costs nothing, but whether those
+  replies carried anything in the message body was not recorded and also needs
+  a re-run. Truncation (`Unexpected end of input`, 20 of the prose arm's 50
+  malformed calls) is out of reach of both, being a generation limit rather
+  than a formatting fault. The order to try is repair, then empty-call
+  fallthrough, then retry on what remains, and each step's yield is measurable
+  before the next is built. When one is picked, it gets a brainstorm and a plan
+  under `docs/superpowers/plans/`.
+
 - **Can a runaway generation be cancelled at all, and how.** `keep_alive: 0` did not cancel one in a direct test (an 18 s generation completed at 20.9 s), nor did `ollama stop` (16.3 s), and 53 unloads did not stop a 70-minute generation during `granite4.1:3b`'s after-eviction run. Until a cancellation path is shown to work and the model is re-run behind it, `granite4.1:3b`'s 0.33.2 shape and stall figures stay recorded as cascade-damaged rather than as a model measurement (see [the cascade section](#stalls-are-a-queueing-cascade-not-a-runtime-difference)). The schema-constrained `Carousel` timeouts on `qwen3.6:27b-coding-nvfp4` (see [its per-model notes](#qwen3627b-coding-nvfp4)) add two more occurrences under 0.33.3: both times the client's 180 s timeout left the runner stuck in `ollama ps`'s `Stopping...` state, holding 16-22 GB at roughly 19% CPU for up to an hour, and an explicit `keep_alive: 0` unload that the server acknowledged (`done_reason: "unload"`) did not clear it — only killing the runner process did, with `ollama serve` itself staying up and responsive throughout. No token or character count was captured for the timed-out calls, so a still-generating server-side process is a hypothesis consistent with the evidence, not a confirmed mechanism; what is established is narrower — `evictModel()` prevented the timeouts from cascading into the next probe within this run (`ColumnSet` cold passed immediately after three `Carousel` timeouts) without terminating the generation or freeing the runner. A third instance, on 2026-09-05, wedged the same model under `--json-format json` — the third occurrence under constrained decoding on `qwen3.6:27b-coding-nvfp4`, and again an acknowledged `keep_alive: 0` unload (`done_reason: "unload"`) did not clear it; only killing the runner process did, at a resident 10.6 GB of the 21-22 GB model, alive 1:02:32 at roughly 33% CPU, with `ollama serve` staying responsive throughout. This run wedged sooner, after 6 calls, and produced no comparable pass/fail — every call after the wedge returned `timeout (180s)`, including two cases that score 6/6 in both prior arms, so nothing from it was archived.
 - **Closed 2026-09-11: nothing drops a history message that fits.** This entry asked what discarded an oversized message when the runner had room for it. The [fit control](#a-filled-context-an-oversized-history-message-is-dropped-whole-and-a-real-one-costs-some-models-a-third-of-their-shapes) shows the premise was false: all six models ingested the filler once it fit, and every drop was a message 42426 tokens or larger under a 35851-token window. The probe's fixed `fillerCharsPerToken = 4.0` manufactured the gap by sizing history in characters. Three things it left open have since closed. Per-model calibration shipped on 2026-09-12, so a run no longer sizes its filler from a constant that overflows on dense tokenizers. The M5 archive was re-measured the same week and all eight models carry `runnerContextLength`, putting `min(requested, trained window)` on a memory-constrained host as well. And the filled-context cost has a third fill level on three models, which shows it is neither proportional to occupancy nor a cliff.
 
