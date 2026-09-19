@@ -2,6 +2,27 @@
 
 ## [0.18.0]
 
+- Notebook: **`granite4.1:3b`'s 52 stalls under Ollama 0.33.2 had two
+  causes, separated by a control.** A full sweep on the M1 Max under 0.34.0
+  (2026-09-18) recorded no stall, but the card prompt had also changed since
+  the 0.33.2 run (`Input.Rating`, `9fcba7af`). Re-running both shape probes on
+  0.34.0 with the old prompt recorded one stall per probe and no cascade: the
+  runaway still occurs on `table` and `facts`, the request now ends
+  server-side at 2m0s, and the next call is not queued. The runtime change
+  stopped the cascade and the prompt edit removed the runaway. The before-
+  and after-eviction 0.33.2 runs are recorded as stalling on the same 52
+  calls index for index. Direct tests on 0.34.0 found `keep_alive: 0` and
+  `ollama stop` leave a running generation to finish, while a client
+  disconnect frees the slot (a queued request waits 13.9 s behind a live
+  generation and 0.1 s after a disconnect). The sweep section's account of
+  the 2026-08-20 incident was corrected against commit `286265de`: `ollama
+stop` did run, the runner never finished evicting, and the "7 minutes
+  instead of 124" compared a two-probe re-run with a whole sweep (33.9
+  minutes, 13 stalls). The cascade proof figures that lived only in a plan
+  are recorded, the one-minute unusable threshold is stated once, and two
+  stall counts were corrected against the 0.32.14 archive. Blog article 5 was
+  rewritten to match.
+
 - Notebook: **the retry-on-parse-failure measurement now has its own section,
   and three tool-channel figures were corrected against the archive.** The
   per-model retry table, the 63/36 split by whether the retry used the tool,
