@@ -2,10 +2,13 @@
 
 In
 [`freemansoft/Flutter-AdaptiveCards`](https://github.com/freemansoft/Flutter-AdaptiveCards)
-a demonstration Dart chat server asks a local Ollama model for an answer as
-Adaptive Card JSON. A Flutter app renders the reply. A directory of probes
-measures which models manage it. Each probe sends a fixed set of questions to
-one model and judges every reply with the chat server's own card detector.
+a demonstration Flutter client sends questions to a Dart chat server. The
+server passes each one to a local Ollama model and asks for the answer as
+Adaptive Card JSON. The client renders the card that comes back. To measure
+which models manage that, a directory of probes sends a fixed set of questions
+straight to Ollama, one model at a time. Each probe builds its requests the way
+the chat server does and judges every reply with the server's own card
+detector.
 
 Several of those results looked like something a model did when the cause
 was the test setup: the machine, the Ollama runtime, the harness or the probe.
