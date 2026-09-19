@@ -69,3 +69,20 @@ sets alongside each other rather than replacing one with the other.
 The M5 / 16 GB readings in the same section have no capture at all, archived
 or otherwise, and cannot get one from this host: the M5 measurement predates
 `--json`, was never re-run, and this directory only holds M1 Max captures.
+
+## `granite4.1:3b` old-prompt control, 2026-09-18
+
+- `m1max-64gb-ollama0340-granite4.1_3b-oldprompt-seeded-2026-09-18.json`
+- `m1max-64gb-ollama0340-granite4.1_3b-oldprompt-unaided-2026-09-18.json`
+
+`shape_ab.dart` runs of `granite4.1:3b` on the Apple M1 Max / 64 GB under
+Ollama 0.34.0, `--samples 2`, `--timeout 120`, with `--baseline` pointed at
+`card_system_prompt.txt` as it stood before commit `9fcba7af` added
+`Input.Rating` (digest `4bfa327067f8`). They separate the prompt change from
+the runtime change in `ModelBehavior.md`'s cascade section.
+
+They are kept here rather than under `results-*/` because the `assets` block
+in each file is wrong for them: the probe records the digest of the prompt in
+the tree (`8cbfde243266`), not of the `--baseline` file it sent. Under a
+`results-*/` directory they would read as a second `seeded` and `unaided` run
+against the current prompt.

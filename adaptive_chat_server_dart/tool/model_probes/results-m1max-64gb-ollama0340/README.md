@@ -56,3 +56,12 @@ fallback under it malforms where the prose arm's would not.
 Neither arm is seeded. The seed card is a synthetic assistant turn holding raw
 card JSON, which is a prose-channel artifact, so the tool arms cannot carry it
 and `shape_ab.dart` refuses the combination.
+
+## `granite4.1:3b`: a full sweep
+
+`granite4.1:3b/` also holds a full `sweep.sh` run from 2026-09-18
+(`json_format_probe`, `temperature_matrix`, `temperature_stress`,
+`shape_ab-seeded`, `shape_ab-unaided`, `cascade_ab`). It re-measures the model
+whose 0.33.2 figures `ModelBehavior.md` records as cascade-damaged. Its
+`shape_ab-unaided.json` is therefore the sweep's unaided arm, and no
+tool-channel arm exists for it, because the canary rates the model `overCalls`.

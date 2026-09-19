@@ -17,17 +17,18 @@ When the notebook and a draft disagree, the notebook wins.
 
 ## The articles
 
-| #   | Article                                                                                | File                              | Status                                                                                           |
-| --- | -------------------------------------------------------------------------------------- | --------------------------------- | ------------------------------------------------------------------------------------------------ |
-| 1   | An SDUI demo that turned into a local-model benchmark                                  | `article-1-origin-story-*`        | **Published**, republished 2026-09-16 with the corrected four-way split                          |
-| 2   | We tried 14 levers to get reliable card JSON from a local model                        | `article-2-tuning-process-*`      | **Published**, republished 2026-09-16. One further fix in the repo awaits a republish, see below |
-| 3   | Running local models for Adaptive Card JSON on a 64 GB M1 Max and a 16 GB M5           | `article-3-m1max-vs-m5-*`         | **Published.** Revised 2026-09-08, mermaid chart, register pass 2026-09-12, cut pass 2026-09-14  |
-| 4   | Ollama's tool channel produces better cards, when the model remembers to use it        | `article-4-tool-channel-*`        | **Published** 2026-09-17, after the rewrite against the re-measurement and a review pass         |
-| 5   | The measurement was wrong, in a way that looked exactly like a slow model              | `article-5-measurement-hygiene-*` | Not published. Drafted, revised 2026-09-08, register pass 2026-09-12                             |
-| 6   | Ollama drops an oversized history message whole, and nothing tells you                 | `article-6-context-fill-*`        | Not published. Drafted 2026-09-12, split 2026-09-12, no visual, register pass 2026-09-12         |
-| 7   | A full context makes one model stop producing cards and another produce the wrong ones | `article-7-full-context-cost-*`   | Not published. Split from 6 on 2026-09-12, mermaid chart, register pass 2026-09-12               |
+| #   | Article                                                                                | File                              | Status                                                                                                                        |
+| --- | -------------------------------------------------------------------------------------- | --------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| 1   | An SDUI demo that turned into a local-model benchmark                                  | `article-1-origin-story-*`        | **Published**, republished 2026-09-16 with the corrected four-way split                                                       |
+| 2   | We tried 14 levers to get reliable card JSON from a local model                        | `article-2-tuning-process-*`      | **Published**, republished 2026-09-16. One further fix in the repo awaits a republish, see below                              |
+| 3   | Running local models for Adaptive Card JSON on a 64 GB M1 Max and a 16 GB M5           | `article-3-m1max-vs-m5-*`         | **Published.** Revised 2026-09-08, mermaid chart, register pass 2026-09-12, cut pass 2026-09-14                               |
+| 4   | Ollama's tool channel beats prose for card JSON on every model that calls it           | `article-4-tool-channel-*`        | **Published** 2026-09-17, after the rewrite against the re-measurement and a review pass. Retitled and republished 2026-09-18 |
+| 5   | Eight measurement rules from a local-model benchmark on Ollama                         | `article-5-measurement-hygiene-*` | **Published** 2026-09-18, rewritten rules first with the Ollama 0.34.0 `granite4.1:3b` control                                |
+| 6   | Ollama drops an oversized history message whole, and nothing tells you                 | `article-6-context-fill-*`        | Not published. Drafted 2026-09-12, split 2026-09-12, no visual, register pass 2026-09-12                                      |
+| 7   | A full context makes one model stop producing cards and another produce the wrong ones | `article-7-full-context-cost-*`   | Not published. Split from 6 on 2026-09-12, mermaid chart, register pass 2026-09-12                                            |
+| 8   | Ollama's prompt cache reused a shared system prompt on one model and not on the other  | `article-8-prompt-cache-*`        | Not published. Split from 5 on 2026-09-18, no visual                                                                          |
 
-**Articles 1 to 4 are published; 5 to 7 are not.** What is published cannot
+**Articles 1 to 5 are published; 6 to 8 are not.** What is published cannot
 be silently corrected, so a finding that moves under re-measurement is tracked
 here until the live post carries it. A repo fix and a republish are two steps,
 and the table below records both.
@@ -39,6 +40,11 @@ article 2's claim that card failure "usually arrives as invalid JSON rather
 than as a wrong choice of element" does not hold against the archive it quotes,
 which gives 101 against 104. That fix is in the repo and needs a second
 republish.
+
+Article 4 was retitled and republished on 2026-09-18. The earlier title,
+"Ollama's tool channel produces better cards, when the model remembers to use
+it", read as though some models forget the tool entirely; the notebook records
+66 to 96 of 100 calls using it on every model in the comparison.
 
 Articles 1 to 5 are drafted and have their visuals: articles 3 and 4 carry
 mermaid diagrams in place of image placeholders (article 5 already had one),
@@ -132,10 +138,10 @@ artifact row. The 1.54x sweep-position bias that bounds how precisely any
 single row's ratio can be read. Thermal throttling as plausible and unproven.
 
 Both hosts run the same Ollama line, so the article compares machines and never
-runtimes: a figure from a pre-0.33 runtime does not appear in it. The
-cross-runtime material, stall counts not being comparable across versions and
-the ceiling's effect on one 0.32.14 figure, belongs to article 5, which owns it as
-a methodological finding rather than as a host comparison.
+runtimes: a figure from a pre-0.33 runtime does not appear in it. Stall
+counts not being comparable across runtimes belongs to article 5, which owns it
+as a methodological finding rather than as a host comparison, on 0.33.x and
+0.34.0 figures only.
 
 Every figure in it was measured against a nearly empty context, a probe call
 being a system prompt, one question and at most a two-turn seed. That is a
@@ -143,7 +149,7 @@ property of the whole series before article 6 and it is stated in article 3's
 caveat list, because article 3 is the one carrying latency figures a reader
 might otherwise generalize to a long conversation.
 
-_Defers:_ bad assertions and undelivered `system` messages to article 5.
+_Defers:_ runner eviction and the queue cascade to article 5.
 What the runner allocates and what happens to history
 that does not fit, to article 6. What a full context costs a model's coverage,
 to article 7.
@@ -163,25 +169,25 @@ one sentence as setup. Its figures are the only unseeded shape figures in the
 series, which it states rather than assumes. Its per-call rates are the only
 per-call figures in the series; every other article quotes `n/25` cases.
 
-**Article 5: measurement hygiene.** The `granite4.1:3b` stall-signature
-account in full, which article 1 names in one sentence and article 3 names in
-one clause, both deferring the account here. Co-residency and a queue cascade
-both produce the identical 52-stall signature, and which one caused the original
-incident is not recoverable. **The queue-cascade material outright**:
-how one abandoned generation is recorded as many stalls, how that was proven
-from the server log rather than assumed, and how the same harness change, an
-unload on timeout with runs labelled before and after runner eviction,
-reproduced the archive for one model (`llama3.2:latest`) and not the other
-(`granite4.1:3b`, whose run still shows the cascade), with the unload itself
-not shown to cancel a generation and the difference unexplained. Why a stall
-is the most misread measurement in the set, and what the per-call timeout
-changes, including why raising the ceiling was never the answer. Suspect the
-harness before the model: a fence-stripping bug and a bad assertion, both
-blamed on models first. A null
-result means nothing until delivery is established, and a delivery probe must
-not contradict the system prompt. Judge with the parser you ship; derive
-published tables rather than transcribe them. When to discard numbers and what
-survives discarding them.
+**Article 5: measurement hygiene.** It opens on eight rules grouped by when
+they apply, and each later section is the evidence for one of them. The
+2026-08-20 `granite4.1:3b` incident under Ollama 0.32.14, a runner still
+evicting while the next model's probes ran, which article 1 names in one
+paragraph and defers here. That incident is the article's only pre-0.33
+material: the fence-stripping bug, the `rows >= 3` assertion, the delivery
+check and the superseded 2026-08-14 and 2026-08-16 sweeps are in the notebook
+and in no article. **The queue-cascade material outright**: the 2026-09-01
+sweep's 52 stalls with one runner resident, how one abandoned generation is
+recorded as many stalls, the same 52 calls stalling index for index before
+and after the unload-on-timeout change, and that change clearing
+`llama3.2:latest`'s stalls only. The unload tests on 0.33.2 and 0.34.0: an
+unload does not cancel a running generation and a client disconnect does.
+The three-column `granite4.1:3b` control that separates the 0.34.0 runtime
+from the `Input.Rating` prompt edit: the runtime stopped the cascade and the
+prompt removed the runaway. Why the 120 s ceiling stays. Silent truncation of an oversized system prompt, as the mistake that first made the prompt cache read as broken. Judging with the detector the server ships, and what it cannot
+see.
+
+Its prose runs to about 2,300 words, past the 2,000 target, because it owns eight rules and each carries its own measurement. The prompt-cache readings were split out to article 8 on 2026-09-18 for that reason and because they support no rule.
 
 _Defers:_ the `llama3.2:latest` M5 artifact row and the throttling analysis to
 article 3; it recaps article 3's sweep-position control in one paragraph, as a
@@ -223,6 +229,21 @@ does, what the runner allocates, and how history that does not fit is removed.
 It states in one paragraph that its fill sizes were verified as delivered and
 cites article 6 for why that needed verifying, rather than re-deriving the
 tokenizer defect.
+
+**Article 8: the prompt cache.** What Ollama's prefix cache saves a chat
+server, measured with `prompt_eval_cached_count` under Ollama 0.33.3 by
+`prefill_cache_probe.dart`: five request patterns on `llama3.2:latest` on
+both hosts and on `qwen3.8:27b-nvfp4` on the M1 Max. A conversation turn pays
+prefill for its new tokens only, on both models. **The new-conversation miss
+outright**: a byte-identical system prompt with a different first question
+reuses the cache on `llama3.2:latest` and misses entirely on
+`qwen3.8:27b-nvfp4`, on three runs, with the cause not established. The
+retry-after-abort cost, stable on one model and unstable on the other.
+
+_Defers:_ the truncated-prompt mistake that first made the cache read as
+broken to article 5, naming it in one paragraph because the probe's prompt
+size depends on it. What the runner allocates and what happens to oversized
+history to article 6.
 
 ### Resolved: the M5 calibrated run
 
@@ -316,7 +337,7 @@ figures and the series' names, which every article and the skill depend on.
   2026-08-20 re-measurement on eight of ten models. A failure _mode_ first seen
   there may always be named. One narrow exception, which the notebook itself
   takes: a figure from those sweeps may illustrate a _methodological_ finding,
-  as article 5 does with the 6/7-then-2/5 pair behind "the easy set does not
+  as the notebook does with the 6/7-then-2/5 pair behind "the easy set does not
   discriminate", but only when labelled as superseded at the point of use, and
   never as a model's score.
 

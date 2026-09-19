@@ -1,0 +1,188 @@
+{
+  "probe": "temperature_matrix",
+  "model": "granite4.1:3b",
+  "measuredAt": "2026-09-18",
+  "machine": "Apple M1 Max / 64 GB",
+  "ollama": "0.34.0",
+  "samples": 1,
+  "assets": {
+    "card_system_prompt.txt": "8cbfde243266",
+    "seed_card.json": "4ac746114475"
+  },
+  "summary": {
+    "calls": 21,
+    "passed": 16,
+    "cards": 13,
+    "prose": 3
+  },
+  "calls": [
+    {
+      "case": "date",
+      "sample": 0,
+      "pass": false,
+      "label": "broken: invalid JSON: FormatException: Unexpected character (at character 41)\n{\"type\":\"Input.Date\",\"id\":\"meetingDate\"}{\"type\":\"Input.Time\",\"id\":\"meetingT...\n                                        ^\n",
+      "setting": "greedy(t=0)",
+      "ms": 472
+    },
+    {
+      "case": "choice",
+      "sample": 0,
+      "pass": true,
+      "label": "card[1]",
+      "setting": "greedy(t=0)",
+      "ms": 1093
+    },
+    {
+      "case": "facts",
+      "sample": 0,
+      "pass": true,
+      "label": "card[1]",
+      "setting": "greedy(t=0)",
+      "ms": 4030
+    },
+    {
+      "case": "table",
+      "sample": 0,
+      "pass": false,
+      "label": "duplicate-key (duplicate key \"cells\")",
+      "setting": "greedy(t=0)",
+      "ms": 6425
+    },
+    {
+      "case": "chart",
+      "sample": 0,
+      "pass": true,
+      "label": "card[1]",
+      "setting": "greedy(t=0)",
+      "ms": 1439
+    },
+    {
+      "case": "rating",
+      "sample": 0,
+      "pass": true,
+      "label": "card[1]",
+      "setting": "greedy(t=0)",
+      "ms": 369
+    },
+    {
+      "case": "prose",
+      "sample": 0,
+      "pass": true,
+      "label": "prose",
+      "setting": "greedy(t=0)",
+      "ms": 1180
+    },
+    {
+      "case": "date",
+      "sample": 0,
+      "pass": false,
+      "label": "broken: invalid JSON: FormatException: Unexpected character (at character 41)\n{\"type\":\"Input.Date\",\"id\":\"meetingDate\"}{\"type\":\"Input.Time\",\"id\":\"meetingT...\n                                        ^\n",
+      "setting": "low(t=0.2)",
+      "ms": 551
+    },
+    {
+      "case": "choice",
+      "sample": 0,
+      "pass": true,
+      "label": "card[1]",
+      "setting": "low(t=0.2)",
+      "ms": 1298
+    },
+    {
+      "case": "facts",
+      "sample": 0,
+      "pass": true,
+      "label": "card[1]",
+      "setting": "low(t=0.2)",
+      "ms": 4311
+    },
+    {
+      "case": "table",
+      "sample": 0,
+      "pass": false,
+      "label": "broken: invalid JSON: FormatException: Unexpected character (at character 170)\n...ck\",\"text\":\"Planet\",\"wrap\":true}]}],[{ \"type\":\"TableCell\",\"items\":[ { \"t...\n                                       ^\n",
+      "setting": "low(t=0.2)",
+      "ms": 8330
+    },
+    {
+      "case": "chart",
+      "sample": 0,
+      "pass": true,
+      "label": "card[1]",
+      "setting": "low(t=0.2)",
+      "ms": 1442
+    },
+    {
+      "case": "rating",
+      "sample": 0,
+      "pass": true,
+      "label": "card[1]",
+      "setting": "low(t=0.2)",
+      "ms": 368
+    },
+    {
+      "case": "prose",
+      "sample": 0,
+      "pass": true,
+      "label": "prose",
+      "setting": "low(t=0.2)",
+      "ms": 1344
+    },
+    {
+      "case": "date",
+      "sample": 0,
+      "pass": false,
+      "label": "broken: invalid JSON: FormatException: Unexpected character (at character 41)\n{\"type\":\"Input.Date\",\"id\":\"meetingDate\"}{\"type\":\"Input.Time\",\"id\":\"meetingT...\n                                        ^\n",
+      "setting": "recommended(t=0.6)",
+      "ms": 546
+    },
+    {
+      "case": "choice",
+      "sample": 0,
+      "pass": true,
+      "label": "card[1]",
+      "setting": "recommended(t=0.6)",
+      "ms": 1332
+    },
+    {
+      "case": "facts",
+      "sample": 0,
+      "pass": true,
+      "label": "card[1]",
+      "setting": "recommended(t=0.6)",
+      "ms": 3827
+    },
+    {
+      "case": "table",
+      "sample": 0,
+      "pass": true,
+      "label": "card[1]",
+      "setting": "recommended(t=0.6)",
+      "ms": 6520
+    },
+    {
+      "case": "chart",
+      "sample": 0,
+      "pass": true,
+      "label": "card[1]",
+      "setting": "recommended(t=0.6)",
+      "ms": 1900
+    },
+    {
+      "case": "rating",
+      "sample": 0,
+      "pass": true,
+      "label": "card[1]",
+      "setting": "recommended(t=0.6)",
+      "ms": 359
+    },
+    {
+      "case": "prose",
+      "sample": 0,
+      "pass": true,
+      "label": "prose",
+      "setting": "recommended(t=0.6)",
+      "ms": 1199
+    }
+  ]
+}

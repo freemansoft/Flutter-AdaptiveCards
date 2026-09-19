@@ -1,4 +1,4 @@
-# Ollama's tool channel produces better cards, when the model remembers to use it
+# Ollama's tool channel beats prose for card JSON on every model that calls it
 
 In
 [`freemansoft/Flutter-AdaptiveCards`](https://github.com/freemansoft/Flutter-AdaptiveCards)

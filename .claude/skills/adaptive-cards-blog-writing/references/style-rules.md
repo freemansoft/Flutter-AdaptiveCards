@@ -231,6 +231,19 @@ compares. A terms table defined later is not a reason to hold the setup back.
   *asked*, *measured*, *taken*. A `## Terms used in this article` heading is
   the standing exception, because it labels a table rather than stating a
   finding, and the series shares the wording.
+- **Name the runtime version wherever a finding differs between versions, and
+  only there.** When two versions of Ollama behaved differently, every heading
+  stating either result names its version, and so does every sentence stating
+  a behavior only one version showed. Article 5 had a heading "Under Ollama
+  0.34.0 `granite4.1:3b` recorded no stall" beside "`granite4.1:3b` recorded
+  52 stalls with one model resident", which was the 0.33.2 result with its
+  version left off, so the reader could not tell the two sections measured
+  different runtimes. Both became "... under Ollama 0.33.2" and "... under
+  Ollama 0.34.0", along with the other headings whose finding changed between
+  those versions. Put the version at the end of the heading so the model or
+  mechanism still leads. A finding measured on one version only, with nothing
+  to contrast it against, keeps its version in the prose and out of the
+  heading.
 - **A heading does not repeat its section's bold first sentence.** When a
   heading is rewritten to state the finding, rewrite the first sentence so it
   adds information.
