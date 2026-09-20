@@ -25,6 +25,23 @@ Both are properties of the Ollama runtime, not of any model. What a full window 
 a model's own behavior is a separate question, and a companion article measures
 it.
 
+The diagram follows one request. Only one of the three outcomes happens to it.
+
+```mermaid
+flowchart TD
+  REQ["Request to Ollama:\nrequested num_ctx, system prompt,\nhistory message, question"]
+  REQ --> ALLOC["Ollama allocates\nmin(requested, trained window)"]
+  C1["cause: the trained window is\nsmaller than the request"] -.-> FIT
+  C2["cause: the tokenizer yields more\ntokens than a character estimate"] -.-> FIT
+  ALLOC --> FIT{"does the prompt fit\nthe allocated window?"}
+  FIT -- yes --> KEPT["history kept\nprompt_eval_count matches\nwhat was sent"]
+  FIT -- "no" --> DROP["history message removed whole\nno error, no warning\nprompt_eval_count covers only the\nsystem prompt and the question"]
+  FIT -- "no, on two nvfp4 builds" --> OVER["prompt evaluated anyway,\nabout 6,700 tokens past\nthe allocation"]
+  style KEPT fill:#6c6,stroke:#060,color:#000
+  style DROP fill:#f66,stroke:#900,color:#000
+  style OVER fill:#fc6,stroke:#960,color:#000
+```
+
 Every figure comes from
 [`ModelBehavior.md`](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md),
 the lab notebook in that repository.
