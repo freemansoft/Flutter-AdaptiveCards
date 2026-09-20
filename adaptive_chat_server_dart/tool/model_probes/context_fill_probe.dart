@@ -25,7 +25,7 @@
 /// wrong, and measurement disproved it. The count tells you afterward that
 /// a run overflowed its window, by which point the run is spoiled: `num_ctx`
 /// was sized from the estimate before the first call. Measured against the
-/// same 127,020 characters, the 4.0 constant holds at 4.29 to 4.30
+/// same 127,024 characters, the 4.0 constant holds at 4.29 to 4.30
 /// chars/token on `llama3.2:latest`, `granite4.1:8b` and `gpt-oss:20b`, and
 /// fails elsewhere — 2.99 on both `qwen3.8:27b-nvfp4` and
 /// `qwen3.6:27b-coding-nvfp4`, 2.74 on `nemotron-3-nano:4b`. A 28000-token

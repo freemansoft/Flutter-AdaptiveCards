@@ -76,6 +76,12 @@ typeset -A PARAMS=(
   # Same treatment as the droppers, for the same reason.
   "qwen3.8:27b-nvfp4"           "65536 42000"
   "qwen3.6:27b-coding-nvfp4"    "65536 42000"
+  # Trained at 8192, so no request can give them more. They only ever got
+  # the 28000-token filler, which no sizing fits, so these entries test
+  # whether they keep a filler that does: 2500 tokens plus the card system
+  # prompt leaves roughly 1,900 tokens for the question and the reply.
+  "llama3-chatqa:8b"            "8192 2500"
+  "llama3-groq-tool-use:8b"     "8192 2500"
 )
 # Smallest first, so a partial run still says something.
 MODELS=(

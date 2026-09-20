@@ -2,6 +2,28 @@
 
 ## [0.18.0]
 
+- Notebook: **the context-fill findings reproduce under Ollama 0.34.0.** The
+  fixed 28000-token filler sweep was repeated on the M1 Max for all fourteen
+  models (`context_fill_results/m1max-64gb-ollama0340-fill28000/`) and every
+  allocation, prompt token range and pass count matched 0.33.3. A new
+  empty-window baseline (`m1max-64gb-ollama0340-fill0/`) scores the two
+  `nvfp4` builds at 21/25 and 23/25 against 17/25 and 21/25 while overrunning
+  their allocation, replacing an unsupported "at no cost" claim. A 0.34.0 calibrated fit control
+  (`m1max-64gb-ollama0340-fitcontrol-calibrated/`) scores them 16/25 and 20/25
+  with a full window inside a 65536 allocation, within one case of the overrun,
+  and shows the two 8192-window models keep a 2500-token filler that fits.
+  `context_fill_fit_control.sh` gains entries for those two models. The
+  full-window table and its verdict decomposition now pair the `nvfp4` builds
+  against a real empty window: `qwen3.8:27b-nvfp4` goes 21/25 to 16/25 with
+  `broken` 0 to 7, a third failure mode beside the two Nemotron ones, and blog
+  article 7 was retitled and updated to carry it. The filler is
+  112,005 characters and the prompt 127,024, not a 127,020-character filler;
+  `qwen3.5:9b` (42540 tokens, 2.99) joins the tokenizer table; three more M1
+  Max droppers are recorded; the drop is scoped to history, since an
+  oversized system prompt is truncated instead; and the chat server's
+  overflow check is noted as sharing the 4.0 chars/token blind spot.
+  `context_fill_sweep.sh` gains `CONTEXT_FILL_NO_CALIBRATE=1` to reproduce the
+  uncalibrated archives. Blog article 6 was corrected to match.
 - Notebook: **`granite4.1:3b`'s 52 stalls under Ollama 0.33.2 had two
   causes, separated by a control.** A full sweep on the M1 Max under 0.34.0
   (2026-09-18) recorded no stall, but the card prompt had also changed since
