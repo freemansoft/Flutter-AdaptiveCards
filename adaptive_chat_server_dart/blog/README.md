@@ -17,18 +17,18 @@ When the notebook and a draft disagree, the notebook wins.
 
 ## The articles
 
-| #   | Article                                                                                | File                              | Status                                                                                                                        |
-| --- | -------------------------------------------------------------------------------------- | --------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
-| 1   | An SDUI demo that turned into a local-model benchmark                                  | `article-1-origin-story-*`        | **Published**, republished 2026-09-16 with the corrected four-way split                                                       |
-| 2   | We tried 14 levers to get reliable card JSON from a local model                        | `article-2-tuning-process-*`      | **Published**, republished 2026-09-16. One further fix in the repo awaits a republish, see below                              |
-| 3   | Running local models for Adaptive Card JSON on a 64 GB M1 Max and a 16 GB M5           | `article-3-m1max-vs-m5-*`         | **Published.** Revised 2026-09-08, mermaid chart, register pass 2026-09-12, cut pass 2026-09-14                               |
-| 4   | Ollama's tool channel beats prose for card JSON on every model that calls it           | `article-4-tool-channel-*`        | **Published** 2026-09-17, after the rewrite against the re-measurement and a review pass. Retitled and republished 2026-09-18 |
-| 5   | Eight measurement rules from a local-model benchmark on Ollama                         | `article-5-measurement-hygiene-*` | **Published** 2026-09-18, rewritten rules first with the Ollama 0.34.0 `granite4.1:3b` control                                |
-| 6   | Ollama drops an oversized history message whole, and nothing tells you                 | `article-6-context-fill-*`        | Not published. Drafted 2026-09-12, split 2026-09-12, no visual, register pass 2026-09-12                                      |
-| 7   | A full context makes one model stop producing cards and another produce the wrong ones | `article-7-full-context-cost-*`   | Not published. Split from 6 on 2026-09-12, mermaid chart, register pass 2026-09-12                                            |
-| 8   | Ollama's prompt cache reused a shared system prompt on one model and not on the other  | `article-8-prompt-cache-*`        | Not published. Split from 5 on 2026-09-18, no visual                                                                          |
+| #   | Article                                                                               | File                              | Status                                                                                                                          |
+| --- | ------------------------------------------------------------------------------------- | --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | An SDUI demo that turned into a local-model benchmark                                 | `article-1-origin-story-*`        | **Published**, republished 2026-09-16 with the corrected four-way split                                                         |
+| 2   | We tried 14 levers to get reliable card JSON from a local model                       | `article-2-tuning-process-*`      | **Published**, republished 2026-09-16. One further fix in the repo awaits a republish, see below                                |
+| 3   | Running local models for Adaptive Card JSON on a 64 GB M1 Max and a 16 GB M5          | `article-3-m1max-vs-m5-*`         | **Published.** Revised 2026-09-08, mermaid chart, register pass 2026-09-12, cut pass 2026-09-14                                 |
+| 4   | Ollama's tool channel beats prose for card JSON on every model that calls it          | `article-4-tool-channel-*`        | **Published** 2026-09-17, after the rewrite against the re-measurement and a review pass. Retitled and republished 2026-09-18   |
+| 5   | Eight measurement rules from a local-model benchmark on Ollama                        | `article-5-measurement-hygiene-*` | **Published** 2026-09-18, rewritten rules first with the Ollama 0.34.0 `granite4.1:3b` control                                  |
+| 6   | Ollama silently drops a history message larger than its context window                | `article-6-context-fill-*`        | **Published** 2026-09-20, after the review against the notebook, the Ollama 0.34.0 re-runs, a flowchart and a retitle           |
+| 7   | A full context breaks three local models, each in a different way                     | `article-7-full-context-cost-*`   | Not published. Split from 6 on 2026-09-12, mermaid chart, register pass 2026-09-12; retitled and third failure added 2026-09-19 |
+| 8   | Ollama's prompt cache reused a shared system prompt on one model and not on the other | `article-8-prompt-cache-*`        | Not published. Split from 5 on 2026-09-18, no visual                                                                            |
 
-**Articles 1 to 5 are published; 6 to 8 are not.** What is published cannot
+**Articles 1 to 6 are published; 7 and 8 are not.** What is published cannot
 be silently corrected, so a finding that moves under re-measurement is tracked
 here until the live post carries it. A repo fix and a republish are two steps,
 and the table below records both.
@@ -50,7 +50,8 @@ Articles 1 to 5 are drafted and have their visuals: articles 3 and 4 carry
 mermaid diagrams in place of image placeholders (article 5 already had one),
 and articles 1 and 2 have real screenshots from the demo client. Article 7 took
 the mermaid chart of the cases each model gains or loses when its window is
-filled. Article 6 has no visual of its own after the split.
+filled. Article 6 gained a mermaid flowchart on 2026-09-20: one request, the
+allocation rule, the two causes of an overflow and the three outcomes.
 
 The 2026-09-08 revision removed every em dash from articles 1 to 5 (see the register
 rules in the `adaptive-cards-blog-writing` skill), framed the chat demo as a demo rather than a production
@@ -196,7 +197,8 @@ the confound, measure it, do not read a mechanism off a net number.
 
 **Article 6: the filled context.** Everything about running a model with its
 window actually full. The allocation rule, `min(requested, trained window)`,
-measured on both hosts with no counterexample in thirty-one runs, and the
+measured on both hosts with no counterexample in fifty-one runs across
+Ollama 0.33.3 and 0.34.0, and the
 reading that retires host memory as a factor. **The silent whole-message drop
 outright**: history that exceeds the allocated window is removed rather than
 trimmed, nothing errors, and `prompt_eval_count` is the only signal. The
@@ -204,8 +206,11 @@ per-tokenizer spread, 4.30 characters per token against 2.74 on the same text,
 and the probe defect it caused: a filler sized in characters overflowed the
 window sized for it, and three models were written up as discarding history
 they had room for when no such model existed. The two `nvfp4` builds that
-evaluate roughly 6,700 tokens past their reported allocation at no cost, which
-separates what the runner allocates from what it enforces.
+evaluate roughly 6,700 tokens past their reported allocation, which separates
+what the runner allocates from what it enforces, and their Ollama 0.34.0
+empty-window and full-window-that-fits baselines: the overrun scores within one case of a full window, and the filled runs two to five cases below an empty one, which `--samples 1` does not establish as a cost. The two 8192-window models keeping a
+filler that fits. The 0.34.0 reproduction of the fixed-filler sweep on all
+fourteen models.
 
 _Defers:_ the general form of "suspect the harness before the model" to
 article 5, naming its own instance in one clause rather than re-deriving the
@@ -214,12 +219,15 @@ quotes no ratio and no sweep timing, because its runs are `--samples 1` at one
 fill size and carry no position control.
 
 **Article 7: what a full window costs a model.** The filled-context measurement
-for eight models, four unaffected and three losing about a third of their shape
-coverage. **The failure decomposition outright**: the two largest losses are
-opposite failures, `nemotron-3.5-lightning:30b` abandoning card output for prose
-and `nemotron-3-nano:30b` emitting well-formed cards with a `TextBlock` where an
-`Input.*` was asked for, and the consequence that only the first is caught by
-checking that a reply parsed as a card. The reordering, in which a model ahead
+for eight models, five moving by three cases or fewer and three losing a quarter
+to a third of their shape coverage. **The failure decomposition outright**: the
+three largest losses are three different failures, `nemotron-3.5-lightning:30b`
+abandoning card output for prose, `nemotron-3-nano:30b` emitting well-formed
+cards with a `TextBlock` where an `Input.*` was asked for, and
+`qwen3.8:27b-nvfp4` emitting bodies that do not parse, with the consequence that
+a parse check catches the first and third and misses the second. The two
+`nvfp4` builds' empty-window arm comes from an Ollama 0.34.0 run, which the
+article states beside the table. The reordering, in which a model ahead
 on an empty window falls behind on a full one. The `qwen2.5-coder:7b` partial
 reversion at roughly half the fill, which is the only sign in the set that the
 effect begins below a full window.

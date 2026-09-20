@@ -1,0 +1,204 @@
+{
+  "probe": "context_fill_probe",
+  "model": "nemotron-3-nano:4b",
+  "measuredAt": "2026-09-18",
+  "machine": "Apple M1 Max / 64 GB",
+  "ollama": "0.34.0",
+  "samples": 1,
+  "assets": {
+    "card_system_prompt.txt": "8cbfde243266",
+    "seed_card.json": "4ac746114475"
+  },
+  "summary": {
+    "pass": 8,
+    "total": 25,
+    "fillTokensTarget": 28000,
+    "systemPromptTokensEstimate": 3755,
+    "charsPerTokenUsed": 4.0,
+    "charsPerTokenMeasured": false,
+    "numCtx": 35851,
+    "runnerContextLength": 35851,
+    "runnerContextClamped": false,
+    "runnerSizeVram": 3750861208,
+    "promptEvalCountMin": 4374,
+    "promptEvalCountMax": 4390
+  },
+  "notes": "Filler sized via fillerCharsPerToken=4.0; see each call's tokens=… for the actual prompt_eval_count. runnerContextLength is what /api/ps reported the runner allocated, against numCtx as requested.",
+  "calls": [
+    {
+      "case": "date",
+      "sample": 0,
+      "pass": false,
+      "label": "prose tokens=4379",
+      "ms": 11076
+    },
+    {
+      "case": "time",
+      "sample": 0,
+      "pass": false,
+      "label": "prose tokens=4378",
+      "ms": 4236
+    },
+    {
+      "case": "toggle",
+      "sample": 0,
+      "pass": false,
+      "label": "prose tokens=4376",
+      "ms": 4479
+    },
+    {
+      "case": "text",
+      "sample": 0,
+      "pass": false,
+      "label": "prose tokens=4379",
+      "ms": 4742
+    },
+    {
+      "case": "number",
+      "sample": 0,
+      "pass": false,
+      "label": "prose tokens=4378",
+      "ms": 4419
+    },
+    {
+      "case": "choice1",
+      "sample": 0,
+      "pass": false,
+      "label": "prose tokens=4375",
+      "ms": 4597
+    },
+    {
+      "case": "choice2",
+      "sample": 0,
+      "pass": false,
+      "label": "prose tokens=4375",
+      "ms": 4320
+    },
+    {
+      "case": "choice3",
+      "sample": 0,
+      "pass": false,
+      "label": "prose tokens=4375",
+      "ms": 4577
+    },
+    {
+      "case": "choice4",
+      "sample": 0,
+      "pass": false,
+      "label": "prose tokens=4375",
+      "ms": 4795
+    },
+    {
+      "case": "choice5",
+      "sample": 0,
+      "pass": false,
+      "label": "prose tokens=4374",
+      "ms": 4482
+    },
+    {
+      "case": "choice6",
+      "sample": 0,
+      "pass": false,
+      "label": "prose tokens=4376",
+      "ms": 5493
+    },
+    {
+      "case": "pie",
+      "sample": 0,
+      "pass": true,
+      "label": "Chart.Pie tokens=4385",
+      "ms": 6109
+    },
+    {
+      "case": "bar",
+      "sample": 0,
+      "pass": true,
+      "label": "Chart.HorizontalBar, TextBlock tokens=4381",
+      "ms": 6719
+    },
+    {
+      "case": "line",
+      "sample": 0,
+      "pass": true,
+      "label": "Chart.Line, TextBlock tokens=4380",
+      "ms": 6702
+    },
+    {
+      "case": "gauge",
+      "sample": 0,
+      "pass": false,
+      "label": "wrong-shape: got {Chart.ProgressRing} want {Chart.Gauge} tokens=4386",
+      "ms": 4600
+    },
+    {
+      "case": "rating_show",
+      "sample": 0,
+      "pass": false,
+      "label": "prose tokens=4389",
+      "ms": 4481
+    },
+    {
+      "case": "rating_ask",
+      "sample": 0,
+      "pass": true,
+      "label": "Input.Rating tokens=4382",
+      "ms": 4382
+    },
+    {
+      "case": "carousel",
+      "sample": 0,
+      "pass": false,
+      "label": "prose tokens=4386",
+      "ms": 6039
+    },
+    {
+      "case": "table",
+      "sample": 0,
+      "pass": false,
+      "label": "prose tokens=4381",
+      "ms": 5850
+    },
+    {
+      "case": "facts",
+      "sample": 0,
+      "pass": false,
+      "label": "broken: invalid JSON: FormatException: Unexpected end of input (at character 237)\n...:\"Battery\",\"value\":\"3200 mAh\"},{\"title\":\"Water Resistance\",\"value\":\"IP68\"}]\n                                                                              ^\n tokens=4383",
+      "ms": 5789
+    },
+    {
+      "case": "columnset",
+      "sample": 0,
+      "pass": true,
+      "label": "Column, ColumnSet, TextBlock tokens=4377",
+      "ms": 5893
+    },
+    {
+      "case": "codeblock",
+      "sample": 0,
+      "pass": false,
+      "label": "wrong-shape: got {TextBlock} want {CodeBlock} tokens=4390",
+      "ms": 6185
+    },
+    {
+      "case": "progress",
+      "sample": 0,
+      "pass": true,
+      "label": "ProgressRing tokens=4379",
+      "ms": 4387
+    },
+    {
+      "case": "badge",
+      "sample": 0,
+      "pass": true,
+      "label": "Badge tokens=4379",
+      "ms": 4487
+    },
+    {
+      "case": "prose",
+      "sample": 0,
+      "pass": true,
+      "label": "prose-ok tokens=4378",
+      "ms": 4873
+    }
+  ]
+}

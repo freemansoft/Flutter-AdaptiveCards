@@ -46,6 +46,12 @@ fi
 RES=$CONTEXT_FILL_RESULTS
 FILL_TOKENS=${CONTEXT_FILL_TOKENS:-28000}
 LOG=${CONTEXT_FILL_LOG:-/tmp/context-fill-sweep-logs}
+# The -fill28000 archives predate per-model calibration and were sized by
+# the fixed 4.0 chars/token constant. The probe now calibrates by default,
+# which sends a different filler, so reproducing one of those archives on
+# another runtime needs CONTEXT_FILL_NO_CALIBRATE=1.
+CALIBRATE_ARGS=()
+[[ -n ${CONTEXT_FILL_NO_CALIBRATE:-} ]] && CALIBRATE_ARGS=(--no-calibrate)
 mkdir -p "$LOG"
 
 # The eight models the M5 run measured, fastest/smallest first so a
@@ -87,7 +93,7 @@ for M in $MODELS; do
   echo "##### MODEL $M $(date +%T) #####"
   wait_for_idle
   fvm dart run tool/model_probes/context_fill_probe.dart \
-    --model "$M" --fill-tokens "$FILL_TOKENS" --json "$OUT" \
+    --model "$M" --fill-tokens "$FILL_TOKENS" $CALIBRATE_ARGS --json "$OUT" \
     >"$LOG/$(slug $M).log" 2>&1
   echo ">>> DONE  $M rc=$? $(date +%T)"
   ollama stop "$M" >/dev/null 2>&1
