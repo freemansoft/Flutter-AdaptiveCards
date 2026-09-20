@@ -38,7 +38,7 @@ removes history that does not fit whole rather than trimming it. That article
 also covers how the defect surfaced and got fixed. Every run here reports the
 token count it actually delivered, in the **Prompt tokens** column.
 
-## Four models are unaffected and three lose about a third
+## Five models move little and three lose a quarter to a third
 
 The probe gave each model a filler calibrated to its own tokenizer, sized to fit
 the window Ollama actually allocates it. The **Empty window** column is the same 25 cases with no history. Six rows read

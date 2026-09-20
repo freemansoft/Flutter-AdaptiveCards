@@ -48,7 +48,8 @@ resident. The patterns are the ones a chat server sends:
 
 The glossary is sized to fit the window on purpose. A first version of the
 probe sent a prompt larger than `num_ctx`. Ollama cut it short without an
-error, and every cache figure read near zero. The measurement-hygiene article
+error, and every cache figure read near zero. The
+[measurement-hygiene article](https://joe.blog.freemansoft.com/2026/09/eight-measurement-rules-from-local.html)
 in this series covers that mistake. The check is that `prompt_eval_count`
 matches the size of the prompt that was sent.
 

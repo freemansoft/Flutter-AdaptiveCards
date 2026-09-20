@@ -196,7 +196,8 @@ the confound, measure it, do not read a mechanism off a net number.
 
 **Article 6: the filled context.** Everything about running a model with its
 window actually full. The allocation rule, `min(requested, trained window)`,
-measured on both hosts with no counterexample in thirty-one runs, and the
+measured on both hosts with no counterexample in fifty-one runs across
+Ollama 0.33.3 and 0.34.0, and the
 reading that retires host memory as a factor. **The silent whole-message drop
 outright**: history that exceeds the allocated window is removed rather than
 trimmed, nothing errors, and `prompt_eval_count` is the only signal. The

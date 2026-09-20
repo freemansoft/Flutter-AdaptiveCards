@@ -592,7 +592,7 @@ Two caveats on the numbers:
 
 #### Allocation is `min(requested, trained window)`, regardless of host memory
 
-Across thirty-one runs on both hosts the runner allocated exactly **`min(requested, trained window)`** with no counterexample: every clamp lands on that model's own trained window, none at an intermediate value, and no model got less than its window could hold.
+Across thirty-one runs on both hosts under Ollama 0.33.3, and twenty more on the M1 Max under Ollama 0.34.0 (the fourteen-model fixed-filler sweep, two empty-window runs and four fit-control runs), the runner allocated exactly **`min(requested, trained window)`** with no counterexample: every clamp lands on that model's own trained window, none at an intermediate value, and no model got less than its window could hold.
 
 | Model                     | Trained window | Allocated (35851 requested) | Clamped |
 | ------------------------- | -------------- | --------------------------- | ------- |
