@@ -18,6 +18,9 @@ results reproduced under Ollama 0.34.0.
 - **A history message larger than the window is removed, not trimmed.** The
   model gets none of it, and the failure is silent: no error and no warning.
 
+Neither shows up in the reply. `ollama ps` shows the first, and comparing
+`prompt_eval_count` with the size of what was sent shows the second.
+
 Both are properties of the Ollama runtime, not of any model. What a full window does to
 a model's own behavior is a separate question, and a companion article measures
 it.
