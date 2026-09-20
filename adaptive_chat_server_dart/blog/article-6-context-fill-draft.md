@@ -1,4 +1,4 @@
-# Ollama drops an oversized history message whole, and nothing tells you
+# Ollama silently drops a history message larger than its context window
 
 In [`freemansoft/Flutter-AdaptiveCards`](https://github.com/freemansoft/Flutter-AdaptiveCards) a demonstration Dart chat server hands a question to a local Ollama
 model. It asks for the answer as Adaptive Card JSON, a strict,

@@ -17,18 +17,18 @@ When the notebook and a draft disagree, the notebook wins.
 
 ## The articles
 
-| #   | Article                                                                               | File                              | Status                                                                                                                                      |
-| --- | ------------------------------------------------------------------------------------- | --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1   | An SDUI demo that turned into a local-model benchmark                                 | `article-1-origin-story-*`        | **Published**, republished 2026-09-16 with the corrected four-way split                                                                     |
-| 2   | We tried 14 levers to get reliable card JSON from a local model                       | `article-2-tuning-process-*`      | **Published**, republished 2026-09-16. One further fix in the repo awaits a republish, see below                                            |
-| 3   | Running local models for Adaptive Card JSON on a 64 GB M1 Max and a 16 GB M5          | `article-3-m1max-vs-m5-*`         | **Published.** Revised 2026-09-08, mermaid chart, register pass 2026-09-12, cut pass 2026-09-14                                             |
-| 4   | Ollama's tool channel beats prose for card JSON on every model that calls it          | `article-4-tool-channel-*`        | **Published** 2026-09-17, after the rewrite against the re-measurement and a review pass. Retitled and republished 2026-09-18               |
-| 5   | Eight measurement rules from a local-model benchmark on Ollama                        | `article-5-measurement-hygiene-*` | **Published** 2026-09-18, rewritten rules first with the Ollama 0.34.0 `granite4.1:3b` control                                              |
-| 6   | Ollama drops an oversized history message whole, and nothing tells you                | `article-6-context-fill-*`        | Not published. Drafted 2026-09-12, split, register pass 2026-09-12; review fixes and 0.34.0 re-run 2026-09-18, mermaid flowchart 2026-09-20 |
-| 7   | A full context breaks three local models, each in a different way                     | `article-7-full-context-cost-*`   | Not published. Split from 6 on 2026-09-12, mermaid chart, register pass 2026-09-12; retitled and third failure added 2026-09-19             |
-| 8   | Ollama's prompt cache reused a shared system prompt on one model and not on the other | `article-8-prompt-cache-*`        | Not published. Split from 5 on 2026-09-18, no visual                                                                                        |
+| #   | Article                                                                               | File                              | Status                                                                                                                          |
+| --- | ------------------------------------------------------------------------------------- | --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | An SDUI demo that turned into a local-model benchmark                                 | `article-1-origin-story-*`        | **Published**, republished 2026-09-16 with the corrected four-way split                                                         |
+| 2   | We tried 14 levers to get reliable card JSON from a local model                       | `article-2-tuning-process-*`      | **Published**, republished 2026-09-16. One further fix in the repo awaits a republish, see below                                |
+| 3   | Running local models for Adaptive Card JSON on a 64 GB M1 Max and a 16 GB M5          | `article-3-m1max-vs-m5-*`         | **Published.** Revised 2026-09-08, mermaid chart, register pass 2026-09-12, cut pass 2026-09-14                                 |
+| 4   | Ollama's tool channel beats prose for card JSON on every model that calls it          | `article-4-tool-channel-*`        | **Published** 2026-09-17, after the rewrite against the re-measurement and a review pass. Retitled and republished 2026-09-18   |
+| 5   | Eight measurement rules from a local-model benchmark on Ollama                        | `article-5-measurement-hygiene-*` | **Published** 2026-09-18, rewritten rules first with the Ollama 0.34.0 `granite4.1:3b` control                                  |
+| 6   | Ollama silently drops a history message larger than its context window                | `article-6-context-fill-*`        | **Published** 2026-09-20, after the review against the notebook, the Ollama 0.34.0 re-runs, a flowchart and a retitle           |
+| 7   | A full context breaks three local models, each in a different way                     | `article-7-full-context-cost-*`   | Not published. Split from 6 on 2026-09-12, mermaid chart, register pass 2026-09-12; retitled and third failure added 2026-09-19 |
+| 8   | Ollama's prompt cache reused a shared system prompt on one model and not on the other | `article-8-prompt-cache-*`        | Not published. Split from 5 on 2026-09-18, no visual                                                                            |
 
-**Articles 1 to 5 are published; 6 to 8 are not.** What is published cannot
+**Articles 1 to 6 are published; 7 and 8 are not.** What is published cannot
 be silently corrected, so a finding that moves under re-measurement is tracked
 here until the live post carries it. A repo fix and a republish are two steps,
 and the table below records both.
