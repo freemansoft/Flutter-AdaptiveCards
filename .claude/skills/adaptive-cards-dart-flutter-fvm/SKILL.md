@@ -48,11 +48,12 @@ fvm use <flutter-version>
 fvm flutter --version
 ```
 
-Confirm these files agree on the version:
+Confirm these tracked pins agree on the version:
 
-- `.fvm/fvm_config.json`
-- `.fvmrc`
+- `.fvmrc` — the source of truth FVM resolves from
 - `.github/workflows/*.yml` → every `flutter-version:` and `sdk:` pin, not just one file (see **`adaptive-cards-release-flutter-upgrade-sdk`** for the full bump checklist)
+
+`.fvm/` is generated and gitignored — the symlinks plus a legacy `fvm_config.json` that FVM 4.x still writes but no longer reads. Nothing in this repo reads it either. It can disagree with `.fvmrc` indefinitely without breaking anything, so check `.fvmrc`; `fvm use` rewrites the rest.
 
 Check the pin without switching:
 
