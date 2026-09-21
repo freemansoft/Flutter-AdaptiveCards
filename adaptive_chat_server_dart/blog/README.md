@@ -25,7 +25,7 @@ When the notebook and a draft disagree, the notebook wins.
 | 4   | Ollama's tool channel beats prose for card JSON on every model that calls it          | `article-4-tool-channel-*`        | **Published** 2026-09-17, after the rewrite against the re-measurement and a review pass. Retitled and republished 2026-09-18                     |
 | 5   | Eight measurement rules from a local-model benchmark on Ollama                        | `article-5-measurement-hygiene-*` | **Published** 2026-09-18, rewritten rules first with the Ollama 0.34.0 `granite4.1:3b` control                                                    |
 | 6   | Ollama silently drops a history message larger than its context window                | `article-6-context-fill-*`        | **Published** 2026-09-20, after the review against the notebook, the Ollama 0.34.0 re-runs, a flowchart and a retitle                             |
-| 7   | A full context costs three of eight local models 5 to 7 of 25 card test cases         | `article-7-full-context-cost-*`   | Not published. Split from 6 on 2026-09-12, mermaid chart, register pass 2026-09-12; review pass, failure-defense flowchart and retitle 2026-09-20 |
+| 7   | A full context window costs three of eight local models 5 to 7 of 25 card test cases  | `article-7-full-context-cost-*`   | Not published. Split from 6 on 2026-09-12, mermaid chart, register pass 2026-09-12; review pass, failure-defense flowchart and retitle 2026-09-20 |
 | 8   | Ollama's prompt cache reused a shared system prompt on one model and not on the other | `article-8-prompt-cache-*`        | Not published. Split from 5 on 2026-09-18; review pass, restructured into four findings, two mermaid visuals 2026-09-20                           |
 
 **Articles 1 to 6 are published; 7 and 8 are not.** What is published cannot
@@ -68,7 +68,7 @@ They were drafted as one article and split the same day, on topic rather than on
 length: the draft was 1823 prose words, well inside the cap. The split separates
 a runtime finding from a model finding, which a reader may want separately.
 Article 6 was 1073 prose words at the split and is 1617 after its review pass.
-Article 7 was 1290 and is 1983 after the
+Article 7 was 1290 and is 1987 after the
 2026-09-20 review pass, which restored the `wrong-shape` verdict column, split
 the `broken` column into stalls and malformed bodies, and named the probe and
 the judge.

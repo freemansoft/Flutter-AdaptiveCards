@@ -1,4 +1,4 @@
-# A full context costs three of eight local models 5 to 7 of 25 card test cases
+# A full context window costs three of eight local models 5 to 7 of 25 card test cases
 
 In [`freemansoft/Flutter-AdaptiveCards`](https://github.com/freemansoft/Flutter-AdaptiveCards) a demonstration Dart chat server hands a question to a local Ollama
 model. It asks for the answer as Adaptive Card JSON, a strict,
@@ -28,27 +28,31 @@ the lab notebook in that repository.
 
 ## Terms used in this article
 
-| Term                    | What it means here                                                                                                                                                                                                                                                                                                                                                                                               |
-| ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Window**              | The context window: the number of tokens Ollama allocates to one request, which holds the system prompt, the history and the question.                                                                                                                                                                                                                                                                           |
-| **Shape score**, `n/25` | 25 test cases, one question each, paired with the Adaptive Card element types that would answer it. Scored on one thing: did the reply use one of them? What it measures is **shape coverage**, not accuracy, and the article reports a change in it as cases gained or lost out of 25. A model can be entirely correct in prose and score low. One of the 25 is a negative control where a card is the failure. |
-| **The judge**           | `judgeShape`, the function that assigns each reply one verdict. It is the same judge the repository's other shape probes use, so the verdicts below are comparable with theirs.                                                                                                                                                                                                                                  |
-| **`--samples 1`**       | Each case runs once and is scored on that one reply. Most figures in the notebook are `--samples 2`, where a case passes only if both runs pass, so the noise floor here is looser than the series' usual ±1.                                                                                                                                                                                                    |
-| **Filler**              | A block of deterministic nonsense the probe prepends as conversation history, sized to a token target, so a run can ask what a model does with a window that is mostly used.                                                                                                                                                                                                                                     |
-| **`prompt_eval_count`** | The token count Ollama reports for the prompt it actually evaluated. It is how each run below proves it delivered the history it meant to.                                                                                                                                                                                                                                                                       |
-| **Empty window**        | The same 25 cases with no history: the card system prompt and the question, about 4,000 tokens depending on the tokenizer. It is the comparison column throughout, and it is the condition nearly every local-model score published elsewhere appears to be measured under.                                                                                                                                      |
-| **Full window**         | The same 25 cases with a filler history sized so the prompt fills about three quarters of the window Ollama allocates: roughly 48,500 of 65,536 tokens, or 24,721 of 32,768 for `qwen2.5-coder:7b`.                                                                                                                                                                                                              |
+| Term                    | What it means here                                                                                                                                                                                                                                                                                                                                                                                      |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Window**              | The context window: the number of tokens Ollama allocates to one request, which holds the system prompt, the history and the question.                                                                                                                                                                                                                                                                  |
+| **Trained window**      | The largest context window a model was built for. Ollama allocates `min(requested, trained window)`, so a request cannot exceed it.                                                                                                                                                                                                                                                                     |
+| **Arm**                 | One of the two conditions a model is measured under, empty window or full window.                                                                                                                                                                                                                                                                                                                       |
+| **Shape score**, `n/25` | 25 test cases, one question each, paired with the Adaptive Card element types that would answer it. Scored on one thing: did the reply use one of them? What it measures is **shape coverage**, not accuracy, and the article reports a change in it as cases gained or lost out of 25. A model can be correct in prose and score low. One of the 25 is a negative control where a card is the failure. |
+| **The judge**           | `judgeShape`, the function that assigns each reply one verdict. It is the same judge the repository's other shape probes use, so the verdicts below are comparable with theirs.                                                                                                                                                                                                                         |
+| **`--samples 1`**       | Each case runs once and is scored on that one reply. Most figures in the notebook are `--samples 2`, where a case passes only if both runs pass, so the noise floor here is looser than the series' usual ±1.                                                                                                                                                                                           |
+| **Filler**              | A block of deterministic nonsense the probe prepends as conversation history, sized to a token target, so a run can ask what a model does with a window that is mostly used.                                                                                                                                                                                                                            |
+| **`prompt_eval_count`** | The token count Ollama reports for the prompt it evaluated. The **Prompt tokens, full** column holds it, and it is how each run proves it delivered the history it meant to.                                                                                                                                                                                                                            |
+| **Empty window**        | The same 25 cases with no history: the card system prompt and the question, about 4,000 tokens depending on the tokenizer. It is the comparison column throughout.                                                                                                                                                                                                                                      |
+| **Full window**         | The same 25 cases with a filler history sized so the prompt fills about three quarters of the window Ollama allocates: roughly 48,500 of 65,536 tokens, or 24,721 of 32,768 for `qwen2.5-coder:7b`. A **near-empty** window, used once in the caveats, is a third condition at about an eighth.                                                                                                         |
 
 **Every run below verified its fill size**, and reports the token count it
-actually delivered in the **Prompt tokens, full** column. Tokenizers differ
-enough that a filler sized in characters can overflow a window and be discarded
-whole, with no error. The companion article "Ollama silently drops a history
-message larger than its context window" covers that defect and its fix.
+delivered in the **Prompt tokens, full** column. Tokenizers differ enough that
+a filler sized in characters can overflow a window and be discarded whole, with
+no error. The companion article [Ollama silently drops a history message larger
+than its context
+window](https://joe.blog.freemansoft.com/2026/09/ollama-silently-drops-history-message.html)
+covers that defect and its fix.
 
 ## Three of eight models lose 5 to 7 of 25 cases on a full context window
 
 The probe gave each model a filler calibrated to its own tokenizer, sized to
-fit the window Ollama actually allocates it. **Empty window** and **Full
+fit the window Ollama allocates it. **Empty window** and **Full
 window** hold the shape score under each condition. Compare them row by row.
 
 | Model                        | Empty window | Full window | Prompt tokens, full | Window, full |
@@ -62,21 +66,21 @@ window** hold the shape score under each condition. Compare them row by row.
 | `nemotron-3-nano:30b`        | 17/25        | **12/25**   | 48611               | 65536        |
 | `nemotron-3-nano:4b`         | 8/25         | 6/25        | 48559               | 65536        |
 
-\* These two builds were measured on an empty window for the first time on a
-later run, under Ollama 0.34.0. Their filled and empty figures therefore come
+\* The probe measured these two builds on an empty window for the first time on
+a later run, under Ollama 0.34.0. Their filled and empty figures therefore come
 from different runtimes. The pairing holds because the filled run itself
 repeats on 0.34.0. It returns 16/25 for `qwen3.8:27b-nvfp4` and 20/25 for
 `qwen3.6:27b-coding-nvfp4`, matching all 25 verdicts case for case. Until that
-run this column held a reading for both builds taken under an already-full
-window, and both were read as unaffected.
+run this column held a reading for both builds taken under a window that was
+already full, and both were read as unaffected.
 
 The other six rows read the empty-window figure from the pre-calibration sweep,
-under Ollama 0.33.3. A filler was sent there, overflowed the allocation, and
-Ollama discarded it whole, so those runs still reached the model with no
-history. Every empty-window run asked for a 35,851-token window, against 65,536
-for the filled runs, so the two arms differ in window size as well as in
-history. The exception is `qwen2.5-coder:7b`, whose trained window caps both
-arms at 32,768.
+under Ollama 0.33.3. The probe sent a filler in that sweep, it overflowed the
+allocation, and Ollama discarded it whole, so those calls still reached the
+model with no history. Every empty-window run asked for a 35,851-token window,
+against 65,536 for the filled runs, so the two arms differ in window size as
+well as in history. The exception is `qwen2.5-coder:7b`, whose trained window
+caps both arms at 32,768.
 
 ```mermaid
 xychart-beta horizontal
@@ -103,9 +107,9 @@ full like every other model, but on 24,721 tokens rather than about 48,500. Its
 bar comes from half the token load.
 
 Both Nemotron losses reproduced at a second prompt size. An earlier run of the
-same control, before the filler was calibrated per tokenizer, carried about
-42,600 tokens for the two of them and returned 13/25 and 12/25. The run above
-carries 48,500 and returns 13/25 and 12/25 again. `qwen3.8:27b-nvfp4`
+same control, before the probe calibrated the filler per tokenizer, carried
+about 42,600 tokens for the two of them and returned 13/25 and 12/25. The run
+above carries 48,500 and returns 13/25 and 12/25 again. `qwen3.8:27b-nvfp4`
 reproduces the same way from a different archive, the fixed-filler sweep: 17/25
 at 42,542 tokens and 16/25 at 48,539, against 21/25 empty. Two prompt sizes
 landing on the same counts is a stronger reading than either alone. None of the
@@ -181,13 +185,12 @@ empty, and every one is valid card JSON. Seven of the eight put a static
 
 Each case asks the model to collect something, and it displays something
 instead. Its other verdicts do not all parse. Two replies in each arm are
-`broken`, so the substitution is what changed rather than the only thing
-failing.
+`broken`, so the substitution is what the full window changed.
 
 `qwen3.8:27b-nvfp4` picks the right elements and **stops finishing its
 replies**. Its `broken` count goes 0 on an empty window to 7 on a full one, and
 those seven are not one failure. Four ran past the probe's 180-second ceiling
-and were scored as stalls; three returned a body that does not parse as JSON.
+and the judge scored them as stalls; three returned a body that does not parse.
 `qwen3.6:27b-coding-nvfp4` goes 2 to 5 on the same verdict. It gains stalls and
 no malformed bodies, on three of the four cases that stalled on
 `qwen3.8:27b-nvfp4`.
@@ -222,8 +225,8 @@ Catching that one means validating the reply against what was asked for, not
 just against the schema.
 
 The `nemotron-3.5-lightning:30b` and `nemotron-3-nano:30b` patterns look like
-weakening instruction adherence over a long context. Each is specifically a
-failure to follow the system prompt. One ignored the instruction to answer as a
+weakening instruction adherence over a long context. Each is a failure to
+follow the system prompt. One ignored the instruction to answer as a
 card, the other the list of element types the prompt allows. Ordinary question
 answering is intact in both, since a prose reply and a `TextBlock` card both
 answer what was asked. `qwen3.8:27b-nvfp4` does not fit that account. A reply
