@@ -1368,6 +1368,16 @@ Four readings:
 - **The cache survives interleaving.** An unrelated request between two identical ones did not evict the first sequence (2136 of 2143 still cached, 55 ms), and the unrelated request itself reused the 28-token instruction prefix the two prompts shared. How many sequences the runner retains, and its eviction policy under memory pressure, were not probed.
 - **A retry after an aborted call costs a warm repeat, not a cold prefill** — 29 ms against the ~2,000 ms a cold prefill of the same prompt costs. Whether that is 0.33.0's prefill restore points retaining partial work or the abandoned request completing server-side during the 5 s wait is not established; the two are indistinguishable here and the retry price is the same either way. This bounds the cost of the timeout-and-retry pattern the probes use.
 
+**What the growing-conversation phase sends**, since `turns 2–3` above and in the table below is a row label rather than a description. The phase issues **three** calls, each replaying the whole accumulated history rather than a delta, which is the chat server's own pattern. `turn-1` carries no history, so it is a fresh question against the same system prompt and is not comparable to the two that follow; both tables report `turn-2` and `turn-3` only.
+
+| Call     | Messages sent                                                                                      |
+| -------- | -------------------------------------------------------------------------------------------------- |
+| `turn-1` | system + `Define alpha-term12.`                                                                    |
+| `turn-2` | system + `Define alpha-term12.` + reply + `Now define alpha-term15.`                               |
+| `turn-3` | system + `Define alpha-term12.` + reply + `Now define alpha-term15.` + reply + `And alpha-term18?` |
+
+Read from the `history` list in [`prefill_cache_probe.dart`](tool/model_probes/prefill_cache_probe.dart); `system` is `_systemPrompt('alpha')`, the same 300-entry synthetic glossary phases 1 and 2 send.
+
 ### Three readings hold on both models; one is a confirmed miss on the large model; retry-after-abort is unstable on it
 
 The same probe, run on an Apple M1 Max / 64 GB under the same Ollama 0.33.3, `t=0`, `num_ctx` 8192, against `llama3.2:latest` first — holding the model fixed against the M5 run — then against `qwen3.8:27b-nvfp4` (16.9 GB, too large for the M5's 16 GB), measured 2026-09-04, one model resident at a time. The `qwen3.8:27b-nvfp4` run was repeated in full on an idle machine after its "same system prompt, different question" and "interleaved unrelated request" rows came back as apparent full cold prefills, to rule out a one-off scheduling or GPU-contention artifact before recording them. These 2026-09-04 readings predate the probe's `--json` flag; the stdout captures they were read from are preserved under [`tool/model_probes/raw-captures/`](tool/model_probes/raw-captures/README.md).
