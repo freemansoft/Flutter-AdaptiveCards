@@ -41,6 +41,21 @@ than as a wrong choice of element" does not hold against the archive it quotes,
 which gives 101 against 104. That fix is in the repo and needs a second
 republish.
 
+Article 7 gained a prior-art sentence on 2026-09-21, after it was published.
+The draft opened as though a full context costing a model coverage were an open
+question, when long-context degradation is well documented; what the article
+adds is which failure mode the degradation takes and which of the three a schema
+check misses. Two sentences in the second paragraph now say so.
+
+The same day the failure table regained its `wrong-shape` column. The published
+version carried four of the judge's five categories and labeled `no-input` as
+"Card, wrong element", which is the plain description of the `wrong-shape`
+category it had dropped, so the one column that read like the missing one held
+different figures. Rows fell short of 25 by the dropped column's value, which
+the text explained away rather than fixed. Each column is now named for what it
+holds, and every row sums to 25 except `qwen3.8:27b-nvfp4`'s empty column, which
+also holds one `unwanted-card`. Both fixes are in the repo and need a republish.
+
 Article 4 was retitled and republished on 2026-09-18. The earlier title,
 "Ollama's tool channel produces better cards, when the model remembers to use
 it", read as though some models forget the tool entirely; the notebook records

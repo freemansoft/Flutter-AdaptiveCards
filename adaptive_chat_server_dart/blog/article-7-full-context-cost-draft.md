@@ -10,11 +10,14 @@ into a nearly empty window: a system prompt, one question, and at most a short
 seed exchange.
 
 What does a model do when its context is genuinely full? An ongoing
-conversation fills it, so that is the condition a chat user is in. The probe measured eight models twice, once with an empty window and once
-carrying roughly 48,500 tokens of history. The host was an Apple M1 Max with
-64 GB, running Ollama 0.33.3 and 0.34.0. Five models move by three cases or
-fewer. Three lose a quarter to a third of their shape coverage. Each of those three
-fails a different way, so no single check catches them.
+conversation fills it. The literature documents that a long context degrades
+model behavior. What it does to a model's adherence to an output format is
+measured less often. The probe measured eight models twice, once with an
+empty window and once carrying roughly 48,500 tokens of history. The host was
+an Apple M1 Max with 64 GB, running Ollama 0.33.3 and 0.34.0. Five models move
+by three cases or fewer. Three lose a quarter to a third of their shape
+coverage. Each of those three fails differently, so no single check catches
+them.
 
 Every figure is transcribed from
 [`ModelBehavior.md`](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md),
@@ -93,24 +96,26 @@ of the smaller movements reproduce that way.
 
 ## The three big losers fail in three different ways
 
-A lost case is not one thing. Sorting each run's 25 verdicts by what the judge
-said turns the three largest losses into three different problems. The columns
-carry the three failure kinds this section is about, so a row does not sum to 25.
+A lost case is not one thing. Sorting each run's 25 verdicts by the judge's
+label turns the three largest losses into three different problems. Every row
+sums to 25 except `qwen3.8:27b-nvfp4`'s empty column, which also holds one card
+the case did not ask for.
 
-| Model                        | Pass     | No card at all | Card, wrong element | Card, does not parse |
-| ---------------------------- | -------- | -------------- | ------------------- | -------------------- |
-| `nemotron-3.5-lightning:30b` | 20 to 13 | **1 to 10**    | 1 to 0              | 3 to 2               |
-| `nemotron-3-nano:30b`        | 17 to 12 | 0 to 0         | **4 to 8**          | 2 to 2               |
-| `qwen3.8:27b-nvfp4`          | 21 to 16 | 2 to 2         | 0 to 0              | **0 to 7**           |
-| `qwen2.5-coder:7b`           | 22 to 19 | 0 to 3         | 2 to 1              | 0 to 0               |
-| `nemotron-3-nano:4b`         | 8 to 6   | 14 to 14       | 0 to 0              | 1 to 2               |
+| Model                        | Pass     | No card at all | Card, displays instead of collects | Card, wrong element | Card, does not parse |
+| ---------------------------- | -------- | -------------- | ---------------------------------- | ------------------- | -------------------- |
+| `nemotron-3.5-lightning:30b` | 20 to 13 | **1 to 10**    | 1 to 0                             | 0 to 0              | 3 to 2               |
+| `nemotron-3-nano:30b`        | 17 to 12 | 0 to 0         | **4 to 8**                         | 2 to 3              | 2 to 2               |
+| `qwen3.8:27b-nvfp4`          | 21 to 16 | 2 to 2         | 0 to 0                             | 1 to 0              | **0 to 7**           |
+| `qwen2.5-coder:7b`           | 22 to 19 | 0 to 3         | 2 to 1                             | 1 to 2              | 0 to 0               |
+| `nemotron-3-nano:4b`         | 8 to 6   | 14 to 14       | 0 to 0                             | 2 to 3              | 1 to 2               |
 
 `nemotron-3.5-lightning:30b` **stops producing cards**. All eight cases it loses
 come back as prose. It answers the question in plain text instead of emitting
 card JSON at all. On an empty window it did that once in twenty-five.
 
-`nemotron-3-nano:30b` keeps producing cards and **picks worse elements**. Its replies are valid card JSON every time, with a static `TextBlock` put
-where the question asked for an interactive input:
+`nemotron-3-nano:30b` keeps producing cards and **displays where it should
+collect**. Its replies are valid card JSON every time, with a static
+`TextBlock` put where the question asked for an interactive input:
 
 - `got {TextBlock} want {Input.Time}`, where the question asked for a time.
 - `want {Input.ChoiceSet}`, where it asked the reader to pick from a set.
@@ -124,8 +129,11 @@ JSON**. Every case it loses is a body the parser rejects, 0 on an empty window
 and 7 on a full one. `qwen3.6:27b-coding-nvfp4` fails the same way at a third
 the size, 2 to 5, which a single sample does not separate from noise.
 
-The differences decide which defense works. Any check that asks whether the reply parsed as a card catches two of the
-three. It sees the model that reverts to prose and the one that emits broken
+The wrong-element column carries none of this. For every model in the table, it
+moves by at most one case, in either direction.
+
+The differences decide which defense works. Any check that asks whether the
+reply parsed as a card catches two of the three. It sees the model that reverts to prose and the one that emits broken
 JSON, and most applications already have that check. Broken
 JSON is also the one failure a retry helps, since the next attempt is a fresh
 sample of the same request. A model that returns a well-formed card with the
