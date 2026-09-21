@@ -2,6 +2,23 @@
 
 ## [0.18.0]
 
+- Notebook: **`qwen3.8:27b-nvfp4`'s full-window `broken` count is four
+  stalls and three malformed bodies, not seven parse failures.** The archived
+  labels in `m1max-64gb-ollama0333-fitcontrol-calibrated/` record four
+  `broken: timeout (180s)` and three `invalid JSON`; `qwen3.6:27b-coding-nvfp4`'s
+  2 to 5 adds three stalls on the same cases. The `broken` definition now
+  covers timeouts, the retry claim is scoped to malformed bodies, and the key
+  finding no longer says a parse check catches only the prose failure. Also
+  corrected: the `nvfp4` empty-window run is dated 2026-09-18, as its archive
+  records, not 2026-09-19; `qwen3.8:27b-nvfp4` is 16.9 GB in the prompt-cache
+  section, not ~18 GB; the toggle label is quoted in full as
+  `want {Input.ChoiceSet, Input.Toggle}`; and seven of the eight fit-control
+  models carried roughly 48,500 tokens, not six. The `qwen3.8:27b-nvfp4`
+  full-window cost is no longer hedged as "possible and not established": a
+  same-runtime comparison now exists (21/25 empty against 16/25 filled, both
+  0.34.0), the filled figures reproduce at two prompt sizes under both
+  runtimes, and `qwen3.6:27b-coding-nvfp4` adds stalls on three of the same
+  four cases. Blog articles 7 and 8 were revised to match.
 - Notebook: **the context-fill findings reproduce under Ollama 0.34.0.** The
   fixed 28000-token filler sweep was repeated on the M1 Max for all fourteen
   models (`context_fill_results/m1max-64gb-ollama0340-fill28000/`) and every
@@ -12,11 +29,8 @@
   (`m1max-64gb-ollama0340-fitcontrol-calibrated/`) scores them 16/25 and 20/25
   with a full window inside a 65536 allocation, within one case of the overrun,
   and shows the two 8192-window models keep a 2500-token filler that fits.
-  `context_fill_fit_control.sh` gains entries for those two models. The
-  full-window table and its verdict decomposition now pair the `nvfp4` builds
-  against a real empty window: `qwen3.8:27b-nvfp4` goes 21/25 to 16/25 with
-  `broken` 0 to 7, a third failure mode beside the two Nemotron ones, and blog
-  article 7 was retitled and updated to carry it. The filler is
+  `context_fill_fit_control.sh` gains entries for those two models. The full-window table and its verdict decomposition now pair the `nvfp4`
+  builds against a real empty window. The filler is
   112,005 characters and the prompt 127,024, not a 127,020-character filler;
   `qwen3.5:9b` (42540 tokens, 2.99) joins the tokenizer table; three more M1
   Max droppers are recorded; the drop is scoped to history, since an
@@ -158,23 +172,12 @@ stop` did run, the runner never finished evicting, and the "7 minutes
   headings that state one concrete finding, claims checked against source, and
   the word-count and figure-diff commands. The README keeps the series plan,
   Figures, and Terms and units; CLAUDE.md points blog work at the skill.
-- Docs: **corrected four claims that the skill's first test runs surfaced.** The
+- Docs: **corrected three claims that the skill's first test runs surfaced.** The
   filler sample quoted in `ModelBehavior.md` and article 6 read
   `filler-term123 means concept456.`, which `buildFillerText` cannot produce,
   since term 123 pairs with concept 861. Article 5 called the two 52-stall
-  sweeps eleven days apart, where 2026-08-20 to 2026-09-01 is twelve. The blog
-  README's prose word counts for articles 6 and 7 were stale, at 1137 and 1106
-  against 1073 and 1290. Article 4 announced its question with "This article
+  sweeps eleven days apart, where 2026-08-20 to 2026-09-01 is twelve. Article 4 announced its question with "This article
   asks", which the register rules replace with the question itself.
-- Docs: **recorded that the tool channel and the prose channel do not share a
-  system prompt.** `shape_ab.dart` sends `card_tool_prompt.txt` (70 lines) on
-  the tool channel and `card_system_prompt.txt` (223 lines) on prose, because
-  the prose prompt's instruction that the whole reply be a raw card fragment is
-  false when a tool is offered. The tool-channel section now states it, names
-  the code that selects it, and reads it as an unmeasured confound in the
-  per-model deltas. Found by a review of article 4, which quotes those deltas
-  and describes the two channels as differing only in the field the reply
-  lands in.
 
 ## [0.17.0]
 
