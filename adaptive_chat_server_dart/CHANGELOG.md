@@ -2,6 +2,19 @@
 
 ## [0.18.0]
 
+- Notebook: **`qwen3.8:27b-nvfp4`'s full-window `broken` count is four
+  stalls and three malformed bodies, not seven parse failures.** The archived
+  labels in `m1max-64gb-ollama0333-fitcontrol-calibrated/` record four
+  `broken: timeout (180s)` and three `invalid JSON`; `qwen3.6:27b-coding-nvfp4`'s
+  2 to 5 adds three stalls on the same cases. The `broken` definition now
+  covers timeouts, the retry claim is scoped to malformed bodies, and the key
+  finding no longer says a parse check catches only the prose failure. Also
+  corrected: the `nvfp4` empty-window run is dated 2026-09-18, as its archive
+  records, not 2026-09-19; `qwen3.8:27b-nvfp4` is 16.9 GB in the prompt-cache
+  section, not ~18 GB; the toggle label is quoted in full as
+  `want {Input.ChoiceSet, Input.Toggle}`; and seven of the eight fit-control
+  models carried roughly 48,500 tokens, not six. Blog articles 7 and 8 were
+  revised to match.
 - Notebook: **the context-fill findings reproduce under Ollama 0.34.0.** The
   fixed 28000-token filler sweep was repeated on the M1 Max for all fourteen
   models (`context_fill_results/m1max-64gb-ollama0340-fill28000/`) and every
