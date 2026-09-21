@@ -13,7 +13,9 @@ that would answer the question. Every other probe in that set had been asking
 into a nearly empty window. That window holds a system prompt, one question,
 and at most a short canned exchange showing the model the shape of a card.
 
-The probe simulates a long conversation by filling three quarters of the window
+The literature documents that a long context degrades model behavior. What it
+does to a model's adherence to an output format is measured less often. The
+probe simulates a long conversation by filling three quarters of the window
 with generated text. It measured eight models twice, once with no history at
 all and once carrying roughly 48,500 tokens of prompt for seven of the eight.
 The host was an Apple M1 Max with 64 GB, under Ollama 0.33.3, with two
@@ -118,27 +120,13 @@ so its filler is smaller too. It runs three quarters full like every other
 model, but on 24,721 tokens rather than about 48,500. Its bar comes from half
 the token load.
 
-## Both Nemotron losses repeat at a second prompt size and on a second host
+## Both Nemotron losses repeat at a second prompt size
 
 The uncalibrated fit control carried about 42,600 tokens for the two Nemotron
 builds and returned 13/25 and 12/25. The run above carries 48,500 and returns
 13/25 and 12/25 again. `qwen3.8:27b-nvfp4` reproduces the same way from the
 pre-calibration sweep: 17/25 at 42,542 tokens and 16/25 at 48,539, against
 21/25 empty. None of the Qwen movements reproduce that way.
-
-The M5 fit control repeated three of these rows under the same Ollama 0.33.3.
-Those three are every model in the table above that a 16 GB Apple M5 can hold.
-
-| Model                | Prompt tokens, full | M1 Max, full window | M5, full window |
-| -------------------- | ------------------- | ------------------- | --------------- |
-| `nemotron-3-nano:4b` | 48559               | 6/25                | 6/25            |
-| `qwen3.5:9b`         | 48537               | 16/25               | 16/25           |
-| `qwen2.5-coder:7b`   | 24721               | 19/25               | 20/25           |
-
-A tokenizer belongs to the model, not the machine, so each model evaluated the
-same prompt on both hosts, token for token. **Prompt tokens, full** therefore
-appears once. Two of the three scores match exactly, and the third differs by
-one case, which is the noise floor.
 
 ## The three models lose cases in three different ways
 
@@ -247,11 +235,10 @@ that account. A reply that stalls or stops parsing is a generation failure, and
 both builds of that quantization show it. Nothing here tests either mechanism,
 and the notebook lists what would.
 
-## Two models swap places between an empty window and a full one
+## A model that leads on an empty window can trail on a full one
 
-Score on an empty window does not predict the score on a full one. On an empty
-window `nemotron-3.5-lightning:30b` scores 20/25 and `qwen3.5:9b` scores 18/25.
-On a full one the order reverses, 13/25 against 16/25.
+On an empty window `nemotron-3.5-lightning:30b` scores 20/25 and `qwen3.5:9b`
+scores 18/25. On a full one the order reverses, 13/25 against 16/25.
 
 For a chat application, the empty-window column is the wrong one to choose on.
 It does not say which way a model moves when the window fills.
@@ -262,17 +249,17 @@ Every figure above is a single-sample run. A movement of two or three cases is
 noise, and only the two five-case losses and the seven-case one are large
 enough to read.
 
-The M5 fit control also took those same three models to a third fill level,
-holding the window constant across the two filled levels. Their shape scores,
-added together, run 47/75 near-empty, 42/75 at half fill and 42/75 full. Half a
-window costs the same as a full one, so the cost neither grows with occupancy
-nor switches on at one depth. The first step carries a qualifier. The
-near-empty reading does not match the other two. It comes from the M5's own
-pre-calibration sweep, at a smaller allocated window for two of the three. The
-five-case fall between it and half fill is therefore not established, and
-settling it needs `--samples 2` and more models. No 30-billion-parameter
-Nemotron build fits a 16 GB host. How the loss scales with fill is therefore
-untested on the two models that lose the most.
+The M5 fit control took the three models a 16 GB Apple M5 can hold to a third
+fill level, holding the window constant across the two filled levels. Their
+shape scores, added together, run 47/75 near-empty, 42/75 at half fill and
+42/75 full. Half a window costs the same as a full one, so the cost neither
+grows with occupancy nor switches on at one depth. The first step carries a
+qualifier. The near-empty reading does not match the other two. It comes from
+the M5's own pre-calibration sweep, at a smaller allocated window for two of
+the three. The five-case fall between it and half fill is therefore not
+established, and settling it needs `--samples 2` and more models. No
+30-billion-parameter Nemotron build fits a 16 GB host. How the loss scales with
+fill is therefore untested on the two models that lose the most.
 
 ## Four checks for a chat application that fills its window
 

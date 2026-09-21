@@ -17,24 +17,35 @@ When the notebook and a draft disagree, the notebook wins.
 
 ## The articles
 
-| #   | Article                                                                                   | File                              | Post                                                                                          | Status                                                                                                                                            |
-| --- | ----------------------------------------------------------------------------------------- | --------------------------------- | --------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1   | An SDUI demo that turned into a local-model benchmark                                     | `article-1-origin-story-*`        | [post](https://joe.blog.freemansoft.com/2026/09/an-sdui-demo-that-turned-into-local.html)     | **Published**, republished 2026-09-16 with the corrected four-way split                                                                           |
-| 2   | We tried 14 levers to get reliable card JSON from a local model                           | `article-2-tuning-process-*`      | [post](https://joe.blog.freemansoft.com/2026/09/we-tried-14-levers-to-get-reliable-card.html) | **Published**, republished 2026-09-16. One further fix in the repo awaits a republish, see below                                                  |
-| 3   | Running local models for Adaptive Card JSON on a 64 GB M1 Max and a 16 GB M5              | `article-3-m1max-vs-m5-*`         | [post](https://joe.blog.freemansoft.com/2026/09/benchmarking-local-model-llm-generated.html)  | **Published.** Revised 2026-09-08, mermaid chart, register pass 2026-09-12, cut pass 2026-09-14                                                   |
-| 4   | Ollama's tool channel beats prose for card JSON on every model that calls it              | `article-4-tool-channel-*`        | [post](https://joe.blog.freemansoft.com/2026/09/ollamas-tool-channel-produces-better.html)    | **Published** 2026-09-17, after the rewrite against the re-measurement and a review pass. Retitled and republished 2026-09-18                     |
-| 5   | Eight measurement rules from a local-model benchmark on Ollama                            | `article-5-measurement-hygiene-*` | [post](https://joe.blog.freemansoft.com/2026/09/eight-measurement-rules-from-local.html)      | **Published** 2026-09-18, rewritten rules first with the Ollama 0.34.0 `granite4.1:3b` control                                                    |
-| 6   | Ollama silently drops a history message larger than its context window                    | `article-6-context-fill-*`        | [post](https://joe.blog.freemansoft.com/2026/09/ollama-silently-drops-history-message.html)   | **Published** 2026-09-20, after the review against the notebook, the Ollama 0.34.0 re-runs, a flowchart and a retitle                             |
-| 7   | Three of eight local models degrade on a mostly full context window, each a different way | `article-7-full-context-cost-*`   | n/a                                                                                           | Not published. Split from 6 on 2026-09-12, mermaid chart, register pass 2026-09-12; review pass, failure-defense flowchart and retitle 2026-09-20 |
-| 8   | Ollama's prompt cache reused a shared system prompt on one model and not on the other     | `article-8-prompt-cache-*`        | n/a                                                                                           | Not published. Split from 5 on 2026-09-18; review pass, restructured into four findings, two mermaid visuals 2026-09-20                           |
+| #   | Article                                                                                   | File                              | Post                                                                                          | Status                                                                                                                                                                                  |
+| --- | ----------------------------------------------------------------------------------------- | --------------------------------- | --------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | An SDUI demo that turned into a local-model benchmark                                     | `article-1-origin-story-*`        | [post](https://joe.blog.freemansoft.com/2026/09/an-sdui-demo-that-turned-into-local.html)     | **Published**, republished 2026-09-16 with the corrected four-way split                                                                                                                 |
+| 2   | We tried 14 levers to get reliable card JSON from a local model                           | `article-2-tuning-process-*`      | [post](https://joe.blog.freemansoft.com/2026/09/we-tried-14-levers-to-get-reliable-card.html) | **Published**, republished 2026-09-16. One further fix in the repo awaits a republish, see below                                                                                        |
+| 3   | Running local models for Adaptive Card JSON on a 64 GB M1 Max and a 16 GB M5              | `article-3-m1max-vs-m5-*`         | [post](https://joe.blog.freemansoft.com/2026/09/benchmarking-local-model-llm-generated.html)  | **Published.** Revised 2026-09-08, mermaid chart, register pass 2026-09-12, cut pass 2026-09-14                                                                                         |
+| 4   | Ollama's tool channel beats prose for card JSON on every model that calls it              | `article-4-tool-channel-*`        | [post](https://joe.blog.freemansoft.com/2026/09/ollamas-tool-channel-produces-better.html)    | **Published** 2026-09-17, after the rewrite against the re-measurement and a review pass. Retitled and republished 2026-09-18                                                           |
+| 5   | Eight measurement rules from a local-model benchmark on Ollama                            | `article-5-measurement-hygiene-*` | [post](https://joe.blog.freemansoft.com/2026/09/eight-measurement-rules-from-local.html)      | **Published** 2026-09-18, rewritten rules first with the Ollama 0.34.0 `granite4.1:3b` control                                                                                          |
+| 6   | Ollama silently drops a history message larger than its context window                    | `article-6-context-fill-*`        | [post](https://joe.blog.freemansoft.com/2026/09/ollama-silently-drops-history-message.html)   | **Published** 2026-09-20, after the review against the notebook, the Ollama 0.34.0 re-runs, a flowchart and a retitle                                                                   |
+| 7   | Three of eight local models degrade on a mostly full context window, each a different way | `article-7-full-context-cost-*`   | [post](https://joe.blog.freemansoft.com/2026/09/a-full-context-breaks-three-local.html)       | **Published** 2026-09-21 under the title "A full context breaks three local models, each in a different way". Retitled and corrected in the repo after publication; a republish is owed |
+| 8   | Ollama's prompt cache reused a shared system prompt on one model and not on the other     | `article-8-prompt-cache-*`        | n/a                                                                                           | Not published. Split from 5 on 2026-09-18; review pass, restructured into four findings, two mermaid visuals 2026-09-20                                                                 |
 
 **Post** links the live article, so a draft that needs to cite a sibling does
 not have to go looking. Record the URL here when an article is published.
 
-**Articles 1 to 6 are published; 7 and 8 are not.** What is published cannot
+**Articles 1 to 7 are published; 8 is not.** What is published cannot
 be silently corrected, so a finding that moves under re-measurement is tracked
-here until the live post carries it. A repo fix and a republish are two steps,
-and the table below records both.
+here until the live post carries it. A repo fix and a republish are two steps, and the table below records both.
+
+Article 7 owes a republish. The version published on 2026-09-21 says
+`qwen3.8:27b-nvfp4` "stops emitting parseable JSON" and that "every case it
+loses is a body the parser rejects". The archived labels record four of those
+seven as `broken: timeout (180s)` stalls and three as malformed bodies, so the
+live post also tells a reader a retry addresses a failure that a retry cannot
+address. It says "none of the smaller movements reproduce", where
+`nemotron-3-nano:4b` reproduces at 6/25 across two prompt sizes. It states
+"nothing changed between the two runs but the history", where the two arms also
+differ in requested window size. The failure table carries four of the judge's
+five verdicts. All of that is fixed in the repo, along with a retitle, a
+restructure, the prior-art sentences and the M5 cut.
 
 Articles 1 and 2 were corrected and republished on 2026-09-16, after the
 tool-channel re-measurement moved the capability probe's four-way split and
@@ -71,7 +82,7 @@ They were drafted as one article and split the same day, on topic rather than on
 length: the draft was 1823 prose words, well inside the cap. The split separates
 a runtime finding from a model finding, which a reader may want separately.
 Article 6 was 1073 prose words at the split and is 1617 after its review pass.
-Article 7 was 1290 and is 1903 after the
+Article 7 was 1290 and is 1838 after the
 2026-09-20 review pass, which restored the `wrong-shape` verdict column, split
 the `broken` column into stalls and malformed bodies, and named the probe and
 the judge.
@@ -263,12 +274,17 @@ history to article 6.
 ### Resolved: the M5 calibrated run
 
 Landed 2026-09-12. The three models a 16 GB host can hold were re-run under the
-M1 Max's calibrated parameters, and article 7 now carries the comparison: prompt
-counts identical to the digit, two of three scores unchanged, one case apart on
-the third. Article 7 keeps its M1 Max attribution for the eight-row table, since
-five of those rows are still single-host, and states the three-row cross-host
-confirmation beside the reproduction paragraph rather than adding a column that
-would be empty for five models.
+M1 Max's calibrated parameters: prompt counts identical to the digit, two of
+three scores unchanged, one case apart on the third. One case across three
+models is the noise floor, so the check found no host effect to report.
+Identical prompt counts are expected, since a tokenizer is a property of the
+model and not of the host.
+
+Article 7 carried that comparison as a three-row table until 2026-09-21, when
+it was cut as a null result: the article is about what a full window costs, and
+the table reported that a smaller host changes nothing. The figures stay
+recorded here. Article 7 keeps its M1 Max attribution for the eight-row table,
+since five of those rows are single-host either way.
 
 The same run added a second fill level with the window held constant, which
 answered a caveat article 7 had left open. Pooled coverage runs 47/75 near-empty,

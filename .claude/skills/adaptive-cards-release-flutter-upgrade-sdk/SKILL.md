@@ -16,12 +16,12 @@ FVM is the source of truth for the local development environment. `fvm flutter -
 
 You can manually update flutter versions by running:
 
-- Run `fvm install <new-flutter-version>` (e.g., `fvm install 3.41.2`) in the root of the repository if the new target version of flutter is not already installed.
-- Run `fvm use <new-flutter-version>` (e.g., `fvm use 3.41.2`) in the root of the repository.
-- Verify that `.fvm/fvm_config.json` has been updated with the new version.
+- Run `fvm install <new-flutter-version>` (e.g., `fvm install 3.47.4`) in the root of the repository if the new target version of flutter is not already installed.
+- Run `fvm use <new-flutter-version>` (e.g., `fvm use 3.47.4`) in the root of the repository.
+- Verify that `.fvmrc` has been updated with the new version. That is the tracked pin and the only one a reviewer sees. Everything under `.fvm/` — the `flutter_sdk` and `versions/<version>` symlinks, and the legacy `fvm_config.json` FVM 4.x still writes for backward compatibility — is generated and gitignored, so it is local state rather than something to verify into a commit. Resolution comes from `.fvmrc`: a stale `.fvm/fvm_config.json` will sit at an old version while `fvm flutter --version` correctly reports the new one, which is why drift there goes unnoticed. `fvm use` regenerates all of it.
 - `fvm use` (FVM 4.x) rewrites `.vscode/settings.json` (`dart.flutterSdkPath`); keep that. Separately, Flutter's own project migration (`flutter_tools/lib/src/migrations/analysis_options_migration.dart`, run by `flutter pub get` and other commands from 3.47 on) adds `analyzer: exclude:` entries for `build/**` and each platform directory that exists to every `analysis_options.yaml` it finds. Those are part of the upgrade: run `fvm flutter pub get` once, keep what it writes, and commit it with the SDK bump so later commands stop dirtying the tree.
 - If the new `very_good_analysis` release enables lints that ship with quick-fixes, run `fvm dart fix --apply` at the workspace root and again in `adaptive_chat_server_dart/`, then re-run `fvm flutter analyze`. The `unnecessary_unawaited` fix has mangled multi-line `unawaited(...)` calls (it drops the wrapper but leaves the trailing `),`), so expect to repair those by hand.
-- Goldens are engine-sensitive. Run `fvm flutter test --tags=golden` in `packages/flutter_adaptive_cards_fs` and `packages/flutter_adaptive_charts_fs`; confirm a failure reproduces on the unmodified sources (stash everything except `.fvmrc` and `.fvm/fvm_config.json`) before regenerating with `--update-goldens --name "<test names>"`. Only the current platform's `gold_files/<os>/` set can be regenerated locally; the other platform's set is checked in CI.
+- Goldens are engine-sensitive. Run `fvm flutter test --tags=golden` in `packages/flutter_adaptive_cards_fs` and `packages/flutter_adaptive_charts_fs`; confirm a failure reproduces on the unmodified sources (stash everything except `.fvmrc`; `.fvm/` is gitignored, so a stash leaves it alone anyway) before regenerating with `--update-goldens --name "<test names>"`. Only the current platform's `gold_files/<os>/` set can be regenerated locally; the other platform's set is checked in CI.
 
 ## 2. Update CI/CD Workflows
 
