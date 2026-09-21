@@ -1,4 +1,4 @@
-# Ollama's prompt cache reused a shared system prompt across conversations on one model and not on the other
+# One of two models reused Ollama's prompt cache across conversations
 
 In
 [`freemansoft/Flutter-AdaptiveCards`](https://github.com/freemansoft/Flutter-AdaptiveCards)
