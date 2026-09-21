@@ -4,10 +4,10 @@ In
 [`freemansoft/Flutter-AdaptiveCards`](https://github.com/freemansoft/Flutter-AdaptiveCards)
 a demonstration Dart chat server asks a local Ollama model for an answer as
 Adaptive Card JSON. That is a strict, closed-vocabulary schema, and a Flutter
-app renders it as interactive UI rather than as text. The request is expensive
-before the model writes anything. The card system prompt that describes the
-element vocabulary is estimated at about 3,755 tokens. The chat server replays
-up to ten prior exchanges on every turn.
+app renders it as interactive UI rather than as text. The request is expensive.
+The card system prompt that describes the element vocabulary is estimated at
+about 3,755 tokens. The chat server replays up to ten prior exchanges on every
+turn.
 
 Ollama keeps a prefix cache, so a request whose opening tokens match an earlier
 one does not have to process them again. How much does that cache save a chat
