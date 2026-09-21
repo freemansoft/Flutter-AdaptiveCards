@@ -18,11 +18,10 @@ Every reading below comes from
 the lab notebook in that repository.
 
 **The answer differs by model.** `llama3.2:latest` reused a cached system
-prompt on every pattern the probe sent, on an Apple M5 and on an Apple M1 Max.
-A second conversation cost it tens of milliseconds instead of two seconds.
-`qwen3.8:27b-nvfp4` reused the same prompt inside a conversation. It missed
-entirely at the start of a new one, paying about 40 seconds of prefill every
-time. Both models ran under Ollama 0.33.3.
+prompt on every pattern the probe sent. A second conversation cost it tens of
+milliseconds instead of two seconds. `qwen3.8:27b-nvfp4` reused the same prompt
+inside a conversation. It missed entirely at the start of a new one, paying
+about 40 seconds of prefill every time. Both models ran under Ollama 0.33.3.
 
 ## Terms used in this article
 
