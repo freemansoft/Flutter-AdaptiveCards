@@ -1,4 +1,4 @@
-# Ollama's prompt cache reused a shared system prompt on one model and not on the other
+# Ollama's prompt cache reused a shared system prompt across conversations on one model and not on the other
 
 In
 [`freemansoft/Flutter-AdaptiveCards`](https://github.com/freemansoft/Flutter-AdaptiveCards)
@@ -16,6 +16,13 @@ server, and when does it miss? Ollama 0.33.3 reports
 Every reading below comes from
 [`ModelBehavior.md`](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md),
 the lab notebook in that repository.
+
+The answer differs by model. `llama3.2:latest` reused a cached system prompt on
+every pattern the probe sent, on an Apple M5 and on an Apple M1 Max. A second
+conversation cost it tens of milliseconds instead of two seconds.
+`qwen3.8:27b-nvfp4` reused the same prompt inside a conversation. It missed
+entirely at the start of a new one, paying about 40 seconds of prefill every
+time. Both models ran under Ollama 0.33.3.
 
 ## Terms used in this article
 
@@ -37,10 +44,10 @@ own.
 [`prefill_cache_probe.dart`](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/tool/model_probes/prefill_cache_probe.dart)
 builds its own system prompts rather than sending the card one, each a
 synthetic glossary of 300 entries. The three it builds are identical except for
-a tag word that prefixes every entry, so they tokenize to within a few hundred
-tokens of each other. All three share the same short instruction prefix. Four
-of the five patterns send the first, called the cached glossary below. The unrelated
-request sends the second and the retry the third. The probe sends these to one
+a tag word that prefixes every entry. They therefore tokenize to within a few
+hundred tokens of each other, and all three share the same short instruction
+prefix. Four of the five patterns send the first, called the cached glossary
+below. The unrelated request sends the second and the retry the third. The probe sends these to one
 model at a time and records the token counts
 and the prefill time for each call. Every run is at temperature 0 with one
 model resident. The patterns are the ones a chat server sends:
@@ -61,22 +68,32 @@ sequenceDiagram
   participant O as Ollama runner, one model resident
 
   Note over P,O: the cached glossary, a second and a third are three<br/>300-entry system prompts differing only by a tag word on every entry
-  P->>O: 1. cached glossary, one question
-  O-->>P: cold prefill
-  P->>O: 1. the same request again
-  O-->>P: the repeat
-  P->>O: 2. cached glossary, a different first question
-  O-->>P: what a new conversation looks like
-  P->>O: 3. cached glossary, history replayed plus one new turn
-  O-->>P: turns 2 and 3
-  P->>O: 4. a second glossary, sharing only a short instruction prefix
-  O-->>P: the unrelated request
-  P->>O: 4. cached glossary, the original request repeated
-  O-->>P: does the first prefix survive
-  P-xO: 5. a third glossary, no earlier call sent it,<br/>aborted by the probe 400 ms in
+
+  Note over P,O: 1. the same request twice
+  P->>O: cached glossary, one question
+  O-->>P: the cold prefill reading
+  P->>O: the same request again
+  O-->>P: the repeat's reading
+
+  Note over P,O: 2. a new conversation
+  P->>O: cached glossary, a different first question
+  O-->>P: the new-conversation reading
+
+  Note over P,O: 3. a growing conversation
+  P->>O: cached glossary, history replayed plus one new exchange
+  O-->>P: the readings for turns 2 and 3
+
+  Note over P,O: 4. an unrelated request between two identical ones
+  P->>O: a second glossary, sharing only the instruction prefix
+  O-->>P: the unrelated request's reading
+  P->>O: cached glossary, the original request repeated
+  O-->>P: the reading that shows whether the first prefix survived
+
+  Note over P,O: 5. a retry after an abort
+  P-xO: a third glossary no earlier call sent,<br/>aborted by the probe 400 ms in
   Note over P: waits 5 s
-  P->>O: 5. the same request again
-  O-->>P: the retry
+  P->>O: the same request again
+  O-->>P: the retry's reading
 ```
 
 A glossary replaces the card system prompt so that the probe can vary it. The
@@ -110,7 +127,7 @@ The first table holds readings from an Apple M5 / 16 GB, recorded as Ollama
 | Pattern, M5, `llama3.2:latest`                         | prompt / cached          | prefill         |
 | ------------------------------------------------------ | ------------------------ | --------------- |
 | identical request repeated                             | 2143 / 2142              | 2017 ms → 18 ms |
-| cached glossary, a different question                  | 2144 / 2136              | 60 ms           |
+| new conversation: a different question                 | 2144 / 2136              | 60 ms           |
 | growing conversation, turns 2 and 3                    | 2166 / 2150, 2188 / 2173 | ~94 ms per turn |
 | the original request repeated after an unrelated one   | 2143 / 2136              | 55 ms           |
 | retry after aborting mid-prefill (400 ms in, 5 s wait) | 2444 / 2443              | 29 ms           |
@@ -134,7 +151,7 @@ conversation into its two turns, because both were timed separately here.
 | Pattern, M1 Max, `llama3.2:latest`                     | prompt / cached | prefill         |
 | ------------------------------------------------------ | --------------- | --------------- |
 | identical request repeated                             | 2143 / 2142     | 2079 ms → 12 ms |
-| cached glossary, a different question                  | 2144 / 2136     | 87 ms, 42 ms    |
+| new conversation: a different question                 | 2144 / 2136     | 87 ms, 42 ms    |
 | growing conversation, turn 2                           | 2166 / 2150     | 54 ms           |
 | growing conversation, turn 3                           | 2188 / 2173     | 53 ms           |
 | the unrelated request itself                           | 2444 / 28       | 2170 ms         |
@@ -151,7 +168,7 @@ across both models, lands within 15% of what a cold prefill cost in the same
 run. The identical-repeat row carries one run. The 2026-09-05 archived run read
 1900 ms → 11 ms for it, and matched this table on every other row it repeated.
 
-## `qwen3.8:27b-nvfp4` re-evaluated a byte-identical system prompt on every new conversation
+## An identical repeat and a growing conversation reuse the cache on both models
 
 The next readings hold the host fixed and change the model.
 `qwen3.8:27b-nvfp4` is a build Ollama reports as `nvfp4` quantization. At
@@ -162,7 +179,7 @@ the two differ by about nine times in size as well as in quantization.
 | Pattern, M1 Max, `qwen3.8:27b-nvfp4`                   | prompt / cached                       | prefill                      |
 | ------------------------------------------------------ | ------------------------------------- | ---------------------------- |
 | identical request repeated                             | 3176 / 3171                           | 37779 ms → 133 ms, 158 ms    |
-| cached glossary, a different question                  | 3177 / 4, 3177 / 4, 3177 / 4          | 40426 ms, 40377 ms, 37615 ms |
+| new conversation: a different question                 | 3177 / 4, 3177 / 4, 3177 / 4          | 40426 ms, 40377 ms, 37615 ms |
 | growing conversation, turn 2                           | 3207 / 3172                           | 812 ms                       |
 | growing conversation, turn 3                           | 3237 / 3202                           | 804 ms                       |
 | the unrelated request itself                           | 3176 / 4, 3176 / 4, 3176 / 4          | 40381 ms, 40604 ms, 37815 ms |
@@ -180,26 +197,33 @@ whole glossary request counts 3,176 tokens for this model and 2,143 for
 in this series measures the same two builds on a different shared text, at 2.99
 and 4.30 characters per token. The gap here is consistent with it.
 
-The chart below plots what each pattern cost in work rather than in time. Each
-bar is prompt tokens minus cached tokens, which is what the model had to
-re-evaluate. A short bar means the cache served the request. Prefill time spans
-12 ms to 40 seconds across these two models, so a chart of milliseconds would
-show only that the larger model is slower.
-
-```mermaid
-xychart-beta horizontal
-    title "Prompt tokens re-evaluated, M1 Max, Ollama 0.33.3"
-    x-axis ["llama3.2 identical repeat", "qwen3.8-nvfp4 identical repeat", "llama3.2 new conversation", "qwen3.8-nvfp4 new conversation", "llama3.2 growing conversation, turn 3", "qwen3.8-nvfp4 growing conversation, turn 3", "llama3.2 unrelated request", "qwen3.8-nvfp4 unrelated request", "llama3.2 repeat after the unrelated request", "qwen3.8-nvfp4 repeat after the unrelated request"]
-    y-axis "Prompt tokens the model re-evaluated" 0 --> 3200
-    bar [1, 5, 8, 3173, 15, 35, 2416, 3172, 7, 5]
-```
-
 Three readings hold for the larger model. An identical repeat falls from 34 to
 38 seconds to under 200 ms. A growing conversation pays about 800 ms per turn,
 far below its own cold prefill. The original request stays cached after an
 unrelated one. The unrelated request itself is a near-total miss on this model
 too, 4 cached tokens of 3,176. The reason is the same one it is on the smaller
 model.
+
+The chart below plots what four of the patterns cost in work rather than in
+time. Each bar is prompt tokens minus cached tokens, which is what the model
+had to re-evaluate. A short bar means the cache served the request. Prefill
+time spans 12 ms to 40 seconds across these two models, so a chart of
+milliseconds would show only that the larger model is slower. The growing
+conversation is left out because at 15 and 35 re-evaluated tokens it is
+indistinguishable from the other hits at this scale.
+
+```mermaid
+xychart-beta horizontal
+    title "Prompt tokens re-evaluated, M1 Max, Ollama 0.33.3"
+    x-axis ["llama3.2:latest identical repeat", "qwen3.8:27b-nvfp4 identical repeat", "llama3.2:latest new conversation", "qwen3.8:27b-nvfp4 new conversation", "llama3.2:latest unrelated request", "qwen3.8:27b-nvfp4 unrelated request", "llama3.2:latest repeat after the unrelated request", "qwen3.8:27b-nvfp4 repeat after the unrelated request"]
+    y-axis "Prompt tokens the model re-evaluated" 0 --> 3200
+    bar [1, 5, 8, 3173, 2416, 3172, 7, 5]
+```
+
+Three of the eight bars are tall. Two are the unrelated request on each model,
+which is expected. The third is a new conversation on `qwen3.8:27b-nvfp4`.
+
+## `qwen3.8:27b-nvfp4` re-evaluated a byte-identical system prompt on every new conversation
 
 The new-conversation pattern is the miss that is not expected. The cached
 glossary is byte-identical and only the short question differs.
@@ -208,6 +232,23 @@ glossary is byte-identical and only the short question differs.
 40.4 seconds. An unarchived same-day rerun read 4 cached tokens as well, at
 36,685 ms; the notebook records it as corroboration rather than a fourth
 measurement.
+
+The cost of that miss is the whole system prompt. On `llama3.2:latest` a new
+conversation costs 42 to 87 ms of prefill on the M1 Max and 60 ms on the M5,
+once the glossary is cached. On `qwen3.8:27b-nvfp4` it costs about 40 seconds,
+the same as the first request after a model load. A chat server that starts
+many short conversations on that model pays the full prefill every time. Within
+one conversation, both models reuse the cache on every exchange.
+
+The cause is not established. The probe reports `prompt_eval_cached_count`, not
+the runner's matching rule. Three explanations fit the readings:
+
+- a matching rule specific to the model or to the `nvfp4` quantization;
+- a prompt-length effect above roughly 3,000 tokens, where `llama3.2:latest`
+  sends 2,144 tokens and `qwen3.8:27b-nvfp4` sends 3,177;
+- a limit on how many prefixes the runner keeps.
+
+Separating them needs a probe that varies prompt length on one model.
 
 ## The retry after an abort cost a warm repeat on `llama3.2:latest` and varied by two orders of magnitude on `qwen3.8:27b-nvfp4`
 
@@ -231,20 +272,16 @@ rather than the models. How much prefill completed before each abort landed is
 a plausible reason for the variance within the larger model's runs. The probe
 does not observe server-side progress, so neither reading is confirmed.
 
-## A new conversation costs `llama3.2:latest` tens of milliseconds and `qwen3.8:27b-nvfp4` about 40 seconds
+## Three checks for a chat server that reuses a system prompt
 
-On `llama3.2:latest` a new conversation costs 42 to 87 ms of prefill on the M1
-Max, and 60 ms on the M5, once the glossary is cached. On `qwen3.8:27b-nvfp4` it
-costs about 40 seconds, the same as the first request after a model load. A
-server that starts many short conversations on that model pays the whole system
-prompt every time. Within one conversation, both models reuse the cache on
-every turn.
+Two of these change how you measure a model, and one changes what the server
+budgets for.
 
-The cause of the miss is not established. The probe reports
-`prompt_eval_cached_count`, not the runner's matching rule. A model-specific
-or quantization-specific rule, an effect of prompt length past about 3,000
-tokens, and a limit on cached sequences are each consistent with it. None is
-confirmed.
+| Check                                                            | Why                                                                                                                                      |
+| ---------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| Read `prompt_eval_cached_count` on every reply                   | It is the only signal that separates a served prefix from a re-evaluated one, and nothing else in the reply reports it.                  |
+| Measure the new-conversation pattern rather than assuming it     | The same server code paid the prompt once per resident model on `llama3.2:latest` and once per conversation on `qwen3.8:27b-nvfp4`.      |
+| Budget a first question at cold-prefill cost on an untried model | That is 2 seconds on one of these models and about 40 on the other, and no field in the reply predicts which behavior a model will show. |
 
 These readings cover one model on two hosts and a second model on one host. The
 M1 Max runs are stamped Ollama 0.33.3 in their result files; the M5 run is not
