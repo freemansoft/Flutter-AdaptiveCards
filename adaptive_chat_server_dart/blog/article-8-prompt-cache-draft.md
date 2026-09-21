@@ -76,7 +76,7 @@ sequenceDiagram
   O-->>P: the retry
 ```
 
-A glossary stands in for the card system prompt so that the probe can vary it.
+A glossary replaces the card system prompt so that the probe can vary it.
 Both run to a few thousand tokens. The readings below are therefore about
 reusing a long system prompt at that scale, not about the card prompt itself.
 

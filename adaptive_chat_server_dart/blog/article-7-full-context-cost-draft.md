@@ -12,15 +12,14 @@ that would answer the question. Every other probe in that set had been asking
 into a nearly empty window. That window holds a system prompt, one question,
 and at most a short canned exchange showing the model the shape of a card.
 
-The probe stands in for a long conversation by filling three quarters of the
-window with generated text. It measured eight models twice, once with no
-history at all and once carrying roughly 48,500 tokens of prompt for seven of
-the eight. The host was an Apple M1 Max with 64 GB, under Ollama 0.33.3, with
-two empty-window cells from a later 0.34.0 run. Five models move by three cases
-or fewer out of 25, in both directions. Three lose 5, 5 and 7 cases. Each of
-those three fails a different way, so no single validation check catches them.
-The losses also reorder the models: one that outscores another on an empty
-window trails it on a full one.
+The probe simulates a long conversation by filling three quarters of the window
+with generated text. It measured eight models twice, once with no history at
+all and once carrying roughly 48,500 tokens of prompt for seven of the eight.
+The host was an Apple M1 Max with 64 GB, under Ollama 0.33.3, with two
+empty-window cells from a later 0.34.0 run. Five models move by three cases or
+fewer out of 25, in both directions. Three lose 5, 5 and 7 cases. Each of those
+three fails a different way, so no single validation check catches them. Two
+models also swap places between the two conditions.
 
 Every figure is transcribed from
 [`ModelBehavior.md`](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md),
@@ -49,11 +48,13 @@ than its context
 window](https://joe.blog.freemansoft.com/2026/09/ollama-silently-drops-history-message.html)
 covers that defect and its fix.
 
-## Three of eight models lose 5 to 7 of 25 cases on a full context window
+## Five of eight models hold on a full window
 
 The probe gave each model a filler calibrated to its own tokenizer, sized to
-fit the window Ollama allocates it. **Empty window** and **Full
-window** hold the shape score under each condition. Compare them row by row.
+fit the window Ollama allocates it. **Empty window** and **Full window** hold
+the shape score under each condition. All of it comes from
+`context_fill_probe.dart` at `--samples 1` on the M1 Max, under Ollama 0.33.3
+except the two starred cells.
 
 | Model                        | Empty window | Full window | Prompt tokens, full | Window, full |
 | ---------------------------- | ------------ | ----------- | ------------------- | ------------ |
@@ -67,7 +68,7 @@ window** hold the shape score under each condition. Compare them row by row.
 | `nemotron-3-nano:4b`         | 8/25         | 6/25        | 48559               | 65536        |
 
 \* The probe measured these two builds on an empty window for the first time on
-a later run, under Ollama 0.34.0. Their filled and empty figures therefore come
+the 0.34.0 empty-window run. Their filled and empty figures therefore come
 from different runtimes. The pairing holds because the filled run itself
 repeats on 0.34.0. It returns 16/25 for `qwen3.8:27b-nvfp4` and 20/25 for
 `qwen3.6:27b-coding-nvfp4`, matching all 25 verdicts case for case. Until that
@@ -75,12 +76,15 @@ run this column held a reading for both builds taken under a window that was
 already full, and both were read as unaffected.
 
 The other six rows read the empty-window figure from the pre-calibration sweep,
-under Ollama 0.33.3. The probe sent a filler in that sweep, it overflowed the
-allocation, and Ollama discarded it whole, so those calls still reached the
-model with no history. Every empty-window run asked for a 35,851-token window,
-against 65,536 for the filled runs, so the two arms differ in window size as
-well as in history. The exception is `qwen2.5-coder:7b`, whose trained window
-caps both arms at 32,768.
+under Ollama 0.33.3. The probe sent a filler in that sweep. It overflowed the
+allocation and Ollama discarded it whole, so those calls still reached the
+model with no history. Every empty-window run asked for a 35,851-token window
+against 65,536 for the filled runs. The two arms differ in window size as well
+as in history. The exception is `qwen2.5-coder:7b`, whose trained window caps
+both arms at 32,768.
+
+The chart plots each model's full-window score minus its empty-window score.
+Three bars run past minus five; the rest sit within noise.
 
 ```mermaid
 xychart-beta horizontal
@@ -89,10 +93,6 @@ xychart-beta horizontal
         y-axis "Cases, filled window minus empty" -8 --> 3
     bar [-7, -5, -5, -3, -3, -2, -2, 2]
 ```
-
-The three bars at minus five and beyond are the finding. The other five are
-single-sample runs moving by two or three cases in both directions, which is
-noise.
 
 `nemotron-3.5-lightning:30b` loses 8 of the 20 cases it passed on an empty
 window and wins 1 back, for a net of 7. `nemotron-3-nano:30b` loses 8 of its 17
@@ -106,18 +106,17 @@ window caps it at 32768, so its filler is smaller too. It runs three quarters
 full like every other model, but on 24,721 tokens rather than about 48,500. Its
 bar comes from half the token load.
 
-Both Nemotron losses reproduced at a second prompt size. An earlier run of the
-same control, before the probe calibrated the filler per tokenizer, carried
-about 42,600 tokens for the two of them and returned 13/25 and 12/25. The run
-above carries 48,500 and returns 13/25 and 12/25 again. `qwen3.8:27b-nvfp4`
-reproduces the same way from a different archive, the fixed-filler sweep: 17/25
-at 42,542 tokens and 16/25 at 48,539, against 21/25 empty. Two prompt sizes
-landing on the same counts is a stronger reading than either alone. None of the
-Qwen movements reproduce that way.
+## Both Nemotron losses repeat at a second prompt size and on a second host
 
-A later run repeated three of these rows on a second machine, a 16 GB Apple M5,
-on the same Ollama 0.33.3. Those three are every model in the eight-row table
-that a 16 GB host can hold.
+The uncalibrated fit control, an earlier run of the same script, carried about
+42,600 tokens for the two Nemotron builds and returned 13/25 and 12/25. The run
+above carries 48,500 and returns 13/25 and 12/25 again. `qwen3.8:27b-nvfp4`
+reproduces the same way from the pre-calibration sweep: 17/25
+at 42,542 tokens and 16/25 at 48,539, against 21/25 empty. None of the Qwen
+movements reproduce that way.
+
+The M5 fit control repeated three of these rows under the same Ollama 0.33.3.
+Those three are every model in the table above that a 16 GB Apple M5 can hold.
 
 | Model                | Prompt tokens, full | M1 Max, full window | M5, full window |
 | -------------------- | ------------------- | ------------------- | --------------- |
@@ -125,12 +124,12 @@ that a 16 GB host can hold.
 | `qwen3.5:9b`         | 48537               | 16/25               | 16/25           |
 | `qwen2.5-coder:7b`   | 24721               | 19/25               | 20/25           |
 
-The prompt counts are identical to the digit and two of the three scores are
-unchanged. One case across three models is the noise floor. Identical prompt
-counts are expected, since a tokenizer is a property of the model and not of the
-machine. The scores come from generated replies, and they held.
+Each model evaluated the same prompt on both hosts, token for token, so
+**Prompt tokens, full** appears once: a tokenizer belongs to the model, not the
+machine. Two of the three scores match exactly, and the third differs by
+one case, which is the noise floor.
 
-## The three models that lose 5 to 7 cases fail in three different ways
+## The three models lose cases in three different ways
 
 A lost case is not one thing. Sorting each run's 25 verdicts by what the judge
 said turns the losses of 7, 5 and 5 cases into three different problems. The
@@ -145,7 +144,8 @@ judge assigns one of five failure verdicts:
 - `unwanted-card`, a card returned for the one case that asks for prose. It
   appears once in the table below.
 
-Each cell below reads empty window first, then full.
+Each cell below reads empty window first, then full. Same host, probe and
+sample count as the table above, including the two 0.34.0 readings.
 
 | Model                        | Shape score | `prose`     | `no-input` | `wrong-shape` | `broken`   |
 | ---------------------------- | ----------- | ----------- | ---------- | ------------- | ---------- |
@@ -154,6 +154,7 @@ Each cell below reads empty window first, then full.
 | `qwen3.8:27b-nvfp4`          | 21 to 16    | 2 to 2      | 0 to 0     | 1 to 0        | **0 to 7** |
 | `qwen2.5-coder:7b`           | 22 to 19    | 0 to 3      | 2 to 1     | 1 to 2        | 0 to 0     |
 | `nemotron-3-nano:4b`         | 8 to 6      | 14 to 14    | 0 to 0     | 2 to 3        | 1 to 2     |
+| `qwen3.6:27b-coding-nvfp4`   | 23 to 20    | 0 to 0      | 0 to 0     | 0 to 0        | 2 to 5     |
 
 Each row sums to 25 in both arms, except `qwen3.8:27b-nvfp4`'s empty-window
 figures, which sum to 24 because its twenty-fifth verdict is that
@@ -183,9 +184,8 @@ empty, and every one is valid card JSON. Seven of the eight put a static
 - `got {TextBlock} want {Input.ChoiceSet, Input.Toggle}`, where it asked for a
   yes or no.
 
-Each case asks the model to collect something, and it displays something
-instead. Its other verdicts do not all parse. Two replies in each arm are
-`broken`, so the substitution is what the full window changed.
+Its other verdicts do not all parse. Two replies in each arm are `broken`, so
+the substitution is what the full window changed.
 
 `qwen3.8:27b-nvfp4` picks the right elements and **stops finishing its
 replies**. Its `broken` count goes 0 on an empty window to 7 on a full one, and
@@ -195,16 +195,23 @@ and the judge scored them as stalls; three returned a body that does not parse.
 no malformed bodies, on three of the four cases that stalled on
 `qwen3.8:27b-nvfp4`.
 
+## A parse check catches two of the four failures
+
+Those three patterns produce four kinds of failure, because
+`qwen3.8:27b-nvfp4`'s replies fail in two ways. The diagram follows one reply
+down to the outcome the user sees. Each count is out of the 25 cases, on a full
+window.
+
 ```mermaid
 flowchart TD
-  R["Reply to a card question,\nwindow full"] --> T{"did the reply\narrive at all?"}
-  T -- "no: ran past 180 s\nqwen3.8:27b-nvfp4, 4 cases" --> STALL["caught only by a timeout,\na retry runs the same risk"]
-  T -- yes --> D{"does the reply parse\nas a card?"}
-  D -- "no: answered in prose\nnemotron-3.5-lightning:30b, 1 to 10" --> CAUGHT["caught by a parse check"]
-  D -- "no: body does not parse\nqwen3.8:27b-nvfp4, 3 cases" --> RETRY["caught by a parse check,\nand a retry is a fresh sample"]
-  D -- yes --> E{"is the element the one\nthe question asked for?"}
+  R["Reply to a card question,\nwindow three quarters full"] --> T{"did the reply\narrive at all?"}
+  T -- "no: ran past 180 s\nqwen3.8:27b-nvfp4, 4 of 25" --> STALL["caught only by a timeout,\na retry runs the same risk"]
+  T -- yes --> D{"what came back?"}
+  D -- "a reply with no card\nnemotron-3.5-lightning:30b, 10 of 25" --> CAUGHT["caught by a parse check"]
+  D -- "a card body that does not parse\nqwen3.8:27b-nvfp4, 3 of 25" --> RETRY["caught by a parse check,\nand a retry is a fresh sample"]
+  D -- "a card" --> E{"is the element the one\nthe question asked for?"}
   E -- yes --> OK["card rendered as asked"]
-  E -- "no: TextBlock where an Input.* belongs\nnemotron-3-nano:30b, 4 to 8" --> BLANK["passes every structural check,\nno retry fires,\nreaches the user as a screen\nthat cannot be filled in"]
+  E -- "no: TextBlock where an Input.* belongs\nnemotron-3-nano:30b, 8 of 25" --> BLANK["passes every structural check,\nno retry fires,\nreaches the user as a screen\nthat cannot be filled in"]
   style OK fill:#6c6,stroke:#060,color:#000
   style CAUGHT fill:#fc6,stroke:#960,color:#000
   style RETRY fill:#fc6,stroke:#960,color:#000
@@ -212,30 +219,23 @@ flowchart TD
   style BLANK fill:#f66,stroke:#900,color:#000
 ```
 
-The differences decide which defense works. The three models produce four kinds
-of failure, because `qwen3.8:27b-nvfp4`'s splits in two. A check that asks
-whether the reply parsed as a card catches two of the four. It sees the model
-that reverts to prose and the bodies that do not parse, and an application that
-renders cards has to run that check anyway. That check does not see a stall,
-which needs a timeout of its own. Nor does a retry help there, since the
-request already ran 180 seconds under a full window. A well-formed card with
-the wrong element type passes the parse check and triggers no retry at all. It
-reaches the user as a screen that renders correctly and cannot be filled in.
-Catching that one means validating the reply against what was asked for, not
-just against the schema.
+A check that asks whether the reply parsed as a card catches two of the four.
+It sees the model that reverts to prose and the bodies that do not parse. An
+application that renders cards has to run that check anyway. That check does
+not see a stall, which needs a timeout of its own. Nor does a retry help there,
+since the request already ran 180 seconds under a full window. A well-formed
+card with the wrong element type passes the parse check and triggers no retry
+at all. It reaches the user as a screen that renders correctly and cannot be
+filled in. Catching that one means validating the reply against what was asked
+for, not just against the schema.
 
-The `nemotron-3.5-lightning:30b` and `nemotron-3-nano:30b` patterns look like
-weakening instruction adherence over a long context. Each is a failure to
-follow the system prompt. One ignored the instruction to answer as a
-card, the other the list of element types the prompt allows. Ordinary question
-answering is intact in both, since a prose reply and a `TextBlock` card both
-answer what was asked. `qwen3.8:27b-nvfp4` does not fit that account. A reply
-that stalls or stops parsing is a generation failure rather than an instruction
-ignored, and it is the pattern both `nvfp4` builds show. These runs do not test
-either mechanism. Establishing one would mean moving the card instruction to a
-different position in the prompt. The alternative is sweeping the fill across
-sizes to see whether the loss scales, which the M5 run below does for three
-other models. Neither run covers these two.
+Both Nemotron patterns are failures to follow the system prompt: one ignores
+the instruction to answer as a card, the other the element types it allows.
+Ordinary question answering stays intact in both. That looks like weakening
+instruction adherence over a long context. `qwen3.8:27b-nvfp4` does not fit
+that account: a reply that stalls or stops parsing is a generation failure, and
+it is the pattern both `nvfp4` builds show. Nothing here tests either
+mechanism, and the notebook lists what would.
 
 ## Two models swap places between an empty window and a full one
 
@@ -243,39 +243,38 @@ Score on an empty window does not predict the score on a full one. On an empty
 window `nemotron-3.5-lightning:30b` scores 20/25 and `qwen3.5:9b` scores 18/25.
 On a full one the order reverses, 13/25 against 16/25.
 
-A leaderboard, or a local benchmark that asks short questions, ranks models on
-the empty-window column. For a chat application that is the wrong column, and a
-published score does not say which way a model moves when the window fills.
+For a chat application, the empty-window column is the wrong one to choose on.
+It does not say which way a model moves when the window fills.
 
-## Four checks for a chat application that fills its window
+## Three models score the same at half fill and at full
 
-Each check below follows from one of the findings above.
+Every figure above is a single-sample run. A movement of two or three cases is
+noise, and only the two five-case losses and the seven-case one are large
+enough to read.
 
-| Check                                                       | Why                                                                                                                           |
-| ----------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
-| Measure at the context length you will run at               | Three of eight models here lose 5 to 7 of 25 cases on a full window, and the empty-window score does not predict which three. |
-| Validate the reply against the request, not just the schema | A well-formed card with a `TextBlock` where an input belongs passes every structural check and fails the user.                |
-| Give a card request a timeout of its own                    | Four of the seven cases `qwen3.8:27b-nvfp4` loses never returned inside 180 seconds.                                          |
-| Re-measure after a model swap, not just after a prompt edit | The three models that lose here sit beside five that hold, on the same prompt and a fill sized to each model's own window.    |
-
-## Two caveats on all of it
-
-Every figure is a single-sample run. A movement of two or three cases is noise,
-and only the two five-case losses and the seven-case one are large enough to
-read.
-
-The shape of the loss is only partly measured. A later run on that same M5 took
-the three models it can hold to a third fill level. It held the window constant
-for the two filled levels, and found no threshold. The three models' shape
-scores, added together, run 47/75 near-empty, 42/75 half and 42/75 full. So the
-cost is neither proportional to how full the window is nor a cliff at some
-particular depth. One qualifier applies to the first step. The near-empty
-reading comes from an earlier uncalibrated archive, at a smaller allocated
-window for two of the three models, rather than from a matched control. The
+The M5 fit control also took those same three models to a third fill level,
+holding the window constant across the two filled levels. Their shape scores,
+added together, run 47/75 near-empty, 42/75 at half fill and 42/75 full. Half a
+window costs the same as a full one, so the cost neither grows with occupancy
+nor switches on at one depth. The first step carries a qualifier. The
+near-empty reading is not a matched control. It comes from an earlier
+uncalibrated archive, at a smaller allocated window for two of the three. The
 five-case fall between it and half fill is therefore not established, and
 settling it needs `--samples 2` and more models. No 30-billion-parameter
 Nemotron build fits a 16 GB host, so how the loss scales with fill is untested
 on the two models that lose the most.
+
+## Four checks for a chat application that fills its window
+
+Two of these change how you measure a model, and two change what your
+application does with a reply.
+
+| Check                                                                    | Why                                                                                                                           |
+| ------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------- |
+| Measure at the context length you will run at                            | Three of eight models here lose 5 to 7 of 25 cases on a full window, and the empty-window score does not predict which three. |
+| Validate the reply against the request, not just the schema              | A well-formed card with a `TextBlock` where an input belongs passes every structural check and fails the user.                |
+| Give a card request a timeout of its own                                 | Four of the seven cases `qwen3.8:27b-nvfp4` loses never returned inside 180 seconds.                                          |
+| Rank models based on the expected context window, not on short questions | `qwen3.5:9b` scores 2 cases below `nemotron-3.5-lightning:30b` on an empty window and 3 above it on a full one.               |
 
 The repository is
 [https://github.com/freemansoft/Flutter-AdaptiveCards](https://github.com/freemansoft/Flutter-AdaptiveCards),

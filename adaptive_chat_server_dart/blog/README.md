@@ -68,7 +68,7 @@ They were drafted as one article and split the same day, on topic rather than on
 length: the draft was 1823 prose words, well inside the cap. The split separates
 a runtime finding from a model finding, which a reader may want separately.
 Article 6 was 1073 prose words at the split and is 1617 after its review pass.
-Article 7 was 1290 and is 1987 after the
+Article 7 was 1290 and is 1890 after the
 2026-09-20 review pass, which restored the `wrong-shape` verdict column, split
 the `broken` column into stalls and malformed bodies, and named the probe and
 the judge.
