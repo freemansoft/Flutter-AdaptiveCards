@@ -38,7 +38,7 @@ own.
 | **Cold prefill**               | A prefill the cache serves almost none of. This is about the cache, not about history: a request with no history can still reuse a cached prefix.   |
 | **`num_ctx`**                  | The context window the request asks for, in tokens. Every run here asks for 8,192.                                                                  |
 
-## The probe sends five request patterns a chat server produces
+## The five request patterns the probe sends
 
 [`prefill_cache_probe.dart`](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/tool/model_probes/prefill_cache_probe.dart)
 builds its own system prompts rather than sending the card one, each a
@@ -49,7 +49,8 @@ prefix. Four of the five patterns send the first, called the cached glossary
 below. The unrelated request sends the second and the retry the third. The
 probe sends these to one model at a time and records the token counts and the
 prefill time for each call. Every run is at temperature 0 with one model
-resident. The patterns are the ones a chat server sends:
+resident. The first four patterns are shapes a chat server produces. The last
+is the probe's own, pricing a retry after a timeout:
 
 - the same request twice;
 - the cached glossary with a different first question, which is what a new
