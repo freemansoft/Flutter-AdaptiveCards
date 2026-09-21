@@ -267,12 +267,17 @@ reuses the cache on `llama3.2:latest` and misses entirely on
 retry-after-abort cost, stable on one model and unstable on the other, and the
 fixed 400 ms abort and 5 s wait that make those two arms different experiments.
 
-Its prose runs to about 2,090 words, past the 2,000 target, for two reasons. It
-carries five request patterns across two models and two hosts and has to say
-which run each figure came from, since three of the six readings were measured
-more than once and the M5 arm was measured once and never archived. And it
-explains how a prefix cache matches tokens, which no other article in the
-series owns and without which none of its cached counts can be read.
+Its prose runs to about 2,130 words, past the 2,000 target, for three reasons.
+It carries five request patterns across two models and two hosts and has to
+say which run each figure came from, since three of the six readings were
+measured more than once and the M5 arm was measured once and never archived.
+It explains how a prefix cache matches tokens, which no other article in the
+series owns and without which none of its cached counts can be read. And a
+2026-09-21 pass gave the two model-specific divergences (the new-conversation
+miss, the retry-after-abort variance) their own subsections under a "where the
+two models diverge" heading, with a flowchart for the first one, after a
+reader asked what actually separated "inside a conversation" from "a new one"
+and the draft had no answer in one place.
 
 _Defers:_ the truncated-prompt mistake that first made the cache read as
 broken to article 5, naming it in one paragraph because the probe's prompt
