@@ -204,12 +204,18 @@ Then draft in this order, because each step constrains the next:
 The conversion command is in the README under "Publishing to Blogger". Before
 running it:
 
-- **Render each mermaid fence to a PNG** saved as
-  `adaptive_chat_server_dart/blog/blog-N-<name>.png`, and replace the fence
-  with an `<img>` pointing at it. Blogger does not run mermaid, and
-  `tool/blog/to_blogger.dart` passes a fence through as text. The script turns
-  each image `src` into an `{{IMAGE_URL:<path>}}` token to fill in after
-  uploading the image.
+- **Render each mermaid fence to a PNG for the Blogger upload, and leave the
+  fence in the draft.** Blogger does not run mermaid and
+  `tool/blog/to_blogger.dart` passes a fence through as text, so the pasted
+  HTML shows the diagram's source until you replace it with the uploaded image
+  in the Blogger editor. The draft keeps the mermaid, which is the editable
+  source a later revision edits: articles 3, 4, 6 and 7 are all published with
+  images over fences that are still in the tree, and the rendered PNGs are not
+  committed. Do not rewrite a fence as an `<img>`.
+- **A committed image is different.** Articles 1 and 2 carry real screenshots
+  as `blog-N-<name>.png` beside the drafts, referenced as Markdown images.
+  Those are the `src` values `to_blogger.dart` turns into an
+  `{{IMAGE_URL:<path>}}` token to fill in after uploading.
 - **Re-point the notebook links** to the commit the figures were read at (see
   Attribution in the style rules).
 

@@ -110,8 +110,12 @@ substitute after uploading the image through the Blogger editor. Paste into the
 HTML view and publish from the HTML view: the Compose view re-serializes the
 document, which is the usual way a pasted table gets flattened.
 
-The script does not convert mermaid fences. Render each diagram to a PNG beside
-the drafts and replace the fence with an image before converting.
+The script does not convert mermaid fences, so a pasted post shows the
+diagram's source. Render each diagram to a PNG, upload it in the Blogger editor
+and swap it in there. The draft keeps its fence: the mermaid is the editable
+source a later revision edits, and the rendered PNGs are not committed. The
+`{{IMAGE_URL:<path>}}` token is for a committed image instead, as in articles 1
+and 2.
 
 ## What each article owns
 
