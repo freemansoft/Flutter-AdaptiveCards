@@ -53,20 +53,22 @@ covers that defect and its fix.
 
 The probe gave each model a filler calibrated to its own tokenizer, sized to
 fit the window Ollama allocates it. **Empty window** and **Full window** hold
-the shape score under each condition. All of it comes from
+the shape score under each condition. **Window allocated** is what `/api/ps`
+reported the runner gave each request, and the probe asked for exactly that
+every time, so nothing was clamped. All of it comes from
 `context_fill_probe.dart` at `--samples 1` on the M1 Max, under Ollama 0.33.3
 except the two starred cells.
 
-| Model                        | Empty window | Full window | Prompt tokens, full | Window, full |
-| ---------------------------- | ------------ | ----------- | ------------------- | ------------ |
-| `qwen3-coder:30b`            | 18/25        | 20/25       | 48459               | 65536        |
-| `qwen3.6:27b-coding-nvfp4`   | 23/25\*      | 20/25       | 48535               | 65536        |
-| `qwen2.5-coder:7b`           | 22/25        | 19/25       | 24721               | 32768        |
-| `qwen3.5:9b`                 | 18/25        | 16/25       | 48537               | 65536        |
-| `qwen3.8:27b-nvfp4`          | 21/25\*      | **16/25**   | 48539               | 65536        |
-| `nemotron-3.5-lightning:30b` | 20/25        | **13/25**   | 48600               | 65536        |
-| `nemotron-3-nano:30b`        | 17/25        | **12/25**   | 48611               | 65536        |
-| `nemotron-3-nano:4b`         | 8/25         | 6/25        | 48559               | 65536        |
+| Model                        | Empty window | Full window | Prompt tokens, full | Window allocated |
+| ---------------------------- | ------------ | ----------- | ------------------- | ---------------- |
+| `qwen3-coder:30b`            | 18/25        | 20/25       | 48459               | 65536            |
+| `qwen3.6:27b-coding-nvfp4`   | 23/25\*      | 20/25       | 48535               | 65536            |
+| `qwen2.5-coder:7b`           | 22/25        | 19/25       | 24721               | 32768            |
+| `qwen3.5:9b`                 | 18/25        | 16/25       | 48537               | 65536            |
+| `qwen3.8:27b-nvfp4`          | 21/25\*      | **16/25**   | 48539               | 65536            |
+| `nemotron-3.5-lightning:30b` | 20/25        | **13/25**   | 48600               | 65536            |
+| `nemotron-3-nano:30b`        | 17/25        | **12/25**   | 48611               | 65536            |
+| `nemotron-3-nano:4b`         | 8/25         | 6/25        | 48559               | 65536            |
 
 \* The 0.34.0 empty-window run measured these two builds on an empty window for
 the first time, so their two arms come from different runtimes. The pairing
