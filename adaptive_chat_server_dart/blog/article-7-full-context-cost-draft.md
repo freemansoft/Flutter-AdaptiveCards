@@ -1,4 +1,4 @@
-# A full context window costs three of eight local models 5 to 7 of 25 card test cases
+# Three of eight local models degrade on a mostly full context window, each a different way
 
 In
 [`freemansoft/Flutter-AdaptiveCards`](https://github.com/freemansoft/Flutter-AdaptiveCards)
@@ -75,7 +75,7 @@ the first time, so their two arms come from different runtimes. The pairing
 holds because a 0.34.0 repeat of the full-window run returns the same 16/25 and
 20/25, matching all 25 verdicts case for case. Before it, the **Empty window**
 column held a reading for both builds that had itself been taken under a filled
-window, which is why the notebook read both as unaffected.
+window. That is why the notebook read both as unaffected.
 
 The other six rows read their empty-window figure from the pre-calibration
 sweep. Five runs appear in this article, and they differ in what they asked for
@@ -89,8 +89,8 @@ and in what the model received.
 | the M5 fit control           | The calibrated fit control on a 16 GB Apple M5, plus a half-fill level.                                                                                  |
 | the 0.34.0 empty-window run  | The two `nvfp4` builds with no history, under Ollama 0.34.0.                                                                                             |
 
-So the two arms differ in window size as well as in history: every empty-window
-run asked for 35,851 tokens against 65,536 for the filled runs. The exception
+So the two arms differ in window size as well as in history. Every empty-window
+run asked for 35,851 tokens, against 65,536 for the filled runs. The exception
 is `qwen2.5-coder:7b`, whose trained window caps both arms at 32,768.
 
 The chart plots each model's full-window score minus its empty-window score.
@@ -135,9 +135,9 @@ Those three are every model in the table above that a 16 GB Apple M5 can hold.
 | `qwen3.5:9b`         | 48537               | 16/25               | 16/25           |
 | `qwen2.5-coder:7b`   | 24721               | 19/25               | 20/25           |
 
-Each model evaluated the same prompt on both hosts, token for token, so
-**Prompt tokens, full** appears once: a tokenizer belongs to the model, not the
-machine. Two of the three scores match exactly, and the third differs by
+A tokenizer belongs to the model, not the machine, so each model evaluated the
+same prompt on both hosts, token for token. **Prompt tokens, full** therefore
+appears once. Two of the three scores match exactly, and the third differs by
 one case, which is the noise floor.
 
 ## The three models lose cases in three different ways
@@ -239,13 +239,13 @@ at all. It reaches the user as a screen that renders correctly and cannot be
 filled in. Catching that one means validating the reply against what was asked
 for, not just against the schema.
 
-Both Nemotron patterns are failures to follow the system prompt: one ignores
+Both Nemotron patterns are failures to follow the system prompt. One ignores
 the instruction to answer as a card, the other the element types it allows.
 Ordinary question answering stays intact in both. That looks like weakening
 instruction adherence over a long context. `qwen3.8:27b-nvfp4` does not fit
-that account: a reply that stalls or stops parsing is a generation failure, and
-it is the pattern both builds of that quantization show. Nothing here tests
-either mechanism, and the notebook lists what would.
+that account. A reply that stalls or stops parsing is a generation failure, and
+both builds of that quantization show it. Nothing here tests either mechanism,
+and the notebook lists what would.
 
 ## Two models swap places between an empty window and a full one
 
@@ -271,8 +271,8 @@ near-empty reading does not match the other two. It comes from the M5's own
 pre-calibration sweep, at a smaller allocated window for two of the three. The
 five-case fall between it and half fill is therefore not established, and
 settling it needs `--samples 2` and more models. No 30-billion-parameter
-Nemotron build fits a 16 GB host, so how the loss scales with fill is untested
-on the two models that lose the most.
+Nemotron build fits a 16 GB host. How the loss scales with fill is therefore
+untested on the two models that lose the most.
 
 ## Four checks for a chat application that fills its window
 
