@@ -17,9 +17,9 @@ Every reading below comes from
 [`ModelBehavior.md`](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md),
 the lab notebook in that repository.
 
-**The answer differs by model.** `llama3.2:latest` reused a cached system prompt on
-every pattern the probe sent, on an Apple M5 and on an Apple M1 Max. A second
-conversation cost it tens of milliseconds instead of two seconds.
+**The answer differs by model.** `llama3.2:latest` reused a cached system
+prompt on every pattern the probe sent, on an Apple M5 and on an Apple M1 Max.
+A second conversation cost it tens of milliseconds instead of two seconds.
 `qwen3.8:27b-nvfp4` reused the same prompt inside a conversation. It missed
 entirely at the start of a new one, paying about 40 seconds of prefill every
 time. Both models ran under Ollama 0.33.3.
@@ -47,10 +47,10 @@ synthetic glossary of 300 entries. The three it builds are identical except for
 a tag word that prefixes every entry. They therefore tokenize to within a few
 hundred tokens of each other, and all three share the same short instruction
 prefix. Four of the five patterns send the first, called the cached glossary
-below. The unrelated request sends the second and the retry the third. The probe sends these to one
-model at a time and records the token counts
-and the prefill time for each call. Every run is at temperature 0 with one
-model resident. The patterns are the ones a chat server sends:
+below. The unrelated request sends the second and the retry the third. The
+probe sends these to one model at a time and records the token counts and the
+prefill time for each call. Every run is at temperature 0 with one model
+resident. The patterns are the ones a chat server sends:
 
 - the same request twice;
 - the cached glossary with a different first question, which is what a new
@@ -104,8 +104,7 @@ the card prompt itself. The probe also asks for a smaller window than the chat
 server does, 8,192 tokens against 16,384.
 
 The probe sizes each glossary to fit the window on purpose. A first version of
-the
-probe sent a prompt larger than `num_ctx`. Ollama cut it short without an
+the probe sent a prompt larger than `num_ctx`. Ollama cut it short without an
 error, and every cache figure read near zero. The
 [measurement-hygiene article](https://joe.blog.freemansoft.com/2026/09/eight-measurement-rules-from-local.html)
 in this series covers that mistake. The check is that `prompt_eval_count` grows
@@ -156,7 +155,7 @@ turn, so this table gives the growing conversation a row apiece.
 | growing conversation, turn 2                           | 2166 / 2150     | 54 ms           |
 | growing conversation, turn 3                           | 2188 / 2173     | 53 ms           |
 | the unrelated request itself                           | 2444 / 28       | 2170 ms         |
-| the original request repeated after it                 | 2143 / 2136     | 39 ms           |
+| the original request repeated after an unrelated one   | 2143 / 2136     | 39 ms           |
 | retry after aborting mid-prefill (400 ms in, 5 s wait) | 2444 / 2443     | 30 ms           |
 
 `llama3.2:latest` reproduced the M5 pattern on every row the two tables share.
@@ -184,7 +183,7 @@ the two differ by about nine times in size as well as in quantization.
 | growing conversation, turn 2                           | 3207 / 3172                           | 812 ms                       |
 | growing conversation, turn 3                           | 3237 / 3202                           | 804 ms                       |
 | the unrelated request itself                           | 3176 / 4, 3176 / 4, 3176 / 4          | 40381 ms, 40604 ms, 37815 ms |
-| the original request repeated after it                 | 3176 / 3171, 3176 / 3171, 3176 / 3171 | 215 ms, 205 ms, 198 ms       |
+| the original request repeated after an unrelated one   | 3176 / 3171, 3176 / 3171, 3176 / 3171 | 215 ms, 205 ms, 198 ms       |
 | retry after aborting mid-prefill (400 ms in, 5 s wait) | 3477 / 3472, 3477 / 2063, 3477 / 3472 | 148 ms, 18154 ms, 142 ms     |
 
 All the M1 Max runs are from 2026-09-04 and 2026-09-05. The new-conversation
