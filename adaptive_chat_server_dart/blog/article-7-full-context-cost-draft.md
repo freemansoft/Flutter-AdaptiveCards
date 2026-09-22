@@ -7,7 +7,7 @@ asks for the answer as Adaptive Card JSON, a strict, closed-vocabulary schema
 that a Flutter client renders as interactive UI rather than as text. A set of
 probes in that repository puts identical questions to different local models.
 [`context_fill_probe.dart`](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/tool/model_probes/context_fill_probe.dart)
-is the probe that produced every figure in this article. It runs 25 test cases,
+produced every figure in this article. It runs 25 test cases,
 one question each. A test case passes only if the reply used an element type
 that would answer the question. Every other probe in that set had been asking
 into a nearly empty window. That window holds a system prompt, one question,
@@ -15,7 +15,7 @@ and at most a short canned exchange showing the model the shape of a card.
 
 The literature documents that a long context degrades model behavior. What it
 does to a model's adherence to an output format is measured less often. The
-probe simulates a long conversation by filling three quarters of the window
+test probe simulates a long conversation by filling three quarters of the window
 with generated text. It measured eight models twice, once with no history at
 all and once carrying roughly 48,500 tokens of prompt for seven of the eight.
 The host was an Apple M1 Max with 64 GB, under Ollama 0.33.3, with two
@@ -45,7 +45,8 @@ the lab notebook in that repository.
 
 Every full-window run reports the token count it delivered in the **Prompt
 tokens, full** column. Tokenizers differ enough that a filler sized in
-characters can overflow a window and be discarded whole, with no error. The companion article [Ollama silently drops a history message larger
+characters can overflow a window in some models and be discarded whole, with no error.
+The companion article [Ollama silently drops a history message larger
 than its context
 window](https://joe.blog.freemansoft.com/2026/09/ollama-silently-drops-history-message.html)
 covers that defect and its fix.
