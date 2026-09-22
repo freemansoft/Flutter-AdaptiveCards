@@ -2,6 +2,17 @@
 
 ## [0.18.0]
 
+- Probes: **`prefill_cache_probe.dart` takes `--entries <n>`** (default 300,
+  ceiling 600) to set the synthetic glossary's length, so cache reuse can be
+  measured against prompt length on one model. The count is recorded in
+  `summary.glossaryEntries` and as the run's variant, and every run now writes
+  `prefill_cache_probe-entries<n>.json`, default included. A sixth phase,
+  `ordering`, sends fresh questions on the shared system prompt after an
+  exact repeat, after a fresh question, and after a call that extended the
+  previous one, so a cache miss can be tied to the call before it. A seventh,
+  `first-divergence`, sends three fresh questions on each of two new system
+  prompts, one with an exact repeat first, to test whether only the first
+  divergence from a prompt's first prefill misses.
 - Notebook: **`qwen3.8:27b-nvfp4`'s full-window `broken` count is four
   stalls and three malformed bodies, not seven parse failures.** The archived
   labels in `m1max-64gb-ollama0333-fitcontrol-calibrated/` record four
