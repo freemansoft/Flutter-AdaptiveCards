@@ -2,6 +2,30 @@
 
 ## [0.18.0]
 
+- Notebook: **a new conversation's prompt-cache cost follows the model's
+  memory type.** Eleven more installed models ran the seven-phase
+  `prefill_cache_probe.dart` on the M1 Max under Ollama 0.34.0 (2026-09-22),
+  fifteen in all. `llama-server`'s load output identifies the memory type. The
+  seven attention-only models and `gpt-oss:20b` (sliding window) reused the
+  cached system prompt on new conversations. The five recurrent models on
+  `llama-server` re-processed the tokens after the last context checkpoint,
+  1,025 at this prompt size, on every new conversation (four of five every
+  time), and the server log names the checkpoint restored. This reframes the
+  MLX-runner miss as the same recurrent architecture under a different
+  checkpoint policy; that policy and the MLX builds' recurrence are recorded as
+  inferred. The long retry after an abort is a timing effect on both runners.
+  Blog article 8 was reframed and retitled around the fifteen-model result.
+- Notebook: **the prompt-cache miss is no longer attributed to the runner
+  alone, and the MLX retry's cost is read from its total time.** `ollama show`
+  reports both MLX-served builds as `qwen3_5` / `nvfp4` and both
+  `llama-server` builds as GGUF `Q4_K_M` (`llama`, `qwen3moe`), so runner,
+  quantization and architecture move together and the section says so. Every
+  MLX retry after an abort took 37.4 to 47.3 s of wall clock (`totalMs`),
+  about a cold request, even when `prompt_eval_duration` read 142 ms; the
+  0.33.3 archive reads the same. A seven-phase `qwen3-coder:30b` run
+  (2026-09-22) confirms the first new conversation is warm on a second
+  `llama-server` model. Blog article 8 was rewritten on the 0.34.0 figures to
+  match, dropping the unarchived M5 table.
 - Probes: **`prefill_cache_probe.dart` takes `--entries <n>`** (default 300,
   ceiling 600) to set the synthetic glossary's length, so cache reuse can be
   measured against prompt length on one model. The count is recorded in
