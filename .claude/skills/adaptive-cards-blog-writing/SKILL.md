@@ -276,7 +276,8 @@ A=adaptive_chat_server_dart/blog/article-4-tool-channel-draft.md; BASE=main
 # Length. Prose excludes fenced blocks, table rows and URLs: aim for 1,500,
 # justify past 2,000 in the README ownership entry, hard cap 3,000. The on-page
 # figure adds the tables back, which is what the reader scrolls, soft ceiling
-# 3,500. Published articles are not retrofitted, and a walkthrough or how-to is
+# 3,500. Mermaid source stays out of both: it renders as an image, not as
+# text. Published articles are not retrofitted, and a walkthrough or how-to is
 # paced by its steps rather than by this target.
 python3 - "$A" <<'EOF'
 import re, sys
@@ -285,7 +286,8 @@ t = re.sub(r'```.*?```', '', raw, flags=re.S)
 t = re.sub(r'^\|.*$', '', t, flags=re.M)
 t = re.sub(r'\(https?://[^)]*\)', '', t)
 t = re.sub(r'https?://\S+', '', t)
-onpage = re.sub(r'\(https?://[^)]*\)', '', raw)
+onpage = re.sub(r'```mermaid.*?```', '', raw, flags=re.S)
+onpage = re.sub(r'\(https?://[^)]*\)', '', onpage)
 onpage = re.sub(r'https?://\S+', '', onpage)
 print('prose words:', len(t.split()), '  on-page words:', len(onpage.split()))
 EOF
