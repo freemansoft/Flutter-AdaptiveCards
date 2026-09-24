@@ -276,12 +276,13 @@ separate (the MLX runner from `nvfp4`). The retry after an abort, whose total
 time tracks how much of the abandoned prefill the probe's fixed wait leaves
 uncovered, on both runners.
 
-Its prose runs to about 2,010 words, past the 2,000 target, because the finding
+Its prose runs to about 2,250 words, past the 2,000 target, because the finding
 is a sort of fifteen models into memory-and-runner groups and each group needs
 its own mechanism paragraph: `llama-server`'s checkpoint placement, the MLX
-runner's, and what the retry waits for. A 2026-09-23 review pass corrected six
-claims the server log contradicts, cut the three-lane budget diagram as
-redundant with the flowchart, and turned the closing checks into a table.
+runner's, what two interleaved conversations cost, and what the retry waits
+for. A 2026-09-23 pass added the `--entries` sweep that turns the one-batch
+rollback from an inference into a measurement, the interleaved-conversations
+result, and the `int4` MLX control that rules out the quantization.
 
 _Defers:_ the truncated-prompt mistake that first made the cache read as
 broken to article 5, naming it in one paragraph because the probe's prompt

@@ -10,7 +10,7 @@
 /// reason — a standalone diagnostic that ran for one model would otherwise
 /// be reported missing for every other launched model.
 ///
-/// Seven phases, all against one resident model, strictly serial:
+/// Nine phases, all against one resident model, strictly serial:
 ///   1. **identical repeat** — the cold prefill against the warm one.
 ///   2. **same system prompt, different question** — a fresh question
 ///      against the same cached system prompt, the server's steady-state
@@ -34,6 +34,15 @@
 ///      repeat before its first fresh question. Tests whether a miss belongs
 ///      to the first request that diverges from a prompt's first prefill,
 ///      whatever came before it.
+///   8. **interleaved conversations** — two conversations on the *same*
+///      system prompt, alternating turn by turn, which is what two users of
+///      one chat server produce. Phase 4 switches system prompts instead, so
+///      nothing before this phase measures the shape the chat server itself
+///      generates.
+///   9. **second branch** — a new conversation on a system prompt that two
+///      earlier requests have already diverged from at different points,
+///      which asks whether a runner keeps one restorable branch per prompt or
+///      several.
 ///
 /// **Size the system prompt under `num_ctx`.** A prompt that overflows the
 /// window is truncated silently, which pins `prompt_eval_count` at about
@@ -59,13 +68,21 @@
 ///     carries the same figures in prose form, for a reader scanning the
 ///     file rather than querying it.
 ///
-/// `caseId` carries one of the seven phase names above (`identical-repeat`,
+/// `caseId` carries one of the nine phase names above (`identical-repeat`,
 /// `new-question`, `growing-conversation`, `interleaved`,
-/// `retry-after-abort`, `ordering`, `first-divergence`); `condition` carries
-/// the role within that phase (`cold`/`identical`, `turn-1`/`turn-2`/`turn-3`,
-/// `after-exact`, `delta-fresh-1`, …).
+/// `retry-after-abort`, `ordering`, `first-divergence`,
+/// `interleaved-conversations`, `second-branch`); `condition` carries the
+/// role within that phase (`cold`/`identical`, `turn-1`/`turn-2`/`turn-3`,
+/// `after-exact`, `delta-fresh-1`, `a-turn-2`, `branch-1-again`, …).
 /// The warmup call that loads the model and the final unload are plumbing,
-/// not one of the seven measured phases, and are not recorded as `ProbeCall`s.
+/// not one of the nine measured phases, and are not recorded as `ProbeCall`s.
+///
+/// **Each call records a digest of its reply**, not the reply itself. At
+/// `temperature 0` a warm repeat should answer a request byte for byte as its
+/// cold original did, so a differing digest on an identical request says the
+/// cache path changed the output, which is a correctness question rather than
+/// a cost one. The text is not archived because a run holds 40 replies and
+/// none of them is the measurement.
 ///
 /// **`--entries` sets the glossary length**, 300 by default. It exists to
 /// test whether cache reuse depends on prompt length: the same phases
@@ -94,6 +111,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:args/args.dart';
+import 'package:crypto/crypto.dart';
 
 // Relative: this file and its helper both live outside `lib/`, so there is
 // no `package:` URI for them.
@@ -129,6 +147,26 @@ String _systemPrompt(String tag, int glossaryEntries) {
       'Reference glossary: $entries';
 }
 
+/// A short hash of a reply, enough to tell two replies apart.
+String _digest(String reply) =>
+    sha256.convert(utf8.encode(reply)).toString().substring(0, 12);
+
+/// The Ollama settings that decide how the runner splits its cache.
+///
+/// Recorded per run because a slot count above one partitions the KV cache,
+/// which is exactly the mechanism a cache measurement is about. An unset
+/// variable is recorded as `unset` rather than omitted, so a later reader can
+/// tell "the default applied" from "nobody looked".
+Map<String, String> _cacheEnvironment() => {
+  for (final name in [
+    'OLLAMA_NUM_PARALLEL',
+    'OLLAMA_KV_CACHE_TYPE',
+    'OLLAMA_MAX_LOADED_MODELS',
+    'OLLAMA_CONTEXT_LENGTH',
+  ])
+    name: Platform.environment[name] ?? 'unset',
+};
+
 int _ms(Map<String, dynamic> data, String key) =>
     data[key] is int ? (data[key] as int) ~/ 1000000 : 0;
 
@@ -163,6 +201,8 @@ class const _CallResult({
     if (cached != null) 'cached': cached,
     if (prefillMs != null) 'prefillMs': prefillMs,
     if (totalMs != null) 'totalMs': totalMs,
+    if (reply != null) 'replyDigest': _digest(reply!),
+    if (reply != null) 'replyChars': reply!.length,
   };
 }
 
@@ -345,6 +385,50 @@ Future<void> _firstDivergencePhase(_Record record, int glossaryEntries) async {
   }
 }
 
+/// Phase 8: two conversations on one system prompt, alternating.
+///
+/// `a-turn-N` and `b-turn-N` replay their own history each time, so every
+/// call after the first pair diverges from the conversation the runner served
+/// immediately before it.
+Future<void> _interleavedConversationsPhase(
+  _Record record,
+  List<Map<String, String>> Function(String question) ask,
+) async {
+  const phase = 'interleaved-conversations';
+  var sample = 0;
+  final a = ask('Define alpha-term30.');
+  final b = ask('Define alpha-term40.');
+  for (final turn in [1, 2, 3]) {
+    for (final (tag, history, follow) in [
+      ('a', a, 'Now define alpha-term3${turn}1.'),
+      ('b', b, 'Now define alpha-term4${turn}1.'),
+    ]) {
+      final result = await record(phase, '$tag-turn-$turn', sample++, history);
+      history
+        ..add({'role': 'assistant', 'content': result.reply ?? ''})
+        ..add({'role': 'user', 'content': follow});
+    }
+  }
+}
+
+/// Phase 9: a second divergence branch on one system prompt.
+///
+/// `branch-1` and `branch-2` diverge from the shared glossary at the same
+/// point but with different questions; `branch-1-again` then returns to the
+/// first branch. A runner that keeps one branch per prompt has to re-process
+/// it; one that keeps several serves it warm.
+Future<void> _secondBranchPhase(
+  _Record record,
+  List<Map<String, String>> Function(String question) ask,
+) async {
+  const phase = 'second-branch';
+  var sample = 0;
+  await record(phase, 'branch-1', sample++, ask('Define alpha-term50.'));
+  await record(phase, 'branch-2', sample++, ask('Define alpha-term60.'));
+  await record(phase, 'branch-1-again', sample++, ask('Define alpha-term50.'));
+  await record(phase, 'branch-3', sample++, ask('Define alpha-term70.'));
+}
+
 Future<void> main(List<String> argv) async {
   final parsedArgs = _parseArgs(argv);
   if (parsedArgs == null) return;
@@ -459,6 +543,12 @@ Future<void> main(List<String> argv) async {
   stdout.writeln('7. first divergence');
   await _firstDivergencePhase(record, glossaryEntries);
 
+  stdout.writeln('8. interleaved conversations');
+  await _interleavedConversationsPhase(record, ask);
+
+  stdout.writeln('9. second branch');
+  await _secondBranchPhase(record, ask);
+
   await _unload(url, model);
   stdout.writeln('model unloaded');
 
@@ -479,7 +569,13 @@ Future<void> main(List<String> argv) async {
       // of accepting the default.
       assetNames: const [],
       temperature: 0,
-      summary: {'glossaryEntries': glossaryEntries, ...phaseSummaries},
+      summary: {
+        'glossaryEntries': glossaryEntries,
+        'numCtx': _numCtx,
+        'numPredict': _numPredict,
+        'environment': _cacheEnvironment(),
+        ...phaseSummaries,
+      },
       calls: calls,
       notes:
           'Standalone cache/prefill diagnostic, not one of the seven sweep '

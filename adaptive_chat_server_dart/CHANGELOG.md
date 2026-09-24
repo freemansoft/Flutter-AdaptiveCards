@@ -2,6 +2,26 @@
 
 ## [0.18.0]
 
+- Probes: **`prefill_cache_probe.dart` gains two phases, reply digests and an
+  archived server-log slice.** `interleaved-conversations` alternates two
+  conversations on one system prompt, the shape two users of one chat server
+  produce and the one nothing measured before; `second-branch` asks whether a
+  runner keeps one restorable branch per prompt or several. Each call records a
+  digest of its reply, so a warm repeat can be checked against its cold
+  original at `t=0`, and each run records `num_ctx`, `num_predict` and the
+  `OLLAMA_*` cache settings.
+- Notebook: **the `llama-server` rollback is one 1,024-token batch, measured.**
+  An `--entries` sweep moved `qwen3.5:9b` from 1,007 to 4,811 tokens and the
+  re-processed count stayed at 1,025, so the batch reading is no longer
+  inferred from the launch flags. A prompt shorter than one batch has no
+  checkpoint to fall back to and re-processes everything. Two conversations
+  interleaved on one system prompt pay that batch on **every turn** on
+  `llama-server`, while the same architecture on the MLX runner stays warm.
+  `mvincig11/semif-qwen3.5-4b-mlx-4bit`, an `int4` MLX build, reproduces the
+  MLX shape and rules out the `nvfp4` quantization as the cause; the
+  architecture stays confounded, since Ollama's MLX runner refuses the
+  `gpt-oss` safetensors build (`unsupported architecture`). Blog article 8
+  carries all three.
 - Notebook: **a new conversation's prompt-cache cost follows the model's
   memory type.** Eleven more installed models ran the seven-phase
   `prefill_cache_probe.dart` on the M1 Max under Ollama 0.34.0 (2026-09-22),

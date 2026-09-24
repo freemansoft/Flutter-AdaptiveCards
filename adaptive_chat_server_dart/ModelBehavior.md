@@ -1417,7 +1417,7 @@ For `qwen3.8:27b-nvfp4`, a byte-identical repeat and a strictly-growing conversa
 
 ### Only the first divergence from a cached prefix pays, on the MLX-served `nvfp4` `qwen3_5` builds (superseded in part by the recurrent-memory section below)
 
-The section above left the cross-question miss on `qwen3.8:27b-nvfp4` with three unconfirmed candidate causes: a matching rule specific to the model or the `nvfp4` quantization, a prompt-length effect above roughly 3,000 tokens, or a limit on how many prefixes the runner keeps. `prefill_cache_probe.dart` gained `--entries` on 2026-09-21 to size the glossary independent of the fixed 300, and two new phases — `ordering` (seven fresh questions, one after each kind of preceding call: `seed`, `after-exact`, `after-question`, `after-question-2`, `after-exact-2`, `extend-base`, `after-extend`) and `first-divergence` (three fresh questions on each of two system prompts no earlier call had sent, one preceded by an exact repeat) — to separate order from content. Every reading below is Apple M1 Max / 64 GB, Ollama 0.34.0 (confirmed via `GET /api/version`; the probe's own `ollamaVersion` field read `null` on every run here, since it shells out to `ollama --version` rather than the server it is talking to — a probe gap, not a data gap), `t=0`, one model resident, `num_ctx` 8192, single run per cell. Archives: [`results-m1max-64gb-ollama0340/`](tool/model_probes/results-m1max-64gb-ollama0340), one `prefill_cache_probe-entries<n>-<phase-count>phase.json` per model per run.
+The section above left the cross-question miss on `qwen3.8:27b-nvfp4` with three unconfirmed candidate causes: a matching rule specific to the model or the `nvfp4` quantization, a prompt-length effect above roughly 3,000 tokens, or a limit on how many prefixes the runner keeps. `prefill_cache_probe.dart` gained `--entries` on 2026-09-21 to size the glossary independent of the fixed 300, and two new phases — `ordering` (seven fresh questions, one after each kind of preceding call: `seed`, `after-exact`, `after-question`, `after-question-2`, `after-exact-2`, `extend-base`, `after-extend`) and `first-divergence` (three fresh questions on each of two system prompts no earlier call had sent, one preceded by an exact repeat) — to separate order from content. Every reading below is Apple M1 Max / 64 GB, Ollama 0.34.0 (each archive's `ollama` field records it, read from `ollama --version` at write time, and `GET /api/version` agrees), `t=0`, one model resident, `num_ctx` 8192, single run per cell. Archives: [`results-m1max-64gb-ollama0340/`](tool/model_probes/results-m1max-64gb-ollama0340), one `prefill_cache_probe-entries<n>-<phase-count>phase.json` per model per run.
 
 **The miss follows which runner serves the model, confirmed from the server log rather than inferred from figures alone.** `ollama serve`'s log records `"mlx runner is ready"` or `"using llama-server for model"` when it starts serving a request, and every call in every run here was covered by exactly one such line:
 
@@ -1537,6 +1537,42 @@ Across all fifteen measured models the new-conversation behavior sorts by memory
 The retry readings follow the timing account on all eleven `llama-server` models too: a retry's total runs long wherever the cold prefill outlasts the 0.4 s abort plus 5 s wait (`qwen2.5-coder:7b`, 7.3–9.3 s cold, retried in 4.95 s; `granite4.1:8b`, 5.7–7.8 s cold, 4.10 s) and short where it does not (`granite4.1:3b`, 2.2–3.2 s cold, 0.18 s).
 
 - Caveat: one seven-phase run per model for these eleven, one client, requests serial. The rollback was one 1,024-token batch at both prompt sizes measured (3,177 and 3,479 tokens), which matches the `-b 1024 -ub 1024` Ollama passes `llama-server`; no run varied the batch size.
+
+### The rollback is one batch, the MLX miss is not the `nvfp4` quantization, and interleaved conversations pay per turn
+
+`prefill_cache_probe.dart` gained two phases on 2026-09-23, `interleaved-conversations` (two conversations alternating on one system prompt, three turns each) and `second-branch` (two divergences from one prompt, then a return to the first). The same change records a digest of every reply, the `num_ctx`, `num_predict` and `OLLAMA_*` settings a run used, and a slice of `ollama serve`'s log beside each archive. Runs below are `prefill_cache_probe-entries<n>-ninephase.json` under [`results-m1max-64gb-ollama0340/`](tool/model_probes/results-m1max-64gb-ollama0340), M1 Max / 64 GB, Ollama 0.34.0, one model resident, `t=0`.
+
+**The `llama-server` rollback is one 1,024-token batch, measured within one model rather than inferred from the launch flags.** `--entries` moved `qwen3.5:9b`'s prompt from 1,007 to 4,811 tokens. The tokens a new conversation re-processes stay fixed:
+
+| Entries | Prompt | Cached on a new conversation | Re-processed | New-conversation prefill | Cold prefill |
+| ------- | ------ | ---------------------------- | ------------ | ------------------------ | ------------ |
+| 100     | 1007   | 0                            | 1007         | 3233 ms                  | 2227 ms      |
+| 150     | 1548   | 523                          | 1025         | 4363 ms                  | 5819 ms      |
+| 200     | 2092   | 1067                         | 1025         | 3676 ms                  | 7003 ms      |
+| 300     | 3177   | 2152                         | 1025         | 4190 ms                  | 9589 ms      |
+| 450     | 4811   | 3786                         | 1025         | 4013 ms                  | 15798 ms     |
+
+`nemotron-3-nano:4b` re-processes 1,025 at both sizes measured (1,700 and 3,479 tokens). Two consequences. A prompt shorter than one batch has no checkpoint before the divergence, so the 100-entry run re-processes everything and its new conversation costs _more_ than its own cold prefill. And "about a third of a cold prefill", recorded in the section above, is a property of a ~3,200-token prompt: the fixed 1,025 tokens are 25% of a 4,811-token prompt and 100% of a 1,007-token one.
+
+**A second conversation on the same system prompt pays the rollback on every turn, on `llama-server`.** Nothing before this phase measured that shape: the `interleaved` phase switches system prompts, where two users of one chat server share one. Re-evaluated tokens per call, at 300 entries:
+
+| Model                                 | Runner         | Memory    | Two conversations, six turns | Second branch, four calls |
+| ------------------------------------- | -------------- | --------- | ---------------------------- | ------------------------- |
+| `llama3.2:latest`                     | `llama-server` | attention | 7 to 58                      | 7 each                    |
+| `gpt-oss:20b`                         | `llama-server` | sliding   | 5 to 25, and one 1,025       | 5 each                    |
+| `qwen3.5:9b`                          | `llama-server` | recurrent | 1,024 to 1,042 every turn    | 988 each                  |
+| `nemotron-3-nano:4b`                  | `llama-server` | recurrent | 1,022 to 1,059 every turn    | 958 each                  |
+| `qwen3.8:27b-nvfp4`                   | MLX            | recurrent | 11 to 37                     | 5 to 11                   |
+| `mvincig11/semif-qwen3.5-4b-mlx-4bit` | MLX            | recurrent | 10 to 22                     | 4 to 10                   |
+
+The two runners diverge here rather than agreeing. On `llama-server` a recurrent model re-processes a batch on every turn of an interleaved pair, because each turn diverges from the conversation the runner served last. On the MLX runner the same architecture stays warm throughout, which fits the reading that it keeps a checkpoint at each divergence point it has already seen. A second branch is free on both runners once its point has been visited.
+
+**The MLX miss is not the `nvfp4` quantization.** `mvincig11/semif-qwen3.5-4b-mlx-4bit` is a safetensors `qwen3_5` build at `int4`, served by the MLX runner (`mlx runner is ready` in its archived log slice). It reproduces the shape the two `nvfp4` builds show: a cold first request (4.49 s), a warm exact repeat (3176/3172, 29 ms), a cold first new conversation (3177/5, 5.38 s), and a warm second one (3177/3167, 74 ms). Two quantizations, one runner, same behavior.
+
+What remains confounded is the architecture: every model Ollama serves on its MLX runner here is `qwen3_5`. An attention-only control was attempted and is not available on this runtime. `pd95/gptoss-mlx:20b-mxfp4` is a safetensors MXFP4 build of `gpt-oss`; Ollama routes it to the MLX runner and the runner refuses it, `mlx runner failed: Error: unsupported architecture: GptOssForCausalLM`. An MLX 4-bit Llama from `mlx-community` does not import either: `ollama create` rejects its packed tensors with `unknown data type: U32`.
+
+- Probe observation, not a model finding: `qwen3.5:9b` returns an empty `message.content` on every call in these runs, so its growing conversations append empty assistant turns. The reply digests make this visible (`e3b0c44298fc` is the digest of the empty string). Its cache figures are unaffected, since the probe measures the prompt side, but a run that scored replies would score nothing here.
+- Caveat: one run per cell for the sweep and the two new phases. The interleaved phase alternates two conversations; three or more, and concurrent rather than serial clients, are unmeasured.
 
 ### Measurement lessons
 

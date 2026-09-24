@@ -87,12 +87,12 @@ void main() {
       tmpDir.deleteSync(recursive: true);
     });
 
-    // One long, sequential test rather than several: the seven phases share
+    // One long, sequential test rather than several: the nine phases share
     // one resident model and are meant to run strictly in order (per the
     // probe's doc comment), so splitting them into independent test() cases
     // would either serialize on shared server/tmpDir state anyway or lose
     // the ordering the probe itself depends on.
-    test('writes one call per request across the seven phases, structured '
+    test('writes one call per request across the nine phases, structured '
         'figures in summary, and round-trips', () async {
       final path = p.join(tmpDir.path, 'run.json');
 
@@ -130,6 +130,8 @@ void main() {
         'retry-after-abort': 2,
         'ordering': 10,
         'first-divergence': 9,
+        'interleaved-conversations': 6,
+        'second-branch': 4,
       };
       final byPhase = <String, List<ProbeCall>>{};
       for (final call in run.calls) {
@@ -183,6 +185,18 @@ void main() {
       // The default glossary length is recorded, so a later run at another
       // --entries cannot be mistaken for this one.
       expect(run.summary['glossaryEntries'], 300);
+
+      // The run records what decides how the runner splits its cache, and a
+      // digest of each reply: at t=0 a warm repeat should answer as its cold
+      // original did, so a later reader can check that the cache path did not
+      // change the output.
+      expect(run.summary['numCtx'], 8192);
+      final env = run.summary['environment'] as Map<String, dynamic>;
+      expect(env.containsKey('OLLAMA_NUM_PARALLEL'), isTrue);
+      expect(cold['replyDigest'], isA<String>());
+      expect(cold['replyChars'], greaterThan(0));
+      final repeat = identicalRepeat.last as Map<String, dynamic>;
+      expect(repeat['replyDigest'], cold['replyDigest']);
     });
 
     test('--entries sets the glossary length and is recorded', () async {

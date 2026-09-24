@@ -25,10 +25,10 @@ store context as attention entries, one token at a time, and they reused the
 cached prompt on 119 of 120 new conversations. The other seven carry a running
 state, which a runner can restore only from a saved checkpoint. On Ollama's
 `llama-server` runner, four of them re-processed the last 1,024 or 1,025 tokens
-of the request on every new conversation. That is about a third of a cold
-prefill. A fifth did so on some. On Ollama's MLX runner, two re-processed the
-whole prompt for the first new conversation on a system prompt and almost none
-of it afterward.
+of the request on every new conversation. That is a fixed cost: a quarter of a
+4,800-token prompt, and all of a 1,000-token one. A fifth did so on some. On
+Ollama's MLX runner, two re-processed the whole prompt for the first new
+conversation on a system prompt and almost none of it afterward.
 
 ## Terms used in this article
 
@@ -94,12 +94,14 @@ sequenceDiagram
   Note over P: waits 5 s
   P->>O: the same request again
 
-  Note over P,O: 6-7. two follow-up experiments on the shared glossary<br/>and on two more glossaries
+  Note over P,O: 6-9. four follow-up experiments: ordering, first divergence,<br/>two interleaved conversations, and a second branch
   P->>O: unload, which ends the run
 ```
 
 Eleven of the fifteen models ran the probe once, on 2026-09-22, from one client
-sending requests one at a time. `llama3.2:latest`, `qwen3-coder:30b` and the
+sending requests one at a time. Two later experiments, on interleaved
+conversations and on a second divergence branch, ran on 2026-09-23 against six
+of the fifteen, and the sections that use them say so. `llama3.2:latest`, `qwen3-coder:30b` and the
 two `nvfp4` builds ran the first five or six patterns twice more on 2026-09-21.
 `llama3.2:latest` and `qwen3.8:27b-nvfp4` ran a third time at a different
 glossary length. Every token count repeated except the retry's.
@@ -163,13 +165,13 @@ Source: the notebook's [recurrent-memory section](https://github.com/freemansoft
 
 All seven attention-only models were warm on every new conversation.
 `gpt-oss:20b` was warm on 14 of 15, and once `llama-server` rolled it back to a
-checkpoint at 1,167 tokens. That rollback followed an exact repeat. Two other
-new conversations that followed an exact repeat were warm, so the preceding
-call does not explain the rollback.
+checkpoint at 1,167 tokens. Two other new conversations after the same kind of
+call were warm, so one event does not attribute it.
 
 Four of the recurrent builds reused 2,152 to 2,455 tokens on every new
-conversation, the first included, and re-processed the last 1,024 or 1,025.
-That cost 1.6 to 4.0 s against 4.0 to 11.0 s cold, about a third. The fifth is
+conversation, the first included, and re-processed the last 1,024 or 1,025. On
+these 3,177 to 3,479-token prompts that cost 1.6 to 4.0 s against 4.0 to 11.0 s
+cold, about a third, and the share grows as the prompt shrinks. The fifth is
 the unsloth build of the same Nemotron weights as `nemotron-3-nano:30b`. It did
 so on a third of its new conversations and restored almost the whole prompt on
 the rest. The two `nvfp4` builds on Ollama's MLX runner paid a cold prefill for
@@ -208,17 +210,19 @@ Its 3,177-token request therefore re-processes 1,025 tokens. A request with
 nothing to restore gets a different line. That covers a first request and a
 request on an unrelated glossary: `forcing full prompt re-processing due to
 lack of cache data (likely due to SWA or hybrid/recurrent memory …)`. The
-rollback was 1,024 or 1,025 tokens on all five recurrent builds, whose prompts
-ran 3,177 to 3,479 tokens. No run varied the prompt length within one model or
-changed the batch size, so the rollback matching the batch is read from the
-launch flags rather than measured.
+rollback is one batch, not a share of the prompt. `--entries` moved
+`qwen3.5:9b`'s prompt from 1,007 to 4,811 tokens, and the tokens it
+re-processed stayed at 1,025 across that range. `nemotron-3-nano:4b` matches at
+both sizes measured. The exception is instructive. A 1,007-token prompt is
+shorter than one batch, so it holds no checkpoint before the divergence, and
+the model re-processes all of it for more than its own cold prefill costs. No
+run varied the batch size itself.
 
-The unsloth Nemotron build saves a third checkpoint, 16 tokens from the end of
-its prompt. An exact repeat or a growing-conversation turn drops that
-checkpoint, and a new conversation then falls back 1,025 tokens like the other
-builds. After any other call the checkpoint survives and the next new
-conversation restores from it. Why `llama-server` places one there for this
-build is not in `llama-server`'s output.
+The unsloth Nemotron build saves a third checkpoint 16 tokens from the end. An
+exact repeat or a growing-conversation turn drops it, and that build then falls
+back 1,025 tokens like the others; after any other call it restores from the
+closer checkpoint. Why `llama-server` places one there for this build is not in
+its output.
 
 ## Ollama's MLX runner pays one extra cold prefill per system prompt
 
@@ -255,22 +259,53 @@ time in parentheses where it matters:
 Source: the notebook's [phase-7 table](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md#recurrent-memory-models-lose-part-of-a-cached-prefix-on-llama-server-too-the-runner-sets-how-much).
 
 `qwen3.8:27b-nvfp4` pays its cold prefill once, with or without an exact repeat
-before it, and about 400 ms on each new conversation after. The other two rows
-reproduce their sections' results.
+before it, and about 400 ms after. The other two rows reproduce their sections'
+results.
 
 An `ordering` experiment sent seven more new conversations on the shared
 glossary, each after a different kind of call. Only the unsloth build's result
 moved, along with `gpt-oss:20b`'s single rollback.
 
-## No run separates Ollama's MLX runner from the `nvfp4` quantization
+## Two conversations on one system prompt pay per turn, on `llama-server`
 
-Both models Ollama served on its MLX runner are `nvfp4` builds of one model
-family. Nothing here separates the MLX runner's
-checkpoint policy from the `nvfp4` quantization, because no other quantization
-ran on that runner. A checkpoint policy belongs to a runner rather than to a
-weight format, which makes the MLX runner the likelier cause. No run has shown
-it. An attention-only model on the MLX runner would test it. None is installed
-on this host.
+A chat server with two users runs two conversations against one system prompt.
+Each turn replays its own history, so each one diverges from the conversation
+the runner served last. A phase that alternates two three-turn conversations
+puts that shape on the probe for the first time. Re-evaluated tokens per call,
+at 300 entries:
+
+| Model                                 | Runner         | Memory    | Two conversations, six turns | Second branch, four calls |
+| ------------------------------------- | -------------- | --------- | ---------------------------- | ------------------------- |
+| `llama3.2:latest`                     | `llama-server` | attention | 7 to 58                      | 7 each                    |
+| `gpt-oss:20b`                         | `llama-server` | sliding   | 5 to 25, and one 1,025       | 5 each                    |
+| `qwen3.5:9b`                          | `llama-server` | recurrent | 1,024 to 1,042 every turn    | 988 each                  |
+| `nemotron-3-nano:4b`                  | `llama-server` | recurrent | 1,022 to 1,059 every turn    | 958 each                  |
+| `qwen3.8:27b-nvfp4`                   | MLX            | recurrent | 11 to 37                     | 5 to 11                   |
+| `mvincig11/semif-qwen3.5-4b-mlx-4bit` | MLX            | recurrent | 10 to 22                     | 4 to 10                   |
+
+Source: the notebook's [interleaved-conversations
+section](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md#the-rollback-is-one-batch-the-mlx-miss-is-not-the-nvfp4-quantization-and-interleaved-conversations-pay-per-turn).
+
+The two runners part company here. A recurrent model on `llama-server` pays a
+batch on every turn of the pair, so the cost is per turn rather than per
+conversation. The same architecture on Ollama's MLX runner stays warm, which
+fits a runner that keeps a checkpoint at each divergence point it has already
+served. A second branch on one system prompt is cheap on both, once its point
+has been visited.
+
+## The MLX result is not about the quantization, and the architecture is untested
+
+The quantization is ruled out. `mvincig11/semif-qwen3.5-4b-mlx-4bit` is an
+`int4` safetensors build that Ollama also serves on its MLX runner, and it
+repeats the shape exactly: a warm exact repeat at 3,172 of 3,176 tokens, a cold
+first new conversation at 3,177 / 5, and a warm second one at 3,167. Two
+quantizations, one runner, one behaviour. The architecture is not ruled out,
+because every model this runtime serves on MLX here is a `qwen3_5` build. Two
+attempts at an attention-only control failed on the runtime rather than on the
+measurement. Ollama routes `pd95/gptoss-mlx:20b-mxfp4`, a safetensors
+`gpt-oss`, to the MLX runner, which refuses it: `unsupported architecture:
+GptOssForCausalLM`. An MLX 4-bit Llama build does not import at all, since
+`ollama create` rejects its packed tensors with `unknown data type: U32`.
 
 ## A retry's cost is the remainder of the abandoned call, not its own prefill
 
@@ -314,13 +349,10 @@ in milliseconds. One that does not pays the remainder, up to 47.3 s on
 
 The two `nvfp4` rows span three runs, in both columns, which is why their cold
 figures are wider here than in the table above. On `qwen3.8:27b-nvfp4` the
-retry also cached 2,063 tokens on two of three runs.
-A fourth run, with a 200-entry glossary, stopped there too (2,063 of 2,292).
-The MLX runner prefills in 2,048-token chunks, and its log shows the abort
-landing at the first chunk boundary: `processed=2048`, then `Request terminated
-error="context canceled"`. The retry then resumed from those 2,048 tokens plus
-the 15 it already shared. That is why the figure does not move with prompt
-length.
+retry cached 2,063 tokens on three runs of four, at two glossary sizes. The MLX
+runner prefills in 2,048-token chunks and its log shows the abort landing at
+the first boundary, so the retry resumes from those 2,048 tokens plus the 15 it
+already shared.
 
 Fifteen models, sorted by what a request shares with the runner's last call:
 
@@ -346,11 +378,11 @@ flowchart TD
 Each check costs one line of code or one look at a log, and each catches a cost
 the reply itself does not report.
 
-| Check                                                             | Why                                                                                                                                                                                                        |
-| ----------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Read each model's memory type before relying on the cache         | `llama-server` prints `llama_memory_recurrent` in Ollama's server log for a recurrent model, and the same log names the runner Ollama started.                                                             |
-| Budget a recurrent model's new-conversation cost by runner        | On `llama-server` it was about a third of a cold prefill, on every new conversation for four of the five builds. On the two `nvfp4` builds it was one extra cold prefill per system prompt per model load. |
-| Read `prompt_eval_cached_count` and the total time on every reply | The cached count is the only field that separates a served prefix from a re-evaluated one. The prefill time alone can hide a wait behind another call.                                                     |
+| Check                                                             | Why                                                                                                                                                                                                                                                                             |
+| ----------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Read each model's memory type before relying on the cache         | `llama-server` prints `llama_memory_recurrent` in Ollama's server log for a recurrent model, and the same log names the runner Ollama started.                                                                                                                                  |
+| Budget a recurrent model's new-conversation cost by runner        | On `llama-server` it is a fixed 1,025 tokens per divergence, a quarter of a 4,800-token prompt and all of a 1,000-token one, charged on every turn when two conversations interleave. On the two `nvfp4` builds it was one extra cold prefill per system prompt per model load. |
+| Read `prompt_eval_cached_count` and the total time on every reply | The cached count is the only field that separates a served prefix from a re-evaluated one. The prefill time alone can hide a wait behind another call.                                                                                                                          |
 
 The probe did not measure how many cached prefixes a runner keeps, or what it
 evicts under memory pressure.
