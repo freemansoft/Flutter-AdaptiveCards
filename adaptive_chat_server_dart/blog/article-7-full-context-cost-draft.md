@@ -1,4 +1,4 @@
-# Three of eight local models degrade on a mostly full context window, each a different way
+# A full context breaks three local models, each in a different way
 
 In
 [`freemansoft/Flutter-AdaptiveCards`](https://github.com/freemansoft/Flutter-AdaptiveCards)
