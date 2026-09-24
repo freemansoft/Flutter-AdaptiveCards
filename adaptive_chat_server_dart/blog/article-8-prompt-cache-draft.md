@@ -159,9 +159,9 @@ twelve follow one.
 | -------------------------------------- | -------------- | -------------- | --------------------------- | ---------------------------------------------- | ------------------------------------------------- |
 | `llama3.2:latest`                      | attention      | `llama-server` | 1.9–3.1 s                   | 2,136, 42–46 ms                                | 2,136, 39–71 ms                                   |
 | `qwen3-coder:30b`                      | attention      | `llama-server` | 4.1–5.9 s                   | 3,167, 76–103 ms                               | 3,167–3,168, 78–120 ms                            |
-| `qwen2.5-coder:7b`                     | attention      | `llama-server` | 8.6–10.0 s                  | 3,167, 106–137 ms                              | 3,167–3,168, 99–142 ms                            |
+| `qwen2.5-coder:7b`                     | attention      | `llama-server` | 8.6–9.9 s                   | 3,167, 106–137 ms                              | 3,167–3,168, 99–142 ms                            |
 | `llama3-chatqa:8b`                     | attention      | `llama-server` | 4.7–6.2 s                   | 2,121, 103–139 ms                              | 2,121, 76–106 ms                                  |
-| `llama3-groq-tool-use:8b`              | attention      | `llama-server` | 4.7–6.1 s                   | 2,126, 120–136 ms                              | 2,126, 113–137 ms                                 |
+| `llama3-groq-tool-use:8b`              | attention      | `llama-server` | 4.7–6.0 s                   | 2,126, 120–136 ms                              | 2,126, 113–137 ms                                 |
 | `granite4.1:3b`                        | attention      | `llama-server` | 2.2–3.3 s                   | 2,124, 49–58 ms                                | 2,124, 46–85 ms                                   |
 | `granite4.1:8b`                        | attention      | `llama-server` | 7.1–8.4 s                   | 2,124, 137–180 ms                              | 2,124, 130–185 ms                                 |
 | `gpt-oss:20b`                          | sliding window | `llama-server` | 2.4–3.4 s                   | 2,182, 67–86 ms                                | 2,182 on 11 (59–89 ms); 1,162 once (1.68 s)       |
@@ -362,7 +362,7 @@ The other is an exact repeat's total.
 | `nemotron-3-nano:30b`      | 4.1–5.1 s    | 0.14 s           | 49 ms, 0.27 s                             |
 | `nemotron-3-nano:4b`       | 5.8–6.4 s    | 0.27 s           | 54 ms, 2.20 s                             |
 | `granite4.1:8b`            | 7.1–8.4 s    | 0.29 s           | 36 ms, 4.76 s                             |
-| `qwen2.5-coder:7b`         | 8.6–10.0 s   | 0.28 s           | 27 ms, 5.72 s                             |
+| `qwen2.5-coder:7b`         | 8.6–9.9 s    | 0.28 s           | 27 ms, 5.72 s                             |
 | `qwen3.5:9b`               | 8.9–10.7 s   | 0.76 s           | 76 ms, 8.12 s                             |
 | `qwen3.6:27b-coding-nvfp4` | 33.8–35.3 s  | 0.91 s           | 175 ms, 34.4 s                            |
 | `qwen3.8:27b-nvfp4`        | 35.2–36.0 s  | 0.80 s           | 152 ms, 35.2 s; 16.3 s, 34.3 s on one run |
