@@ -64,7 +64,7 @@ flowchart TD
 | **Sliding window**         | Attention layers that see only the last few tokens, 128 in `gpt-oss:20b`. `llama-server` handles them with the same checkpoints.                                                                                                       |
 | **First-divergence phase** | Three new conversations on each of two synthetic prompts no earlier call sent. Arm `delta` goes straight there from the first request; arm `echo` sends the same request twice first.                                                  |
 | **Interleaved phase**      | Two three-turn conversations alternating on one system prompt, as when a chat server serves two users.                                                                                                                                 |
-| **Second branch**          | Two divergences from one system prompt, then a return to the first.                                                                                                                                                                    |
+| **Second branch**          | Four single-question requests on the shared synthetic prompt: two different questions, the first one again, then a third. It asks whether the runner keeps one restorable branch per prompt or several.                                |
 
 ## The probe sends the request shapes a chat server produces, in nine phases
 
@@ -248,13 +248,14 @@ cached=3166`, and `qwen3.6:27b-coding-nvfp4` logs the same shape at 3167.
 
 The runner's source says why. Its prefix cache, in
 [`prefix_cache.go`](https://github.com/ollama/ollama/blob/v0.34.0/x/mlxrunner/prefix_cache.go)
-at v0.34.0, is a trie of token runs. Attention layers keep an entry per token
-and can be restored to any position. Recurrent layers keep a snapshot only at
-the end of a trie node. A request that diverges inside a node has nothing to
-restore, so the runner prefills from the start. During that prefill it
-schedules a snapshot at the branch point, "so future requests diverging here
-can restore instead of re-evaluating". The recurrence is in the runner's
-[Qwen3.5 model
+at v0.34.0, is a trie, a prefix tree in which each cached prompt is a path of
+token runs from the root and two prompts share the path until the token where
+they differ. Attention layers keep an entry per token and can be restored to
+any position. Recurrent layers keep a snapshot only at the end of a trie node.
+A request that diverges inside a node has nothing to restore, so the runner
+prefills from the start. During that prefill it schedules a snapshot at the
+branch point, "so future requests diverging here can restore instead of
+re-evaluating". The recurrence is in the runner's [Qwen3.5 model
 code](https://github.com/ollama/ollama/blob/v0.34.0/x/models/qwen3_5/qwen3_5.go)
 as well: gated-delta recurrent layers interleaved with full-attention layers.
 `ollama show` reports both `nvfp4` builds as that architecture.
@@ -292,22 +293,27 @@ create` rejected an MLX 4-bit Llama.
 ## Two conversations on one system prompt pay per turn, on `llama-server`
 
 A chat server with two users runs two conversations against one system prompt.
-Each turn replays its own history, so each one diverges from the conversation
-the runner served last. Re-evaluated tokens per call at 300 entries in the
-interleaved and second-branch phases:
+Each request replays its own conversation's history, so each one diverges from
+the request the runner served last. Two phases send that shape on the shared
+synthetic prompt. The interleaved phase alternates two three-turn
+conversations, six requests. The second-branch phase sends four single-question
+requests: two different questions, the first again, then a third. Every cell
+below is the number of prompt tokens the runner re-evaluated on one request,
+the prompt count minus the cached count. A range spans the phase's requests,
+and "each" means every request read the same:
 
-| Model                                 | Runner         | Memory    | Two conversations, six turns | Second branch, four calls |
-| ------------------------------------- | -------------- | --------- | ---------------------------- | ------------------------- |
-| `llama3.2:latest`                     | `llama-server` | attention | 7 to 58                      | 7 each                    |
-| `qwen3-coder:30b`                     | `llama-server` | attention | 8 to 148                     | 8 each                    |
-| `gpt-oss:20b`                         | `llama-server` | sliding   | 5 to 25, and one 1,025       | 5 each                    |
-| `qwen3.5:9b`                          | `llama-server` | recurrent | 1,019 to 1,080 every turn    | 929 each                  |
-| `nemotron-3-nano:4b`                  | `llama-server` | recurrent | 1,021 to 1,058 every turn    | 957 each                  |
-| `nemotron-3-nano:30b`                 | `llama-server` | recurrent | 1,024 to 1,056 every turn    | 961 each                  |
-| `nemotron-3.5-lightning:30b`          | `llama-server` | recurrent | 1,024 to 1,050 every turn    | 961 each                  |
-| unsloth Nemotron GGUF                 | `llama-server` | recurrent | 17 to 80                     | 17 each                   |
-| `qwen3.8:27b-nvfp4`                   | MLX            | recurrent | 13 to 22                     | 5 to 13                   |
-| `mvincig11/semif-qwen3.5-4b-mlx-4bit` | MLX            | recurrent | 12 to 82                     | 4 to 12                   |
+| Model                                 | Runner         | Memory    | Interleaved phase         | Second-branch phase |
+| ------------------------------------- | -------------- | --------- | ------------------------- | ------------------- |
+| `llama3.2:latest`                     | `llama-server` | attention | 7 to 58                   | 7 each              |
+| `qwen3-coder:30b`                     | `llama-server` | attention | 8 to 148                  | 8 each              |
+| `gpt-oss:20b`                         | `llama-server` | sliding   | 5 to 25, and one 1,025    | 5 each              |
+| `qwen3.5:9b`                          | `llama-server` | recurrent | 1,019 to 1,080 every turn | 929 each            |
+| `nemotron-3-nano:4b`                  | `llama-server` | recurrent | 1,021 to 1,058 every turn | 957 each            |
+| `nemotron-3-nano:30b`                 | `llama-server` | recurrent | 1,024 to 1,056 every turn | 961 each            |
+| `nemotron-3.5-lightning:30b`          | `llama-server` | recurrent | 1,024 to 1,050 every turn | 961 each            |
+| unsloth Nemotron GGUF                 | `llama-server` | recurrent | 17 to 80                  | 17 each             |
+| `qwen3.8:27b-nvfp4`                   | MLX            | recurrent | 13 to 22                  | 5 to 13             |
+| `mvincig11/semif-qwen3.5-4b-mlx-4bit` | MLX            | recurrent | 12 to 82                  | 4 to 12             |
 
 Source: the notebook's [interleaved-conversations
 section](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md#the-rollback-is-one-batch-the-mlx-miss-is-not-the-nvfp4-quantization-and-interleaved-conversations-pay-per-turn).

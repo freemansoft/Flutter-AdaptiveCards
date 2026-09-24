@@ -1481,18 +1481,18 @@ The retry readings follow the timing account on all eleven `llama-server` models
 
 **A second conversation on the same system prompt pays the rollback on every turn, on `llama-server`.** Nothing before this phase measured that shape: the `interleaved` phase switches system prompts, where two users of one chat server share one. Re-evaluated tokens per call, at 300 entries:
 
-| Model                                 | Runner         | Memory    | Two conversations, six turns | Second branch, four calls |
-| ------------------------------------- | -------------- | --------- | ---------------------------- | ------------------------- |
-| `llama3.2:latest`                     | `llama-server` | attention | 7 to 58                      | 7 each                    |
-| `qwen3-coder:30b`                     | `llama-server` | attention | 8 to 148                     | 8 each                    |
-| `gpt-oss:20b`                         | `llama-server` | sliding   | 5 to 25, and one 1,025       | 5 each                    |
-| `qwen3.5:9b`                          | `llama-server` | recurrent | 1,019 to 1,080 every turn    | 929 each                  |
-| `nemotron-3-nano:4b`                  | `llama-server` | recurrent | 1,021 to 1,058 every turn    | 957 each                  |
-| `nemotron-3-nano:30b`                 | `llama-server` | recurrent | 1,024 to 1,056 every turn    | 961 each                  |
-| `nemotron-3.5-lightning:30b`          | `llama-server` | recurrent | 1,024 to 1,050 every turn    | 961 each                  |
-| unsloth Nemotron GGUF                 | `llama-server` | recurrent | 17 to 80                     | 17 each                   |
-| `qwen3.8:27b-nvfp4`                   | MLX            | recurrent | 13 to 22                     | 5 to 13                   |
-| `mvincig11/semif-qwen3.5-4b-mlx-4bit` | MLX            | recurrent | 12 to 82                     | 4 to 12                   |
+| Model                                 | Runner         | Memory    | Interleaved phase         | Second-branch phase |
+| ------------------------------------- | -------------- | --------- | ------------------------- | ------------------- |
+| `llama3.2:latest`                     | `llama-server` | attention | 7 to 58                   | 7 each              |
+| `qwen3-coder:30b`                     | `llama-server` | attention | 8 to 148                  | 8 each              |
+| `gpt-oss:20b`                         | `llama-server` | sliding   | 5 to 25, and one 1,025    | 5 each              |
+| `qwen3.5:9b`                          | `llama-server` | recurrent | 1,019 to 1,080 every turn | 929 each            |
+| `nemotron-3-nano:4b`                  | `llama-server` | recurrent | 1,021 to 1,058 every turn | 957 each            |
+| `nemotron-3-nano:30b`                 | `llama-server` | recurrent | 1,024 to 1,056 every turn | 961 each            |
+| `nemotron-3.5-lightning:30b`          | `llama-server` | recurrent | 1,024 to 1,050 every turn | 961 each            |
+| unsloth Nemotron GGUF                 | `llama-server` | recurrent | 17 to 80                  | 17 each             |
+| `qwen3.8:27b-nvfp4`                   | MLX            | recurrent | 13 to 22                  | 5 to 13             |
+| `mvincig11/semif-qwen3.5-4b-mlx-4bit` | MLX            | recurrent | 12 to 82                  | 4 to 12             |
 
 The two runners diverge here rather than agreeing. On `llama-server` four of the five recurrent builds re-process a batch on every turn of an interleaved pair, because each turn diverges from the conversation the runner served last, and they pay 929 to 961 tokens on every call of a second branch as well. The unsloth Nemotron build is the exception on both shapes, staying within 80 tokens throughout, which is the same checkpoint placement that keeps its new conversations warm. On the MLX runner the architecture stays warm throughout, which fits the reading that it keeps a checkpoint at each divergence point it has already seen, and a revisited branch point is its cheapest call of all (4 or 5 tokens). A second branch is therefore free on the MLX runner and on attention-only builds, and costs most of a batch on the four recurrent `llama-server` ones.
 
