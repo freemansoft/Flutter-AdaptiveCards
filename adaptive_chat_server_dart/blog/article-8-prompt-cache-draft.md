@@ -9,25 +9,26 @@ element vocabulary is estimated at 3,755 tokens. The chat server replays up to
 ten prior exchanges on every turn.
 
 Ollama keeps a prefix cache, so a request whose opening tokens match an earlier
-one does not have to process them again. How much does that cache save a chat
-server, and when does it miss? Ollama 0.33.3 and later report
-`prompt_eval_cached_count` on every reply, which is the field that measures it.
-Every reading below comes from
+one does not have to process them again. Ollama 0.33.3 and later count the
+prompt tokens each reply served from that cache, in
+`prompt_eval_cached_count`, so a chat server can read what the cache saved it
+and when it missed. Every reading below comes from
 [`ModelBehavior.md`](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md),
 the lab notebook in that repository.
 
 **A new conversation reuses a cached system prompt on some models and not on
-others, and the split follows how the model stores its context.** A probe
-measured fifteen local models on an Apple M1 Max under Ollama 0.34.0. Eight
-keep an attention entry per token, and they reused the cached prompt on all but
-one of 120 new conversations. Five are recurrent builds on Ollama's
-`llama-server` runner, and two are on Ollama's MLX runner, recurrent by
-inference from the model family. Four of the five on `llama-server`
-re-processed the last 1,024 or 1,025 tokens on every new conversation. The
-unsloth Nemotron build did so on a third of them. The two on the MLX runner
-re-processed the whole prompt on the first new conversation per system prompt,
-and almost none of it afterward. The diagram sorts a request by what it shares
-with the runner's last call:
+others.** The split follows how the model stores its context. A probe
+measured fifteen local models on an Apple M1 Max under Ollama 0.34.0:
+
+- Eight keep an attention entry per token. They reused the cached prompt on
+  all but one of 120 new conversations.
+- Five are recurrent builds on Ollama's `llama-server` runner. Four
+  re-processed the last 1,024 or 1,025 tokens on every new conversation, and
+  the unsloth Nemotron build did so on a third of them.
+- Two are on Ollama's MLX runner, recurrent by that runner's model code. They re-processed the whole prompt on the first new conversation per system
+  prompt, and almost none of it afterward.
+
+The diagram sorts a request by what it shares with the runner's last call:
 
 ```mermaid
 flowchart TD
@@ -54,13 +55,14 @@ flowchart TD
 | **Prefill**                | The pass in which the model processes the prompt, before it produces the first output token. Ollama reports its duration as `prompt_eval_duration`.                                                                                    |
 | **Cold** and **warm**      | A cold request has almost none of its prompt served from the prefix cache, and pays a cold prefill. A warm request has nearly all of it.                                                                                               |
 | **New conversation**       | A request carrying a system prompt the runner has already processed, followed by a question it has not seen. It is how a chat server opens a second conversation on the same system prompt.                                            |
+| **Synthetic prompt**       | A system prompt the probe builds in place of the card one, as a glossary of numbered entries. The shared one carries most requests; the others differ from it by a tag word.                                                           |
 | **Memory type**            | How a model's layers hold the context they have read: an attention entry per token, or a recurrent running state. `llama-server` prints which at load. Not the host's RAM.                                                             |
 | **Attention-only memory**  | Layers that keep an entry per token, so a runner can reuse any leading run of a cached prompt. Eight models here, one of which, `gpt-oss:20b`, adds a sliding window.                                                                  |
 | **Recurrent memory**       | Layers that carry a running state from token to token instead of keeping an entry per token. The state cannot be rewound to an arbitrary token. `llama-server` prints `llama_memory_recurrent` when it loads such a model.             |
-| **Context checkpoint**     | A saved copy of that state at one token position. A runner can resume a recurrent model only from a checkpoint. `llama-server` logs each one it creates and restores.                                                                  |
+| **Context checkpoint**     | A saved copy of that state at one token position. A runner can resume a recurrent model only from a checkpoint. `llama-server` logs each one it creates and restores; the MLX runner calls the same thing a snapshot.                  |
 | **Batch**                  | The unit `llama-server` prefills a prompt in. Ollama starts it with `-b 1024 -ub 1024`, a 1,024-token batch and micro-batch, and the runner echoes `n_batch = 1024`.                                                                   |
 | **Sliding window**         | Attention layers that see only the last few tokens, 128 in `gpt-oss:20b`. `llama-server` handles them with the same checkpoints.                                                                                                       |
-| **First-divergence phase** | Three new conversations on each of two glossaries no earlier call sent. Arm `delta` goes straight there from the first request; arm `echo` sends the same request twice first.                                                         |
+| **First-divergence phase** | Three new conversations on each of two synthetic prompts no earlier call sent. Arm `delta` goes straight there from the first request; arm `echo` sends the same request twice first.                                                  |
 | **Interleaved phase**      | Two three-turn conversations alternating on one system prompt, as when a chat server serves two users.                                                                                                                                 |
 | **Second branch**          | Two divergences from one system prompt, then a return to the first.                                                                                                                                                                    |
 
@@ -68,48 +70,51 @@ flowchart TD
 
 [`prefill_cache_probe.dart`](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/tool/model_probes/prefill_cache_probe.dart)
 builds its own system prompts rather than sending the card one. Each is a
-synthetic glossary of 300 entries, and they differ only in a tag word that
-prefixes every entry:
+synthetic system prompt built as a glossary of 300 entries. An entry is one
+clause, such as `alpha-term0 means concept0.`, pairing a numbered term with a
+numbered concept, and each question, such as `Define alpha-term20.`, asks for
+one entry. The synthetic prompts differ only in the tag word, `alpha` here,
+that prefixes every entry:
 
 ```txt
 You are a helpful assistant. Answer briefly. Reference glossary: alpha-term0
 means concept0. alpha-term1 means concept7. alpha-term2 means concept14. ...
 ```
 
-The first, the shared glossary, carries most of the requests. The probe sends
-them to one model at a time, at temperature 0, recording each call's token
-counts, prefill time and total time. A warmup call loads the model first, so a
-cold prefill below is the cost of the prompt, not of the model load. The
-diagram gives the nine phases in call order:
+The `alpha` prompt is the shared synthetic prompt below. The probe sends them
+to one model at a time, at temperature 0, recording each call's token counts,
+prefill time and total time. A warmup call loads the model first, so a cold
+prefill below is the cost of the prompt, not of the model load. The diagram
+gives the nine phases in call order:
 
 ```mermaid
 sequenceDiagram
   participant P as prefill_cache_probe
   participant O as Ollama runner, one model resident
 
-  Note over P,O: the shared glossary, a second and a third are three<br/>300-entry system prompts differing only by a tag word on every entry
+  Note over P,O: the shared synthetic prompt, a second and a third are three<br/>300-entry prompts differing only by a tag word on every entry
   Note over P,O: every call returns prompt tokens, cached tokens, prefill time and total time
 
   P->>O: warmup, a short prompt that loads the model
 
   Note over P,O: 1. the same request twice
-  P->>O: shared glossary, one question
+  P->>O: shared prompt, one question
   P->>O: the same request again
 
   Note over P,O: 2. the first new conversation
-  P->>O: shared glossary, a different question
+  P->>O: shared prompt, a different question
 
   Note over P,O: 3. a growing conversation, three calls
-  P->>O: shared glossary, a third question<br/>(a second new conversation)
+  P->>O: shared prompt, a third question<br/>(a second new conversation)
   P->>O: the whole history again, plus a second question
   P->>O: the whole history again, plus a third question
 
   Note over P,O: 4. an unrelated request between two identical ones,<br/>as when a server switches between two system prompts
-  P->>O: a second glossary, sharing only the instruction prefix
-  P->>O: shared glossary, the original request repeated
+  P->>O: a second synthetic prompt, sharing only the instruction prefix
+  P->>O: shared prompt, the original request repeated
 
   Note over P,O: 5. a retry after an abort
-  P-xO: a third glossary no earlier call sent,<br/>aborted by the probe 400 ms in
+  P-xO: a third synthetic prompt no earlier call sent,<br/>aborted by the probe 400 ms in
   Note over P: waits 5 s
   P->>O: the same request again
 
@@ -117,13 +122,13 @@ sequenceDiagram
   P->>O: unload, which ends the run
 ```
 
-Three hundred entries come to 2,127 to 3,479 tokens depending on the tokenizer,
-against the card system prompt's estimated 3,755. Four models then ran the
+The 300-entry shared prompt comes to 2,127 to 3,479 tokens depending on the
+tokenizer, against the card system prompt's estimated 3,755. Four models then ran the
 whole probe on that 15 KB card prompt: `llama3.2:latest`, `qwen3.5:9b`,
 `nemotron-3-nano:4b` and `qwen3.8:27b-nvfp4`. Every figure held.
 `llama3.2:latest` re-evaluated 7 to 8 tokens, the two recurrent `llama-server`
 builds 1,025, and `qwen3.8:27b-nvfp4` paid one cold first new conversation per
-prompt. The probe sizes each glossary to fit the 8,192-token context window
+prompt. The probe sizes each synthetic prompt to fit the 8,192-token context window
 every run asks for. An earlier version overflowed it and every cache figure
 read near zero, the mistake the [measurement-hygiene
 article](https://joe.blog.freemansoft.com/2026/09/eight-measurement-rules-from-local.html)
@@ -132,7 +137,7 @@ covers.
 All fifteen models ran the nine phases on 2026-09-23 and 2026-09-24, one
 client, one request at a time. `llama3.2:latest`, `qwen3.5:9b`,
 `nemotron-3-nano:4b` and `qwen3.8:27b-nvfp4` ran them twice, and `qwen3.5:9b`
-at four more glossary lengths. Every token count in all nine phases repeated
+at four more prompt lengths. Every token count in all nine phases repeated
 between the two runs, except the retry's on `qwen3.8:27b-nvfp4`.
 
 ## Repeating the runner's last call reuses the cache on all fifteen models
@@ -147,26 +152,26 @@ Every row is one model's nine-phase run on the M1 Max under Ollama 0.34.0, and
 each cell gives cached tokens, then the prefill time. Prompts ran 2,127 to
 3,479 tokens, and a new conversation shares all but 5 to 17 of them with the
 cached prompt. The probe opens fifteen new conversations per model over three
-glossaries. Three are the first divergence from their glossary, and twelve
-follow one.
+synthetic prompts. Three are the first divergence from their prompt, and
+twelve follow one.
 
-| Model                                  | Memory               | Runner         | Cold prefill, first request | First new conversation, 3 calls                | Later new conversations, 12                       |
-| -------------------------------------- | -------------------- | -------------- | --------------------------- | ---------------------------------------------- | ------------------------------------------------- |
-| `llama3.2:latest`                      | attention            | `llama-server` | 1.9–3.1 s                   | 2,136, 42–46 ms                                | 2,136, 39–71 ms                                   |
-| `qwen3-coder:30b`                      | attention            | `llama-server` | 4.1–5.9 s                   | 3,167, 76–103 ms                               | 3,167–3,168, 78–120 ms                            |
-| `qwen2.5-coder:7b`                     | attention            | `llama-server` | 8.6–10.0 s                  | 3,167, 106–137 ms                              | 3,167–3,168, 99–142 ms                            |
-| `llama3-chatqa:8b`                     | attention            | `llama-server` | 4.7–6.2 s                   | 2,121, 103–139 ms                              | 2,121, 76–106 ms                                  |
-| `llama3-groq-tool-use:8b`              | attention            | `llama-server` | 4.7–6.1 s                   | 2,126, 120–136 ms                              | 2,126, 113–137 ms                                 |
-| `granite4.1:3b`                        | attention            | `llama-server` | 2.2–3.3 s                   | 2,124, 49–58 ms                                | 2,124, 46–85 ms                                   |
-| `granite4.1:8b`                        | attention            | `llama-server` | 7.1–8.4 s                   | 2,124, 137–180 ms                              | 2,124, 130–185 ms                                 |
-| `gpt-oss:20b`                          | sliding window       | `llama-server` | 2.4–3.4 s                   | 2,182, 67–86 ms                                | 2,182 on 11 (59–89 ms); 1,162 once (1.68 s)       |
-| `qwen3.5:9b`                           | recurrent            | `llama-server` | 8.9–10.7 s                  | 2,154, 3.69–3.98 s                             | 2,154–2,155, 3.41–4.20 s                          |
-| `nemotron-3-nano:4b`                   | recurrent            | `llama-server` | 5.8–6.4 s                   | 2,454, 1.95–1.99 s                             | 2,454–2,455, 1.94–2.12 s                          |
-| `nemotron-3-nano:30b`                  | recurrent            | `llama-server` | 4.1–5.1 s                   | 2,153, 1.34–1.73 s                             | 2,153–2,154, 1.50–1.70 s                          |
-| `nemotron-3.5-lightning:30b`           | recurrent            | `llama-server` | 4.2–5.4 s                   | 2,153, 1.39–1.79 s                             | 2,153–2,154, 1.72–1.80 s                          |
-| `unsloth/Nemotron-3-Nano-30B-A3B-GGUF` | recurrent            | `llama-server` | 4.1–5.4 s                   | 3,162 once (157 ms); 2,154 twice (1.41–1.75 s) | 3,162 on 9 (154–183 ms); 2,154 on 3 (1.87–1.92 s) |
-| `qwen3.8:27b-nvfp4`                    | recurrent (inferred) | MLX            | 35.2–36.0 s                 | 4–15, 35.5–37.1 s                              | 3,166–3,167, 376–415 ms                           |
-| `qwen3.6:27b-coding-nvfp4`             | recurrent (inferred) | MLX            | 33.8–35.3 s                 | 5–16, 34.3–34.7 s                              | 3,167–3,168, 409–432 ms                           |
+| Model                                  | Memory         | Runner         | Cold prefill, first request | First new conversation, 3 calls                | Later new conversations, 12                       |
+| -------------------------------------- | -------------- | -------------- | --------------------------- | ---------------------------------------------- | ------------------------------------------------- |
+| `llama3.2:latest`                      | attention      | `llama-server` | 1.9–3.1 s                   | 2,136, 42–46 ms                                | 2,136, 39–71 ms                                   |
+| `qwen3-coder:30b`                      | attention      | `llama-server` | 4.1–5.9 s                   | 3,167, 76–103 ms                               | 3,167–3,168, 78–120 ms                            |
+| `qwen2.5-coder:7b`                     | attention      | `llama-server` | 8.6–10.0 s                  | 3,167, 106–137 ms                              | 3,167–3,168, 99–142 ms                            |
+| `llama3-chatqa:8b`                     | attention      | `llama-server` | 4.7–6.2 s                   | 2,121, 103–139 ms                              | 2,121, 76–106 ms                                  |
+| `llama3-groq-tool-use:8b`              | attention      | `llama-server` | 4.7–6.1 s                   | 2,126, 120–136 ms                              | 2,126, 113–137 ms                                 |
+| `granite4.1:3b`                        | attention      | `llama-server` | 2.2–3.3 s                   | 2,124, 49–58 ms                                | 2,124, 46–85 ms                                   |
+| `granite4.1:8b`                        | attention      | `llama-server` | 7.1–8.4 s                   | 2,124, 137–180 ms                              | 2,124, 130–185 ms                                 |
+| `gpt-oss:20b`                          | sliding window | `llama-server` | 2.4–3.4 s                   | 2,182, 67–86 ms                                | 2,182 on 11 (59–89 ms); 1,162 once (1.68 s)       |
+| `qwen3.5:9b`                           | recurrent      | `llama-server` | 8.9–10.7 s                  | 2,154, 3.69–3.98 s                             | 2,154–2,155, 3.41–4.20 s                          |
+| `nemotron-3-nano:4b`                   | recurrent      | `llama-server` | 5.8–6.4 s                   | 2,454, 1.95–1.99 s                             | 2,454–2,455, 1.94–2.12 s                          |
+| `nemotron-3-nano:30b`                  | recurrent      | `llama-server` | 4.1–5.1 s                   | 2,153, 1.34–1.73 s                             | 2,153–2,154, 1.50–1.70 s                          |
+| `nemotron-3.5-lightning:30b`           | recurrent      | `llama-server` | 4.2–5.4 s                   | 2,153, 1.39–1.79 s                             | 2,153–2,154, 1.72–1.80 s                          |
+| `unsloth/Nemotron-3-Nano-30B-A3B-GGUF` | recurrent      | `llama-server` | 4.1–5.4 s                   | 3,162 once (157 ms); 2,154 twice (1.41–1.75 s) | 3,162 on 9 (154–183 ms); 2,154 on 3 (1.87–1.92 s) |
+| `qwen3.8:27b-nvfp4`                    | recurrent      | MLX            | 35.2–36.0 s                 | 4–15, 35.5–37.1 s                              | 3,166–3,167, 376–415 ms                           |
+| `qwen3.6:27b-coding-nvfp4`             | recurrent      | MLX            | 33.8–35.3 s                 | 5–16, 34.3–34.7 s                              | 3,167–3,168, 409–432 ms                           |
 
 Source: the notebook's [recurrent-memory section](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md#recurrent-memory-models-lose-part-of-a-cached-prefix-on-llama-server-too-the-runner-sets-how-much), and the archived runs under
 [`results-m1max-64gb-ollama0340/`](https://github.com/freemansoft/Flutter-AdaptiveCards/tree/main/adaptive_chat_server_dart/tool/model_probes/results-m1max-64gb-ollama0340).
@@ -180,23 +185,23 @@ nothing here explains why.
 Four of the recurrent builds reused 2,153 to 2,455 tokens on every new
 conversation, the first included, and re-processed the last 1,024 or 1,025. On
 these 3,177 to 3,479-token prompts that cost 1.34 to 4.20 s against 4.1 to 10.7
-s cold, about a third. The fifth, the unsloth build of the same Nemotron
-weights, did so on a third of them; a third checkpoint explains that below. The
-two `nvfp4` builds on Ollama's MLX runner paid a cold prefill for the first new
-conversation on each glossary. Later ones cost 376 to 432 ms.
+s cold, about a third. The fifth, the unsloth build, did so on a third of them;
+a third checkpoint explains that below. The two `nvfp4` builds on Ollama's MLX
+runner paid a cold prefill for the first new conversation on each synthetic
+prompt. Later ones cost 376 to 432 ms.
 
 ## An unrelated request between two identical ones does not move the split
 
-The probe sent an unrelated glossary between two identical requests. The repeat
+The probe sent an unrelated synthetic prompt between two identical requests. The repeat
 came back warm on the seven attention-only builds and on the two MLX builds,
 which reused 3,173 and 3,174 of 3,178 tokens. The five recurrent builds on
 `llama-server` paid their new-conversation price again, `qwen3.5:9b` reusing
 2,154 of 3,178, and `gpt-oss:20b` fell back to its 1,162-token checkpoint. The
-unrelated glossary itself reused at most 28 tokens.
+unrelated prompt itself reused at most 28 tokens.
 
 ## `llama-server` resumes a recurrent model from a checkpoint one batch back
 
-Processing the shared glossary on `qwen3.5:9b`, a 3,178-token prompt,
+Processing the shared synthetic prompt on `qwen3.5:9b`, 3,178 tokens,
 `llama-server` saved two checkpoints. One sits at 2,154 tokens, one batch
 before the end, and one 4 tokens from the end. A new conversation shares 3,167
 tokens with that prompt and diverges before the later checkpoint. Ollama's
@@ -212,7 +217,7 @@ The new conversation's 3,179-token request therefore re-processes 1,025 tokens.
 An exact repeat or a growing-conversation turn restores the checkpoint at the
 end of the previous call and stays warm. The attention-only builds log no
 checkpoints at all. A request with nothing to restore, a first request or one
-on an unrelated glossary, gets a different line:
+on an unrelated synthetic prompt, gets a different line:
 
 ```
 forcing full prompt re-processing due to lack of cache data (likely due to SWA or hybrid/recurrent memory …)
@@ -241,12 +246,18 @@ logs `total=3179 matched=3166 cached=4`: the runner found the shared prefix
 and restored almost none of it. Later new conversations log `matched=3166
 cached=3166`, and `qwen3.6:27b-coding-nvfp4` logs the same shape at 3167.
 
-Those readings fit a runner that keeps a checkpoint at the end of a processed
-prompt. It adds one at a divergence it has already served. That policy is
-inferred from the log, not read from the runner's source. So is the recurrent
-memory of these builds. `ollama show` reports both as the `qwen3_5`
-architecture, the family whose GGUF build `qwen3.5:9b` loads with recurrent
-memory on `llama-server`. The MLX runner reports nothing at load.
+The runner's source says why. Its prefix cache, in
+[`prefix_cache.go`](https://github.com/ollama/ollama/blob/v0.34.0/x/mlxrunner/prefix_cache.go)
+at v0.34.0, is a trie of token runs. Attention layers keep an entry per token
+and can be restored to any position. Recurrent layers keep a snapshot only at
+the end of a trie node. A request that diverges inside a node has nothing to
+restore, so the runner prefills from the start. During that prefill it
+schedules a snapshot at the branch point, "so future requests diverging here
+can restore instead of re-evaluating". The recurrence is in the runner's
+[Qwen3.5 model
+code](https://github.com/ollama/ollama/blob/v0.34.0/x/models/qwen3_5/qwen3_5.go)
+as well: gated-delta recurrent layers interleaved with full-attention layers.
+`ollama show` reports both `nvfp4` builds as that architecture.
 
 The first-divergence phase compares the two runners side by side. Each cell
 reads prompt / cached, prefill time in parentheses:
@@ -266,7 +277,7 @@ the notebook's earlier
 [phase-7 table](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md#ollama-0340-the-first-four-models-2026-09-21),
 from superseded runs, shows the same shape.
 
-`qwen3.8:27b-nvfp4` pays its cold prefill once per glossary, with or without an
+`qwen3.8:27b-nvfp4` pays its cold prefill once per synthetic prompt, with or without an
 exact repeat before it, and about 400 ms after. `qwen3.5:9b` falls back one
 batch on all six new conversations, and `llama3.2:latest` is warm on all six.
 
@@ -274,18 +285,16 @@ A sixteenth model rules out the quantization.
 `mvincig11/semif-qwen3.5-4b-mlx-4bit` is an `int4` safetensors build on the
 same MLX runner. It repeats the shape. The exact repeat is warm at 3,174 of
 3,178 tokens, the first new conversation cold at 5 of 3,179, and the second
-warm at 3,167. The architecture is not ruled out. Every model this runtime
-serves on MLX here is a `qwen3_5` build. Two attention-only controls failed to
-load: the MLX runner refused a safetensors `gpt-oss`, and `ollama create`
-rejected an MLX 4-bit Llama.
+warm at 3,167. The architecture is not ruled out. Two attention-only controls
+failed to load: the MLX runner refused a safetensors `gpt-oss`, and `ollama
+create` rejected an MLX 4-bit Llama.
 
 ## Two conversations on one system prompt pay per turn, on `llama-server`
 
 A chat server with two users runs two conversations against one system prompt.
 Each turn replays its own history, so each one diverges from the conversation
 the runner served last. Re-evaluated tokens per call at 300 entries in the
-interleaved and second-branch phases; the MLX rows' memory type is inferred,
-as above:
+interleaved and second-branch phases:
 
 | Model                                 | Runner         | Memory    | Two conversations, six turns | Second branch, four calls |
 | ------------------------------------- | -------------- | --------- | ---------------------------- | ------------------------- |
@@ -312,7 +321,7 @@ cheapest call.
 
 ## A retry's cost is the remainder of the abandoned call, not its own prefill
 
-The retry sends a glossary no earlier call had sent, so only the aborted call
+The retry sends a synthetic prompt no earlier call had sent, so only the aborted call
 could have filled the cache. Nearly every retry reused almost the whole prompt.
 The client's abort does not end the call on the server at once:
 
@@ -321,7 +330,7 @@ sequenceDiagram
   participant P as prefill_cache_probe
   participant O as Ollama runner
   participant C as Prefix cache
-  P->>O: request on a glossary no earlier call sent
+  P->>O: request on a synthetic prompt no earlier call sent
   P-xO: aborted by the probe at 0.4 s
   Note over O: the abandoned call keeps running
   Note over P: waits 5 s
@@ -337,8 +346,7 @@ sequenceDiagram
 ```
 
 Each row gives a model's retry beside two yardsticks. One is its cold prefill.
-The other is an exact repeat's total, which is what the retry would cost with
-nothing in its way.
+The other is an exact repeat's total.
 
 | Model                      | Cold prefill | Warm call, total | Retry: prefill, total                     |
 | -------------------------- | ------------ | ---------------- | ----------------------------------------- |
@@ -370,10 +378,14 @@ models the retry's total runs long by about what the abandoned prefill had left
 to do. Two MLX logs record `Request terminated error="context canceled"` part
 way through it. The retry that followed reported 2,063 and 2,064 cached tokens:
 the 2,048-token chunk the MLX runner prefills in, plus the tokens the request
-already shared. `qwen3.8:27b-nvfp4`'s retry is the one figure that differed
+already shared. `prefillChunkSize` in the runner's
+[`pipeline.go`](https://github.com/ollama/ollama/blob/v0.34.0/x/mlxrunner/pipeline.go)
+sets that chunk. `qwen3.8:27b-nvfp4`'s retry is the one figure that differed
 between runs. It read 3,474 cached on the tabulated run, where nothing was
-terminated, and 2,063 on the other, with 16.3 s of prefill. Why the runner
-cancels the abandoned call on some runs and not others is not in the log.
+terminated, and 2,063 on the other, with 16.3 s of prefill. The runner checks
+for a cancelled request only between chunks and keeps the chunks it has
+finished for the retry. Why the cancellation reached it on one run and not the
+other is not in the log.
 
 ## Four checks for a chat server on a shared system prompt
 

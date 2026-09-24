@@ -275,8 +275,8 @@ stays warm on most of them; the two `nvfp4` Qwen3.5 builds on the MLX runner
 pay one extra full prefill per system prompt, then nothing, and an `int4` MLX
 control rules out the quantization while the `qwen3_5` architecture stays
 unseparated from the runner. The article gives `llama-server`'s log lines for
-the mechanism, marks the MLX runner's policy and the MLX builds' recurrence as
-inferred, and reads the retry after an abort from the archived server logs:
+the mechanism, reads the MLX runner's checkpoint policy and the MLX builds'
+recurrence from the runner source at v0.34.0, and reads the retry after an abort from the archived server logs:
 its total tracks what the abandoned call had left to do, and the MLX runner
 sometimes cancels that call at a 2,048-token chunk boundary. It closes with
 four checks for a chat server and the list of what the probe did not measure.
