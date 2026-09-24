@@ -145,6 +145,13 @@ const _defaultGlossaryEntries = 300;
 const _maxGlossaryEntries = 600;
 
 const _numCtx = 8192;
+
+/// Tokens the model may generate per call.
+///
+/// Small on purpose: this probe measures the prompt side, and a long reply
+/// only lengthens a run. It is a cap, so `done_reason` reads `length` on most
+/// calls, and with `think` left on it would be spent before any content
+/// appeared. A run that cares what the model said wants a larger value.
 const _numPredict = 60;
 
 /// The file `--system-file` named, or null when the probe generates its own.
@@ -249,6 +256,17 @@ Future<_CallResult> _call(
         'model': model,
         'stream': false,
         'keep_alive': '10m',
+        // Every other probe here and `ollama_responder.dart` send this, and
+        // this one did not until 2026-09-23. Nine of the sixteen models
+        // measured here declare `thinking`, and without the flag they spend the
+        // whole [_numPredict] budget reasoning: the reply comes back with an
+        // empty `content`, `done_reason: length`, and a growing conversation
+        // then appends an empty assistant turn. Prefill figures are unaffected,
+        // since they are a property of the prompt, but the per-turn figures
+        // were a floor rather than a realistic increment. `gpt-oss:20b` ignores
+        // the flag and still returns empty content at this cap; it needs a
+        // larger [_numPredict] to answer at all.
+        'think': false,
         'options': {
           'temperature': 0,
           'num_ctx': _numCtx,
