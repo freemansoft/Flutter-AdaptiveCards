@@ -2,6 +2,28 @@
 
 ## [0.18.0]
 
+- Probes: **`prefill_cache_probe.dart` now sends `think: false`, and every
+  prompt-cache figure was re-measured.** It was the only probe here not sending
+  the flag. Nine of the sixteen models measured declare `thinking`, and without
+  it they spend the whole 60-token `num_predict` budget reasoning, returning an
+  empty `content` with `done_reason: length`, so a growing conversation
+  appended an empty assistant turn and its per-turn increments were a floor.
+  All sixteen models were re-run on 2026-09-23 and 2026-09-24, one model
+  resident at a time, with a second run of four models: every prompt and cached
+  count in all nine phases repeated exactly, except `qwen3.8:27b-nvfp4`'s
+  retry, which read 3,474 of 3,479 cached on one run and 2,063 on the other.
+  `gpt-oss:20b` ignores the flag and still returns empty content at this cap,
+  which a direct call at `num_predict` 300 confirms is the cap rather than the
+  flag. The archived server-log slices now also carry `llama-server`'s launch
+  flags, `n_batch` and the `checking checkpoint` lines, so the notebook's
+  checkpoint account is verifiable from the tree rather than from a live log.
+- Notebook: **the unsloth Nemotron GGUF build is an exception to the recurrent
+  result, on three shapes.** It holds a context checkpoint 16 tokens from the
+  end of the shared prompt, so it stays warm on most new conversations, on all
+  six turns of two interleaved conversations, and on all four calls of a second
+  branch, where the other four recurrent `llama-server` builds pay 929 to 961
+  tokens every time. A second branch is therefore free on the MLX runner and on
+  attention-only builds, not on both runners as recorded before.
 - Probes: **`prefill_cache_probe.dart` gains two phases, reply digests and an
   archived server-log slice.** `interleaved-conversations` alternates two
   conversations on one system prompt, the shape two users of one chat server
@@ -11,7 +33,7 @@
   original at `t=0`, and each run records `num_ctx`, `num_predict` and the
   `OLLAMA_*` cache settings.
 - Notebook: **the `llama-server` rollback is one 1,024-token batch, measured.**
-  An `--entries` sweep moved `qwen3.5:9b` from 1,007 to 4,811 tokens and the
+  An `--entries` sweep moved `qwen3.5:9b` from 1,008 to 4,812 tokens and the
   re-processed count stayed at 1,025, so the batch reading is no longer
   inferred from the launch flags. A prompt shorter than one batch has no
   checkpoint to fall back to and re-processes everything. Two conversations
