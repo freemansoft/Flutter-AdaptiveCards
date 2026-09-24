@@ -95,6 +95,15 @@
 /// included: a bare `prefill_cache_probe.json` beside an `-entries450` one
 /// would silently mean "the other length".
 ///
+/// **`--system-file` sends a real system prompt instead of the glossary.**
+/// The probe needs five system prompts that differ from each other, so it
+/// appends a one-line session tag to the file's text, one tag per prompt. A
+/// run with the chat server's own `card_system_prompt.txt` answers whether
+/// the checkpoint behaviour measured on 300 uniform clauses survives a prompt
+/// with prose, a schema and examples in it. `summary.systemSource` records
+/// which was used, and the run's variant reads `cardprompt` rather than
+/// `entries<n>`.
+///
 /// ```sh
 /// fvm dart run tool/model_probes/prefill_cache_probe.dart \
 ///   --model llama3.2:latest
@@ -138,7 +147,18 @@ const _maxGlossaryEntries = 600;
 const _numCtx = 8192;
 const _numPredict = 60;
 
+/// The file `--system-file` named, or null when the probe generates its own.
+String? _systemFileText;
+
 String _systemPrompt(String tag, int glossaryEntries) {
+  final fileText = _systemFileText;
+  if (fileText != null) {
+    // The tag leads, so the five prompts diverge at their first line the way
+    // the five glossaries do. A tag appended instead leaves them sharing
+    // every token but the last few, which makes a "prompt no earlier call
+    // sent" reuse the cache and silently voids the first-divergence phase.
+    return 'Session tag: $tag.\n\n$fileText';
+  }
   final entries = List.generate(
     glossaryEntries,
     (i) => '$tag-term$i means concept${i * 7 % 991}.',
@@ -291,6 +311,7 @@ Future<void> _unload(String url, String model) async {
 (ProbeArgs, int)? _parseArgs(List<String> argv) {
   final parser = ArgParser()
     ..addOption('entries', defaultsTo: '$_defaultGlossaryEntries')
+    ..addOption('system-file')
     ..addOption('model')
     ..addOption('url')
     ..addOption('samples')
@@ -301,6 +322,16 @@ Future<void> _unload(String url, String model) async {
   if (parsed['help'] as bool) {
     stdout.writeln(parser.usage);
     return null;
+  }
+  final systemFile = parsed['system-file'] as String?;
+  if (systemFile != null) {
+    final file = File(systemFile);
+    if (!file.existsSync()) {
+      stderr.writeln('prefill_cache_probe: no such file: $systemFile');
+      exitCode = 2;
+      return null;
+    }
+    _systemFileText = file.readAsStringSync().trim();
   }
   final entries = int.tryParse(parsed['entries'] as String);
   if (entries == null || entries < 1 || entries > _maxGlossaryEntries) {
@@ -556,7 +587,9 @@ Future<void> main(List<String> argv) async {
     writeProbeRun(
       path: args.json!,
       probe: 'prefill_cache_probe',
-      variant: 'entries$glossaryEntries',
+      variant: _systemFileText == null
+          ? 'entries$glossaryEntries'
+          : 'cardprompt',
       model: model,
       samples: args.samples,
       assetsDir: probeAssetsDir(),
@@ -571,6 +604,7 @@ Future<void> main(List<String> argv) async {
       temperature: 0,
       summary: {
         'glossaryEntries': glossaryEntries,
+        'systemSource': _systemFileText == null ? 'glossary' : 'system-file',
         'numCtx': _numCtx,
         'numPredict': _numPredict,
         'environment': _cacheEnvironment(),

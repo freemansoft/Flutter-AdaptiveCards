@@ -117,11 +117,15 @@ means concept0. alpha-term1 means concept7. alpha-term2 means concept14. ...
 ```
 
 Three hundred entries of the shared glossary come to 2,127 to 3,479 tokens
-depending on the tokenizer, against the card system prompt's estimated 3,755. The readings are
-about reusing a long system prompt at that scale, not about the card system
-prompt itself. The probe sizes each glossary to fit `num_ctx`. An earlier version overflowed
-it, Ollama truncated the prompt silently, and every cache figure read near
-zero. The [measurement-hygiene
+depending on the tokenizer, against the card system prompt's estimated 3,755.
+Four models then ran the whole probe again on the chat server's own card system
+prompt, 15 KB of prose, rules and a JSON schema, and every figure below held: 8
+re-evaluated tokens on `llama3.2:latest`, 1,025 on both recurrent builds, and
+one cold first new conversation on `qwen3.8:27b-nvfp4`. The checkpoint is
+positional, so what sits at the boundary does not matter. The probe sizes each
+glossary to fit `num_ctx`. An earlier version overflowed it, Ollama truncated
+the prompt silently, and every cache figure read near zero. The
+[measurement-hygiene
 article](https://joe.blog.freemansoft.com/2026/09/eight-measurement-rules-from-local.html)
 covers that mistake.
 
