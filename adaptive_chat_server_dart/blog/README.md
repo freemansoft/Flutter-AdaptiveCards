@@ -35,17 +35,23 @@ not have to go looking. Record the URL here when an article is published.
 be silently corrected, so a finding that moves under re-measurement is tracked
 here until the live post carries it. A repo fix and a republish are two steps, and the table below records both.
 
-Article 7 owes a republish. The version published on 2026-09-21 says
-`qwen3.8:27b-nvfp4` "stops emitting parseable JSON" and that "every case it
-loses is a body the parser rejects". The archived labels record four of those
-seven as `broken: timeout (180s)` stalls and three as malformed bodies, so the
-live post also tells a reader a retry addresses a failure that a retry cannot
-address. It says "none of the smaller movements reproduce", where
-`nemotron-3-nano:4b` reproduces at 6/25 across two prompt sizes. It states
-"nothing changed between the two runs but the history", where the two arms also
-differ in requested window size. The failure table carries four of the judge's
-five verdicts. All of that is fixed in the repo, along with a retitle, a
-restructure, the prior-art sentences and the M5 cut.
+Article 7 was corrected and republished on 2026-09-23. The version published
+on 2026-09-21 had said `qwen3.8:27b-nvfp4` "stops emitting parseable JSON" and
+that "every case it loses is a body the parser rejects", where the archived
+labels record four of those seven as `broken: timeout (180s)` stalls and three
+as malformed bodies, so it told a reader a retry addresses a failure a retry
+cannot address. It had said "none of the smaller movements reproduce", where
+`nemotron-3-nano:4b` reproduces at 6/25 across two prompt sizes, and "nothing
+changed between the two runs but the history", where the two arms also differ
+in requested window size. Its failure table carried four of the judge's five
+verdicts. The draft, the status row and the live post agree as of that date.
+
+One addition is available and not owed. Every model in article 7's full-window
+table now has an Ollama 0.34.0 reading as well: the two `nvfp4` builds on
+2026-09-19 and the other six on 2026-09-24, each reproducing its 0.33.3 pass
+count and prompt-token count exactly. No figure in the live post is wrong, and
+the post frames the condition as 0.33.3, so this is corroboration rather than a
+correction. Taking it means editing the draft and owing a republish again.
 
 Articles 1 and 2 were corrected and republished on 2026-09-16, after the
 tool-channel re-measurement moved the capability probe's four-way split and
@@ -343,6 +349,15 @@ figures and the series' names, which every article and the skill depend on.
   before publishing, and when drafting a new article, verify each figure in
   the notebook directly rather than trusting an intermediate document that
   quotes it.
+- **Name the runtime a figure was measured on, and cite Ollama 0.34.0 for
+  every measurement from article 8 onward.** The M1 Max has run 0.34.0 since
+  2026-09-16, and the notebook's prompt-cache, format-canary and full-window
+  conditions all have 0.34.0 readings. Name an older version only where a
+  capability arrived in it, as `prompt_eval_cached_count` did in 0.33.3, or
+  where a finding genuinely differs between versions, as the `format` flip
+  does. A figure whose only reading is 0.33.x carries that version: the M5
+  host, the `qwen3.6` schema A/B and the GGUF-defaults isolation are the ones
+  that do.
 - **Transcribe verbatim.** Do not round, paraphrase, or recompute a score.
 - **Every score carries its test set and its condition.** An `n/m` is
   uninterpretable without both. Everyday and stress figures are cold-start;
