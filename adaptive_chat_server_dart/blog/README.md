@@ -31,7 +31,7 @@ When the notebook and a draft disagree, the notebook wins.
 **Post** links the live article, so a draft that needs to cite a sibling does
 not have to go looking. Record the URL here when an article is published.
 
-**Articles 1 to 7 are published; 8 is not.** What is published cannot
+**All eight articles are published.** What is published cannot
 be silently corrected, so a finding that moves under re-measurement is tracked
 here until the live post carries it. A repo fix and a republish are two steps, and the table below records both.
 
