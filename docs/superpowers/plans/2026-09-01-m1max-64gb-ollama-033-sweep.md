@@ -142,7 +142,7 @@ state is worthless.
 
 - Produces: a running Ollama server reporting ≥ 0.33.1 from `/api/version`, with `library=Metal` in `server.log`. Tasks 4 and 5 depend on both.
 
-- [ ] **Step 1: Record the starting state**
+- [x] **Step 1: Record the starting state**
 
 ```bash
 curl -s http://127.0.0.1:11434/api/version; echo
@@ -175,7 +175,7 @@ If it still reports 0.32.15, the app is serving a stale binary. Do not work
 around it by editing the version out of the results — stop and tell the user,
 because every figure this plan produces depends on this number being real.
 
-- [ ] **Step 3: Verify Metal, not CPU — this is the gate**
+- [x] **Step 3: Verify Metal, not CPU — this is the gate**
 
 ```bash
 grep -a -E 'inference compute|vram-based|GPU discovery' ~/.ollama/logs/server.log | tail -5
@@ -193,7 +193,7 @@ Ollama again and re-check; if it recurs, report it to the user rather than
 sweeping — a CPU-bound sweep is not a slow measurement, it is a different
 measurement.
 
-- [ ] **Step 4: Confirm the version detector records the server, not the client**
+- [x] **Step 4: Confirm the version detector records the server, not the client**
 
 `detectOllamaVersion()` runs `ollama --version` and takes the **first**
 `\d+\.\d+\.\d+` match, which is the server line. Client and server agree today so
@@ -209,7 +209,7 @@ Expected: the same string `/api/version` returned in Step 2. If these two
 disagree, the result files will be stamped with the wrong runtime and the whole
 sweep is mislabelled — stop and fix `detectOllamaVersion()` first.
 
-- [ ] **Step 5: Pull any missing models**
+- [x] **Step 5: Pull any missing models**
 
 All fifteen were present when this plan was written, so this is expected to be a
 no-op — but run it rather than trusting that snapshot. A tag can be removed, and
@@ -277,7 +277,7 @@ near-neighbour tag: record it as unavailable, let that row carry `—` in the
 0.33.x columns, and say why. A silently different model is worse than a missing
 row.
 
-- [ ] **Step 6: Quiesce the machine before anything is measured**
+- [x] **Step 6: Quiesce the machine before anything is measured**
 
 ```bash
 ollama ps                              # must list nothing
@@ -290,7 +290,7 @@ Quit other applications and keep the machine on AC power. This box has 64 GB and
 the largest model is 23.7 GB, so memory headroom is not the constraint it was on
 the M5 — but a competing GPU client is, and it looks exactly like a slow model.
 
-- [ ] **Step 7: No commit**
+- [x] **Step 7: No commit**
 
 This task changes host state, not the tree. `git status --short` should be
 unchanged from the start of the task.
@@ -319,7 +319,7 @@ being genuinely unrecoverable.
 
 - Produces: the string `0.32.14` as the archive's runtime, cited to a log excerpt. Tasks 6 and 7 quote it.
 
-- [ ] **Step 1: Re-confirm the version across every archive-era log**
+- [x] **Step 1: Re-confirm the version across every archive-era log**
 
 ```bash
 for f in ~/.ollama/logs/server-5.log ~/.ollama/logs/server-4.log ~/.ollama/logs/server-3.log; do
@@ -337,7 +337,7 @@ If a log has rotated away and you cannot see all three, record what you can and
 say so in the file — a partial citation is still a citation. Do not write
 `0.32.14` into `PROVENANCE.md` without an excerpt supporting it.
 
-- [ ] **Step 2: Confirm the archive ran on Metal too**
+- [x] **Step 2: Confirm the archive ran on Metal too**
 
 The comparison is only clean if both configurations used the GPU.
 
@@ -349,7 +349,7 @@ Expected: `library=Metal`, `description="Apple M1 Max"`, `total="51.8 GiB"` —
 identical to the line Task 1 Step 3 requires. Record this in the file: it rules
 out a CPU fallback as an explanation for the archive being slower.
 
-- [ ] **Step 3: Write the provenance file**
+- [x] **Step 3: Write the provenance file**
 
 Create `adaptive_chat_server_dart/tool/model_probes/results-m1max-64gb-ollama032/PROVENANCE.md`:
 
@@ -382,7 +382,7 @@ measurement. `results-m1max-64gb-ollama033/` holds the same host re-measured on
 a stamped runtime, which is the comparison the version question actually needs.
 ````
 
-- [ ] **Step 4: Verify nothing else in the directory changed**
+- [x] **Step 4: Verify nothing else in the directory changed**
 
 ```bash
 cd adaptive_chat_server_dart
@@ -394,7 +394,7 @@ Expected: exactly one untracked file, `PROVENANCE.md`, and `check_results` still
 reporting `171 recorded run(s) across 2 host director(ies)` and `OK`. The
 checker reads `*.json`, so a Markdown file beside them is invisible to it.
 
-- [ ] **Step 5: Commit** (show the diff and get confirmation first — CLAUDE.md git gate)
+- [x] **Step 5: Commit** (show the diff and get confirmation first — CLAUDE.md git gate)
 
 ```bash
 git add adaptive_chat_server_dart/tool/model_probes/results-m1max-64gb-ollama032/PROVENANCE.md
@@ -437,7 +437,7 @@ generator is safe and only the checker needs changing.
 - Consumes: nothing from earlier tasks.
 - Produces: `const shapeTableDir = 'results-m1max-64gb-ollama032';` and a new optional named parameter `List<ProbeRun>? tableResults` on `check()`. When null, the existing host filter applies unchanged, so all seventeen existing `check(...)` call sites in the test file keep compiling.
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Add to `test/check_results_test.dart`, in the group that already exercises
 `tableHost` (near the existing `tableHost: 'Host A'` tests):
@@ -486,7 +486,7 @@ Markdown table. Read the neighbouring tests and reuse their helpers verbatim
 rather than adding new ones — if the file builds these inline, build them
 inline here too.
 
-- [ ] **Step 2: Run the test to verify it fails**
+- [x] **Step 2: Run the test to verify it fails**
 
 ```bash
 cd adaptive_chat_server_dart
@@ -496,7 +496,7 @@ fvm dart test test/check_results_test.dart
 Expected: a compile error — `No named parameter with the name 'tableResults'`.
 That is the failure; it proves the parameter does not exist yet.
 
-- [ ] **Step 3: Add the constant and the parameter**
+- [x] **Step 3: Add the constant and the parameter**
 
 In `check_results.dart`, beside `shapeTableHost`:
 
@@ -539,7 +539,7 @@ the canonical directory explicitly:
     ),
 ```
 
-- [ ] **Step 4: Run the tests to verify they pass**
+- [x] **Step 4: Run the tests to verify they pass**
 
 ```bash
 cd adaptive_chat_server_dart
@@ -550,7 +550,7 @@ fvm dart format --output=none --set-exit-if-changed .
 
 Expected: all tests pass, analyze clean, format clean.
 
-- [ ] **Step 5: Prove the change is inert today and effective tomorrow**
+- [x] **Step 5: Prove the change is inert today and effective tomorrow**
 
 ```bash
 cd adaptive_chat_server_dart
@@ -583,7 +583,7 @@ rm -rf tool/model_probes/results-m1max-64gb-ollama033
 fvm dart run tool/model_probes/check_results.dart   # back to 171 / 2 dirs
 ```
 
-- [ ] **Step 6: Commit** (diff + confirmation first)
+- [x] **Step 6: Commit** (diff + confirmation first)
 
 ```bash
 git add adaptive_chat_server_dart/tool/model_probes/check_results.dart adaptive_chat_server_dart/test/check_results_test.dart
@@ -607,7 +607,7 @@ are committed to the other fourteen.
 - Consumes: the ≥ 0.33.1 Metal-backed server from Task 1; the directory-scoped checker from Task 3.
 - Produces: the first runs in `results-m1max-64gb-ollama033/`, which Task 5 extends and Task 6 reads.
 
-- [ ] **Step 1: Re-confirm the preconditions immediately before starting**
+- [x] **Step 1: Re-confirm the preconditions immediately before starting**
 
 ```bash
 curl -s http://127.0.0.1:11434/api/version; echo    # must be >= 0.33.1
@@ -621,7 +621,7 @@ The last one matters: `run()` skips any `(model, probe)` whose JSON already
 exists, so a leftover directory from Task 3 Step 5 would make this sweep a
 silent no-op.
 
-- [ ] **Step 2: Run the sweep for this model only**
+- [x] **Step 2: Run the sweep for this model only**
 
 ```bash
 cd adaptive_chat_server_dart
@@ -639,7 +639,7 @@ Two log lines mean stop immediately:
 - `>>> ABORT ... another probe is running` — a stale probe process is alive. Find it with `pgrep -fl "model_probes/.*[.]dart"`, kill it, restart.
 - `>>> SKIP` on any line — `SWEEP_RESULTS` is pointing somewhere that already has results. Stop and re-check Step 1.
 
-- [ ] **Step 3: Verify the run is complete and correctly stamped**
+- [x] **Step 3: Verify the run is complete and correctly stamped**
 
 ```bash
 cd adaptive_chat_server_dart
@@ -659,7 +659,7 @@ Expected: 7 or 8 files, every one stamped `Apple M1 Max / 64 GB` and an Ollama
 version ≥ 0.33.1. An unstamped or 0.32.x file means the daemon changed under the
 sweep — delete the directory and start again from Task 1.
 
-- [ ] **Step 4: Read the latency answer**
+- [x] **Step 4: Read the latency answer**
 
 ```bash
 cd adaptive_chat_server_dart
@@ -684,7 +684,7 @@ PYEOF
 The published cross-host ratio is 0.82x. `new/old` isolates the runtime on fixed
 hardware.
 
-- [ ] **Step 5: Read the behavioral answer — the stronger signal**
+- [x] **Step 5: Read the behavioral answer — the stronger signal**
 
 Four unaided calls are the fingerprint. This does not depend on timing at all.
 
@@ -709,7 +709,7 @@ PYEOF
 The M5 comparison gave **4** differing unaided calls — `choice2` and `choice5`,
 both samples, cold — and **0** differing seeded calls.
 
-- [ ] **Step 6: Decide what was established, and tell the user before continuing**
+- [x] **Step 6: Decide what was established, and tell the user before continuing**
 
 Four outcomes. Do not proceed to Task 5 without saying which one happened.
 
@@ -722,7 +722,7 @@ Whatever happens, the figure goes in the write-up. The plan continues to Task 5
 in every case: the other fourteen models are the control that says whether this
 model is special or whether 0.33.x moved everything.
 
-- [ ] **Step 7: Commit** (diff + confirmation first)
+- [x] **Step 7: Commit** (diff + confirmation first)
 
 ```bash
 git add adaptive_chat_server_dart/tool/model_probes/results-m1max-64gb-ollama033/qwen3.5_9b/
@@ -746,7 +746,7 @@ This is the only task that cannot be retried cheaply.
 - Consumes: `SWEEP_RESULTS` and the verified runtime from Tasks 1 and 4.
 - Produces: the complete second configuration Task 6 tabulates.
 
-- [ ] **Step 1: Re-quiesce and re-verify the runtime**
+- [x] **Step 1: Re-quiesce and re-verify the runtime**
 
 A cheap confirmation before committing six hours. Ollama will not auto-update during this run, so this is expected to pass unchanged.
 
@@ -760,7 +760,7 @@ pgrep -fl "model_probes/.*[.]dart"
 If the version moved, restart per Task 1 and note it — a directory that mixes
 runtimes is the one outcome this plan cannot interpret.
 
-- [ ] **Step 2: Start the sweep**
+- [x] **Step 2: Start the sweep**
 
 Pass the fourteen remaining models explicitly, in `sweep.sh`'s own stall-risk
 order with `qwen3.5:9b` removed, so a stalling tail cannot delay the rest.
@@ -783,7 +783,7 @@ continues where it stopped, because `run()` skips `(model, probe)` pairs whose
 JSON already exists. `qwen3.5:9b` is not in this list and its files are already
 present, so it is not re-run either way.
 
-- [ ] **Step 3: Watch the first model to completion before walking away**
+- [x] **Step 3: Watch the first model to completion before walking away**
 
 ```bash
 tail -f /tmp/sweep-m1max-033.log
@@ -793,7 +793,7 @@ Expected within a few minutes: `##### MODEL qwen3.8:27b-nvfp4`, then `>>> START
 … json_format`, then `>>> DONE … rc=0`. Stop on `>>> ABORT` or on any `>>> SKIP`,
 as in Task 4 Step 2.
 
-- [ ] **Step 4: Verify the run is complete, stamped, and single-runtime**
+- [x] **Step 4: Verify the run is complete, stamped, and single-runtime**
 
 ```bash
 cd adaptive_chat_server_dart
@@ -821,7 +821,7 @@ the older stamp, move them to a scratch directory, restore the runtime per Task
 1, and re-run those `(model, probe)` pairs. Say in the changelog that it
 happened.
 
-- [ ] **Step 5: Cross-check shape coverage against the 0.32.14 archive**
+- [x] **Step 5: Cross-check shape coverage against the 0.32.14 archive**
 
 Both configurations ran byte-identical assets at `t=0` on the same machine, so
 coverage should reproduce closely. `ModelBehavior.md` already documents that
@@ -860,7 +860,7 @@ Record every `INVESTIGATE` row and resolve it before Task 6. The
 differing calls is arithmetic, while many differing calls is a behavior change
 worth naming in the write-up.
 
-- [ ] **Step 6: Confirm both archives and CI are untouched**
+- [x] **Step 6: Confirm both archives and CI are untouched**
 
 ```bash
 cd adaptive_chat_server_dart
@@ -873,7 +873,7 @@ by Task 2), and `check_results` reporting **3 host directories** with a run coun
 of 171 plus the new files, and `OK`. If the shape table fails here, Task 3 did
 not take effect.
 
-- [ ] **Step 7: Commit the results** (diff + confirmation first — use `git diff --stat`, this is ~100 files)
+- [x] **Step 7: Commit the results** (diff + confirmation first — use `git diff --stat`, this is ~100 files)
 
 ```bash
 git add adaptive_chat_server_dart/tool/model_probes/results-m1max-64gb-ollama033/
@@ -911,7 +911,7 @@ A measurement settles it; further reasoning does not.
 
 - Create: scratch only. `tool/model_probes/results-m1max-64gb-ollama033/` is **not** touched.
 
-- [ ] **Step 1: Re-run `qwen3.5:9b` hot, immediately**
+- [x] **Step 1: Re-run `qwen3.5:9b` hot, immediately**
 
 Do not wait, do not let the machine idle first.
 
@@ -931,7 +931,7 @@ sweep gives every other model — so the hot run must not overwrite it. A separa
 `SWEEP_RESULTS` avoids moving files at all, which is where this kind of
 experiment usually goes wrong.
 
-- [ ] **Step 2: Compare cold against hot, same runtime, same box**
+- [x] **Step 2: Compare cold against hot, same runtime, same box**
 
 ```bash
 cd adaptive_chat_server_dart
@@ -953,7 +953,7 @@ print(f"hot  vs 0.32.14 archive (6903 ms) = {hot/6903:.2f}x")
 EOF
 ```
 
-- [ ] **Step 3: Read the result**
+- [x] **Step 3: Read the result**
 
 - **hot/cold within ~1.05x** — position is not driving the ratios. The 0.71x stands as a runtime effect, and the four-row ordering above is coincidence or a real model-dependent effect. Say the control was run and report the figure.
 - **hot/cold at or above ~1.15x** — position bias is real and comparable to the effect being measured. Then `qwen3.5:9b`'s 0.71x is partly positional, every ratio in the table carries the same bias, and the write-up must say so. Report `hot vs 0.32.14` alongside `cold vs 0.32.14` as a range rather than publishing the flattering end.
@@ -962,7 +962,7 @@ EOF
 Do **not** retrofit a correction factor onto any published row. A measured bias
 is reportable; an estimated correction is not.
 
-- [ ] **Step 4: No commit of results**
+- [x] **Step 4: No commit of results**
 
 The hot run is a control, not a published measurement, and it stays out of the
 results tree. Its figures go into Task 6's write-up and Task 8's changelog.
@@ -1002,7 +1002,7 @@ before.
 - Move: `results-m1max-64gb-ollama033/llama3.2_latest/` and `.../granite4.1_3b/` to a scratch archive
 - Create: those two directories again, from the re-run
 
-- [ ] **Step 1: Confirm the machine is settled**
+- [x] **Step 1: Confirm the machine is settled**
 
 ```bash
 ollama ps                          # expect nothing resident
@@ -1012,7 +1012,7 @@ pgrep -fl "model_probes/.*[.]dart" # expect nothing
 Re-running under the same contention that may have caused the stalls answers
 nothing.
 
-- [ ] **Step 2: Preserve run 1 rather than overwrite it**
+- [x] **Step 2: Preserve run 1 rather than overwrite it**
 
 `run()` skips any `(model, probe)` whose JSON already exists, so the re-run needs
 these out of the way — and run 1 is evidence: whether the stalls reproduce is
@@ -1032,7 +1032,7 @@ Archive outside the results tree: `perf_table.py` reads every directory under
 the results root and takes the model name from the JSON, so a sibling
 `llama3.2_latest-run1/` would render a second row under the same name.
 
-- [ ] **Step 3: Re-run both models**
+- [x] **Step 3: Re-run both models**
 
 ```bash
 cd adaptive_chat_server_dart
@@ -1044,7 +1044,7 @@ SWEEP_LOG=/tmp/sweep-logs-m1max-033-rerun \
 
 Budget 25 minutes if the stalls were transient, far longer if they reproduce.
 
-- [ ] **Step 4: Compare the two runs**
+- [x] **Step 4: Compare the two runs**
 
 Report, for each model and each run: total sweep minutes, stall count, seeded
 summary, and the indices of the stalled calls. The indices are the diagnostic —
@@ -1095,7 +1095,7 @@ current footnote says cannot be computed. Keep all three outputs open. Every
 figure in the following steps comes from them and nothing else — do not round
 differently, reorder, or tidy a value.
 
-- [ ] **Step 2: Rename the section and restate what the columns are**
+- [x] **Step 2: Rename the section and restate what the columns are**
 
 The heading `#### Performance, by host` and its opening sentence describe two
 hosts. There are now three configurations across two hosts, and the distinction
@@ -1141,7 +1141,7 @@ latency table and a sweep-plus-stalls table — with the same fifteen rows in th
 same order, rather than dropping a configuration. Do not drop the `Weights`
 column; two paragraphs below the table argue from it.
 
-- [ ] **Step 4: Replace the runtime footnote with what was measured**
+- [x] **Step 4: Replace the runtime footnote with what was measured**
 
 The current footnote is the paragraph beginning "**The two column groups were
 measured on different Ollama versions**". Two of its claims are now false: that
@@ -1160,7 +1160,7 @@ establishes it. A version number that correlates with a behavior change is
 evidence that the runtime did it; it is not an account of what the runtime
 changed.
 
-- [ ] **Step 5: Update the surrounding paragraphs that the new column contradicts**
+- [x] **Step 5: Update the surrounding paragraphs that the new column contradicts**
 
 Re-read each paragraph after the table and correct any that the sweep moved:
 
@@ -1170,7 +1170,7 @@ Re-read each paragraph after the table and correct any that the sweep moved:
 
 Change no figure that the runs do not support, and change every figure they do.
 
-- [ ] **Step 6: Verify no figure moved except where the runs moved it**
+- [x] **Step 6: Verify no figure moved except where the runs moved it**
 
 ```bash
 cd adaptive_chat_server_dart
@@ -1189,7 +1189,7 @@ fvm dart run tool/model_probes/check_results.dart
 
 Expected: `OK`. The shape-coverage table was not touched.
 
-- [ ] **Step 7: Commit** (diff + confirmation first)
+- [x] **Step 7: Commit** (diff + confirmation first)
 
 ```bash
 git add adaptive_chat_server_dart/ModelBehavior.md
@@ -1216,7 +1216,7 @@ caveat that article ends on.
 
 - Consumes: the same `perf_table.py` output as Task 6, and Task 6's rewritten footnote.
 
-- [ ] **Step 1: Find every figure the sweep touches**
+- [x] **Step 1: Find every figure the sweep touches**
 
 ```bash
 cd adaptive_chat_server_dart/blog
@@ -1237,7 +1237,7 @@ Known hits from a survey taken before this plan was written:
 | article-3 | 166   | "Re-measuring the M1 Max on 0.33.1 would separate the runtime from the machine." |
 | article-1 | 127   | "that figure needs its host and its Ollama version named"                        |
 
-- [ ] **Step 2: Correct the unconditional errors first**
+- [x] **Step 2: Correct the unconditional errors first**
 
 Independent of how the sweep came out, **"it is not recoverable" is false** —
 Task 2 recovered it from the server logs. Fix that claim wherever it appears
@@ -1249,7 +1249,7 @@ Article 1 line 127 needs no correction — "that figure needs its host and its
 Ollama version named" is exactly the point this sweep confirms. Check whether it
 now understates the case and can cite the result instead.
 
-- [ ] **Step 3: Rewrite article 3's closing section from the measurement**
+- [x] **Step 3: Rewrite article 3's closing section from the measurement**
 
 Section `## A per-row ratio compares two configurations, not two machines`
 (line 141) ends on "Re-measuring the M1 Max on 0.33.1 would separate the runtime
@@ -1264,7 +1264,7 @@ heading as a finding, per the tone rule, and let it say what was measured:
 - If the runtime explains `qwen3.5:9b`, the section becomes the story of a confound found and removed, and the table's `0.8x` needs a same-runtime replacement figure beside it.
 - If it does not, the section says the runtime was tested and excluded, which is a stronger claim than the caveat it replaces.
 
-- [ ] **Step 4: Update article 3's table, chart comment, and prose figures**
+- [x] **Step 4: Update article 3's table, chart comment, and prose figures**
 
 The table at line 60 and the chart data block at lines 78–93 both carry the eight
 ratios. If the same-runtime comparison changes any of them:
@@ -1276,7 +1276,7 @@ ratios. If the same-runtime comparison changes any of them:
 The chart is a `<!-- CHART (to be produced) -->` comment, not a rendered image,
 so it is text like any other and must not be left stale.
 
-- [ ] **Step 4b: Extend article 5 with the cascade, and correct its 52-stall attribution**
+- [x] **Step 4b: Extend article 5 with the cascade, and correct its 52-stall attribution**
 
 Article 5 is titled "The measurement was wrong, in a way that looked exactly
 like a slow model", which is this sweep's finding restated. It is the home for
@@ -1305,7 +1305,7 @@ Then add, in the article's register:
 
 Figures come from `FIGURES.md`; do not recompute them.
 
-- [ ] **Step 5: Check articles 2, 4, 5 and the blog README**
+- [x] **Step 5: Check articles 2, 4, 5 and the blog README**
 
 ```bash
 cd adaptive_chat_server_dart/blog
@@ -1320,7 +1320,7 @@ confirm rather than assume.
 
 Leave an article alone if no figure in it moved. Not every article needs an edit.
 
-- [ ] **Step 6: Verify no figure moved except where the runs moved it**
+- [x] **Step 6: Verify no figure moved except where the runs moved it**
 
 ```bash
 cd adaptive_chat_server_dart
@@ -1334,7 +1334,7 @@ done
 Expected: no output for the articles you did not intend to change, and only
 sweep-justified differences in the rest.
 
-- [ ] **Step 7: Run the Markdown format gate**
+- [x] **Step 7: Run the Markdown format gate**
 
 `adaptive_chat_server_dart/**` is covered by `check:md:chat`, not `check:md` —
 the trap CLAUDE.md calls out.
@@ -1348,7 +1348,7 @@ If it fails, run `npm run format:md:chat`, then re-run Step 6's numeric diff —
 Prettier reflows tables and rewrites `*italic*` to `_italic_`, and the numeric
 check is what proves the reflow changed nothing that matters.
 
-- [ ] **Step 8: Commit** (diff + confirmation first)
+- [x] **Step 8: Commit** (diff + confirmation first)
 
 ```bash
 git add adaptive_chat_server_dart/blog/
@@ -1366,7 +1366,7 @@ with the measurement that justified each change", and every prior sweep has one.
 
 - Modify: `adaptive_chat_server_dart/CHANGELOG.md`
 
-- [ ] **Step 1: Add the `## [Unreleased]` bullets**
+- [x] **Step 1: Add the `## [Unreleased]` bullets**
 
 Match the surrounding entries' style — a bolded claim, then what was measured.
 Fill every bracketed figure from Tasks 4–6; do not leave a bracket in the file.
@@ -1393,7 +1393,7 @@ Fill every bracketed figure from Tasks 4–6; do not leave a bracket in the file
   for a second host. The table is now scoped to `results-m1max-64gb-ollama032/` by name.
 ```
 
-- [ ] **Step 2: Full verification**
+- [x] **Step 2: Full verification**
 
 ```bash
 cd /Users/joefreeman/Documents/GitHub/freemansoft/Flutter-AdaptiveCards
@@ -1408,9 +1408,9 @@ fvm dart run tool/model_probes/check_results.dart
 Expected: all pass, and `check_results` reporting `OK` across **3 host
 directories** with the archive's 171 runs plus the new sweep's.
 
-- [ ] **Step 3: Invoke `superpowers:verification-before-completion`** and paste the command output — exit codes and pass/fail counts — before claiming the work is done. CLAUDE.md's plan completion gate requires evidence, not a summary.
+- [x] **Step 3: Invoke `superpowers:verification-before-completion`** and paste the command output — exit codes and pass/fail counts — before claiming the work is done. CLAUDE.md's plan completion gate requires evidence, not a summary.
 
-- [ ] **Step 4: Commit** (diff + confirmation first)
+- [x] **Step 4: Commit** (diff + confirmation first)
 
 ```bash
 git add adaptive_chat_server_dart/CHANGELOG.md

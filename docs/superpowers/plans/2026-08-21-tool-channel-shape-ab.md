@@ -66,7 +66,7 @@ That last point matters: the `prose` control case has an empty `accepted` set, s
   - `String replyEquivalent(Map<String, dynamic> message, String toolName)` — the prose-equivalent string described above
   - `Future<ProbeOutcome> probeOnceViaTool({...})`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Create `test/tool_channel_test.dart`:
 
@@ -217,7 +217,7 @@ fvm dart test test/tool_channel_test.dart
 
 Expected: FAIL at compile time — `Error: Couldn't resolve … tool_channel.dart`.
 
-- [ ] **Step 3: Write `tool_channel.dart`**
+- [x] **Step 3: Write `tool_channel.dart`**
 
 Create `tool/model_probes/tool_channel.dart`. Move `renderCardTool` and `toolCallArguments` out of `tool_call_probe.dart` (they are currently private `_renderCardTool` / `_toolCallArguments` there) and make them public here, keeping their existing bodies and doc comments. Then add:
 
@@ -353,7 +353,7 @@ Add the imports the file needs (`dart:async`, `dart:convert`, `dart:io`, and rel
 
 Then update `tool_call_probe.dart` to import `tool_channel.dart` and delete its private copies, leaving its behavior identical.
 
-- [ ] **Step 4: Run the tests to verify they pass**
+- [x] **Step 4: Run the tests to verify they pass**
 
 ```bash
 cd adaptive_chat_server_dart
@@ -362,7 +362,7 @@ fvm dart test test/tool_channel_test.dart test/tool_call_probe_test.dart
 
 Expected: PASS, 8 + 8 = 16 tests. `tool_call_probe_test.dart` passing unchanged is the signal that extracting the helpers changed no behavior.
 
-- [ ] **Step 5: Wire `--channel` into `shape_ab.dart`**
+- [x] **Step 5: Wire `--channel` into `shape_ab.dart`**
 
 Add the option beside the existing ones:
 
@@ -439,7 +439,7 @@ Finally, record the channel in the run so a result file cannot be misread:
 
 and pass `assetNames: const ['card_tool_prompt.txt']` to the run when the channel is tool, matching what it actually sent.
 
-- [ ] **Step 6: Verify the wiring without calling a model**
+- [x] **Step 6: Verify the wiring without calling a model**
 
 ```bash
 cd adaptive_chat_server_dart
@@ -449,7 +449,7 @@ fvm dart run tool/model_probes/shape_ab.dart --channel tool --model x --only pro
 
 Expected: the help text lists `--channel`; the second command exits 2 with the seed-card refusal message, proving the guard fires before any network call.
 
-- [ ] **Step 7: Full suite, analyze, changelog, commit**
+- [x] **Step 7: Full suite, analyze, changelog, commit**
 
 ```bash
 cd adaptive_chat_server_dart
@@ -502,7 +502,7 @@ ollama ps
 
 Expected: a model list, and an empty `ollama ps`. A stalling measurement looks identical whether the model is slow or the machine is busy — check before, not after.
 
-- [ ] **Step 2: Derive the eight target models from the recorded phase 1 verdicts**
+- [x] **Step 2: Derive the eight target models from the recorded phase 1 verdicts**
 
 Do not copy a list from any document, including this one. Read it from the data:
 
@@ -519,7 +519,7 @@ PY
 
 Expected: 8 model tags. If it prints a different count, stop and report — the gate rests on this number.
 
-- [ ] **Step 3: Run the tool arm, serially**
+- [x] **Step 3: Run the tool arm, serially**
 
 One model resident at a time. Run each as a foreground command; do not background them.
 
@@ -540,7 +540,7 @@ done
 
 If a model times out or errors, record what happened and continue to the next. One bad model must not abort the run.
 
-- [ ] **Step 4: Build the comparison**
+- [x] **Step 4: Build the comparison**
 
 For each model, compare `shape_ab-channel-tool.json` against the recorded `shape_ab-unaided.json` — **not** `shape_ab-seeded.json`. The tool arm ran unseeded, and comparing it to a seeded prose score hands prose an advantage the tool arm structurally cannot have.
 
@@ -562,7 +562,7 @@ for f in sorted(glob.glob('tool/model_probes/results/*/shape_ab-channel-tool.jso
 PY
 ```
 
-- [ ] **Step 5: Register the new variant**
+- [x] **Step 5: Register the new variant**
 
 Add `'shape_ab-channel-tool'` to `expectedProbes` in `tool/model_probes/check_results.dart`, and a `run` line to `sweep.sh` beside the existing `shapes-unaided` one. Then:
 
@@ -573,13 +573,13 @@ fvm dart run tool/model_probes/check_results.dart
 
 Expected: no `missing probe` finding for a model that has a `shape_ab-channel-tool.json`. Models that are not `supported` will legitimately lack one — if `check_results.dart` flags those as missing, make the expectation conditional rather than recording a fake run.
 
-- [ ] **Step 6: Write the finding, and apply the phase 3 gate**
+- [x] **Step 6: Write the finding, and apply the phase 3 gate**
 
 Add a subsection under the tool-calling canary section in `ModelBehavior.md` carrying the per-model comparison table from Step 4 and one sentence naming what it means. Report the result honestly whichever way it falls — "the tool channel scored the same or worse" is a publishable finding and is the outcome the thin headroom predicts, since these models already score 23–24 of 25 on the prose path.
 
 **The phase 3 gate:** proceed to Tasks 3–4 only if the tool arm is at least as good as the prose arm on a majority of the eight models. If the tool channel is worse single-turn, its multi-turn behavior is moot and phase 3 is not built — record that and stop.
 
-- [ ] **Step 7: Verify and commit**
+- [x] **Step 7: Verify and commit**
 
 ```bash
 cd adaptive_chat_server_dart
@@ -766,21 +766,21 @@ Add the multi-turn findings to `ModelBehavior.md`, register `cascade_ab-tool` in
 
 ## Final Task: Full verification
 
-- [ ] **Step 1: Full suite**
+- [x] **Step 1: Full suite**
 
 ```bash
 cd adaptive_chat_server_dart
 fvm dart test
 ```
 
-- [ ] **Step 2: Analyze the whole repo**
+- [x] **Step 2: Analyze the whole repo**
 
 ```bash
 cd /Users/joefreeman/Documents/GitHub/freemansoft/Flutter-AdaptiveCards
 fvm flutter analyze
 ```
 
-- [ ] **Step 3: Format gates**
+- [x] **Step 3: Format gates**
 
 ```bash
 fvm dart format --output=none --set-exit-if-changed adaptive_chat_server_dart/
@@ -788,7 +788,7 @@ npm run check:md:chat
 npm run check:md
 ```
 
-- [ ] **Step 4: Confirm scope**
+- [x] **Step 4: Confirm scope**
 
 ```bash
 git diff --stat main -- packages/
@@ -796,6 +796,6 @@ git diff --stat main -- packages/
 
 Expected: no output.
 
-- [ ] **Step 5: Invoke `superpowers:verification-before-completion`**
+- [x] **Step 5: Invoke `superpowers:verification-before-completion`**
 
 Paste command output — exit codes and pass/fail counts — before any success claim.

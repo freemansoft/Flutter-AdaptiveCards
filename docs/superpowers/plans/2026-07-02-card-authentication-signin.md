@@ -58,7 +58,7 @@ Run all Phase 1 commands from `packages/flutter_adaptive_cards_fs/` unless noted
 - Test: `packages/flutter_adaptive_cards_fs/test/models/authentication_config_test.dart`
 - Modify: `packages/flutter_adaptive_cards_fs/lib/flutter_adaptive_cards_fs.dart`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Create `test/models/authentication_config_test.dart`:
 
@@ -120,7 +120,7 @@ void main() {
 Run: `fvm flutter test test/models/authentication_config_test.dart`
 Expected: FAIL — `AuthenticationConfig` is undefined (compile error).
 
-- [ ] **Step 3: Write minimal implementation**
+- [x] **Step 3: Write minimal implementation**
 
 Create `lib/src/models/authentication_config.dart`:
 
@@ -225,12 +225,12 @@ exports (near the `refresh_config.dart` export):
 export 'package:flutter_adaptive_cards_fs/src/models/authentication_config.dart';
 ```
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `fvm flutter test test/models/authentication_config_test.dart`
 Expected: PASS (2 tests).
 
-- [ ] **Step 5: Commit** (show diff + get user approval first — see gate)
+- [x] **Step 5: Commit** (show diff + get user approval first — see gate)
 
 ```bash
 git add packages/flutter_adaptive_cards_fs/lib/src/models/authentication_config.dart \
@@ -248,7 +248,7 @@ git commit -m "feat(cards): parse root authentication object into typed model"
 - Modify: `packages/flutter_adaptive_cards_fs/lib/src/models/action_invoke.dart`
 - Test: `packages/flutter_adaptive_cards_fs/test/models/signin_action_invoke_test.dart`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Create `test/models/signin_action_invoke_test.dart`:
 
@@ -280,7 +280,7 @@ void main() {
 Run: `fvm flutter test test/models/signin_action_invoke_test.dart`
 Expected: FAIL — `SigninActionInvoke` is undefined.
 
-- [ ] **Step 3: Write minimal implementation**
+- [x] **Step 3: Write minimal implementation**
 
 Append to `lib/src/models/action_invoke.dart` (after `OpenUrlDialogActionInvoke`).
 The file already imports `authentication_config.dart` transitively via the
@@ -330,12 +330,12 @@ class SigninActionInvoke {
 }
 ```
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `fvm flutter test test/models/signin_action_invoke_test.dart`
 Expected: PASS.
 
-- [ ] **Step 5: Commit** (gate)
+- [x] **Step 5: Commit** (gate)
 
 ```bash
 git add packages/flutter_adaptive_cards_fs/lib/src/models/action_invoke.dart \
@@ -352,7 +352,7 @@ git commit -m "feat(cards): add SigninActionInvoke payload"
 - Modify: `packages/flutter_adaptive_cards_fs/lib/src/action/action_handler.dart`
 - Test: covered by Task 4's widget test (this task is a pure additive field).
 
-- [ ] **Step 1: Add the nullable handler field**
+- [x] **Step 1: Add the nullable handler field**
 
 In `lib/src/action/action_handler.dart`, add to the constructor parameter list
 (after `this.onHttp,`):
@@ -372,13 +372,13 @@ And add the field (after the `onHttp` field, before the closing `of`):
   final void Function(SigninActionInvoke invoke)? onSignin;
 ```
 
-- [ ] **Step 2: Verify it compiles**
+- [x] **Step 2: Verify it compiles**
 
 Run: `fvm flutter analyze lib/src/action/action_handler.dart`
 Expected: No new errors. (`SigninActionInvoke` resolves via the existing
 `action_invoke.dart` import.)
 
-- [ ] **Step 3: Commit** (gate)
+- [x] **Step 3: Commit** (gate)
 
 ```bash
 git add packages/flutter_adaptive_cards_fs/lib/src/action/action_handler.dart
@@ -394,7 +394,7 @@ git commit -m "feat(cards): add onSignin host handler"
 - Modify: `packages/flutter_adaptive_cards_fs/lib/src/cards/adaptive_card_element.dart`
 - Test: `packages/flutter_adaptive_cards_fs/test/cards/authentication_region_test.dart`
 
-- [ ] **Step 1: Write the failing widget test**
+- [x] **Step 1: Write the failing widget test**
 
 Create `test/cards/authentication_region_test.dart`. Use the repo's test support
 harness for pumping a card. Check an existing card widget test (e.g.
@@ -496,7 +496,7 @@ void main() {
 Run: `fvm flutter test test/cards/authentication_region_test.dart`
 Expected: FAIL — no sign-in text/button rendered; `onSignin` unused.
 
-- [ ] **Step 3: Parse `authentication` in `initState`**
+- [x] **Step 3: Parse `authentication` in `initState`**
 
 In `lib/src/cards/adaptive_card_element.dart`, add the import near the top with
 the other model imports:
@@ -522,7 +522,7 @@ In `initState`, after the `refresh` parse block (around line 99), add:
     }
 ```
 
-- [ ] **Step 4: Add the dispatch method**
+- [x] **Step 4: Add the dispatch method**
 
 Add a method near `_triggerRefresh` (after it, around line 170):
 
@@ -571,7 +571,7 @@ Add a method near `_triggerRefresh` (after it, around line 170):
 > `import 'dart:developer' as developer;` at the top. Check the existing imports
 > first — the file logs elsewhere, so it is likely already present.
 
-- [ ] **Step 5: Render the region in `build`**
+- [x] **Step 5: Render the region in `build`**
 
 In `build`, after the `_refreshConfig?.action != null` block (around line 321)
 and before the `backgroundImage` block, add:
@@ -592,7 +592,7 @@ and before the `backgroundImage` block, add:
     }
 ```
 
-- [ ] **Step 6: Add the `_AuthenticationRegion` widget**
+- [x] **Step 6: Add the `_AuthenticationRegion` widget**
 
 Add near `_RefreshAffordance` (end of file, around line 433):
 
@@ -654,17 +654,17 @@ class _AuthenticationRegion extends StatelessWidget {
 }
 ```
 
-- [ ] **Step 7: Run the widget test to verify it passes**
+- [x] **Step 7: Run the widget test to verify it passes**
 
 Run: `fvm flutter test test/cards/authentication_region_test.dart`
 Expected: PASS (3 tests).
 
-- [ ] **Step 8: Analyze**
+- [x] **Step 8: Analyze**
 
 Run: `fvm flutter analyze lib/src/cards/adaptive_card_element.dart`
 Expected: No new errors/warnings.
 
-- [ ] **Step 9: Commit** (gate)
+- [x] **Step 9: Commit** (gate)
 
 ```bash
 git add packages/flutter_adaptive_cards_fs/lib/src/cards/adaptive_card_element.dart \
@@ -681,13 +681,13 @@ git commit -m "feat(cards): render authentication sign-in region and dispatch on
 - Test: `packages/flutter_adaptive_cards_fs/test/goldens/authentication_signin_test.dart` (match the repo's existing golden test location/pattern)
 - Golden fixture JSON: add under the repo's golden card fixtures directory used by other golden tests.
 
-- [ ] **Step 1: Find the golden pattern**
+- [x] **Step 1: Find the golden pattern**
 
 Run: `ls packages/flutter_adaptive_cards_fs/test/**/gold_files 2>/dev/null; grep -rl "matchesGoldenFile\|@Tags(\['golden'\])" packages/flutter_adaptive_cards_fs/test | head`
 Expected: identifies an existing golden test file + the `gold_files/<platform>/`
 baseline layout referenced in `docs/Implementation-Status.md`.
 
-- [ ] **Step 2: Write the golden test mirroring an existing one**
+- [x] **Step 2: Write the golden test mirroring an existing one**
 
 Copy the smallest existing golden test (e.g. an icon or rating golden), rename
 to `authentication_signin_test.dart`, tag it `@Tags(['golden'])`, and point it
@@ -696,17 +696,17 @@ at a new fixture card containing the `authentication` object from Task 4's
 setup the sibling golden uses (see the "Load icon font in golden tests" note in
 `docs/Implementation-Status.md`). Name the golden `v1_4_authentication_signin`.
 
-- [ ] **Step 3: Generate the baseline (affected platform only)**
+- [x] **Step 3: Generate the baseline (affected platform only)**
 
 Run: `fvm flutter test --update-goldens test/goldens/authentication_signin_test.dart`
 Expected: PASS; a new `v1_4_authentication_signin-*.png` baseline is written.
 
-- [ ] **Step 4: Re-run without updating to confirm determinism**
+- [x] **Step 4: Re-run without updating to confirm determinism**
 
 Run: `fvm flutter test test/goldens/authentication_signin_test.dart`
 Expected: PASS against the just-generated baseline.
 
-- [ ] **Step 5: Commit** (gate)
+- [x] **Step 5: Commit** (gate)
 
 ```bash
 git add packages/flutter_adaptive_cards_fs/test/goldens/authentication_signin_test.dart \
@@ -725,7 +725,7 @@ git commit -m "test(cards): golden for authentication sign-in region"
 - Modify: `docs/actions-architecture.md`
 - Modify: `docs/Implementation-Status.md`
 
-- [ ] **Step 1: Update the core README Implementation status**
+- [x] **Step 1: Update the core README Implementation status**
 
 In `packages/flutter_adaptive_cards_fs/README.md` → Root `AdaptiveCard`
 Properties table, change the `authentication` row from `❌ Missing` to
@@ -734,20 +734,20 @@ Properties table, change the `authentication` row from `❌ Missing` to
 the `### Known gaps` `AdaptiveCard root` row to drop `authentication` from the
 missing list (leave `rtl`, `minHeight`, `verticalContentAlignment`).
 
-- [ ] **Step 2: Document the handler in actions-architecture.md**
+- [x] **Step 2: Document the handler in actions-architecture.md**
 
 Run: `grep -n "onRefresh\|onHttp" docs/actions-architecture.md`
 Then add an `onSignin` / `SigninActionInvoke` subsection alongside the existing
 handler docs, describing the tap → `onSignin` handoff and the `onOpenUrl`
 fallback.
 
-- [ ] **Step 3: Update the status index**
+- [x] **Step 3: Update the status index**
 
 In `docs/Implementation-Status.md`, remove root `authentication` from any
 "missing/deferred" phrasing and add a `### Root authentication sign-in
 (2026-07-02)` bullet under **Recently completed** (button path; SSO deferred).
 
-- [ ] **Step 4: Add CHANGELOG entry**
+- [x] **Step 4: Add CHANGELOG entry**
 
 In `packages/flutter_adaptive_cards_fs/CHANGELOG.md` under `## [Unreleased]`:
 
@@ -758,7 +758,7 @@ In `packages/flutter_adaptive_cards_fs/CHANGELOG.md` under `## [Unreleased]`:
   `tokenExchangeResource` is parsed but not exchanged.
 ```
 
-- [ ] **Step 5: Run the Phase 1 verification suite**
+- [x] **Step 5: Run the Phase 1 verification suite**
 
 Run (from `packages/flutter_adaptive_cards_fs/`):
 
@@ -771,7 +771,7 @@ fvm flutter test --tags=golden test/goldens/authentication_signin_test.dart
 Expected: analyze clean; non-golden suite passes with no regressions; the new
 golden passes. Record the pass/fail counts.
 
-- [ ] **Step 6: Commit** (gate)
+- [x] **Step 6: Commit** (gate)
 
 ```bash
 git add packages/flutter_adaptive_cards_fs/README.md \
@@ -794,7 +794,7 @@ Run all Phase 2 commands from `packages/flutter_adaptive_cards_host_fs/` unless 
 - Modify: `packages/flutter_adaptive_cards_host_fs/lib/src/models/invoke_request.dart`
 - Test: `packages/flutter_adaptive_cards_host_fs/test/models/invoke_request_signin_test.dart`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Create `test/models/invoke_request_signin_test.dart`:
 
@@ -833,7 +833,7 @@ void main() {
 Run: `fvm flutter test test/models/invoke_request_signin_test.dart`
 Expected: FAIL — `signin` enum value and `fromSignin` do not exist.
 
-- [ ] **Step 3: Add the enum value**
+- [x] **Step 3: Add the enum value**
 
 In `lib/src/models/invoke_kind.dart`, add:
 
@@ -842,7 +842,7 @@ In `lib/src/models/invoke_kind.dart`, add:
   signin,
 ```
 
-- [ ] **Step 3a: Keep the package compiling — add the Teams `switch` case now**
+- [x] **Step 3a: Keep the package compiling — add the Teams `switch` case now**
 
 Adding the enum value makes `TeamsInvokeAdapter.toMap`'s exhaustive `switch`
 non-exhaustive, a **package-wide compile error**. Add the `signin` case in the
@@ -862,7 +862,7 @@ same task so every subsequent test builds. In
 
 (Task 9 adds the test that pins this behavior.)
 
-- [ ] **Step 4: Add the field + factory**
+- [x] **Step 4: Add the field + factory**
 
 In `lib/src/models/invoke_request.dart`, add `this.connectionName,` to the
 constructor, add the factory after `fromOpenUrlDialog`:
@@ -892,12 +892,12 @@ And add the field (near `url`):
   final String? connectionName;
 ```
 
-- [ ] **Step 5: Run test to verify it passes**
+- [x] **Step 5: Run test to verify it passes**
 
 Run: `fvm flutter test test/models/invoke_request_signin_test.dart`
 Expected: PASS.
 
-- [ ] **Step 6: Commit** (gate)
+- [x] **Step 6: Commit** (gate)
 
 ```bash
 git add packages/flutter_adaptive_cards_host_fs/lib/src/models/invoke_kind.dart \
@@ -916,7 +916,7 @@ git commit -m "feat(host): add signin invoke kind, fromSignin factory, Teams cas
 - Modify: `packages/flutter_adaptive_cards_host_fs/lib/src/adapters/plain_json_invoke_adapter.dart`
 - Test: `packages/flutter_adaptive_cards_host_fs/test/adapters/plain_json_signin_test.dart`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Create `test/adapters/plain_json_signin_test.dart`:
 
@@ -954,7 +954,7 @@ void main() {
 Run: `fvm flutter test test/adapters/plain_json_signin_test.dart`
 Expected: FAIL — `connectionName` missing from serialized map / restored request.
 
-- [ ] **Step 3: Add `connectionName` to serialize + parse**
+- [x] **Step 3: Add `connectionName` to serialize + parse**
 
 In `lib/src/adapters/plain_json_invoke_adapter.dart`, in `toMap` add (after the
 `url` line):
@@ -970,12 +970,12 @@ In `requestFromMap`, add to the constructor call:
       connectionName: map['connectionName'] as String?,
 ```
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `fvm flutter test test/adapters/plain_json_signin_test.dart`
 Expected: PASS.
 
-- [ ] **Step 5: Commit** (gate)
+- [x] **Step 5: Commit** (gate)
 
 ```bash
 git add packages/flutter_adaptive_cards_host_fs/lib/src/adapters/plain_json_invoke_adapter.dart \
@@ -996,7 +996,7 @@ git commit -m "feat(host): serialize signin connectionName in PlainJson adapter"
 - Test: `packages/flutter_adaptive_cards_host_fs/test/adapters/teams_signin_test.dart`
 - (Implementation already added in Task 7 Step 3a.)
 
-- [ ] **Step 1: Write the test**
+- [x] **Step 1: Write the test**
 
 Create `test/adapters/teams_signin_test.dart`:
 
@@ -1024,13 +1024,13 @@ void main() {
 }
 ```
 
-- [ ] **Step 2: Run test to verify it passes**
+- [x] **Step 2: Run test to verify it passes**
 
 Run: `fvm flutter test test/adapters/teams_signin_test.dart`
 Expected: PASS (the `signin` case from Task 7 Step 3a produces
 `signin/verifyState`).
 
-- [ ] **Step 3: Commit** (gate)
+- [x] **Step 3: Commit** (gate)
 
 ```bash
 git add packages/flutter_adaptive_cards_host_fs/test/adapters/teams_signin_test.dart
@@ -1046,7 +1046,7 @@ git commit -m "test(host): pin Teams signin/verifyState mapping"
 - Modify: `packages/flutter_adaptive_cards_host_fs/lib/src/handlers/backend_handlers.dart`
 - Test: `packages/flutter_adaptive_cards_host_fs/test/handlers/backend_handlers_signin_test.dart`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Create `test/handlers/backend_handlers_signin_test.dart`. Reuse the existing
 backend-handler test's mock client + card harness (open a sibling test under
@@ -1113,7 +1113,7 @@ void main() {
 Run: `fvm flutter test test/handlers/backend_handlers_signin_test.dart`
 Expected: FAIL — `urlOpener` param and `completeSignin` do not exist.
 
-- [ ] **Step 3: Add constructor params + fields**
+- [x] **Step 3: Add constructor params + fields**
 
 In `lib/src/handlers/backend_handlers.dart`, add to the constructor:
 
@@ -1140,7 +1140,7 @@ Add a private field to remember the in-flight sign-in:
   SigninActionInvoke? _pendingSignin;
 ```
 
-- [ ] **Step 4: Wire `onSignin` in `wrap`**
+- [x] **Step 4: Wire `onSignin` in `wrap`**
 
 In `wrap(...)`, add to the `InheritedAdaptiveCardHandlers(...)` argument list:
 
@@ -1159,7 +1159,7 @@ In `wrap(...)`, add to the `InheritedAdaptiveCardHandlers(...)` argument list:
       },
 ```
 
-- [ ] **Step 5: Add `completeSignin`**
+- [x] **Step 5: Add `completeSignin`**
 
 Add a public method (after `wrap`, before `_handleHttp`). It reuses the private
 `_handle` used by Submit/Execute:
@@ -1204,17 +1204,17 @@ Add a public method (after `wrap`, before `_handleHttp`). It reuses the private
 > set them at the top of `wrap`, and in `completeSignin` use
 > `onCardReplaced ?? _onCardReplaced` and `cardValidator ?? _cardValidator`.
 
-- [ ] **Step 6: Run test to verify it passes**
+- [x] **Step 6: Run test to verify it passes**
 
 Run: `fvm flutter test test/handlers/backend_handlers_signin_test.dart`
 Expected: PASS.
 
-- [ ] **Step 7: Analyze**
+- [x] **Step 7: Analyze**
 
 Run: `fvm flutter analyze lib/src/handlers/backend_handlers.dart`
 Expected: no new issues (`unawaited` is already imported in this file).
 
-- [ ] **Step 8: Commit** (gate)
+- [x] **Step 8: Commit** (gate)
 
 ```bash
 git add packages/flutter_adaptive_cards_host_fs/lib/src/handlers/backend_handlers.dart \
@@ -1232,7 +1232,7 @@ git commit -m "feat(host): wire onSignin and add completeSignin round-trip"
 - Modify: `packages/flutter_adaptive_cards_host_fs/CHANGELOG.md`
 - Modify: `docs/backend-host-integration.md`
 
-- [ ] **Step 1: Update host README + CHANGELOG**
+- [x] **Step 1: Update host README + CHANGELOG**
 
 Add a sign-in bullet to `packages/flutter_adaptive_cards_host_fs/README.md`
 (Implementation status / features) and to `CHANGELOG.md` under `## [Unreleased]`:
@@ -1244,13 +1244,13 @@ Add a sign-in bullet to `packages/flutter_adaptive_cards_host_fs/README.md`
   the returned card.
 ```
 
-- [ ] **Step 2: Update backend-host-integration doc**
+- [x] **Step 2: Update backend-host-integration doc**
 
 Run: `grep -n "onRefresh\|ReplaceCardEffect\|completeS" docs/backend-host-integration.md`
 Then add a "Sign-in (authentication)" subsection documenting the
 `urlOpener` → tap → `completeSignin` → `replaceCard` flow.
 
-- [ ] **Step 3: Full verification suite (completion gate)**
+- [x] **Step 3: Full verification suite (completion gate)**
 
 Run (repo root):
 
@@ -1282,7 +1282,7 @@ hold for both packages (add tests rather than lowering floors). Invoke the
 `verification-before-completion` skill and paste the command output (exit codes,
 pass/fail counts) before claiming completion.
 
-- [ ] **Step 4: Commit** (gate)
+- [x] **Step 4: Commit** (gate)
 
 ```bash
 git add packages/flutter_adaptive_cards_host_fs/README.md \

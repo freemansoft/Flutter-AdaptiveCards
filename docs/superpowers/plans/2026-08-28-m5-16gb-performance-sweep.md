@@ -110,7 +110,7 @@ ls tool/model_probes/results/qwen2.5-coder_7b/
 Expected: `RES=tool/model_probes/results` on line 33, and seven JSON files
 listed. Those seven are exactly what `run()` would skip.
 
-- [ ] **Step 2: Make the directory overridable**
+- [x] **Step 2: Make the directory overridable**
 
 Replace line 33:
 
@@ -153,7 +153,7 @@ Expected: `check_results: 113 recorded run(s), 4 model(s) in launch.json`
 followed by the `OK —` line. A `FAIL` here means something other than this
 step's edit is wrong; stop and investigate before sweeping.
 
-- [ ] **Step 5: Commit** (show the diff and get confirmation first — CLAUDE.md git gate)
+- [x] **Step 5: Commit** (show the diff and get confirmation first — CLAUDE.md git gate)
 
 ```bash
 git add adaptive_chat_server_dart/tool/model_probes/sweep.sh
@@ -184,7 +184,7 @@ the sweep.
 
 - Produces: `String? detectOllamaVersion()` — returns e.g. `0.33.1`, or `null` when the daemon is unreachable. `ProbeRun` gains a nullable `ollama` field, serialized after `machine` and omitted when null, so existing result files still parse.
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 Add to `test/probe_results_test.dart`, inside the existing `round trip` group,
 replacing that group's single test with these two:
@@ -244,7 +244,7 @@ fvm dart test test/probe_results_test.dart
 Expected: a compile error — `No named parameter with the name 'ollama'`. That is
 the failure; it proves the field does not exist yet.
 
-- [ ] **Step 3: Add the field and the detector**
+- [x] **Step 3: Add the field and the detector**
 
 In `probe_results.dart`, add to the `ProbeRun` constructor parameter list beside
 `this.machine`:
@@ -328,7 +328,7 @@ git status --short tool/model_probes/results/
 Expected: `113 recorded run(s)` and `OK`, and no modification to any archived
 file. The field is additive and write-side only; nothing rewrites the archive.
 
-- [ ] **Step 6: Confirm the detector reads this host**
+- [x] **Step 6: Confirm the detector reads this host**
 
 ```bash
 cd adaptive_chat_server_dart
@@ -338,7 +338,7 @@ fvm dart run -e "import 'tool/model_probes/probe_results.dart'; void main() => p
 Expected: `0.33.1`. If `dart run -e` is unavailable in this SDK, the fallback
 prints the same version from the CLI, which is the string the regex parses.
 
-- [ ] **Step 7: Commit** (diff + confirmation first)
+- [x] **Step 7: Commit** (diff + confirmation first)
 
 ```bash
 git add adaptive_chat_server_dart/tool/model_probes/probe_results.dart adaptive_chat_server_dart/test/probe_results_test.dart
@@ -363,7 +363,7 @@ data first is what makes its M5 output trustworthy.
 - Consumes: result JSON written by `writeProbeRun` (`probe_results.dart:333`) — fields `model`, `machine`, `measuredAt`, and `calls[].{ms,label}`.
 - Produces: CLI `python3 tool/model_probes/perf_table.py <results-dir> [--compare <results-dir>]`, printing a Markdown table sorted ascending by median s/call. Task 5 pastes its output.
 
-- [ ] **Step 1: Write the script**
+- [x] **Step 1: Write the script**
 
 ```python
 #!/usr/bin/env python3
@@ -494,7 +494,7 @@ if __name__ == "__main__":
     main()
 ```
 
-- [ ] **Step 2: Validate against the M1 Max archive — this is the test**
+- [x] **Step 2: Validate against the M1 Max archive — this is the test**
 
 ```bash
 cd adaptive_chat_server_dart
@@ -526,7 +526,7 @@ Fourteen of the fifteen rows must match cell for cell. If any of those fourteen
 disagrees, the script is wrong — fix the script, not the table. The published
 figures are the fixture here.
 
-- [ ] **Step 3: Correct the one row that does not match**
+- [x] **Step 3: Correct the one row that does not match**
 
 `qwen3.8:27b-nvfp4`'s recorded run gives a median of **4339 ms**, which is
 **4.3 s**; the published table says 4.4 s. This was confirmed against the run
@@ -550,7 +550,7 @@ python3 tool/model_probes/perf_table.py tool/model_probes/results
 
 Expected after the edit: all fifteen rows match the file.
 
-- [ ] **Step 4: Commit** (diff + confirmation first)
+- [x] **Step 4: Commit** (diff + confirmation first)
 
 ```bash
 git add adaptive_chat_server_dart/tool/model_probes/perf_table.py adaptive_chat_server_dart/ModelBehavior.md
@@ -579,7 +579,7 @@ curl -s http://127.0.0.1:11434/api/tags |
 Expected before pulling: `qwen2.5-coder:7b`, `qwen3.5:9b`, `llama3.2:latest`,
 all `Q4_K_M`.
 
-- [ ] **Step 2: Pull the five missing models**
+- [x] **Step 2: Pull the five missing models**
 
 Roughly 17 GB of download; 204 GB free, so disk is not a constraint. Serial on
 purpose — a parallel pull saturates the link and tells you nothing sooner.
@@ -597,7 +597,7 @@ a near-neighbor tag — record the model as unavailable in Step 4 and let Task 5
 table carry seven rows instead of eight. A silently different model is worse
 than a missing row.
 
-- [ ] **Step 3: Verify all eight are present and none is a surprise quantization**
+- [x] **Step 3: Verify all eight are present and none is a surprise quantization**
 
 ```bash
 curl -s http://127.0.0.1:11434/api/tags |
@@ -616,7 +616,7 @@ in this plan's model table — a size differing by more than ~0.3 GiB means the
 tag was re-published since the M1 Max sweep, which is a real finding for the
 write-up, not an error.
 
-- [ ] **Step 4: Record the roster**
+- [x] **Step 4: Record the roster**
 
 Write `adaptive_chat_server_dart/tool/model_probes/results-m5-16gb/MODELS.md`
 with the exact output of Step 3, plus:
@@ -633,7 +633,7 @@ weights also changed.
 <paste the Step 3 output here as a fenced block>
 ```
 
-- [ ] **Step 5: Commit** (diff + confirmation first)
+- [x] **Step 5: Commit** (diff + confirmation first)
 
 ```bash
 git add adaptive_chat_server_dart/tool/model_probes/results-m5-16gb/MODELS.md
@@ -673,7 +673,7 @@ a background application competing for the Metal budget looks exactly like a
 slow model — that is the failure mode `granite4.1:3b`'s first measurement fell
 into.
 
-- [ ] **Step 2: Start the sweep, ordered by stall risk**
+- [x] **Step 2: Start the sweep, ordered by stall risk**
 
 `sweep.sh`'s built-in `MODELS` list is the full fifteen, so pass the eight
 explicitly. The order below is the script's own ordering — reliable models
@@ -710,7 +710,7 @@ stop immediately:
 - `>>> ABORT ... another probe is running` — a stale probe process is alive. Find it with `pgrep -fl "model_probes/.*[.]dart"`, kill it, restart.
 - `>>> SKIP` on any line — `SWEEP_RESULTS` did not take effect and the sweep is reading the M1 Max archive. Stop, re-check Task 1.
 
-- [ ] **Step 4: Verify the run is complete and well-formed**
+- [x] **Step 4: Verify the run is complete and well-formed**
 
 ```bash
 cd adaptive_chat_server_dart
@@ -731,7 +731,7 @@ A `rc=` other than 0 in the log for some `(model, probe)` leaves that file
 missing. Re-run the same command from Step 2 — completed pairs are skipped and
 only the gap is retried.
 
-- [ ] **Step 5: Cross-check shape coverage against the M1 Max archive**
+- [x] **Step 5: Cross-check shape coverage against the M1 Max archive**
 
 This is the sanity gate. Both hosts ran the same assets at `t=0`, so shape
 coverage is a property of the model and should reproduce within ±1 (the file
@@ -772,7 +772,7 @@ fvm dart run tool/model_probes/check_results.dart
 Expected: no changes under `results/`, and `check_results` still reports 113
 runs and `OK`. The M5 directory is a sibling, so the checker does not see it.
 
-- [ ] **Step 7: Commit the results** (diff + confirmation first — `git diff --stat`, this is ~58 files)
+- [x] **Step 7: Commit the results** (diff + confirmation first — `git diff --stat`, this is ~58 files)
 
 ```bash
 git add adaptive_chat_server_dart/tool/model_probes/results-m5-16gb/
@@ -801,7 +801,7 @@ about it.
 
 - Create: scratch only. `tool/model_probes/results-m5-16gb/` is **not** touched.
 
-- [ ] **Step 1: Record the thermal state, then start immediately**
+- [x] **Step 1: Record the thermal state, then start immediately**
 
 Do not wait, do not let the machine idle, do not run the cooldown first.
 
@@ -821,7 +821,7 @@ other seven -- so the hot run must not overwrite it. Using a separate
 `SWEEP_RESULTS` avoids moving files at all, which is where this kind of
 experiment usually goes wrong.
 
-- [ ] **Step 2: Compare cold against hot**
+- [x] **Step 2: Compare cold against hot**
 
 ```bash
 cd adaptive_chat_server_dart
@@ -843,7 +843,7 @@ print(f"cold vs M1 Max {cold/2728:.2f}x   hot vs M1 Max {hot/2728:.2f}x")
 EOF
 ```
 
-- [ ] **Step 3: Read the result**
+- [x] **Step 3: Read the result**
 
 - **hot/cold within ~1.05x** -- no measurable throttling across a 4-hour sweep. The fanless caveat stays in the write-up as a stated limitation, but cooldowns are not warranted and the existing figures need no adjustment.
 - **hot/cold above ~1.15x** -- throttling is real and position in the sweep biases every row. Say so in the write-up, note that models measured later are penalised, and recommend cooldowns for any future sweep on this host. Do **not** retrofit a correction factor onto the published figures; a measured bias is reportable, an estimated correction is not.
@@ -924,7 +924,7 @@ If it reports under ~6 GiB, something is holding memory. Find it and stop it
 first; a re-run under the same pressure repeats the original measurement rather
 than testing it.
 
-- [ ] **Step 2: Preserve run 1 rather than overwrite it**
+- [x] **Step 2: Preserve run 1 rather than overwrite it**
 
 `run()` skips any (model, probe) whose JSON already exists, so the re-run needs
 these out of the way -- and run 1 is evidence, not garbage: whether the stalls
@@ -943,7 +943,7 @@ directory under the results root and takes the model name from the JSON, so a
 sibling `llama3.2_latest-run1/` would render a second row also labelled
 `llama3.2:latest`.
 
-- [ ] **Step 3: Re-run just that model**
+- [x] **Step 3: Re-run just that model**
 
 ```bash
 cd adaptive_chat_server_dart
@@ -953,7 +953,7 @@ SWEEP_RESULTS=tool/model_probes/results-m5-16gb SWEEP_LOG=/tmp/sweep-logs-m5-rer
 Budget 12-90 minutes: 12 if the stalls were transient and it behaves like its
 M1 Max run, ~90 if they reproduce.
 
-- [ ] **Step 4: Compare the two runs**
+- [x] **Step 4: Compare the two runs**
 
 ```bash
 cd adaptive_chat_server_dart
@@ -977,7 +977,7 @@ stats('tool/model_probes/results-m5-16gb/llama3.2_latest', 'run 2')
 EOF
 ```
 
-- [ ] **Step 5: Decide which run the table publishes**
+- [x] **Step 5: Decide which run the table publishes**
 
 Three outcomes, and the write-up differs for each:
 
@@ -988,7 +988,7 @@ Three outcomes, and the write-up differs for each:
 Do not average the two runs, and do not publish the better one because it is
 better. Say which run the table carries and why.
 
-- [ ] **Step 6: Commit** (diff + confirmation first)
+- [x] **Step 6: Commit** (diff + confirmation first)
 
 ```bash
 git add adaptive_chat_server_dart/tool/model_probes/results-m5-16gb/llama3.2_latest/
@@ -1008,7 +1008,7 @@ git commit -m "test(chat-server): re-run llama3.2:latest on an idle M5"
 
 - Consumes: `python3 tool/model_probes/perf_table.py tool/model_probes/results-m5-16gb --compare tool/model_probes/results` from Task 2.
 
-- [ ] **Step 1: Generate the figures**
+- [x] **Step 1: Generate the figures**
 
 ```bash
 cd adaptive_chat_server_dart
@@ -1019,7 +1019,7 @@ python3 tool/model_probes/perf_table.py tool/model_probes/results-m5-16gb \
 Keep this output open — every figure in the following steps comes from it, and
 nothing else. Do not round differently, reorder, or "tidy" a value.
 
-- [ ] **Step 2: Rewrite the section intro for two hosts**
+- [x] **Step 2: Rewrite the section intro for two hosts**
 
 One table carries both hosts; the M5 columns sit beside the M1 Max ones so the
 comparison is read across a row rather than between two tables. The heading
@@ -1058,7 +1058,7 @@ All figures are derived from the recorded runs by
 re-run diffs against the table rather than against somebody's typing.
 ```
 
-- [ ] **Step 3: Widen the table and footnote the runtime**
+- [x] **Step 3: Widen the table and footnote the runtime**
 
 Add three columns to the existing fifteen-row table, keeping its current sort
 (ascending M1 Max median) so the two paragraphs below it still describe the order
@@ -1095,7 +1095,7 @@ describe — "**Weight does not predict speed**" and "**Stalls, not token rate,
 decide how long a sweep takes**" are both M1 Max observations, and both should
 name that host now that a second one is in the table. Change no figure in them.
 
-- [ ] **Step 3b: Add the M5 findings paragraphs after the table**
+- [x] **Step 3b: Add the M5 findings paragraphs after the table**
 
 Write these from Step 1's generated figures, in the file's register: state the
 figure, hedge the mechanism. The claims the data will bear on:
@@ -1111,7 +1111,7 @@ methodology note above rejects min-of-two for exactly this reason; here the bias
 is inside a single run, ordered by the sweep's stall-risk sequence rather than by
 weight. Read a small difference between two adjacent rows as noise.
 
-- [ ] **Step 4: Fix the two anchor references the renamed heading breaks**
+- [x] **Step 4: Fix the two anchor references the renamed heading breaks**
 
 `ModelBehavior.md:259`:
 
@@ -1122,7 +1122,7 @@ weight. Read a small difference between two adjacent rows as noise.
 `ModelBehavior.md:622` — change `[the performance table](#performance-on-this-machine)`
 to `[the performance table](#performance-by-host)`.
 
-- [ ] **Step 5: Correct the two "the development machine has 64 GB" claims**
+- [x] **Step 5: Correct the two "the development machine has 64 GB" claims**
 
 `ModelBehavior.md:123`, replace the sentence "The current development machine is
 a **64 GB M1**, where every model in this table runs comfortably on its own —
@@ -1139,7 +1139,7 @@ machine is expected and useful; it is how this matrix gets filled in." with:
 Probing a ❌ model on the 64 GB host is expected and useful; it is how this matrix gets filled in, and the 16 GB host is where the column gets checked rather than asserted.
 ```
 
-- [ ] **Step 6: Update `tool/model_probes/README.md:157-161`**
+- [x] **Step 6: Update `tool/model_probes/README.md:157-161`**
 
 Replace "On the 64 GB development machine every model probed so far fits
 **individually** …" with a sentence naming both hosts:
@@ -1189,7 +1189,7 @@ If it fails, `npm run format:md:chat`, then re-run Step 7's numeric diff —
 Prettier reflows tables and normalizes emphasis, and the numeric check is what
 proves the reflow changed nothing that matters.
 
-- [ ] **Step 9: Commit** (diff + confirmation first)
+- [x] **Step 9: Commit** (diff + confirmation first)
 
 ```bash
 git add adaptive_chat_server_dart/ModelBehavior.md adaptive_chat_server_dart/tool/model_probes/README.md
@@ -1260,7 +1260,7 @@ the shape table.
 
 - [ ] **Step 3: Invoke `superpowers:verification-before-completion`** and paste the command output — exit codes and pass/fail counts — before claiming the work is done. CLAUDE.md's plan completion gate requires evidence, not a summary.
 
-- [ ] **Step 4: Commit** (diff + confirmation first)
+- [x] **Step 4: Commit** (diff + confirmation first)
 
 ```bash
 git add adaptive_chat_server_dart/CHANGELOG.md

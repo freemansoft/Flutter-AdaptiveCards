@@ -66,7 +66,7 @@ The test reads both registries **as source text**, so it fails when either gains
 - Consumes: nothing from earlier tasks.
 - Produces: `$defs.Element.properties.type.enum` — a 33-entry `List<String>` read by Task 2's test and, transitively, by Task 3's `loadKnownElementTypes`.
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Append these helpers and this group to `test/card_schema_test.dart`. `_schemaElementTypes()` already exists at the top of that file — reuse it, do not redefine it.
 
@@ -165,7 +165,7 @@ fvm dart test test/card_schema_test.dart -n 'the schema mirrors the renderable r
 
 Expected: the two `hasLength` tests PASS; `the Element enum is exactly the renderable top-level set` FAILS, reporting the 9 types present in the registry set and absent from the schema — `Media`, `Container`, `RichTextBlock`, `ActionSet`, `ImageSet`, `Input.Rating`, `CompoundButton`, `Accordion`, `TabSet`.
 
-- [ ] **Step 3: Add the 9 missing types to the schema**
+- [x] **Step 3: Add the 9 missing types to the schema**
 
 In `assets/card_schema.json`, replace the `$defs.Element.properties.type.enum` array with this exact 33-entry list:
 
@@ -207,7 +207,7 @@ In `assets/card_schema.json`, replace the `$defs.Element.properties.type.enum` a
           ]
 ```
 
-- [ ] **Step 4: Run the full schema test file to verify it passes**
+- [x] **Step 4: Run the full schema test file to verify it passes**
 
 ```bash
 cd adaptive_chat_server_dart
@@ -216,7 +216,7 @@ fvm dart test test/card_schema_test.dart
 
 Expected: PASS, all groups. The pre-existing `every type the prompt advertises is allowed by the schema enum` test still passes — it is a subset check, and the enum only grew. The pre-existing `the schema does not allow multi-series chart types` test also still passes, because `_deliberatelyExcluded` keeps those two out.
 
-- [ ] **Step 5: Repoint the shape-coverage pin at the prompt palette**
+- [x] **Step 5: Repoint the shape-coverage pin at the prompt palette**
 
 **Do not skip this and do not defer it to a later task.** `test/shape_cases_test.dart` pins the probe's shape coverage to the `Element` enum, so Step 3 has just broken it. Run it and see the failure first:
 
@@ -306,7 +306,7 @@ heading loop is not firing and the prose-only entries are being missed.
 
 No change is needed in `tool/model_probes/shape_cases.dart`. Its doc comment already reads "21 of the 24 element types the card system prompt advertises" — the comment and the test disagreed before this repoint, and the repoint makes the test match the documentation that was already there. Confirm this rather than assuming it; if the comment does cite the schema enum, correct it.
 
-- [ ] **Step 6: Verify both test files pass together**
+- [x] **Step 6: Verify both test files pass together**
 
 ```bash
 cd adaptive_chat_server_dart
@@ -315,7 +315,7 @@ fvm dart test test/card_schema_test.dart test/shape_cases_test.dart
 
 Expected: PASS, both files. If `shape_cases_test.dart` still fails, the prompt palette and `shapeCases` genuinely disagree and that is a real coverage gap to report — do not widen `documentedExclusions` to hide it.
 
-- [ ] **Step 7: Add the changelog entry**
+- [x] **Step 7: Add the changelog entry**
 
 Insert as the first bullet under `## [Unreleased]` in `adaptive_chat_server_dart/CHANGELOG.md`:
 
@@ -340,7 +340,7 @@ Insert as the first bullet under `## [Unreleased]` in `adaptive_chat_server_dart
   now pins against the prompt.
 ```
 
-- [ ] **Step 8: Format and commit**
+- [x] **Step 8: Format and commit**
 
 Both changes go in one commit: the enum growth breaks the shape pin, so splitting them would leave the suite red at the intermediate commit.
 
@@ -371,7 +371,7 @@ git commit -m "feat(chat-server): mirror the renderable registry in card_schema.
 - Consumes: `_renderableTopLevelTypes()` and `_notTopLevel` from Task 1's test file; `$defs.Element` from Task 1.
 - Produces: `$defs.ChildElement.properties.type.enum` — a 38-entry `List<String>`. Task 3's `loadKnownElementTypes` reads **this** definition, not `Element`.
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Append to `test/card_schema_test.dart`:
 
@@ -431,7 +431,7 @@ fvm dart test test/card_schema_test.dart -n 'ChildElement covers every legal nes
 
 Expected: FAIL with a `_TypeError` or null-cast error, because `$defs.ChildElement` does not exist yet.
 
-- [ ] **Step 3: Add the definition to the schema**
+- [x] **Step 3: Add the definition to the schema**
 
 In `assets/card_schema.json`, insert this object into `$defs` immediately after the `Element` definition and before `CardObject`:
 
@@ -488,7 +488,7 @@ In `assets/card_schema.json`, insert this object into `$defs` immediately after 
     },
 ```
 
-- [ ] **Step 4: Run the full schema test file to verify it passes**
+- [x] **Step 4: Run the full schema test file to verify it passes**
 
 ```bash
 cd adaptive_chat_server_dart
@@ -497,7 +497,7 @@ fvm dart test test/card_schema_test.dart
 
 Expected: PASS, all groups.
 
-- [ ] **Step 5: Add the changelog entry**
+- [x] **Step 5: Add the changelog entry**
 
 Insert directly below the Task 1 bullet:
 
@@ -510,7 +510,7 @@ Insert directly below the Task 1 bullet:
   nested elements.
 ```
 
-- [ ] **Step 6: Format and commit**
+- [x] **Step 6: Format and commit**
 
 ```bash
 cd /Users/joefreeman/Documents/GitHub/freemansoft/Flutter-AdaptiveCards
@@ -540,7 +540,7 @@ A misspelled `type` is valid JSON, passes `tryParseCardBody`, and renders as an 
   - `Set<String> loadKnownElementTypes(String path)`
   - `Set<String> unknownElementTypes(List<Map<String, dynamic>> body, Set<String> known)`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Create `test/element_types_test.dart`:
 
@@ -680,7 +680,7 @@ fvm dart test test/element_types_test.dart
 
 Expected: FAIL at compile time — `Error: Couldn't resolve the package 'adaptive_chat_server_dart' … element_types.dart` or `Method not found: 'loadKnownElementTypes'`.
 
-- [ ] **Step 3: Write the implementation**
+- [x] **Step 3: Write the implementation**
 
 Create `lib/src/element_types.dart`:
 
@@ -795,7 +795,7 @@ Set<String> unknownElementTypes(
 }
 ```
 
-- [ ] **Step 4: Run the test to verify it passes**
+- [x] **Step 4: Run the test to verify it passes**
 
 ```bash
 cd adaptive_chat_server_dart
@@ -804,7 +804,7 @@ fvm dart test test/element_types_test.dart
 
 Expected: PASS, 10 tests.
 
-- [ ] **Step 5: Analyze**
+- [x] **Step 5: Analyze**
 
 ```bash
 cd /Users/joefreeman/Documents/GitHub/freemansoft/Flutter-AdaptiveCards
@@ -815,7 +815,7 @@ Expected: `No issues found!`
 
 If any lint does fire, fix it rather than suppressing it. An adversarial review of this plan's first draft found four real violations in code it told the engineer to type verbatim — `unnecessary_raw_strings`, `inference_failure_on_collection_literal` (a _warning_, so `analyze` exits 2), `specify_nonobvious_property_types`, and `lines_longer_than_80_chars`. All four are fixed in the snippets above, but `very_good_analysis` is strict and the list is not guaranteed exhaustive.
 
-- [ ] **Step 6: Add the changelog entry and commit**
+- [x] **Step 6: Add the changelog entry and commit**
 
 ```markdown
 - Added: **unknown-element-type detection (`lib/src/element_types.dart`).**
@@ -852,7 +852,7 @@ Wire Task 3's check into the reply path as a **warning only** — the card still
 - Consumes: `loadKnownElementTypes(String)` and `unknownElementTypes(List<Map<String, dynamic>>, Set<String>)` from Task 3.
 - Produces: no new public API. `OllamaResponder.describe()` gains a `knownElementTypes` int key.
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Add to `test/ollama_responder_test.dart`. The existing `setUp` writes a schema of `{$defs: {}, oneOf: []}`, which yields an empty vocabulary and therefore a disabled check — that is what keeps every pre-existing test unchanged. This group writes its own schema.
 
@@ -946,7 +946,7 @@ fvm dart test test/ollama_responder_test.dart -n 'unrecognized element types'
 
 Expected: the two "no warning" tests PASS vacuously; `a misspelled type is warned about and still rendered` FAILS with `Expected: not empty / Actual: []`.
 
-- [ ] **Step 3: Write the implementation**
+- [x] **Step 3: Write the implementation**
 
 In `lib/src/ollama_responder.dart`:
 
@@ -1009,7 +1009,7 @@ In `reply()`, replace the `} else if (cardBody == null) {` branch and its body w
     }
 ```
 
-- [ ] **Step 4: Run the test to verify it passes**
+- [x] **Step 4: Run the test to verify it passes**
 
 ```bash
 cd adaptive_chat_server_dart
@@ -1018,7 +1018,7 @@ fvm dart test test/ollama_responder_test.dart
 
 Expected: PASS, including every pre-existing test in the file.
 
-- [ ] **Step 5: Run the whole server suite and analyze**
+- [x] **Step 5: Run the whole server suite and analyze**
 
 ```bash
 cd adaptive_chat_server_dart
@@ -1029,7 +1029,7 @@ fvm dart analyze adaptive_chat_server_dart/
 
 Expected: all tests pass; `No issues found!`
 
-- [ ] **Step 6: Add the changelog entry and commit**
+- [x] **Step 6: Add the changelog entry and commit**
 
 ```markdown
 - Added: **`OllamaResponder` warns when a rendered card carries an
@@ -1068,7 +1068,7 @@ Ollama accepts `tools` for every model but honors it only where the chat templat
 - Consumes: `parseProbeArgs`, `probeAssetsDir`, `loadCardSchema` from `probe_support.dart`; `ProbeCall`, `writeProbeRun`, `passSummary` from `probe_results.dart`; `tryParseCardBody` from `package:adaptive_chat_server_dart/src/card_detect.dart`.
 - Produces: `enum ToolVerdict { supported, unsupported, supportedButDeclines, overCalls }` and `ToolVerdict classifyToolSupport({required bool calledTrivialTool, required bool calledCardTool, required bool cardArgumentsRender, required bool calledOnNegativeControl})`.
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Create `test/tool_call_probe_test.dart`. Only the classifier is unit-tested — the HTTP path needs a live Ollama and is exercised in Task 6.
 
@@ -1182,7 +1182,7 @@ fvm dart test test/tool_call_probe_test.dart
 
 Expected: FAIL at compile time — `Error: Couldn't resolve … tool_call_probe.dart`.
 
-- [ ] **Step 3: Write the prompt asset**
+- [x] **Step 3: Write the prompt asset**
 
 Create `assets/card_tool_prompt.txt`. This is `card_system_prompt.txt` recast for the tool channel: the reply-shape framing changes, the palette does not.
 
@@ -1256,7 +1256,7 @@ Display — show information, no user entry:
 Do NOT include any Action, an "actions" array, or an ActionSet.
 ```
 
-- [ ] **Step 4: Write the probe**
+- [x] **Step 4: Write the probe**
 
 Create `tool/model_probes/tool_call_probe.dart`:
 
@@ -1575,7 +1575,7 @@ Future<void> main(List<String> argv) async {
 }
 ````
 
-- [ ] **Step 5: Run the test to verify it passes**
+- [x] **Step 5: Run the test to verify it passes**
 
 ```bash
 cd adaptive_chat_server_dart
@@ -1584,7 +1584,7 @@ fvm dart test test/tool_call_probe_test.dart
 
 Expected: PASS, 7 tests.
 
-- [ ] **Step 6: Analyze and commit**
+- [x] **Step 6: Analyze and commit**
 
 ```bash
 cd /Users/joefreeman/Documents/GitHub/freemansoft/Flutter-AdaptiveCards
@@ -1633,7 +1633,7 @@ git commit -m "feat(chat-server): add tool-calling capability canary probe"
 - Consumes: `tool_call_probe.dart` from Task 5.
 - Produces: a `verdict` per model, and the phase-2 gate decision.
 
-- [ ] **Step 1: Confirm Ollama is up and nothing is resident**
+- [x] **Step 1: Confirm Ollama is up and nothing is resident**
 
 ```bash
 curl -s http://127.0.0.1:11434/api/tags | head -c 400
@@ -1642,7 +1642,7 @@ ollama ps
 
 Expected: a JSON model list, and an empty or near-empty `ollama ps`. A stalling measurement looks identical whether the model is slow or the machine is busy — `granite4.1:3b`'s first measurement was wrong for exactly this reason.
 
-- [ ] **Step 2: Re-derive the launch set**
+- [x] **Step 2: Re-derive the launch set**
 
 ```bash
 cd adaptive_chat_server_dart
@@ -1652,7 +1652,7 @@ grep -A1 '"--ollama-model"' ../.vscode/launch.json |
 
 Use whatever this prints. Do not use a list copied from any document, including this plan — the set is expected to change.
 
-- [ ] **Step 3: Run the canary serially, one model at a time**
+- [x] **Step 3: Run the canary serially, one model at a time**
 
 **One model resident at a time.** Do not parallelize and do not dispatch a subagent per model — several candidates are 18–24 GB, cannot be co-resident, and a reload costs roughly 20x the warm load.
 
@@ -1675,7 +1675,7 @@ done
 
 Expected: a `VERDICT:` line per model and one JSON file each.
 
-- [ ] **Step 4: Apply the phase-2 gate**
+- [x] **Step 4: Apply the phase-2 gate**
 
 Count models verdicted `supported`:
 
@@ -1689,7 +1689,7 @@ grep -h '"verdict"' tool/model_probes/results/*/tool_call_probe.json
 
 Record which outcome occurred; it is the deliverable of this task either way.
 
-- [ ] **Step 5: Register the probe so its results cannot go stale**
+- [x] **Step 5: Register the probe so its results cannot go stale**
 
 Every other per-model probe is tracked by the staleness checker and driven by the sweep script. Without this step `tool_call_probe` results silently rot as `launch.json` and the prompts change.
 
@@ -1723,7 +1723,7 @@ fvm dart run tool/model_probes/check_results.dart
 
 Expected: no `missing probe` finding for `tool_call_probe` on any model whose results Step 3 wrote.
 
-- [ ] **Step 6: Write the finding into `ModelBehavior.md`**
+- [x] **Step 6: Write the finding into `ModelBehavior.md`**
 
 Add a section after ``### Not a card test: the `format` canary``, since it is the same kind of capability probe. Use this structure, filling in the measured values — do not invent numbers:
 
@@ -1745,7 +1745,7 @@ local model for structured output through a tool.>**
 
 If the result generalizes, also add one bullet to `## Key findings`. If it does not, do not force one.
 
-- [ ] **Step 7: Update the changelog and commit**
+- [x] **Step 7: Update the changelog and commit**
 
 ```markdown
 - Docs: **tool-calling capability measured across the launch set.**
@@ -1765,7 +1765,7 @@ git commit -m "docs(chat-server): record tool-calling capability across the laun
 
 ## Final Task: Full verification
 
-- [ ] **Step 1: Full server suite**
+- [x] **Step 1: Full server suite**
 
 ```bash
 cd adaptive_chat_server_dart
@@ -1774,7 +1774,7 @@ fvm dart test
 
 Expected: all tests pass. Record the pass/fail counts and exit code.
 
-- [ ] **Step 2: Analyze the whole repo**
+- [x] **Step 2: Analyze the whole repo**
 
 ```bash
 cd /Users/joefreeman/Documents/GitHub/freemansoft/Flutter-AdaptiveCards
@@ -1785,7 +1785,7 @@ Expected: `No issues found!`
 
 If any lint does fire, fix it rather than suppressing it. An adversarial review of this plan's first draft found four real violations in code it told the engineer to type verbatim — `unnecessary_raw_strings`, `inference_failure_on_collection_literal` (a _warning_, so `analyze` exits 2), `specify_nonobvious_property_types`, and `lines_longer_than_80_chars`. All four are fixed in the snippets above, but `very_good_analysis` is strict and the list is not guaranteed exhaustive.
 
-- [ ] **Step 3: Both format gates**
+- [x] **Step 3: Both format gates**
 
 ```bash
 cd /Users/joefreeman/Documents/GitHub/freemansoft/Flutter-AdaptiveCards
@@ -1796,7 +1796,7 @@ npm run check:md
 
 Expected: all three exit 0. `check:md` is included because this plan also touches `docs/superpowers/`, which only that script covers.
 
-- [ ] **Step 4: Confirm the main library is untouched**
+- [x] **Step 4: Confirm the main library is untouched**
 
 ```bash
 git diff --stat main -- packages/
@@ -1804,6 +1804,6 @@ git diff --stat main -- packages/
 
 Expected: **no output.** No task in this plan modifies `packages/`; Task 1's test only _reads_ `registry.dart`. Output here means something went wrong.
 
-- [ ] **Step 5: Invoke `superpowers:verification-before-completion`**
+- [x] **Step 5: Invoke `superpowers:verification-before-completion`**
 
 Paste the command output — exit codes and pass/fail counts — before making any success claim. Do not report the plan complete until every command above has run and passed.

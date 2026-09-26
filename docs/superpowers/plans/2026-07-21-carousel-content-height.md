@@ -43,7 +43,7 @@ Design spec: `docs/superpowers/specs/2026-07-21-carousel-content-height-design.m
 
 - Produces: `double resolveCarouselHeight({required double? heightInPixels, required bool isStretch, required double maxAvailableHeight, required double? measuredMaxHeight, required double fallback})` — precedence: explicit `heightInPixels` → `stretch` with a finite parent height → measured tallest page → pre-measurement `fallback`.
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Create `test/elements/carousel_height_test.dart`:
 
@@ -121,12 +121,12 @@ void main() {
 }
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `fvm flutter test test/elements/carousel_height_test.dart --exclude-tags=golden`
 Expected: FAIL — `resolveCarouselHeight` is not defined (compile error).
 
-- [ ] **Step 3: Write minimal implementation**
+- [x] **Step 3: Write minimal implementation**
 
 Add to the bottom of `lib/src/cards/elements/carousel.dart`:
 
@@ -149,17 +149,17 @@ double resolveCarouselHeight({
 }
 ```
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `fvm flutter test test/elements/carousel_height_test.dart --exclude-tags=golden`
 Expected: PASS (5 tests).
 
-- [ ] **Step 5: Analyze**
+- [x] **Step 5: Analyze**
 
 Run: `fvm flutter analyze lib/src/cards/elements/carousel.dart test/elements/carousel_height_test.dart`
 Expected: No issues.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add packages/flutter_adaptive_cards_fs/lib/src/cards/elements/carousel.dart \
@@ -181,7 +181,7 @@ git commit -m "feat(carousel): add resolveCarouselHeight height-precedence helpe
 - Consumes: `resolveCarouselHeight(...)` from Task 1.
 - Produces: carousel renders its `PageView` inside a `SizedBox` whose height is `resolveCarouselHeight(...)`; `heightInPixels` and `height` are parsed from the element JSON; orientation stays independent of `heightInPixels`.
 
-- [ ] **Step 1: Write the failing widget tests**
+- [x] **Step 1: Write the failing widget tests**
 
 Append to `test/elements/carousel_height_test.dart` (add the imports shown at the top of the new block):
 
@@ -294,12 +294,12 @@ void main() {
 
 > Note: `'height': ?heightProp` uses the collection-if-null map spread already used in `carousel_behavior_test.dart`; keys with a null value are omitted.
 
-- [ ] **Step 2: Run tests to verify they fail**
+- [x] **Step 2: Run tests to verify they fail**
 
 Run: `fvm flutter test test/elements/carousel_height_test.dart --exclude-tags=golden`
 Expected: FAIL — the widget tests fail because height is still the hardcoded 400 (e.g. `heightInPixels` expects 100 but gets 400; `hShortTall` is 400 not `< 400`).
 
-- [ ] **Step 3: Add measurement widget + state + parsing**
+- [x] **Step 3: Add measurement widget + state + parsing**
 
 In `lib/src/cards/elements/carousel.dart`:
 
@@ -401,7 +401,7 @@ class _MeasureSizeRenderObject extends RenderProxyBox {
 }
 ```
 
-- [ ] **Step 4: Rewrite `AdaptiveCarouselState.build`**
+- [x] **Step 4: Rewrite `AdaptiveCarouselState.build`**
 
 Replace the current `build` method body (the `Visibility(...)` return) with:
 
@@ -474,17 +474,17 @@ Replace the current `build` method body (the `Visibility(...)` return) with:
   }
 ```
 
-- [ ] **Step 5: Run the height tests to verify they pass**
+- [x] **Step 5: Run the height tests to verify they pass**
 
 Run: `fvm flutter test test/elements/carousel_height_test.dart --exclude-tags=golden`
 Expected: PASS (5 unit + 3 widget = 8 tests).
 
-- [ ] **Step 6: Analyze**
+- [x] **Step 6: Analyze**
 
 Run: `fvm flutter analyze lib/src/cards/elements/carousel.dart test/elements/carousel_height_test.dart`
 Expected: No issues. (If `import 'package:flutter/rendering.dart';` is reported unused because `RenderProxyBox`/`RenderObject` already resolve via `material.dart`, remove it.)
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add packages/flutter_adaptive_cards_fs/lib/src/cards/elements/carousel.dart \
@@ -502,12 +502,12 @@ git commit -m "feat(carousel): size to tallest page; honor height and heightInPi
 - Modify: `CHANGELOG.md`.
 - Modify (as grep dictates): docs under `docs/` and `README.md`.
 
-- [ ] **Step 1: Run the full carousel test set**
+- [x] **Step 1: Run the full carousel test set**
 
 Run: `fvm flutter test test/elements/carousel_behavior_test.dart test/elements/carousel_page_test.dart test/elements/carousel_visibility_overlay_test.dart --exclude-tags=golden`
 Expected: PASS. The transient measurement layer is gone after `pumpAndSettle`, so page-count / `find.text` assertions should hold. If any assertion now double-counts (e.g. `findsOneWidget` → 2), the cause is a test that reads before settle; fix by adding `await tester.pumpAndSettle();` before the assertion, or by scoping the finder with `find.descendant(of: find.byType(PageView), ...)`. Do **not** loosen a correctness assertion to hide a real double-render.
 
-- [ ] **Step 2: Changelog**
+- [x] **Step 2: Changelog**
 
 Add under `## [Unreleased]` in `packages/flutter_adaptive_cards_fs/CHANGELOG.md`:
 
@@ -515,12 +515,12 @@ Add under `## [Unreleased]` in `packages/flutter_adaptive_cards_fs/CHANGELOG.md`
 - **Carousel:** replaced the fixed 400px height with the spec height model — `height` (`auto`/`stretch`) and `heightInPixels` — and, for the default `auto` case, size the carousel to its tallest page. Orientation stays independent of `heightInPixels`.
 ```
 
-- [ ] **Step 3: Docs sync**
+- [x] **Step 3: Docs sync**
 
 Run: `git grep -niE 'carousel' docs/ packages/flutter_adaptive_cards_fs/README.md`
 Review hits for any statement that the carousel is fixed-height or that height is unimplemented (e.g. an Implementation-status/Known-gaps row). Update those to reflect the new behavior. If no such statement exists, no doc edit is required — record that in the commit message.
 
-- [ ] **Step 4: Commit docs + changelog**
+- [x] **Step 4: Commit docs + changelog**
 
 ```bash
 git add packages/flutter_adaptive_cards_fs/CHANGELOG.md
@@ -528,7 +528,7 @@ git add packages/flutter_adaptive_cards_fs/CHANGELOG.md
 git commit -m "docs(carousel): changelog + status sync for content-sized height"
 ```
 
-- [ ] **Step 5: Full verification (see section below)**
+- [x] **Step 5: Full verification (see section below)**
 
 ---
 
@@ -540,18 +540,18 @@ The v1.6 carousel golden (`test/gold_files/<platform>/v1_6_carousel.png`) render
 
 - Regenerate (do not commit): `test/gold_files/macos/v1_6_carousel.png` (and, on CI/Linux, `test/gold_files/linux/v1_6_carousel.png`).
 
-- [ ] **Step 1: Regenerate the carousel golden only**
+- [x] **Step 1: Regenerate the carousel golden only**
 
 Run (from `packages/flutter_adaptive_cards_fs/`):
 `fvm flutter test test/golden_v1_6_test.dart --update-goldens --name 'Golden Carousel'`
 Expected: PASS; `git status` shows `test/gold_files/macos/v1_6_carousel.png` modified.
 
-- [ ] **Step 2: Confirm the golden now passes without updating**
+- [x] **Step 2: Confirm the golden now passes without updating**
 
 Run: `fvm flutter test test/golden_v1_6_test.dart --name 'Golden Carousel'`
 Expected: PASS against the regenerated master.
 
-- [ ] **Step 3: Hand the image to the user for review — DO NOT commit**
+- [x] **Step 3: Hand the image to the user for review — DO NOT commit**
 
 Show the regenerated `v1_6_carousel.png` to the user. Leave it unstaged/uncommitted. Only the user decides when (and whether) the image is committed. Do not run `git add`/`git commit` on any `*.png`.
 
@@ -561,19 +561,19 @@ Show the regenerated `v1_6_carousel.png` to the user. Leave it unstaged/uncommit
 
 Run from `packages/flutter_adaptive_cards_fs/` unless noted. Paste exit codes / pass-fail counts before claiming completion (per `superpowers:verification-before-completion`).
 
-- [ ] Repo-root analyze:
+- [x] Repo-root analyze:
 
 Run (from repo root): `fvm flutter analyze`
 Expected: No issues.
 
-- [ ] Main library tests (golden-excluded):
+- [x] Main library tests (golden-excluded):
 
 Run: `fvm flutter test --exclude-tags=golden`
 Expected: All pass.
 
-- [ ] Coverage gate:
+- [x] Coverage gate:
 
 Run: `fvm flutter test --coverage --exclude-tags=golden` then, from repo root, `fvm dart run tool/coverage/check_coverage.dart`
 Expected: `carousel.dart` coverage does not drop the package below its floor in `tool/coverage_floors.yaml`. If it does, add tests (do not lower the floor).
 
-- [ ] Only after all of the above pass, invoke `superpowers:finishing-a-development-branch`.
+- [x] Only after all of the above pass, invoke `superpowers:finishing-a-development-branch`.
