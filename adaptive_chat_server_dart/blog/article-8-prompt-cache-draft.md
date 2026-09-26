@@ -54,7 +54,7 @@ flowchart TD
 
 | Term                       | What it means here                                                                                                                                                                                                                                                     |
 | -------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Runner**                 | The process Ollama starts to serve one loaded model: `llama-server` for the thirteen GGUF builds here, the MLX runner for the two safetensors builds. Ollama's server log names the one it starts, and the prefix cache belongs to it.                                 |
+| **Runner**                 | The process Ollama starts to serve one loaded model: `llama-server` for the thirteen GGUF builds here, the MLX runner for the two safetensors builds and the two controls. Ollama's server log names the one it starts, and the prefix cache belongs to it.            |
 | **Prefill**                | The pass in which the model processes the prompt, before it produces the first output token. Ollama reports its duration as `prompt_eval_duration`.                                                                                                                    |
 | **Cold** and **warm**      | A cold request has almost none of its prompt served from the prefix cache, and pays a cold prefill. A warm request has nearly all of it.                                                                                                                               |
 | **New conversation**       | A request carrying a system prompt the runner has already processed, followed by a question it has not seen. It is how a chat server opens a second conversation on the same system prompt.                                                                            |
@@ -272,13 +272,22 @@ without an exact repeat before it, and about 400 ms after. An exact repeat after
 an unrelated synthetic prompt was warm on both MLX builds, at 3,173 and 3,174 of
 3,178 tokens. The prompt had already paid its one cold divergence.
 
-A sixteenth model repeats the shape at a different quantization.
-`mvincig11/semif-qwen3.5-4b-mlx-4bit` is an `int4` safetensors build on the same
-MLX runner, against the two `nvfp4` builds above. Its exact repeat is warm at
-3,174 of 3,178 tokens, its first new conversation cold at 5 of 3,179, and the
-second warm at 3,167. Nothing here tests the architecture. Two attention-only
-controls failed to load: the MLX runner refused a safetensors `gpt-oss`, and
-`ollama create` rejected an MLX 4-bit Llama.
+Two control builds on the same MLX runner repeat the shape with the
+quantization changed and then the architecture changed.
+`mvincig11/semif-qwen3.5-4b-mlx-4bit` is an `int4` safetensors build of the same
+Qwen3.5 architecture. `nemotron-3-nano-mlx:4b-bf16` is
+[`nvidia/NVIDIA-Nemotron-3-Nano-4B-BF16`](https://huggingface.co/nvidia/NVIDIA-Nemotron-3-Nano-4B-BF16),
+a Mamba2 hybrid with no Qwen ancestry, imported with `ollama create
+--experimental` so that it stays safetensors. It is the same weights as
+`nemotron-3-nano:4b`, which rolls back one batch per new conversation on
+`llama-server` above. Both controls read as the `nvfp4` builds do. The exact
+repeat is warm with 4 tokens uncached. The first new conversation is cold with
+5 cached, and the second is warm at 3,167. Two architectures, three
+quantizations, one runner, one shape, and the same Nemotron weights on the
+other runner show that runner's rollback. The extra cold prefill belongs to the
+MLX runner's snapshot policy, not to the model. An attention-only build on that
+runner is still unmeasured; the source reading predicts it pays no such
+prefill.
 
 ## Two conversations on one recurrent `llama-server` build pay a batch per turn
 
@@ -302,6 +311,7 @@ and "each" means every request read the same:
 | unsloth Nemotron GGUF                 | `llama-server` | recurrent      | 17 to 80                  | 17 each             |
 | `qwen3.8:27b-nvfp4`                   | MLX            | recurrent      | 13 to 22                  | 5 to 13             |
 | `mvincig11/semif-qwen3.5-4b-mlx-4bit` | MLX            | recurrent      | 12 to 82                  | 4 to 12             |
+| `nemotron-3-nano-mlx:4b-bf16`         | MLX            | recurrent      | 11 to 20                  | 4 to 11             |
 
 Source: the notebook's [interleaved-conversations
 section](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md#the-rollback-is-one-batch-the-mlx-miss-is-not-the-nvfp4-quantization-and-interleaved-conversations-pay-per-turn).
@@ -309,8 +319,10 @@ section](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive
 Four of the five recurrent builds on `llama-server` pay a batch on every turn of
 the pair. They pay most of one again on every call of a second branch. The
 unsloth Nemotron build stays within 80 tokens on both shapes, from its extra
-checkpoint. The MLX builds re-evaluated 12 to 82 tokens on the interleaved turns
-and 4 to 13 on a second branch.
+checkpoint. The three MLX builds re-evaluated 11 to 82 tokens on the
+interleaved turns and 4 to 13 on a second branch. The Nemotron pair is the
+direct comparison. The MLX runner re-evaluated 11 to 20 tokens a turn, against
+1,021 to 1,058 for the same weights on `llama-server`.
 
 ## A retry's cost is the remainder of the abandoned call, not its own prefill
 

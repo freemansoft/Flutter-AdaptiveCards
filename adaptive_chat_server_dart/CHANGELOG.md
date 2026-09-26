@@ -2,6 +2,23 @@
 
 ## [0.18.0]
 
+- Notebook: **the MLX runner's first-divergence cost is not the Qwen3.5
+  architecture.** `nemotron-3-nano-mlx:4b-bf16`, the Hugging Face
+  `NVIDIA-Nemotron-3-Nano-4B-BF16` safetensors build (`nemotron_h`, a Mamba2
+  hybrid, the same weights as `nemotron-3-nano:4b`) imported with
+  `ollama create --experimental` and served by the MLX runner, ran the
+  nine-phase `prefill_cache_probe.dart` on the M1 Max under Ollama 0.34.0 on
+  2026-09-26 and reproduced the MLX shape: a warm exact repeat (3177/3173),
+  a full cold prefill on the first new conversation per system prompt
+  (3178/5, 4.9 s) and warm ones after, 11 to 20 tokens re-evaluated per
+  interleaved turn where the same weights on `llama-server` re-process
+  1,021 to 1,058. Two architectures, three quantizations, one runner, one
+  shape, so the cost is the runner's snapshot policy. The import needed
+  `eos_token_id` widened to `[2, 11]` in the repo's `generation_config.json`,
+  whose declared end token does not match its chat template's `<|im_end|>`;
+  a `PARAMETER stop` line is not applied on that runner. An attention-only
+  MLX build stays unmeasured and is now an open question. Archive under
+  `results-m1max-64gb-ollama0340/nemotron-3-nano-mlx_4b-bf16/`.
 - Probes: **`prefill_cache_probe.dart` now sends `think: false`, and every
   prompt-cache figure was re-measured.** It was the only probe here not sending
   the flag. Nine of the sixteen models measured declare `thinking`, and without
@@ -41,9 +58,9 @@
   `llama-server`, while the same architecture on the MLX runner stays warm.
   `mvincig11/semif-qwen3.5-4b-mlx-4bit`, an `int4` MLX build, reproduces the
   MLX shape and rules out the `nvfp4` quantization as the cause; the
-  architecture stays confounded, since Ollama's MLX runner refuses the
-  `gpt-oss` safetensors build (`unsupported architecture`). Blog article 8
-  carries all three.
+  architecture stayed confounded until the Nemotron control below, since
+  Ollama's MLX runner refuses the `gpt-oss` safetensors build
+  (`unsupported architecture`). Blog article 8 carries all three.
 - Notebook: **a new conversation's prompt-cache cost follows the model's
   memory type.** Eleven more installed models ran the seven-phase
   `prefill_cache_probe.dart` on the M1 Max under Ollama 0.34.0 (2026-09-22),
