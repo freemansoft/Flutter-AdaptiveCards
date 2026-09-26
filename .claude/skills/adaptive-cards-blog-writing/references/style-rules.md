@@ -482,7 +482,9 @@ following them wants the current file, not an archived one.
   ownership entry, so a later cut pass measures it against the right number.
 - **Watch the on-page count too, with a soft ceiling near 3,500.** The prose
   figure excludes tables, and this series keeps every table, so it understates
-  what the reader scrolls by 300 to 1,000 words. Article 3 is 2,038 prose
+  what the reader scrolls by 300 to 1,000 words. The on-page figure adds tables
+  back but not mermaid source, which is published as a rendered image and is
+  never read as text. Article 3 is 2,038 prose
   against 3,002 on the page, and article 2 is 2,877 against 3,677, the only
   breach. Prose can be trimmed to target while the article gets longer on
   screen, which is why both numbers are worth reading. Measured 2026-09-15:

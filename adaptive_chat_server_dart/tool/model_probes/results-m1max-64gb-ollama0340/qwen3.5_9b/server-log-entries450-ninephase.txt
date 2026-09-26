@@ -1,0 +1,268 @@
+time=2026-09-23T23:48:31.446-04:00 level=INFO source=server.go:109 msg="using llama-server for model" model=/Users/joefreeman/.ollama/models/blobs/sha256-dec52a44569a2a25341c4e4d3fee25846eed4f6f0b936278e3a3c900bb99d37c
+time=2026-09-23T23:48:31.447-04:00 level=INFO source=llama_server.go:433 msg="starting llama-server" ... -b 1024 -ub 1024 ...
+print_info: n_swa                 = 0
+llama_context: n_batch               = 1024
+llama_context: n_ubatch              = 1024
+llama_memory_recurrent: size =   50.25 MiB (     1 cells,  32 layers,  1 seqs  0 rs_seq), R (f32):    2.25 MiB, S (f32):   48.00 MiB, P (f32):    0.00 MiB
+srv    load_model: context checkpoints enabled, max = 32, min spacing = 8192
+slot create_check: id  0 | task 0 | created context checkpoint 1 of 32 (pos_min = 19, pos_max = 19, n_tokens = 20, size = 50.251 MiB)
+slot   operator(): id  0 | task 5 | checking checkpoint with [19, 19] against 5...
+slot   operator(): id  0 | task 5 | forcing full prompt re-processing due to lack of cache data (likely due to SWA or hybrid/recurrent memory, see https://github.com/ggml-org/llama.cpp/pull/13194#issuecomment-2868343055)
+slot   operator(): id  0 | task 5 | erased invalidated context checkpoint (pos_min = 19, pos_max = 19, n_tokens = 20, n_swa = 0, pos_next = 0, size = 50.251 MiB)
+slot create_check: id  0 | task 5 | created context checkpoint 1 of 32 (pos_min = 3787, pos_max = 3787, n_tokens = 3788, size = 50.251 MiB)
+slot create_check: id  0 | task 5 | created context checkpoint 2 of 32 (pos_min = 4807, pos_max = 4807, n_tokens = 4808, size = 50.251 MiB)
+slot   operator(): id  0 | task 31 | checking checkpoint with [4807, 4807] against 4811...
+slot   operator(): id  0 | task 31 | restored context checkpoint (pos_min = 4807, pos_max = 4807, n_tokens = 4808, n_past = 4808, size = 50.251 MiB)
+slot create_check: id  0 | task 31 | erasing context checkpoint too close to an earlier one (pos_min = 4807, pos_max = 4807, n_tokens = 4808, size = 50.251 MiB)
+slot create_check: id  0 | task 31 | created context checkpoint 2 of 32 (pos_min = 4807, pos_max = 4807, n_tokens = 4808, size = 50.251 MiB)
+slot   operator(): id  0 | task 52 | checking checkpoint with [4807, 4807] against 4801...
+slot   operator(): id  0 | task 52 | checking checkpoint with [3787, 3787] against 4801...
+slot   operator(): id  0 | task 52 | restored context checkpoint (pos_min = 3787, pos_max = 3787, n_tokens = 3788, n_past = 3788, size = 50.251 MiB)
+slot   operator(): id  0 | task 52 | erased invalidated context checkpoint (pos_min = 4807, pos_max = 4807, n_tokens = 4808, n_swa = 0, pos_next = 3788, size = 50.251 MiB)
+slot create_check: id  0 | task 52 | created context checkpoint 2 of 32 (pos_min = 3788, pos_max = 3788, n_tokens = 3789, size = 50.251 MiB)
+slot create_check: id  0 | task 52 | created context checkpoint 3 of 32 (pos_min = 4808, pos_max = 4808, n_tokens = 4809, size = 50.251 MiB)
+slot   operator(): id  0 | task 75 | checking checkpoint with [4808, 4808] against 4801...
+slot   operator(): id  0 | task 75 | checking checkpoint with [3788, 3788] against 4801...
+slot   operator(): id  0 | task 75 | restored context checkpoint (pos_min = 3788, pos_max = 3788, n_tokens = 3789, n_past = 3789, size = 50.251 MiB)
+slot   operator(): id  0 | task 75 | erased invalidated context checkpoint (pos_min = 4808, pos_max = 4808, n_tokens = 4809, n_swa = 0, pos_next = 3789, size = 50.251 MiB)
+slot create_check: id  0 | task 75 | erasing context checkpoint too close to an earlier one (pos_min = 3788, pos_max = 3788, n_tokens = 3789, size = 50.251 MiB)
+slot create_check: id  0 | task 75 | created context checkpoint 2 of 32 (pos_min = 3788, pos_max = 3788, n_tokens = 3789, size = 50.251 MiB)
+slot create_check: id  0 | task 75 | created context checkpoint 3 of 32 (pos_min = 4808, pos_max = 4808, n_tokens = 4809, size = 50.251 MiB)
+slot   operator(): id  0 | task 97 | checking checkpoint with [4808, 4808] against 4809...
+slot   operator(): id  0 | task 97 | restored context checkpoint (pos_min = 4808, pos_max = 4808, n_tokens = 4809, n_past = 4809, size = 50.251 MiB)
+slot create_check: id  0 | task 97 | erasing context checkpoint too close to an earlier one (pos_min = 3788, pos_max = 3788, n_tokens = 3789, size = 50.251 MiB)
+slot create_check: id  0 | task 97 | erasing context checkpoint too close to an earlier one (pos_min = 4808, pos_max = 4808, n_tokens = 4809, size = 50.251 MiB)
+slot create_check: id  0 | task 97 | created context checkpoint 2 of 32 (pos_min = 4808, pos_max = 4808, n_tokens = 4809, size = 50.251 MiB)
+slot create_check: id  0 | task 97 | created context checkpoint 3 of 32 (pos_min = 4844, pos_max = 4844, n_tokens = 4845, size = 50.251 MiB)
+slot   operator(): id  0 | task 120 | checking checkpoint with [4844, 4844] against 4845...
+slot   operator(): id  0 | task 120 | restored context checkpoint (pos_min = 4844, pos_max = 4844, n_tokens = 4845, n_past = 4845, size = 50.251 MiB)
+slot create_check: id  0 | task 120 | erasing context checkpoint too close to an earlier one (pos_min = 4808, pos_max = 4808, n_tokens = 4809, size = 50.251 MiB)
+slot create_check: id  0 | task 120 | erasing context checkpoint too close to an earlier one (pos_min = 4844, pos_max = 4844, n_tokens = 4845, size = 50.251 MiB)
+slot create_check: id  0 | task 120 | created context checkpoint 2 of 32 (pos_min = 4844, pos_max = 4844, n_tokens = 4845, size = 50.251 MiB)
+slot create_check: id  0 | task 120 | created context checkpoint 3 of 32 (pos_min = 4880, pos_max = 4880, n_tokens = 4881, size = 50.251 MiB)
+slot   operator(): id  0 | task 143 | checking checkpoint with [4880, 4880] against 16...
+slot   operator(): id  0 | task 143 | checking checkpoint with [4844, 4844] against 16...
+slot   operator(): id  0 | task 143 | checking checkpoint with [3787, 3787] against 16...
+slot   operator(): id  0 | task 143 | forcing full prompt re-processing due to lack of cache data (likely due to SWA or hybrid/recurrent memory, see https://github.com/ggml-org/llama.cpp/pull/13194#issuecomment-2868343055)
+slot   operator(): id  0 | task 143 | erased invalidated context checkpoint (pos_min = 3787, pos_max = 3787, n_tokens = 3788, n_swa = 0, pos_next = 0, size = 50.251 MiB)
+slot   operator(): id  0 | task 143 | erased invalidated context checkpoint (pos_min = 4844, pos_max = 4844, n_tokens = 4845, n_swa = 0, pos_next = 0, size = 50.251 MiB)
+slot   operator(): id  0 | task 143 | erased invalidated context checkpoint (pos_min = 4880, pos_max = 4880, n_tokens = 4881, n_swa = 0, pos_next = 0, size = 50.251 MiB)
+slot create_check: id  0 | task 143 | created context checkpoint 1 of 32 (pos_min = 3787, pos_max = 3787, n_tokens = 3788, size = 50.251 MiB)
+slot create_check: id  0 | task 143 | created context checkpoint 2 of 32 (pos_min = 4807, pos_max = 4807, n_tokens = 4808, size = 50.251 MiB)
+slot   operator(): id  0 | task 170 | checking checkpoint with [4880, 4880] against 4801...
+slot   operator(): id  0 | task 170 | checking checkpoint with [4844, 4844] against 4801...
+slot   operator(): id  0 | task 170 | checking checkpoint with [3787, 3787] against 4801...
+slot   operator(): id  0 | task 170 | restored context checkpoint (pos_min = 3787, pos_max = 3787, n_tokens = 3788, n_past = 3788, size = 50.251 MiB)
+slot   operator(): id  0 | task 170 | erased invalidated context checkpoint (pos_min = 4844, pos_max = 4844, n_tokens = 4845, n_swa = 0, pos_next = 3788, size = 50.251 MiB)
+slot   operator(): id  0 | task 170 | erased invalidated context checkpoint (pos_min = 4880, pos_max = 4880, n_tokens = 4881, n_swa = 0, pos_next = 3788, size = 50.251 MiB)
+slot create_check: id  0 | task 170 | created context checkpoint 2 of 32 (pos_min = 3787, pos_max = 3787, n_tokens = 3788, size = 50.251 MiB)
+slot create_check: id  0 | task 170 | created context checkpoint 3 of 32 (pos_min = 4807, pos_max = 4807, n_tokens = 4808, size = 50.251 MiB)
+slot   operator(): id  0 | task 192 | checking checkpoint with [4807, 4807] against 16...
+slot   operator(): id  0 | task 192 | checking checkpoint with [3787, 3787] against 16...
+slot   operator(): id  0 | task 192 | checking checkpoint with [3787, 3787] against 16...
+slot   operator(): id  0 | task 192 | forcing full prompt re-processing due to lack of cache data (likely due to SWA or hybrid/recurrent memory, see https://github.com/ggml-org/llama.cpp/pull/13194#issuecomment-2868343055)
+slot   operator(): id  0 | task 192 | erased invalidated context checkpoint (pos_min = 3787, pos_max = 3787, n_tokens = 3788, n_swa = 0, pos_next = 0, size = 50.251 MiB)
+slot   operator(): id  0 | task 192 | erased invalidated context checkpoint (pos_min = 3787, pos_max = 3787, n_tokens = 3788, n_swa = 0, pos_next = 0, size = 50.251 MiB)
+slot   operator(): id  0 | task 192 | erased invalidated context checkpoint (pos_min = 4807, pos_max = 4807, n_tokens = 4808, n_swa = 0, pos_next = 0, size = 50.251 MiB)
+slot create_check: id  0 | task 192 | created context checkpoint 1 of 32 (pos_min = 4238, pos_max = 4238, n_tokens = 4239, size = 50.251 MiB)
+slot create_check: id  0 | task 192 | created context checkpoint 2 of 32 (pos_min = 5258, pos_max = 5258, n_tokens = 5259, size = 50.251 MiB)
+slot   operator(): id  0 | task 220 | checking checkpoint with [5258, 5258] against 5262...
+slot   operator(): id  0 | task 220 | restored context checkpoint (pos_min = 5258, pos_max = 5258, n_tokens = 5259, n_past = 5259, size = 50.251 MiB)
+slot create_check: id  0 | task 220 | erasing context checkpoint too close to an earlier one (pos_min = 5258, pos_max = 5258, n_tokens = 5259, size = 50.251 MiB)
+slot create_check: id  0 | task 220 | created context checkpoint 2 of 32 (pos_min = 5258, pos_max = 5258, n_tokens = 5259, size = 50.251 MiB)
+slot   operator(): id  0 | task 242 | checking checkpoint with [4807, 4807] against 4801...
+slot   operator(): id  0 | task 242 | checking checkpoint with [3787, 3787] against 4801...
+slot   operator(): id  0 | task 242 | restored context checkpoint (pos_min = 3787, pos_max = 3787, n_tokens = 3788, n_past = 3788, size = 50.251 MiB)
+slot   operator(): id  0 | task 242 | erased invalidated context checkpoint (pos_min = 4807, pos_max = 4807, n_tokens = 4808, n_swa = 0, pos_next = 3788, size = 50.251 MiB)
+slot create_check: id  0 | task 242 | erasing context checkpoint too close to an earlier one (pos_min = 3787, pos_max = 3787, n_tokens = 3788, size = 50.251 MiB)
+slot create_check: id  0 | task 242 | created context checkpoint 2 of 32 (pos_min = 3788, pos_max = 3788, n_tokens = 3789, size = 50.251 MiB)
+slot create_check: id  0 | task 242 | created context checkpoint 3 of 32 (pos_min = 4808, pos_max = 4808, n_tokens = 4809, size = 50.251 MiB)
+slot   operator(): id  0 | task 267 | checking checkpoint with [4808, 4808] against 4812...
+slot   operator(): id  0 | task 267 | restored context checkpoint (pos_min = 4808, pos_max = 4808, n_tokens = 4809, n_past = 4809, size = 50.251 MiB)
+slot create_check: id  0 | task 267 | erasing context checkpoint too close to an earlier one (pos_min = 3788, pos_max = 3788, n_tokens = 3789, size = 50.251 MiB)
+slot create_check: id  0 | task 267 | erasing context checkpoint too close to an earlier one (pos_min = 4808, pos_max = 4808, n_tokens = 4809, size = 50.251 MiB)
+slot create_check: id  0 | task 267 | created context checkpoint 2 of 32 (pos_min = 4808, pos_max = 4808, n_tokens = 4809, size = 50.251 MiB)
+slot   operator(): id  0 | task 290 | checking checkpoint with [4808, 4808] against 4802...
+slot   operator(): id  0 | task 290 | checking checkpoint with [3787, 3787] against 4802...
+slot   operator(): id  0 | task 290 | restored context checkpoint (pos_min = 3787, pos_max = 3787, n_tokens = 3788, n_past = 3788, size = 50.251 MiB)
+slot   operator(): id  0 | task 290 | erased invalidated context checkpoint (pos_min = 4808, pos_max = 4808, n_tokens = 4809, n_swa = 0, pos_next = 3788, size = 50.251 MiB)
+slot create_check: id  0 | task 290 | created context checkpoint 2 of 32 (pos_min = 3788, pos_max = 3788, n_tokens = 3789, size = 50.251 MiB)
+slot create_check: id  0 | task 290 | created context checkpoint 3 of 32 (pos_min = 4808, pos_max = 4808, n_tokens = 4809, size = 50.251 MiB)
+slot   operator(): id  0 | task 315 | checking checkpoint with [4808, 4808] against 4802...
+slot   operator(): id  0 | task 315 | checking checkpoint with [3788, 3788] against 4802...
+slot   operator(): id  0 | task 315 | restored context checkpoint (pos_min = 3788, pos_max = 3788, n_tokens = 3789, n_past = 3789, size = 50.251 MiB)
+slot   operator(): id  0 | task 315 | erased invalidated context checkpoint (pos_min = 4808, pos_max = 4808, n_tokens = 4809, n_swa = 0, pos_next = 3789, size = 50.251 MiB)
+slot create_check: id  0 | task 315 | erasing context checkpoint too close to an earlier one (pos_min = 3788, pos_max = 3788, n_tokens = 3789, size = 50.251 MiB)
+slot create_check: id  0 | task 315 | created context checkpoint 2 of 32 (pos_min = 3788, pos_max = 3788, n_tokens = 3789, size = 50.251 MiB)
+slot create_check: id  0 | task 315 | created context checkpoint 3 of 32 (pos_min = 4808, pos_max = 4808, n_tokens = 4809, size = 50.251 MiB)
+slot   operator(): id  0 | task 339 | checking checkpoint with [4808, 4808] against 4802...
+slot   operator(): id  0 | task 339 | checking checkpoint with [3788, 3788] against 4802...
+slot   operator(): id  0 | task 339 | restored context checkpoint (pos_min = 3788, pos_max = 3788, n_tokens = 3789, n_past = 3789, size = 50.251 MiB)
+slot   operator(): id  0 | task 339 | erased invalidated context checkpoint (pos_min = 4808, pos_max = 4808, n_tokens = 4809, n_swa = 0, pos_next = 3789, size = 50.251 MiB)
+slot create_check: id  0 | task 339 | erasing context checkpoint too close to an earlier one (pos_min = 3788, pos_max = 3788, n_tokens = 3789, size = 50.251 MiB)
+slot create_check: id  0 | task 339 | created context checkpoint 2 of 32 (pos_min = 3788, pos_max = 3788, n_tokens = 3789, size = 50.251 MiB)
+slot create_check: id  0 | task 339 | created context checkpoint 3 of 32 (pos_min = 4808, pos_max = 4808, n_tokens = 4809, size = 50.251 MiB)
+slot   operator(): id  0 | task 363 | checking checkpoint with [4808, 4808] against 4812...
+slot   operator(): id  0 | task 363 | restored context checkpoint (pos_min = 4808, pos_max = 4808, n_tokens = 4809, n_past = 4809, size = 50.251 MiB)
+slot create_check: id  0 | task 363 | erasing context checkpoint too close to an earlier one (pos_min = 3788, pos_max = 3788, n_tokens = 3789, size = 50.251 MiB)
+slot create_check: id  0 | task 363 | erasing context checkpoint too close to an earlier one (pos_min = 4808, pos_max = 4808, n_tokens = 4809, size = 50.251 MiB)
+slot create_check: id  0 | task 363 | created context checkpoint 2 of 32 (pos_min = 4808, pos_max = 4808, n_tokens = 4809, size = 50.251 MiB)
+slot   operator(): id  0 | task 386 | checking checkpoint with [4808, 4808] against 4802...
+slot   operator(): id  0 | task 386 | checking checkpoint with [3787, 3787] against 4802...
+slot   operator(): id  0 | task 386 | restored context checkpoint (pos_min = 3787, pos_max = 3787, n_tokens = 3788, n_past = 3788, size = 50.251 MiB)
+slot   operator(): id  0 | task 386 | erased invalidated context checkpoint (pos_min = 4808, pos_max = 4808, n_tokens = 4809, n_swa = 0, pos_next = 3788, size = 50.251 MiB)
+slot create_check: id  0 | task 386 | created context checkpoint 2 of 32 (pos_min = 3788, pos_max = 3788, n_tokens = 3789, size = 50.251 MiB)
+slot create_check: id  0 | task 386 | created context checkpoint 3 of 32 (pos_min = 4808, pos_max = 4808, n_tokens = 4809, size = 50.251 MiB)
+slot   operator(): id  0 | task 411 | checking checkpoint with [4808, 4808] against 4802...
+slot   operator(): id  0 | task 411 | checking checkpoint with [3788, 3788] against 4802...
+slot   operator(): id  0 | task 411 | restored context checkpoint (pos_min = 3788, pos_max = 3788, n_tokens = 3789, n_past = 3789, size = 50.251 MiB)
+slot   operator(): id  0 | task 411 | erased invalidated context checkpoint (pos_min = 4808, pos_max = 4808, n_tokens = 4809, n_swa = 0, pos_next = 3789, size = 50.251 MiB)
+slot create_check: id  0 | task 411 | erasing context checkpoint too close to an earlier one (pos_min = 3788, pos_max = 3788, n_tokens = 3789, size = 50.251 MiB)
+slot create_check: id  0 | task 411 | created context checkpoint 2 of 32 (pos_min = 3788, pos_max = 3788, n_tokens = 3789, size = 50.251 MiB)
+slot create_check: id  0 | task 411 | created context checkpoint 3 of 32 (pos_min = 4808, pos_max = 4808, n_tokens = 4809, size = 50.251 MiB)
+slot   operator(): id  0 | task 435 | checking checkpoint with [4808, 4808] against 4809...
+slot   operator(): id  0 | task 435 | restored context checkpoint (pos_min = 4808, pos_max = 4808, n_tokens = 4809, n_past = 4809, size = 50.251 MiB)
+slot create_check: id  0 | task 435 | erasing context checkpoint too close to an earlier one (pos_min = 3788, pos_max = 3788, n_tokens = 3789, size = 50.251 MiB)
+slot create_check: id  0 | task 435 | erasing context checkpoint too close to an earlier one (pos_min = 4808, pos_max = 4808, n_tokens = 4809, size = 50.251 MiB)
+slot create_check: id  0 | task 435 | created context checkpoint 2 of 32 (pos_min = 4808, pos_max = 4808, n_tokens = 4809, size = 50.251 MiB)
+slot create_check: id  0 | task 435 | created context checkpoint 3 of 32 (pos_min = 4846, pos_max = 4846, n_tokens = 4847, size = 50.251 MiB)
+slot   operator(): id  0 | task 459 | checking checkpoint with [4846, 4846] against 4802...
+slot   operator(): id  0 | task 459 | checking checkpoint with [4808, 4808] against 4802...
+slot   operator(): id  0 | task 459 | checking checkpoint with [3787, 3787] against 4802...
+slot   operator(): id  0 | task 459 | restored context checkpoint (pos_min = 3787, pos_max = 3787, n_tokens = 3788, n_past = 3788, size = 50.251 MiB)
+slot   operator(): id  0 | task 459 | erased invalidated context checkpoint (pos_min = 4808, pos_max = 4808, n_tokens = 4809, n_swa = 0, pos_next = 3788, size = 50.251 MiB)
+slot   operator(): id  0 | task 459 | erased invalidated context checkpoint (pos_min = 4846, pos_max = 4846, n_tokens = 4847, n_swa = 0, pos_next = 3788, size = 50.251 MiB)
+slot create_check: id  0 | task 459 | created context checkpoint 2 of 32 (pos_min = 3788, pos_max = 3788, n_tokens = 3789, size = 50.251 MiB)
+slot create_check: id  0 | task 459 | created context checkpoint 3 of 32 (pos_min = 4808, pos_max = 4808, n_tokens = 4809, size = 50.251 MiB)
+slot   operator(): id  0 | task 484 | checking checkpoint with [4808, 4808] against 16...
+slot   operator(): id  0 | task 484 | checking checkpoint with [3788, 3788] against 16...
+slot   operator(): id  0 | task 484 | checking checkpoint with [3787, 3787] against 16...
+slot   operator(): id  0 | task 484 | forcing full prompt re-processing due to lack of cache data (likely due to SWA or hybrid/recurrent memory, see https://github.com/ggml-org/llama.cpp/pull/13194#issuecomment-2868343055)
+slot   operator(): id  0 | task 484 | erased invalidated context checkpoint (pos_min = 3787, pos_max = 3787, n_tokens = 3788, n_swa = 0, pos_next = 0, size = 50.251 MiB)
+slot   operator(): id  0 | task 484 | erased invalidated context checkpoint (pos_min = 3788, pos_max = 3788, n_tokens = 3789, n_swa = 0, pos_next = 0, size = 50.251 MiB)
+slot   operator(): id  0 | task 484 | erased invalidated context checkpoint (pos_min = 4808, pos_max = 4808, n_tokens = 4809, n_swa = 0, pos_next = 0, size = 50.251 MiB)
+slot create_check: id  0 | task 484 | created context checkpoint 1 of 32 (pos_min = 3787, pos_max = 3787, n_tokens = 3788, size = 50.251 MiB)
+slot create_check: id  0 | task 484 | created context checkpoint 2 of 32 (pos_min = 4807, pos_max = 4807, n_tokens = 4808, size = 50.251 MiB)
+slot   operator(): id  0 | task 509 | checking checkpoint with [4807, 4807] against 4801...
+slot   operator(): id  0 | task 509 | checking checkpoint with [3787, 3787] against 4801...
+slot   operator(): id  0 | task 509 | restored context checkpoint (pos_min = 3787, pos_max = 3787, n_tokens = 3788, n_past = 3788, size = 50.251 MiB)
+slot   operator(): id  0 | task 509 | erased invalidated context checkpoint (pos_min = 4807, pos_max = 4807, n_tokens = 4808, n_swa = 0, pos_next = 3788, size = 50.251 MiB)
+slot create_check: id  0 | task 509 | created context checkpoint 2 of 32 (pos_min = 3787, pos_max = 3787, n_tokens = 3788, size = 50.251 MiB)
+slot create_check: id  0 | task 509 | created context checkpoint 3 of 32 (pos_min = 4807, pos_max = 4807, n_tokens = 4808, size = 50.251 MiB)
+slot   operator(): id  0 | task 531 | checking checkpoint with [4807, 4807] against 4801...
+slot   operator(): id  0 | task 531 | checking checkpoint with [3787, 3787] against 4801...
+slot   operator(): id  0 | task 531 | restored context checkpoint (pos_min = 3787, pos_max = 3787, n_tokens = 3788, n_past = 3788, size = 50.251 MiB)
+slot   operator(): id  0 | task 531 | erased invalidated context checkpoint (pos_min = 4807, pos_max = 4807, n_tokens = 4808, n_swa = 0, pos_next = 3788, size = 50.251 MiB)
+slot create_check: id  0 | task 531 | erasing context checkpoint too close to an earlier one (pos_min = 3787, pos_max = 3787, n_tokens = 3788, size = 50.251 MiB)
+slot create_check: id  0 | task 531 | created context checkpoint 2 of 32 (pos_min = 3787, pos_max = 3787, n_tokens = 3788, size = 50.251 MiB)
+slot create_check: id  0 | task 531 | created context checkpoint 3 of 32 (pos_min = 4807, pos_max = 4807, n_tokens = 4808, size = 50.251 MiB)
+slot   operator(): id  0 | task 553 | checking checkpoint with [4807, 4807] against 4801...
+slot   operator(): id  0 | task 553 | checking checkpoint with [3787, 3787] against 4801...
+slot   operator(): id  0 | task 553 | restored context checkpoint (pos_min = 3787, pos_max = 3787, n_tokens = 3788, n_past = 3788, size = 50.251 MiB)
+slot   operator(): id  0 | task 553 | erased invalidated context checkpoint (pos_min = 4807, pos_max = 4807, n_tokens = 4808, n_swa = 0, pos_next = 3788, size = 50.251 MiB)
+slot create_check: id  0 | task 553 | erasing context checkpoint too close to an earlier one (pos_min = 3787, pos_max = 3787, n_tokens = 3788, size = 50.251 MiB)
+slot create_check: id  0 | task 553 | created context checkpoint 2 of 32 (pos_min = 3788, pos_max = 3788, n_tokens = 3789, size = 50.251 MiB)
+slot create_check: id  0 | task 553 | created context checkpoint 3 of 32 (pos_min = 4808, pos_max = 4808, n_tokens = 4809, size = 50.251 MiB)
+slot   operator(): id  0 | task 576 | checking checkpoint with [4808, 4808] against 16...
+slot   operator(): id  0 | task 576 | checking checkpoint with [3788, 3788] against 16...
+slot   operator(): id  0 | task 576 | checking checkpoint with [3787, 3787] against 16...
+slot   operator(): id  0 | task 576 | forcing full prompt re-processing due to lack of cache data (likely due to SWA or hybrid/recurrent memory, see https://github.com/ggml-org/llama.cpp/pull/13194#issuecomment-2868343055)
+slot   operator(): id  0 | task 576 | erased invalidated context checkpoint (pos_min = 3787, pos_max = 3787, n_tokens = 3788, n_swa = 0, pos_next = 0, size = 50.251 MiB)
+slot   operator(): id  0 | task 576 | erased invalidated context checkpoint (pos_min = 3788, pos_max = 3788, n_tokens = 3789, n_swa = 0, pos_next = 0, size = 50.251 MiB)
+slot   operator(): id  0 | task 576 | erased invalidated context checkpoint (pos_min = 4808, pos_max = 4808, n_tokens = 4809, n_swa = 0, pos_next = 0, size = 50.251 MiB)
+slot create_check: id  0 | task 576 | created context checkpoint 1 of 32 (pos_min = 3787, pos_max = 3787, n_tokens = 3788, size = 50.251 MiB)
+slot create_check: id  0 | task 576 | created context checkpoint 2 of 32 (pos_min = 4807, pos_max = 4807, n_tokens = 4808, size = 50.251 MiB)
+slot   operator(): id  0 | task 593 | checking checkpoint with [4807, 4807] against 4811...
+slot   operator(): id  0 | task 593 | restored context checkpoint (pos_min = 4807, pos_max = 4807, n_tokens = 4808, n_past = 4808, size = 50.251 MiB)
+slot create_check: id  0 | task 593 | erasing context checkpoint too close to an earlier one (pos_min = 4807, pos_max = 4807, n_tokens = 4808, size = 50.251 MiB)
+slot create_check: id  0 | task 593 | created context checkpoint 2 of 32 (pos_min = 4807, pos_max = 4807, n_tokens = 4808, size = 50.251 MiB)
+slot   operator(): id  0 | task 605 | checking checkpoint with [4807, 4807] against 4801...
+slot   operator(): id  0 | task 605 | checking checkpoint with [3787, 3787] against 4801...
+slot   operator(): id  0 | task 605 | restored context checkpoint (pos_min = 3787, pos_max = 3787, n_tokens = 3788, n_past = 3788, size = 50.251 MiB)
+slot   operator(): id  0 | task 605 | erased invalidated context checkpoint (pos_min = 4807, pos_max = 4807, n_tokens = 4808, n_swa = 0, pos_next = 3788, size = 50.251 MiB)
+slot create_check: id  0 | task 605 | created context checkpoint 2 of 32 (pos_min = 3787, pos_max = 3787, n_tokens = 3788, size = 50.251 MiB)
+slot create_check: id  0 | task 605 | created context checkpoint 3 of 32 (pos_min = 4807, pos_max = 4807, n_tokens = 4808, size = 50.251 MiB)
+slot   operator(): id  0 | task 616 | checking checkpoint with [4807, 4807] against 4801...
+slot   operator(): id  0 | task 616 | checking checkpoint with [3787, 3787] against 4801...
+slot   operator(): id  0 | task 616 | restored context checkpoint (pos_min = 3787, pos_max = 3787, n_tokens = 3788, n_past = 3788, size = 50.251 MiB)
+slot   operator(): id  0 | task 616 | erased invalidated context checkpoint (pos_min = 4807, pos_max = 4807, n_tokens = 4808, n_swa = 0, pos_next = 3788, size = 50.251 MiB)
+slot create_check: id  0 | task 616 | erasing context checkpoint too close to an earlier one (pos_min = 3787, pos_max = 3787, n_tokens = 3788, size = 50.251 MiB)
+slot create_check: id  0 | task 616 | created context checkpoint 2 of 32 (pos_min = 3787, pos_max = 3787, n_tokens = 3788, size = 50.251 MiB)
+slot create_check: id  0 | task 616 | created context checkpoint 3 of 32 (pos_min = 4807, pos_max = 4807, n_tokens = 4808, size = 50.251 MiB)
+slot   operator(): id  0 | task 627 | checking checkpoint with [4807, 4807] against 4801...
+slot   operator(): id  0 | task 627 | checking checkpoint with [3787, 3787] against 4801...
+slot   operator(): id  0 | task 627 | restored context checkpoint (pos_min = 3787, pos_max = 3787, n_tokens = 3788, n_past = 3788, size = 50.251 MiB)
+slot   operator(): id  0 | task 627 | erased invalidated context checkpoint (pos_min = 4807, pos_max = 4807, n_tokens = 4808, n_swa = 0, pos_next = 3788, size = 50.251 MiB)
+slot create_check: id  0 | task 627 | erasing context checkpoint too close to an earlier one (pos_min = 3787, pos_max = 3787, n_tokens = 3788, size = 50.251 MiB)
+slot create_check: id  0 | task 627 | created context checkpoint 2 of 32 (pos_min = 3788, pos_max = 3788, n_tokens = 3789, size = 50.251 MiB)
+slot create_check: id  0 | task 627 | created context checkpoint 3 of 32 (pos_min = 4808, pos_max = 4808, n_tokens = 4809, size = 50.251 MiB)
+slot   operator(): id  0 | task 640 | checking checkpoint with [4808, 4808] against 4801...
+slot   operator(): id  0 | task 640 | checking checkpoint with [3788, 3788] against 4801...
+slot   operator(): id  0 | task 640 | restored context checkpoint (pos_min = 3788, pos_max = 3788, n_tokens = 3789, n_past = 3789, size = 50.251 MiB)
+slot   operator(): id  0 | task 640 | erased invalidated context checkpoint (pos_min = 4808, pos_max = 4808, n_tokens = 4809, n_swa = 0, pos_next = 3789, size = 50.251 MiB)
+slot create_check: id  0 | task 640 | erasing context checkpoint too close to an earlier one (pos_min = 3788, pos_max = 3788, n_tokens = 3789, size = 50.251 MiB)
+slot create_check: id  0 | task 640 | created context checkpoint 2 of 32 (pos_min = 3788, pos_max = 3788, n_tokens = 3789, size = 50.251 MiB)
+slot create_check: id  0 | task 640 | created context checkpoint 3 of 32 (pos_min = 4808, pos_max = 4808, n_tokens = 4809, size = 50.251 MiB)
+slot   operator(): id  0 | task 664 | checking checkpoint with [4808, 4808] against 4801...
+slot   operator(): id  0 | task 664 | checking checkpoint with [3788, 3788] against 4801...
+slot   operator(): id  0 | task 664 | restored context checkpoint (pos_min = 3788, pos_max = 3788, n_tokens = 3789, n_past = 3789, size = 50.251 MiB)
+slot   operator(): id  0 | task 664 | erased invalidated context checkpoint (pos_min = 4808, pos_max = 4808, n_tokens = 4809, n_swa = 0, pos_next = 3789, size = 50.251 MiB)
+slot create_check: id  0 | task 664 | erasing context checkpoint too close to an earlier one (pos_min = 3788, pos_max = 3788, n_tokens = 3789, size = 50.251 MiB)
+slot create_check: id  0 | task 664 | created context checkpoint 2 of 32 (pos_min = 3788, pos_max = 3788, n_tokens = 3789, size = 50.251 MiB)
+slot create_check: id  0 | task 664 | created context checkpoint 3 of 32 (pos_min = 4808, pos_max = 4808, n_tokens = 4809, size = 50.251 MiB)
+slot   operator(): id  0 | task 688 | checking checkpoint with [4808, 4808] against 4801...
+slot   operator(): id  0 | task 688 | checking checkpoint with [3788, 3788] against 4801...
+slot   operator(): id  0 | task 688 | restored context checkpoint (pos_min = 3788, pos_max = 3788, n_tokens = 3789, n_past = 3789, size = 50.251 MiB)
+slot   operator(): id  0 | task 688 | erased invalidated context checkpoint (pos_min = 4808, pos_max = 4808, n_tokens = 4809, n_swa = 0, pos_next = 3789, size = 50.251 MiB)
+slot create_check: id  0 | task 688 | erasing context checkpoint too close to an earlier one (pos_min = 3788, pos_max = 3788, n_tokens = 3789, size = 50.251 MiB)
+slot create_check: id  0 | task 688 | created context checkpoint 2 of 32 (pos_min = 3827, pos_max = 3827, n_tokens = 3828, size = 50.251 MiB)
+slot create_check: id  0 | task 688 | created context checkpoint 3 of 32 (pos_min = 4847, pos_max = 4847, n_tokens = 4848, size = 50.251 MiB)
+slot   operator(): id  0 | task 714 | checking checkpoint with [4847, 4847] against 4801...
+slot   operator(): id  0 | task 714 | checking checkpoint with [3827, 3827] against 4801...
+slot   operator(): id  0 | task 714 | restored context checkpoint (pos_min = 3827, pos_max = 3827, n_tokens = 3828, n_past = 3828, size = 50.251 MiB)
+slot   operator(): id  0 | task 714 | erased invalidated context checkpoint (pos_min = 4847, pos_max = 4847, n_tokens = 4848, n_swa = 0, pos_next = 3828, size = 50.251 MiB)
+slot create_check: id  0 | task 714 | erasing context checkpoint too close to an earlier one (pos_min = 3827, pos_max = 3827, n_tokens = 3828, size = 50.251 MiB)
+slot create_check: id  0 | task 714 | created context checkpoint 2 of 32 (pos_min = 3827, pos_max = 3827, n_tokens = 3828, size = 50.251 MiB)
+slot create_check: id  0 | task 714 | created context checkpoint 3 of 32 (pos_min = 4847, pos_max = 4847, n_tokens = 4848, size = 50.251 MiB)
+slot   operator(): id  0 | task 739 | checking checkpoint with [4847, 4847] against 4801...
+slot   operator(): id  0 | task 739 | checking checkpoint with [3827, 3827] against 4801...
+slot   operator(): id  0 | task 739 | restored context checkpoint (pos_min = 3827, pos_max = 3827, n_tokens = 3828, n_past = 3828, size = 50.251 MiB)
+slot   operator(): id  0 | task 739 | erased invalidated context checkpoint (pos_min = 4847, pos_max = 4847, n_tokens = 4848, n_swa = 0, pos_next = 3828, size = 50.251 MiB)
+slot create_check: id  0 | task 739 | erasing context checkpoint too close to an earlier one (pos_min = 3827, pos_max = 3827, n_tokens = 3828, size = 50.251 MiB)
+slot create_check: id  0 | task 739 | created context checkpoint 2 of 32 (pos_min = 3867, pos_max = 3867, n_tokens = 3868, size = 50.251 MiB)
+slot create_check: id  0 | task 739 | created context checkpoint 3 of 32 (pos_min = 4887, pos_max = 4887, n_tokens = 4888, size = 50.251 MiB)
+slot   operator(): id  0 | task 765 | checking checkpoint with [4887, 4887] against 4801...
+slot   operator(): id  0 | task 765 | checking checkpoint with [3867, 3867] against 4801...
+slot   operator(): id  0 | task 765 | restored context checkpoint (pos_min = 3867, pos_max = 3867, n_tokens = 3868, n_past = 3868, size = 50.251 MiB)
+slot   operator(): id  0 | task 765 | erased invalidated context checkpoint (pos_min = 4887, pos_max = 4887, n_tokens = 4888, n_swa = 0, pos_next = 3868, size = 50.251 MiB)
+slot create_check: id  0 | task 765 | erasing context checkpoint too close to an earlier one (pos_min = 3867, pos_max = 3867, n_tokens = 3868, size = 50.251 MiB)
+slot create_check: id  0 | task 765 | created context checkpoint 2 of 32 (pos_min = 3867, pos_max = 3867, n_tokens = 3868, size = 50.251 MiB)
+slot create_check: id  0 | task 765 | created context checkpoint 3 of 32 (pos_min = 4887, pos_max = 4887, n_tokens = 4888, size = 50.251 MiB)
+slot   operator(): id  0 | task 790 | checking checkpoint with [4887, 4887] against 4801...
+slot   operator(): id  0 | task 790 | checking checkpoint with [3867, 3867] against 4801...
+slot   operator(): id  0 | task 790 | restored context checkpoint (pos_min = 3867, pos_max = 3867, n_tokens = 3868, n_past = 3868, size = 50.251 MiB)
+slot   operator(): id  0 | task 790 | erased invalidated context checkpoint (pos_min = 4887, pos_max = 4887, n_tokens = 4888, n_swa = 0, pos_next = 3868, size = 50.251 MiB)
+slot create_check: id  0 | task 790 | erasing context checkpoint too close to an earlier one (pos_min = 3867, pos_max = 3867, n_tokens = 3868, size = 50.251 MiB)
+slot create_check: id  0 | task 790 | created context checkpoint 2 of 32 (pos_min = 3867, pos_max = 3867, n_tokens = 3868, size = 50.251 MiB)
+slot create_check: id  0 | task 790 | created context checkpoint 3 of 32 (pos_min = 4808, pos_max = 4808, n_tokens = 4809, size = 50.251 MiB)
+slot   operator(): id  0 | task 814 | checking checkpoint with [4808, 4808] against 4801...
+slot   operator(): id  0 | task 814 | checking checkpoint with [3867, 3867] against 4801...
+slot   operator(): id  0 | task 814 | restored context checkpoint (pos_min = 3867, pos_max = 3867, n_tokens = 3868, n_past = 3868, size = 50.251 MiB)
+slot   operator(): id  0 | task 814 | erased invalidated context checkpoint (pos_min = 4808, pos_max = 4808, n_tokens = 4809, n_swa = 0, pos_next = 3868, size = 50.251 MiB)
+slot create_check: id  0 | task 814 | erasing context checkpoint too close to an earlier one (pos_min = 3867, pos_max = 3867, n_tokens = 3868, size = 50.251 MiB)
+slot create_check: id  0 | task 814 | created context checkpoint 2 of 32 (pos_min = 3867, pos_max = 3867, n_tokens = 3868, size = 50.251 MiB)
+slot create_check: id  0 | task 814 | created context checkpoint 3 of 32 (pos_min = 4808, pos_max = 4808, n_tokens = 4809, size = 50.251 MiB)
+slot   operator(): id  0 | task 838 | checking checkpoint with [4808, 4808] against 4801...
+slot   operator(): id  0 | task 838 | checking checkpoint with [3867, 3867] against 4801...
+slot   operator(): id  0 | task 838 | restored context checkpoint (pos_min = 3867, pos_max = 3867, n_tokens = 3868, n_past = 3868, size = 50.251 MiB)
+slot   operator(): id  0 | task 838 | erased invalidated context checkpoint (pos_min = 4808, pos_max = 4808, n_tokens = 4809, n_swa = 0, pos_next = 3868, size = 50.251 MiB)
+slot create_check: id  0 | task 838 | erasing context checkpoint too close to an earlier one (pos_min = 3867, pos_max = 3867, n_tokens = 3868, size = 50.251 MiB)
+slot create_check: id  0 | task 838 | created context checkpoint 2 of 32 (pos_min = 3867, pos_max = 3867, n_tokens = 3868, size = 50.251 MiB)
+slot create_check: id  0 | task 838 | created context checkpoint 3 of 32 (pos_min = 4808, pos_max = 4808, n_tokens = 4809, size = 50.251 MiB)
+slot   operator(): id  0 | task 862 | checking checkpoint with [4808, 4808] against 4801...
+slot   operator(): id  0 | task 862 | checking checkpoint with [3867, 3867] against 4801...
+slot   operator(): id  0 | task 862 | restored context checkpoint (pos_min = 3867, pos_max = 3867, n_tokens = 3868, n_past = 3868, size = 50.251 MiB)
+slot   operator(): id  0 | task 862 | erased invalidated context checkpoint (pos_min = 4808, pos_max = 4808, n_tokens = 4809, n_swa = 0, pos_next = 3868, size = 50.251 MiB)
+slot create_check: id  0 | task 862 | erasing context checkpoint too close to an earlier one (pos_min = 3867, pos_max = 3867, n_tokens = 3868, size = 50.251 MiB)
+slot create_check: id  0 | task 862 | created context checkpoint 2 of 32 (pos_min = 3867, pos_max = 3867, n_tokens = 3868, size = 50.251 MiB)
+slot create_check: id  0 | task 862 | created context checkpoint 3 of 32 (pos_min = 4808, pos_max = 4808, n_tokens = 4809, size = 50.251 MiB)

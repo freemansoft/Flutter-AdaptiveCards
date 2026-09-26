@@ -17,16 +17,16 @@ When the notebook and a draft disagree, the notebook wins.
 
 ## The articles
 
-| #   | Article                                                                                   | File                              | Post                                                                                          | Status                                                                                                                                                                                  |
-| --- | ----------------------------------------------------------------------------------------- | --------------------------------- | --------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1   | An SDUI demo that turned into a local-model benchmark                                     | `article-1-origin-story-*`        | [post](https://joe.blog.freemansoft.com/2026/09/an-sdui-demo-that-turned-into-local.html)     | **Published**, republished 2026-09-16 with the corrected four-way split                                                                                                                 |
-| 2   | We tried 14 levers to get reliable card JSON from a local model                           | `article-2-tuning-process-*`      | [post](https://joe.blog.freemansoft.com/2026/09/we-tried-14-levers-to-get-reliable-card.html) | **Published**, republished 2026-09-16. One further fix in the repo awaits a republish, see below                                                                                        |
-| 3   | Running local models for Adaptive Card JSON on a 64 GB M1 Max and a 16 GB M5              | `article-3-m1max-vs-m5-*`         | [post](https://joe.blog.freemansoft.com/2026/09/benchmarking-local-model-llm-generated.html)  | **Published.** Revised 2026-09-08, mermaid chart, register pass 2026-09-12, cut pass 2026-09-14                                                                                         |
-| 4   | Ollama's tool channel beats prose for card JSON on every model that calls it              | `article-4-tool-channel-*`        | [post](https://joe.blog.freemansoft.com/2026/09/ollamas-tool-channel-produces-better.html)    | **Published** 2026-09-17, after the rewrite against the re-measurement and a review pass. Retitled and republished 2026-09-18                                                           |
-| 5   | Eight measurement rules from a local-model benchmark on Ollama                            | `article-5-measurement-hygiene-*` | [post](https://joe.blog.freemansoft.com/2026/09/eight-measurement-rules-from-local.html)      | **Published** 2026-09-18, rewritten rules first with the Ollama 0.34.0 `granite4.1:3b` control                                                                                          |
-| 6   | Ollama silently drops a history message larger than its context window                    | `article-6-context-fill-*`        | [post](https://joe.blog.freemansoft.com/2026/09/ollama-silently-drops-history-message.html)   | **Published** 2026-09-20, after the review against the notebook, the Ollama 0.34.0 re-runs, a flowchart and a retitle                                                                   |
-| 7   | Three of eight local models degrade on a mostly full context window, each a different way | `article-7-full-context-cost-*`   | [post](https://joe.blog.freemansoft.com/2026/09/a-full-context-breaks-three-local.html)       | **Published** 2026-09-21 under the title "A full context breaks three local models, each in a different way". Retitled and corrected in the repo after publication; a republish is owed |
-| 8   | Ollama's prompt cache reused a shared system prompt on one model and not on the other     | `article-8-prompt-cache-*`        | n/a                                                                                           | Not published. Split from 5 on 2026-09-18; review pass, restructured into four findings, two mermaid visuals 2026-09-20                                                                 |
+| #   | Article                                                                                                        | File                              | Post                                                                                          | Status                                                                                                                                                                                                                                                                                                                                                                                         |
+| --- | -------------------------------------------------------------------------------------------------------------- | --------------------------------- | --------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | An SDUI demo that turned into a local-model benchmark                                                          | `article-1-origin-story-*`        | [post](https://joe.blog.freemansoft.com/2026/09/an-sdui-demo-that-turned-into-local.html)     | **Published**, republished 2026-09-16 with the corrected four-way split                                                                                                                                                                                                                                                                                                                        |
+| 2   | We tried 14 levers to get reliable card JSON from a local model                                                | `article-2-tuning-process-*`      | [post](https://joe.blog.freemansoft.com/2026/09/we-tried-14-levers-to-get-reliable-card.html) | **Published**, republished 2026-09-16. One further fix in the repo awaits a republish, see below                                                                                                                                                                                                                                                                                               |
+| 3   | Running local models for Adaptive Card JSON on a 64 GB M1 Max and a 16 GB M5                                   | `article-3-m1max-vs-m5-*`         | [post](https://joe.blog.freemansoft.com/2026/09/benchmarking-local-model-llm-generated.html)  | **Published.** Revised 2026-09-08, mermaid chart, register pass 2026-09-12, cut pass 2026-09-14                                                                                                                                                                                                                                                                                                |
+| 4   | Ollama's tool channel beats prose for card JSON on every model that calls it                                   | `article-4-tool-channel-*`        | [post](https://joe.blog.freemansoft.com/2026/09/ollamas-tool-channel-produces-better.html)    | **Published** 2026-09-17, after the rewrite against the re-measurement and a review pass. Retitled and republished 2026-09-18                                                                                                                                                                                                                                                                  |
+| 5   | Eight measurement rules from a local-model benchmark on Ollama                                                 | `article-5-measurement-hygiene-*` | [post](https://joe.blog.freemansoft.com/2026/09/eight-measurement-rules-from-local.html)      | **Published** 2026-09-18, rewritten rules first with the Ollama 0.34.0 `granite4.1:3b` control                                                                                                                                                                                                                                                                                                 |
+| 6   | Ollama silently drops a history message larger than its context window                                         | `article-6-context-fill-*`        | [post](https://joe.blog.freemansoft.com/2026/09/ollama-silently-drops-history-message.html)   | **Published** 2026-09-20, after the review against the notebook, the Ollama 0.34.0 re-runs, a flowchart and a retitle                                                                                                                                                                                                                                                                          |
+| 7   | A full context breaks three local models, each in a different way                                              | `article-7-full-context-cost-*`   | [post](https://joe.blog.freemansoft.com/2026/09/a-full-context-breaks-three-local.html)       | **Published** 2026-09-21 under the title "A full context breaks three local models, each in a different way". The repo's corrections were applied to the live post on 2026-09-23, so the draft, the status row and the live post now agree                                                                                                                                                     |
+| 8   | On Ollama, a model's memory type and its runner decide how much of the cached prompt a new conversation reuses | `article-8-prompt-cache-*`        | n/a                                                                                           | Not published. Split from 5 on 2026-09-18. Draft complete: fifteen models sorted by memory type and runner, the one-batch `llama-server` rollback measured across prompt sizes, an `int4` MLX control, two interleaved conversations, the retry read from the archived server logs, and four checks for a chat server. Visuals: a flowchart and two sequence diagrams. About 2,120 prose words |
 
 **Post** links the live article, so a draft that needs to cite a sibling does
 not have to go looking. Record the URL here when an article is published.
@@ -35,17 +35,23 @@ not have to go looking. Record the URL here when an article is published.
 be silently corrected, so a finding that moves under re-measurement is tracked
 here until the live post carries it. A repo fix and a republish are two steps, and the table below records both.
 
-Article 7 owes a republish. The version published on 2026-09-21 says
-`qwen3.8:27b-nvfp4` "stops emitting parseable JSON" and that "every case it
-loses is a body the parser rejects". The archived labels record four of those
-seven as `broken: timeout (180s)` stalls and three as malformed bodies, so the
-live post also tells a reader a retry addresses a failure that a retry cannot
-address. It says "none of the smaller movements reproduce", where
-`nemotron-3-nano:4b` reproduces at 6/25 across two prompt sizes. It states
-"nothing changed between the two runs but the history", where the two arms also
-differ in requested window size. The failure table carries four of the judge's
-five verdicts. All of that is fixed in the repo, along with a retitle, a
-restructure, the prior-art sentences and the M5 cut.
+Article 7 was corrected and republished on 2026-09-23. The version published
+on 2026-09-21 had said `qwen3.8:27b-nvfp4` "stops emitting parseable JSON" and
+that "every case it loses is a body the parser rejects", where the archived
+labels record four of those seven as `broken: timeout (180s)` stalls and three
+as malformed bodies, so it told a reader a retry addresses a failure a retry
+cannot address. It had said "none of the smaller movements reproduce", where
+`nemotron-3-nano:4b` reproduces at 6/25 across two prompt sizes, and "nothing
+changed between the two runs but the history", where the two arms also differ
+in requested window size. Its failure table carried four of the judge's five
+verdicts. The draft, the status row and the live post agree as of that date.
+
+One addition is available and not owed. Every model in article 7's full-window
+table now has an Ollama 0.34.0 reading as well: the two `nvfp4` builds on
+2026-09-19 and the other six on 2026-09-24, each reproducing its 0.33.3 pass
+count and prompt-token count exactly. No figure in the live post is wrong, and
+the post frames the condition as 0.33.3, so this is corroboration rather than a
+correction. Taking it means editing the draft and owing a republish again.
 
 Articles 1 and 2 were corrected and republished on 2026-09-16, after the
 tool-channel re-measurement moved the capability probe's four-way split and
@@ -110,8 +116,12 @@ substitute after uploading the image through the Blogger editor. Paste into the
 HTML view and publish from the HTML view: the Compose view re-serializes the
 document, which is the usual way a pasted table gets flattened.
 
-The script does not convert mermaid fences. Render each diagram to a PNG beside
-the drafts and replace the fence with an image before converting.
+The script does not convert mermaid fences, so a pasted post shows the
+diagram's source. Render each diagram to a PNG, upload it in the Blogger editor
+and swap it in there. The draft keeps its fence: the mermaid is the editable
+source a later revision edits, and the rendered PNGs are not committed. The
+`{{IMAGE_URL:<path>}}` token is for a committed image instead, as in articles 1
+and 2.
 
 ## What each article owns
 
@@ -257,14 +267,31 @@ cites article 6 for why that needed verifying, rather than re-deriving the
 tokenizer defect.
 
 **Article 8: the prompt cache.** What Ollama's prefix cache saves a chat
-server, measured with `prompt_eval_cached_count` under Ollama 0.33.3 by
-`prefill_cache_probe.dart`: five request patterns on `llama3.2:latest` on
-both hosts and on `qwen3.8:27b-nvfp4` on the M1 Max. A conversation turn pays
-prefill for its new tokens only, on both models. **The new-conversation miss
-outright**: a byte-identical system prompt with a different first question
-reuses the cache on `llama3.2:latest` and misses entirely on
-`qwen3.8:27b-nvfp4`, on three runs, with the cause not established. The
-retry-after-abort cost, stable on one model and unstable on the other.
+server, measured with `prompt_eval_cached_count` and each call's total time by
+`prefill_cache_probe.dart` on fifteen models on the M1 Max under Ollama
+0.34.0, with `think: false` and one model resident. An exact repeat and a
+growing conversation reuse the cache on all fifteen. **A new conversation's
+cost follows the model's memory type**, read from `llama-server`'s load
+output, and then the runner: the seven attention-only models and the
+sliding-window `gpt-oss:20b` reuse the cached system prompt; four of the five recurrent models on `llama-server` re-evaluate
+one 1,024-token batch on every new conversation and on every turn of two
+interleaved conversations, a rollback measured across prompt sizes with
+`--entries`, while the fifth holds a checkpoint near the end of the prompt and
+stays warm on most of them; the two `nvfp4` Qwen3.5 builds on the MLX runner
+pay one extra full prefill per system prompt, then nothing, and an `int4` MLX
+control repeats the shape at a different quantization, while the `qwen3_5`
+architecture stays unseparated from the runner. The article gives `llama-server`'s log lines for
+the mechanism, reads the MLX runner's checkpoint policy and the MLX builds'
+recurrence from the runner source at v0.34.0, and reads the retry after an abort from the archived server logs:
+its total tracks what the abandoned call had left to do, and the MLX runner
+sometimes cancels that call at a 2,048-token chunk boundary. It closes with
+four checks for a chat server and the list of what the probe did not measure.
+
+Its prose runs to about 2,120 words, past the 2,000 target, because the
+finding sorts fifteen models into memory-and-runner groups and each group
+needs its own mechanism paragraph: `llama-server`'s checkpoint placement, the
+MLX runner's, what two interleaved conversations cost, and what the retry
+waits for.
 
 _Defers:_ the truncated-prompt mistake that first made the cache read as
 broken to article 5, naming it in one paragraph because the probe's prompt
@@ -322,6 +349,15 @@ figures and the series' names, which every article and the skill depend on.
   before publishing, and when drafting a new article, verify each figure in
   the notebook directly rather than trusting an intermediate document that
   quotes it.
+- **Name the runtime a figure was measured on, and cite Ollama 0.34.0 for
+  every measurement from article 8 onward.** The M1 Max has run 0.34.0 since
+  2026-09-16, and the notebook's prompt-cache, format-canary and full-window
+  conditions all have 0.34.0 readings. Name an older version only where a
+  capability arrived in it, as `prompt_eval_cached_count` did in 0.33.3, or
+  where a finding genuinely differs between versions, as the `format` flip
+  does. A figure whose only reading is 0.33.x carries that version: the M5
+  host, the `qwen3.6` schema A/B and the GGUF-defaults isolation are the ones
+  that do.
 - **Transcribe verbatim.** Do not round, paraphrase, or recompute a score.
 - **Every score carries its test set and its condition.** An `n/m` is
   uninterpretable without both. Everyday and stress figures are cold-start;

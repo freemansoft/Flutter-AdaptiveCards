@@ -1,4 +1,4 @@
-# Three of eight local models degrade on a mostly full context window, each a different way
+# A full context breaks three local models, each in a different way
 
 In
 [`freemansoft/Flutter-AdaptiveCards`](https://github.com/freemansoft/Flutter-AdaptiveCards)
@@ -7,7 +7,7 @@ asks for the answer as Adaptive Card JSON, a strict, closed-vocabulary schema
 that a Flutter client renders as interactive UI rather than as text. A set of
 probes in that repository puts identical questions to different local models.
 [`context_fill_probe.dart`](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/tool/model_probes/context_fill_probe.dart)
-is the probe that produced every figure in this article. It runs 25 test cases,
+produced every figure in this article. It runs 25 test cases,
 one question each. A test case passes only if the reply used an element type
 that would answer the question. Every other probe in that set had been asking
 into a nearly empty window. That window holds a system prompt, one question,
@@ -15,7 +15,7 @@ and at most a short canned exchange showing the model the shape of a card.
 
 The literature documents that a long context degrades model behavior. What it
 does to a model's adherence to an output format is measured less often. The
-probe simulates a long conversation by filling three quarters of the window
+test probe simulates a long conversation by filling three quarters of the window
 with generated text. It measured eight models twice, once with no history at
 all and once carrying roughly 48,500 tokens of prompt for seven of the eight.
 The host was an Apple M1 Max with 64 GB, under Ollama 0.33.3, with two
@@ -43,23 +43,23 @@ the lab notebook in that repository.
 | **`--samples 1`**       | Each case runs once and is scored on that one reply. Most figures in the notebook are `--samples 2`, where a case passes only if both runs pass, A one-case difference between two runs is therefore noise, where `--samples 2` figures carry a tighter floor.                                                                                                                                              |
 | **`prompt_eval_count`** | The token count Ollama reports for the prompt it evaluated. The **Prompt tokens, full** column holds it, and it is how each run proves it delivered the history it meant to.                                                                                                                                                                                                                                |
 
-**Every run below verified its fill size**, and reports the token count it
-delivered in the **Prompt tokens, full** column. Tokenizers differ enough that
-a filler sized in characters can overflow a window and be discarded whole, with
-no error. The companion article [Ollama silently drops a history message larger
+Every full-window run reports the token count it delivered in the **Prompt
+tokens, full** column. Tokenizers differ enough that a filler sized in
+characters can overflow a window in some models and be discarded whole, with no error.
+The companion article [Ollama silently drops a history message larger
 than its context
 window](https://joe.blog.freemansoft.com/2026/09/ollama-silently-drops-history-message.html)
 covers that defect and its fix.
 
 ## Five of eight models hold on a full window
 
-The probe gave each model a filler calibrated to its own tokenizer, sized to
-fit the window Ollama allocates it. **Empty window** and **Full window** hold
-the shape score under each condition. **Window allocated** is what `/api/ps`
-reported the runner gave each request, and the probe asked for exactly that
-every time, so nothing was clamped. All of it comes from
-`context_fill_probe.dart` at `--samples 1` on the M1 Max, under Ollama 0.33.3
-except the two starred cells.
+The test probe gave each model filler text calibrated to its own tokenizer, sized to
+fit the window Ollama allocates to it. Columns "**Empty window**" and "**Full window**" hold
+the shape score under each condition. Column "**Window allocated**" holds the
+window size `/api/ps` reported for each request. The probe requested that same
+size every time. Ollama never allocated less than the probe asked for. All of it comes from
+`context_fill_probe.dart` at `--samples 1` on the M1 Max, under Ollama 0.33.3,
+except for the two starred cells.
 
 | Model                        | Empty window | Full window | Prompt tokens, full | Window allocated |
 | ---------------------------- | ------------ | ----------- | ------------------- | ---------------- |
@@ -72,31 +72,31 @@ except the two starred cells.
 | `nemotron-3-nano:30b`        | 17/25        | **12/25**   | 48611               | 65536            |
 | `nemotron-3-nano:4b`         | 8/25         | 6/25        | 48559               | 65536            |
 
-\* The 0.34.0 empty-window run measured these two builds on an empty window for
-the first time, so their two arms come from different runtimes. The pairing
-holds because a 0.34.0 repeat of the full-window run returns the same 16/25 and
-20/25, matching all 25 verdicts case for case. Before it, the **Empty window**
-column held a reading for both builds that had itself been taken under a filled
-window. That is why the notebook read both as unaffected.
+\* The 0.34.0 empty-window run measured these two builds on an empty window, so
+their two arms come from different runtimes. The pairing holds because a 0.34.0
+repeat of the full-window run returns the same 16/25 and 20/25, matching all 25
+verdicts case for case.
 
 The other six rows read their empty-window figure from the pre-calibration
 sweep. Five runs appear in this article, and they differ in what they asked for
 and in what the model received.
 
-| Run                          | What it asked for, and what reached the model                                                                                                            |
-| ---------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| the pre-calibration sweep    | A 28,000-token filler sized in characters, into a 35,851-token window. It overflowed, Ollama dropped it whole, and about 4,000 tokens reached the model. |
-| the uncalibrated fit control | The same filler into a 65,536-token window, where it fit. About 42,600 tokens reached the model.                                                         |
-| the calibrated fit control   | A filler sized per tokenizer to fill the window. About 48,500 tokens, and the **Full window** column above.                                              |
-| the M5 fit control           | The calibrated fit control on a 16 GB Apple M5, plus a half-fill level.                                                                                  |
-| the 0.34.0 empty-window run  | The two `nvfp4` builds with no history, under Ollama 0.34.0.                                                                                             |
+| Run                          | What it asked for, and what reached the model                                                                                                                                                              |
+| ---------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| the pre-calibration sweep    | A 28,000-token filler sized in characters, into a 35,851-token window. It overflowed, Ollama dropped it whole, and about 4,000 tokens reached the model, except for the two `nvfp4` builds, which kept it. |
+| the uncalibrated fit control | The same filler into a 65,536-token window, where it fit, so the whole filler reached the model.                                                                                                           |
+| the calibrated fit control   | A filler sized per tokenizer to fill the window. About 48,500 tokens, and the **Full window** column above.                                                                                                |
+| the M5 fit control           | The calibrated fit control on a 16 GB Apple M5, plus a half-fill level.                                                                                                                                    |
+| the 0.34.0 empty-window run  | The two `nvfp4` builds with no history, under Ollama 0.34.0.                                                                                                                                               |
 
 So the two arms differ in window size as well as in history. Every empty-window
 run asked for 35,851 tokens, against 65,536 for the filled runs. The exception
-is `qwen2.5-coder:7b`, whose trained window caps both arms at 32,768.
+is `qwen2.5-coder:7b`, whose trained window caps both arms at 32,768. The
+model, the 25 questions and the judge are the same in both arms.
 
-The chart plots each model's full-window score minus its empty-window score.
-Three bars run past minus five; the rest sit within noise.
+The chart shows how many cases each model gained or lost when the window was
+filled. Three models lose 5 or more of the 25 cases. The rest move by three or
+fewer, which is within noise.
 
 ```mermaid
 xychart-beta horizontal
@@ -106,33 +106,43 @@ xychart-beta horizontal
     bar [-7, -5, -5, -3, -3, -2, -2, 2]
 ```
 
-`nemotron-3.5-lightning:30b` loses 8 of the 20 cases it passed on an empty
-window and wins 1 back, for a net of 7. `nemotron-3-nano:30b` loses 8 of its 17
-and wins 3 back, for 5. `qwen3.8:27b-nvfp4` loses 7 of its 21 and wins 2 back,
-for 5. The table and the chart carry the net figures. The model, the 25
-questions and the judge are the same in both arms. `qwen3-coder:30b` gains two
-cases under the same load.
+The chart plots net figures. Each of the three large losses is bigger than its
+bar:
 
-`nemotron-3-nano:4b`'s 6/25 is the lowest in the table, and it was already
-lowest at 8/25 empty. Its two lost cases are noise. `qwen2.5-coder:7b`'s minus
-three does not belong beside the others. Its trained window caps it at 32768,
-so its filler is smaller too. It runs three quarters full like every other
-model, but on 24,721 tokens rather than about 48,500. Its bar comes from half
-the token load.
+- `nemotron-3.5-lightning:30b` fails 8 of the 20 cases it passed on an empty
+  window and passes 1 it had failed, for a net loss of 7.
+- `nemotron-3-nano:30b` fails 8 of the 17 it passed and passes 3 it had failed,
+  for a net loss of 5.
+- `qwen3.8:27b-nvfp4` fails 7 of the 21 it passed and passes 2 it had failed,
+  for a net loss of 5.
 
-## Both Nemotron losses repeat at a second prompt size
+Three of the smaller bars need a qualifier:
 
-The uncalibrated fit control carried about 42,600 tokens for the two Nemotron
-builds and returned 13/25 and 12/25. The run above carries 48,500 and returns
-13/25 and 12/25 again. `qwen3.8:27b-nvfp4` reproduces the same way from the
-pre-calibration sweep: 17/25 at 42,542 tokens and 16/25 at 48,539, against
-21/25 empty. None of the Qwen movements reproduce that way.
+- `qwen2.5-coder:7b`'s minus three comes from half the token load. Its trained
+  window caps it at 32,768, so it runs three quarters full on 24,721 tokens
+  rather than about 48,500.
+- `nemotron-3-nano:4b`'s 6/25 is the lowest in the table, but it was already
+  lowest at 8/25 empty. Its two lost cases are noise.
+- `qwen3-coder:30b` gains two cases under the same load.
+
+## The three large losses repeat at a second prompt size
+
+Every figure above comes from one run, and a single run can move by two or
+three cases on its own. The three large losses repeat in an earlier run that
+carried a smaller prompt:
+
+| Model                        | Empty window | Earlier run, smaller prompt | Full window |
+| ---------------------------- | ------------ | --------------------------- | ----------- |
+| `nemotron-3.5-lightning:30b` | 20/25        | 13/25                       | 13/25       |
+| `nemotron-3-nano:30b`        | 17/25        | 12/25                       | 12/25       |
+| `qwen3.8:27b-nvfp4`          | 21/25        | 17/25                       | 16/25       |
+
+The smaller moves by the other Qwen models do not repeat this way.
 
 ## The three models lose cases in three different ways
 
-A lost case is not one thing. Sorting each run's 25 verdicts by what the judge
-said turns the losses of 7, 5 and 5 cases into three different problems. The
-judge assigns one of five failure verdicts:
+The judge gives each failed reply one of five verdicts, and the three models
+lose their 7, 5, and 5 cases mostly to different symptoms:
 
 - `prose`, a reply with no card in it.
 - `no-input`, a valid card that shows something where the case asked it to
@@ -182,8 +192,8 @@ empty, and every one is valid card JSON. Seven of the eight put a static
 - `got {TextBlock} want {Input.ChoiceSet, Input.Toggle}`, where it asked for a
   yes or no.
 
-Its other verdicts do not all parse. Two replies in each arm are `broken`, so
-the substitution is what the full window changed.
+Its `broken` count holds at two in both arms, so the full window changed which
+element it chose, not whether its replies parse.
 
 `qwen3.8:27b-nvfp4` picks the right elements and **stops finishing its
 replies**. Its `broken` count goes 0 on an empty window to 7 on a full one, and

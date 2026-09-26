@@ -2,6 +2,83 @@
 
 ## [0.18.0]
 
+- Probes: **`prefill_cache_probe.dart` now sends `think: false`, and every
+  prompt-cache figure was re-measured.** It was the only probe here not sending
+  the flag. Nine of the sixteen models measured declare `thinking`, and without
+  it they spend the whole 60-token `num_predict` budget reasoning, returning an
+  empty `content` with `done_reason: length`, so a growing conversation
+  appended an empty assistant turn and its per-turn increments were a floor.
+  All sixteen models were re-run on 2026-09-23 and 2026-09-24, one model
+  resident at a time, with a second run of four models: every prompt and cached
+  count in all nine phases repeated exactly, except `qwen3.8:27b-nvfp4`'s
+  retry, which read 3,474 of 3,479 cached on one run and 2,063 on the other.
+  `gpt-oss:20b` ignores the flag and still returns empty content at this cap,
+  which a direct call at `num_predict` 300 confirms is the cap rather than the
+  flag. The archived server-log slices now also carry `llama-server`'s launch
+  flags, `n_batch` and the `checking checkpoint` lines, so the notebook's
+  checkpoint account is verifiable from the tree rather than from a live log.
+- Notebook: **the unsloth Nemotron GGUF build is an exception to the recurrent
+  result, on three shapes.** It holds a context checkpoint 16 tokens from the
+  end of the shared prompt, so it stays warm on most new conversations, on all
+  six turns of two interleaved conversations, and on all four calls of a second
+  branch, where the other four recurrent `llama-server` builds pay 929 to 961
+  tokens every time. A second branch is therefore free on the MLX runner and on
+  attention-only builds, not on both runners as recorded before.
+- Probes: **`prefill_cache_probe.dart` gains two phases, reply digests and an
+  archived server-log slice.** `interleaved-conversations` alternates two
+  conversations on one system prompt, the shape two users of one chat server
+  produce and the one nothing measured before; `second-branch` asks whether a
+  runner keeps one restorable branch per prompt or several. Each call records a
+  digest of its reply, so a warm repeat can be checked against its cold
+  original at `t=0`, and each run records `num_ctx`, `num_predict` and the
+  `OLLAMA_*` cache settings.
+- Notebook: **the `llama-server` rollback is one 1,024-token batch, measured.**
+  An `--entries` sweep moved `qwen3.5:9b` from 1,008 to 4,812 tokens and the
+  re-processed count stayed at 1,025, so the batch reading is no longer
+  inferred from the launch flags. A prompt shorter than one batch has no
+  checkpoint to fall back to and re-processes everything. Two conversations
+  interleaved on one system prompt pay that batch on **every turn** on
+  `llama-server`, while the same architecture on the MLX runner stays warm.
+  `mvincig11/semif-qwen3.5-4b-mlx-4bit`, an `int4` MLX build, reproduces the
+  MLX shape and rules out the `nvfp4` quantization as the cause; the
+  architecture stays confounded, since Ollama's MLX runner refuses the
+  `gpt-oss` safetensors build (`unsupported architecture`). Blog article 8
+  carries all three.
+- Notebook: **a new conversation's prompt-cache cost follows the model's
+  memory type.** Eleven more installed models ran the seven-phase
+  `prefill_cache_probe.dart` on the M1 Max under Ollama 0.34.0 (2026-09-22),
+  fifteen in all. `llama-server`'s load output identifies the memory type. The
+  seven attention-only models and `gpt-oss:20b` (sliding window) reused the
+  cached system prompt on new conversations. The five recurrent models on
+  `llama-server` re-processed the tokens after the last context checkpoint,
+  1,025 at this prompt size, on every new conversation (four of five every
+  time), and the server log names the checkpoint restored. This reframes the
+  MLX-runner miss as the same recurrent architecture under a different
+  checkpoint policy; that policy and the MLX builds' recurrence are recorded as
+  inferred. The long retry after an abort is a timing effect on both runners.
+  Blog article 8 was reframed and retitled around the fifteen-model result.
+- Notebook: **the prompt-cache miss is no longer attributed to the runner
+  alone, and the MLX retry's cost is read from its total time.** `ollama show`
+  reports both MLX-served builds as `qwen3_5` / `nvfp4` and both
+  `llama-server` builds as GGUF `Q4_K_M` (`llama`, `qwen3moe`), so runner,
+  quantization and architecture move together and the section says so. Every
+  MLX retry after an abort took 37.4 to 47.3 s of wall clock (`totalMs`),
+  about a cold request, even when `prompt_eval_duration` read 142 ms; the
+  0.33.3 archive reads the same. A seven-phase `qwen3-coder:30b` run
+  (2026-09-22) confirms the first new conversation is warm on a second
+  `llama-server` model. Blog article 8 was rewritten on the 0.34.0 figures to
+  match, dropping the unarchived M5 table.
+- Probes: **`prefill_cache_probe.dart` takes `--entries <n>`** (default 300,
+  ceiling 600) to set the synthetic glossary's length, so cache reuse can be
+  measured against prompt length on one model. The count is recorded in
+  `summary.glossaryEntries` and as the run's variant, and every run now writes
+  `prefill_cache_probe-entries<n>.json`, default included. A sixth phase,
+  `ordering`, sends fresh questions on the shared system prompt after an
+  exact repeat, after a fresh question, and after a call that extended the
+  previous one, so a cache miss can be tied to the call before it. A seventh,
+  `first-divergence`, sends three fresh questions on each of two new system
+  prompts, one with an exact repeat first, to test whether only the first
+  divergence from a prompt's first prefill misses.
 - Notebook: **`qwen3.8:27b-nvfp4`'s full-window `broken` count is four
   stalls and three malformed bodies, not seven parse failures.** The archived
   labels in `m1max-64gb-ollama0333-fitcontrol-calibrated/` record four
