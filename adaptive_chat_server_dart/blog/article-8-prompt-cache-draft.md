@@ -193,7 +193,7 @@ before the end, and one 4 tokens from the end. A new conversation shares 3,167
 tokens with that prompt and diverges before the later checkpoint. Ollama's
 server log shows `llama-server` trying it and falling back:
 
-```
+```txt
 checking checkpoint with [3173, 3173] against 3167...
 checking checkpoint with [2153, 2153] against 3167...
 restored context checkpoint (pos_min = 2153, ..., n_tokens = 2154, ...)
@@ -211,7 +211,7 @@ exact repeat, after the unrelated prompt, and once in the interleaved phase.
 Nothing in the log explains why. A request with nothing to restore, a first
 request or one on an unrelated synthetic prompt, gets a different line:
 
-```
+```txt
 forcing full prompt re-processing due to lack of cache data (likely due to SWA or hybrid/recurrent memory …)
 ```
 
