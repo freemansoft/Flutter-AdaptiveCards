@@ -314,10 +314,12 @@ and 4 to 13 on a second branch.
 
 ## A retry's cost is the remainder of the abandoned call, not its own prefill
 
-This is the one phase whose result the memory type does not sort. The retry
-sends a synthetic prompt no earlier call had sent, so only the abandoned call
-could have filled the cache. The probe's abort does not end that call on the
-Ollama runner at once:
+This is the one phase whose result does not split by memory type. The probe
+aborts a request 400 ms in, waits 5 s, and sends it again; the diagram below has
+the sequence. The request is on a third synthetic prompt that no earlier call has
+used. Anything the retry finds in the cache was therefore put there by the
+abandoned first call. That call does not end on the Ollama runner when the probe
+aborts it:
 
 ```mermaid
 sequenceDiagram
@@ -355,19 +357,19 @@ sequenceDiagram
 Source: the notebook's [retry account](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md#recurrent-memory-models-lose-part-of-a-cached-prefix-on-llama-server-too-the-runner-sets-how-much).
 
 A retry with nothing in its way costs what a warm call costs, so the wait is the
-retry's total minus the warm call's total. On four of the ten that difference is
+retry's total minus the warm call's total. On four of the ten, that difference is
 under 0.2 s. The probe sends the retry 5.4 s after the abandoned call started,
 its 0.4 s abort plus the 5 s pause. Those four models' cold prefills of 1.9 to
-5.1 s fit inside that 5.4 s. On the other six the retry waits, from 1.9 s on
+5.1 s fit inside that 5.4 s. On the other six, the retry waits, from 1.9 s on
 `nemotron-3-nano:4b` to 34.4 s on `qwen3.8:27b-nvfp4`. On the tabulated run no
 retry's own prefill exceeds 175 ms, so the prefill field reports none of the
 wait. `gpt-oss:20b`'s warm call runs to 1.27 s because the model spends the
 reply cap on thinking.
 
 No `llama-server` log records a termination of the abandoned call. On those
-models the retry's total runs long by about what the abandoned prefill had left
-to do. Two MLX logs record `Request terminated error="context canceled"` part
-way through it. The retry that followed reported 2,063 and 2,064 cached tokens:
+models, the retry's total runs long by about what the abandoned prefill had left
+to do. Two MLX logs record `Request terminated error="context canceled"` partway
+through it. The retry that followed reported 2,063 and 2,064 cached tokens:
 the 2,048-token chunk the MLX runner prefills in, plus the tokens the request
 already shared. `prefillChunkSize` in the runner's
 [`pipeline.go`](https://github.com/ollama/ollama/blob/v0.34.0/x/mlxrunner/pipeline.go)
