@@ -34,11 +34,11 @@ Ruling: every converted class keeps its constructor doc on `this;`. This is how 
 
 **Files:** 189 files across every Dart tree; nine `analysis_options.yaml` files gain `use_declaring_parameters: true`.
 
-- [ ] **Step 1: Confirm the base is green**
+- [x] **Step 1: Confirm the base is green**
 
 Run from the repo root: `fvm flutter analyze` and expect exactly one issue, the `comment_references` info in `packages/flutter_adaptive_cards_fs/lib/src/hostconfig/theme_color_fallbacks.dart:16` (Task 1 fixes it).
 
-- [ ] **Step 2: Commit** (main session, after the user confirms the diff summary)
+- [x] **Step 2: Commit** (main session, after the user confirms the diff summary)
 
 ```bash
 git add -A
@@ -58,11 +58,11 @@ git commit -m "refactor: migrate every Dart tree to Dart 3.13 primary constructo
 - Modify: `.claude/skills/adaptive-cards-flutter-standard-practices/SKILL.md:44-59`
 - Modify: `.claude/skills/adaptive-cards-localization/SKILL.md:73-81`
 
-- [ ] **Step 0: Fix the dangling doc reference**
+- [x] **Step 0: Fix the dangling doc reference**
 
 In `packages/flutter_adaptive_cards_fs/lib/src/hostconfig/theme_color_fallbacks.dart` the constructor doc on `this;` reads `/// Builds color fallbacks from [theme]'s [ColorScheme].` but the declaring parameter is now `_theme`, so `[theme]` does not resolve (`comment_references`). Change it to `/// Builds color fallbacks from the [ThemeData]'s [ColorScheme].` Keep the `this;` line. Then `fvm flutter analyze` from the repo root must report no issues.
 
-- [ ] **Step 1: Rewrite each sample in the primary-constructor form now used by the source**
+- [x] **Step 1: Rewrite each sample in the primary-constructor form now used by the source**
 
 `docs/custom-action-recipe.md`:
 
@@ -146,18 +146,18 @@ class const AdaptiveStrings({
 }
 ```
 
-- [ ] **Step 2: Add one sentence to the element-registry skill**
+- [x] **Step 2: Add one sentence to the element-registry skill**
 
 Directly under the widget skeleton, add: "Fields come from declaring parameters in the class header (`final` in the parameter list); `use_declaring_parameters` is enforced, so never write `this.adaptiveMap` in a primary constructor. The in-body `this : super(...) { ... }` part is where the key and `id` are set, and its `///` comment documents the constructor: `public_member_api_docs` requires one, and a bare `this;` with a doc comment is the form for classes that need nothing else in the body."
 
-- [ ] **Step 3: Verify**
+- [x] **Step 3: Verify**
 
 ```bash
 npm run format:md && npm run check:md
 grep -rnE "^\s+(const )?[A-Z][A-Za-z]+\(\{|^\s+(const )?[A-Z][A-Za-z]+\(\)" docs/*.md .claude/skills/*/SKILL.md   # nothing outside docs/plans and docs/archive
 ```
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add docs .claude/skills packages/flutter_adaptive_cards_fs/lib/src/hostconfig/theme_color_fallbacks.dart
@@ -170,7 +170,7 @@ git commit -m "docs: show the primary-constructor form in element, action, and m
 
 **Files:** Modify the nine `CHANGELOG.md` files: `packages/flutter_adaptive_cards_fs`, `packages/flutter_adaptive_cards_host_fs`, `packages/flutter_adaptive_charts_fs`, `packages/flutter_adaptive_template_fs`, `packages/flutter_adaptive_cards_test_support`, `widgetbook`, `adaptive_explorer`, `adaptive_chat_client`, `adaptive_chat_server_dart`.
 
-- [ ] **Step 1: Add a new `## [Unreleased]` section above `## [0.17.0]` in each file**
+- [x] **Step 1: Add a new `## [Unreleased]` section above `## [0.17.0]` in each file**
 
 ```markdown
 ## [Unreleased]
@@ -178,7 +178,7 @@ git commit -m "docs: show the primary-constructor form in element, action, and m
 - refactor: classes use Dart 3.13 primary constructors with declaring parameters; field docs sit on the parameters in the class header and constructor docs on the in-body `this` declaration. `use_declaring_parameters` is enforced by `analysis_options.yaml`. No behavior change; public constructor signatures are unchanged.
 ```
 
-- [ ] **Step 2: Run the full verification**
+- [x] **Step 2: Run the full verification**
 
 ```bash
 fvm flutter analyze                                   # No issues found
@@ -193,7 +193,7 @@ cd packages/flutter_adaptive_charts_fs && fvm flutter test && cd ../flutter_adap
 cd widgetbook && fvm flutter test && cd ../adaptive_explorer && fvm flutter test && cd ../adaptive_chat_client && fvm flutter test && cd ../adaptive_chat_server_dart && fvm dart test && cd ..
 ```
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add '*/CHANGELOG.md'

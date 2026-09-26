@@ -55,7 +55,7 @@ The card system prompt names the element types the model may emit. Two other pla
 - Consumes: nothing from earlier tasks.
 - Produces: nothing later tasks depend on. Independent — may be done first or last.
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Append this group to `test/card_schema_test.dart`. It parses element types out of the prompt's `- TypeName —` bullets and its `"type":"X"` examples, then asserts both the schema enum and the README mention each one.
 
@@ -137,7 +137,7 @@ Append this group to `test/card_schema_test.dart`. It parses element types out o
 
 The file already imports `dart:convert`, `dart:io`, and `package:test/test.dart` — no new imports are needed.
 
-- [ ] **Step 2: Run the test to verify it fails**
+- [x] **Step 2: Run the test to verify it fails**
 
 Run: `cd adaptive_chat_server_dart && fvm dart test test/card_schema_test.dart`
 
@@ -145,7 +145,7 @@ Expected: the schema test PASSES (PR #51 already added both types to the enum). 
 
 If a failure names anything else — a family heading, a structural child — the extractor is over-matching, not the palette drifting. Report that rather than editing the test until it looks right: a test tuned to pass is worth nothing.
 
-- [ ] **Step 3: Fix the README palette**
+- [x] **Step 3: Fix the README palette**
 
 In `adaptive_chat_server_dart/README.md`, replace the Inputs and Display bullets in the "The card prompt's palette is intentionally small" list:
 
@@ -156,13 +156,13 @@ In `adaptive_chat_server_dart/README.md`, replace the Inputs and Display bullets
   `Rating`, `Icon`, `ProgressBar`, `ProgressRing`, `CodeBlock`, `Image`.
 ```
 
-- [ ] **Step 4: Run the test to verify it passes**
+- [x] **Step 4: Run the test to verify it passes**
 
 Run: `cd adaptive_chat_server_dart && fvm dart test test/card_schema_test.dart`
 
 Expected: PASS, all groups.
 
-- [ ] **Step 5: Add the changelog entry**
+- [x] **Step 5: Add the changelog entry**
 
 Add to the top of `## [Unreleased]` in `adaptive_chat_server_dart/CHANGELOG.md`:
 
@@ -175,7 +175,7 @@ Add to the top of `## [Unreleased]` in `adaptive_chat_server_dart/CHANGELOG.md`:
   discrepancy someone has to notice.
 ```
 
-- [ ] **Step 6: Run the gates and commit**
+- [x] **Step 6: Run the gates and commit**
 
 ```bash
 cd adaptive_chat_server_dart
@@ -203,7 +203,7 @@ git commit -m "test(chat-server): assert prompt, schema, and README palettes agr
 - Consumes: nothing.
 - Produces: `bool replyWrapsCardInProse(String raw)` exported from `lib/src/card_detect.dart`. Task 4 uses it; Tasks 6 and 7 rely on it being in place so their measurements score correctly.
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 Add to `test/card_detect_test.dart`, inside `main`:
 
@@ -240,7 +240,7 @@ Run: `cd adaptive_chat_server_dart && fvm dart test test/card_detect_test.dart`
 
 Expected: FAIL with `Method not found: 'replyWrapsCardInProse'`.
 
-- [ ] **Step 3: Implement the predicate**
+- [x] **Step 3: Implement the predicate**
 
 Add to `lib/src/card_detect.dart`, after `cardParseFailureReason`:
 
@@ -270,13 +270,13 @@ bool replyWrapsCardInProse(String raw) {
 }
 ````
 
-- [ ] **Step 4: Run the tests to verify they pass**
+- [x] **Step 4: Run the tests to verify they pass**
 
 Run: `cd adaptive_chat_server_dart && fvm dart test test/card_detect_test.dart`
 
 Expected: PASS, including the pre-existing groups.
 
-- [ ] **Step 5: Teach `judgeReply` the new verdict**
+- [x] **Step 5: Teach `judgeReply` the new verdict**
 
 In `tool/model_probes/probe_support.dart`, inside `judgeReply`, insert this **before** the final `return why == null ? ... : ...` line:
 
@@ -301,7 +301,7 @@ Update the doc comment on `ProbeOutcome.ok` to say prose counts as a pass **only
   final bool ok;
 ```
 
-- [ ] **Step 6: Verify the probe now fails the shape**
+- [x] **Step 6: Verify the probe now fails the shape**
 
 Create `tool/_verify_judge.dart` (temporary):
 
@@ -334,7 +334,7 @@ predicate on wrapped: true
 
 Then delete it: `rm tool/_verify_judge.dart`
 
-- [ ] **Step 7: Add the changelog entry, run gates, commit**
+- [x] **Step 7: Add the changelog entry, run gates, commit**
 
 Changelog bullet:
 
@@ -372,7 +372,7 @@ The server sends prior turns on every request; every probe sends a single turn. 
 - Consumes: nothing.
 - Produces: `dump_reply.dart --history <file>` (repeatable). Each file's contents become one prior turn, alternating `user`, `assistant`, `user`, … in the order given. Task 7 uses this to measure the multi-turn case.
 
-- [ ] **Step 1: Add the option and build the message list**
+- [x] **Step 1: Add the option and build the message list**
 
 In `dump_reply.dart`, add to `promptParser`:
 
@@ -452,7 +452,7 @@ fvm dart run tool/model_probes/dump_reply.dart \
 
 Expected: `history turns      : 2` and `verdict              : prose` — the same question that returns a card cold now returns Markdown. If it returns a card, record that and note it: the effect is model- and phrasing-dependent, and a non-reproduction is itself a finding worth writing down rather than a reason to abandon the flag.
 
-- [ ] **Step 4: Document the flag**
+- [x] **Step 4: Document the flag**
 
 In `tool/model_probes/README.md`, extend the `dump_reply.dart` row and add below the script table:
 
@@ -463,7 +463,7 @@ turns of conversation is invisible to them — reach for `--history` before
 concluding a reported bug does not reproduce.
 ```
 
-- [ ] **Step 5: Changelog, gates, commit**
+- [x] **Step 5: Changelog, gates, commit**
 
 ```markdown
 - Added: `dump_reply.dart --history <file>` (repeatable) replays prior
@@ -497,7 +497,7 @@ The generic sets ask "did the model emit something broken?" For an options quest
 - Consumes: `probeOnce`, `ProbeOutcome`, `loadCardSystemPrompt`, `parseProbeArgs` from `probe_support.dart`; `tryParseCardBody` from `lib/src/card_detect.dart`.
 - Produces: `choiceset_ab.dart --candidate <file>` printing pass rates for baseline and candidate prompts. Task 7 uses it to measure its prompt change.
 
-- [ ] **Step 1: Create the probe**
+- [x] **Step 1: Create the probe**
 
 ````dart
 /// Scores whether a pick-from-a-set question actually yields a clickable card.
@@ -620,7 +620,7 @@ Future<void> main(List<String> argv) async {
 }
 ````
 
-- [ ] **Step 2: Extend `probeOnce` to accept history and return the reply**
+- [x] **Step 2: Extend `probeOnce` to accept history and return the reply**
 
 This probe needs two things `probeOnce` does not yet provide: prior turns, and the raw reply text (to inspect for `Input.ChoiceSet`). In `probe_support.dart`:
 
@@ -660,7 +660,7 @@ fvm dart run tool/model_probes/choiceset_ab.dart --model qwen2.5-coder:7b --samp
 
 Expected: a low baseline score — the shipped prompt scored **0/6** on this set when measured on 2026-08-14. Any score is a valid baseline; record the actual number. A high baseline would mean the earlier finding does not reproduce, which is worth recording rather than explaining away.
 
-- [ ] **Step 4: Document it**
+- [x] **Step 4: Document it**
 
 Add to the script table in `tool/model_probes/README.md`:
 
@@ -668,7 +668,7 @@ Add to the script table in `tool/model_probes/README.md`:
 | `choiceset_ab.dart` | Does a pick-from-a-set question yield a clickable card? |
 ```
 
-- [ ] **Step 5: Changelog, gates, commit**
+- [x] **Step 5: Changelog, gates, commit**
 
 ```markdown
 - Added: `choiceset_ab.dart`, a shape-aware probe for pick-from-a-set
@@ -704,7 +704,7 @@ git commit -m "feat(chat-server): add a shape-aware ChoiceSet probe"
 - Consumes: nothing.
 - Produces: `prompt_ab.dart --prompts <file>` — one user prompt per line, `#` comments and blank lines ignored. Task 6 uses it.
 
-- [ ] **Step 1: Add the option**
+- [x] **Step 1: Add the option**
 
 In `prompt_ab.dart`, add to the parser:
 
@@ -736,7 +736,7 @@ List<String> _loadPrompts(String? path) {
 
 Thread the resolved list into `_run` as a parameter instead of reading the top-level constant.
 
-- [ ] **Step 2: Verify both paths**
+- [x] **Step 2: Verify both paths**
 
 ```bash
 cd adaptive_chat_server_dart
@@ -751,7 +751,7 @@ fvm dart run tool/model_probes/prompt_ab.dart --model qwen2.5-coder:7b --samples
 
 Expected: the first runs exactly 2 prompts, the second runs the built-in 8. Record both pass rates.
 
-- [ ] **Step 3: Document, changelog, gates, commit**
+- [x] **Step 3: Document, changelog, gates, commit**
 
 README note:
 
@@ -792,7 +792,7 @@ Measured on 2026-08-14: plain comparisons are fine (26/26), but a request that a
 - Consumes: `prompt_ab.dart --prompts` from Task 5; the corrected `judgeReply` from Task 2.
 - Produces: nothing later tasks consume.
 
-- [ ] **Step 1: Capture the baseline before editing**
+- [x] **Step 1: Capture the baseline before editing**
 
 ```bash
 cd adaptive_chat_server_dart
@@ -809,7 +809,7 @@ fvm dart run tool/model_probes/prompt_ab.dart --model qwen2.5-coder:7b --samples
 
 Record the baseline number. Expect failures of the form `invalid JSON ... at the surviving closing fence`, or `prose-with-card` now that Task 2 can see that shape.
 
-- [ ] **Step 2: Edit the candidate prompt**
+- [x] **Step 2: Edit the candidate prompt**
 
 In `/tmp/candidate.txt`, add this paragraph immediately after the opening "Choose ONE of two reply shapes per turn…" block:
 
@@ -834,7 +834,7 @@ Extend pre-send check `0.` so it names this case. Change the sentence beginning 
    after it.
 ```
 
-- [ ] **Step 3: Measure the candidate**
+- [x] **Step 3: Measure the candidate**
 
 ```bash
 cd adaptive_chat_server_dart
@@ -844,7 +844,7 @@ fvm dart run tool/model_probes/prompt_ab.dart --model qwen2.5-coder:7b --samples
 
 Expected: candidate ≥ baseline. **If it is not better, stop and do not promote it** — record the numbers in the changelog as a measured negative result and move to the next task. A wording change that does not measure better is not an improvement, and this exact approach has scored flat before.
 
-- [ ] **Step 4: Promote and check for regression**
+- [x] **Step 4: Promote and check for regression**
 
 Only if Step 3 improved:
 
@@ -857,7 +857,7 @@ fvm dart run tool/model_probes/prompt_ab.dart --model qwen2.5-coder:7b --samples
 
 Expected: stress at or above its pre-change level at both temperatures, and the built-in code set unchanged. A stress regression means the new wording broke something else — revert and record that.
 
-- [ ] **Step 5: Changelog, gates, commit**
+- [x] **Step 5: Changelog, gates, commit**
 
 ```markdown
 - Fixed: a request that asks to compare **and** comment ("…then tell me which
@@ -895,7 +895,7 @@ The prompt's escape hatch reads "if you are **unsure whether a card helps**, use
 - Consumes: `choiceset_ab.dart` from Task 4; `--history` from Task 3.
 - Produces: nothing later tasks consume.
 
-- [ ] **Step 1: Capture the baseline**
+- [x] **Step 1: Capture the baseline**
 
 ```bash
 cd adaptive_chat_server_dart
@@ -904,7 +904,7 @@ fvm dart run tool/model_probes/choiceset_ab.dart --model qwen2.5-coder:7b --samp
 
 Record the baseline choice-set score.
 
-- [ ] **Step 2: Edit the candidate**
+- [x] **Step 2: Edit the candidate**
 
 ```bash
 cd adaptive_chat_server_dart && cp assets/card_system_prompt.txt /tmp/candidate7.txt
@@ -941,7 +941,7 @@ shape 2 (plain Markdown) instead — a malformed card is shown to the user as ra
 JSON text, which is far worse than a plain Markdown answer.
 ```
 
-- [ ] **Step 3: Measure**
+- [x] **Step 3: Measure**
 
 ```bash
 cd adaptive_chat_server_dart
@@ -950,7 +950,7 @@ fvm dart run tool/model_probes/choiceset_ab.dart --model qwen2.5-coder:7b --samp
 
 Expected: candidate well above baseline (0/6 → 5/6 when measured on 2026-08-14). If not better, do not promote — record the negative result.
 
-- [ ] **Step 4: Promote and check for regression**
+- [x] **Step 4: Promote and check for regression**
 
 ```bash
 cd adaptive_chat_server_dart
@@ -961,7 +961,7 @@ fvm dart run tool/model_probes/prompt_ab.dart --model qwen2.5-coder:7b --samples
 
 Expected: no regression on either. This prompt has a history of one added clause costing a stress case, so treat any drop as caused by this change until proven otherwise — re-run the _unmodified_ prompt through the stress set to attribute it rather than dismissing it as temperature noise.
 
-- [ ] **Step 5: Changelog, gates, commit**
+- [x] **Step 5: Changelog, gates, commit**
 
 ```markdown
 - Fixed: an ongoing Markdown conversation talked the model out of cards
@@ -999,7 +999,7 @@ The server ships two system prompts and defaults to the one that never mentions 
 - Consumes: nothing.
 - Produces: nothing.
 
-- [ ] **Step 1: Add the announcement**
+- [x] **Step 1: Add the announcement**
 
 In `bin/server.dart`, add above `main`:
 
@@ -1028,7 +1028,7 @@ void _logSystemPromptChoice(Logger log, String? systemPromptFile) {
 
 Call it during startup, after the logger is configured and before `shelf_io.serve`, passing the parsed `--system-prompt-file` value (`null` when the flag was not given).
 
-- [ ] **Step 2: Make `--help` mention card mode**
+- [x] **Step 2: Make `--help` mention card mode**
 
 In `lib/src/cli.dart`, extend the `system-prompt-file` help text so the flag names the file that turns cards on:
 
@@ -1038,7 +1038,7 @@ In `lib/src/cli.dart`, extend the `system-prompt-file` help text so the flag nam
           'only. Pass assets/card_system_prompt.txt for Adaptive Card replies.',
 ```
 
-- [ ] **Step 3: Verify both modes announce correctly**
+- [x] **Step 3: Verify both modes announce correctly**
 
 ```bash
 cd adaptive_chat_server_dart
@@ -1049,7 +1049,7 @@ timeout 5 fvm dart run bin/server.dart --port 8099 --system-prompt-file assets/c
 
 Expected: help text names `card_system_prompt.txt`; the first server logs the Markdown-only warning; the second names the card prompt file.
 
-- [ ] **Step 4: Changelog, gates, commit**
+- [x] **Step 4: Changelog, gates, commit**
 
 ```markdown
 - Added: the server logs which system prompt is active at startup, and says
@@ -1083,7 +1083,7 @@ git commit -m "feat(chat-server): announce the active system prompt at startup"
 - Consumes: `choiceset_ab.dart` from Task 4 (it sends prior prose turns by construction) and the promoted prompt from Task 7.
 - Produces: a `With history` value for each model measured. Task 11 records them alongside the rest.
 
-- [ ] **Step 1: Run the multi-turn probe, one model at a time**
+- [x] **Step 1: Run the multi-turn probe, one model at a time**
 
 These six already have cold-start numbers, so a history result makes their rows comparable. Run them **strictly sequentially** — each `for` iteration loads one model and the explicit unload releases it before the next:
 
@@ -1098,7 +1098,7 @@ done
 
 Record each model's `choice-set N/6` line. Expect this to take roughly 15-30 minutes total; the models are small and the set is six prompts.
 
-- [ ] **Step 2: Sanity-check one result against a cold-start run**
+- [x] **Step 2: Sanity-check one result against a cold-start run**
 
 A history number only means something next to its cold-start counterpart. For the single best performer from Step 1:
 
@@ -1110,15 +1110,15 @@ fvm dart run tool/model_probes/dump_reply.dart --model <best-model> \
 
 Expected: a `card[...]` verdict cold. If the model scored poorly with history but produces a card cold, that is the same history-erosion effect already recorded for `qwen2.5-coder:7b` and it now has a second data point. If it fails cold too, the cause is not history — say so rather than filing it under the multi-turn finding.
 
-- [ ] **Step 3: Fill in the `With history` column**
+- [x] **Step 3: Fill in the `With history` column**
 
 For each model measured, replace `— not yet probed` in the **With history** column with its score, using the same terse form as the existing row, e.g. `✅ 5/6 choice-set` or `❌ 1/6 — drops to prose`. Leave the four unprobed models and `llama3.2:latest` as `— not yet probed`; do not infer a value for a model you did not run.
 
-- [ ] **Step 4: Record what the spread shows**
+- [x] **Step 4: Record what the spread shows**
 
 Append to `### 4. Multi-turn set — history replay` a short paragraph naming which models held up and which collapsed, with the numbers. If every model degrades, say that — it makes history erosion a property of the workload rather than of one model, which is a stronger and more useful claim. If results vary widely, say that instead; do not round a mixed picture into a tidy conclusion.
 
-- [ ] **Step 5: Changelog, format, commit**
+- [x] **Step 5: Changelog, format, commit**
 
 ```markdown
 - Added: multi-turn (`With history`) results for the six models that already
@@ -1302,7 +1302,7 @@ Measurements from the 2026-08-14 runs live in scratch reports and in this plan's
 - Consumes: the numbers produced by Tasks 4, 6, 7, and 9.
 - Produces: nothing.
 
-- [ ] **Step 1: Add the fence-rate finding to the `qwen2.5-coder:7b` section**
+- [x] **Step 1: Add the fence-rate finding to the `qwen2.5-coder:7b` section**
 
 Append to the `### \`qwen2.5-coder:7b\`` section:
 
@@ -1318,7 +1318,7 @@ recovery, which is why "nothing after the closing fence" is the load-bearing
 rule rather than "no fence".
 ````
 
-- [ ] **Step 2: Record the multi-turn result in full**
+- [x] **Step 2: Record the multi-turn result in full**
 
 The table currently records only the failing half. In `### 4. Multi-turn set — history replay`, append:
 
@@ -1337,7 +1337,7 @@ Update the `With history` cell for `qwen2.5-coder:7b` in the model table to refl
 | ✅ 5/6 after the escape-hatch fix (was 0/6) |
 ```
 
-- [ ] **Step 3: Record the two-prompt comparison**
+- [x] **Step 3: Record the two-prompt comparison**
 
 In `## Which system prompt produced the number`, append:
 
@@ -1350,11 +1350,11 @@ the other two chose a `FactSet` and a `TextBlock`, which are defensible for
 those questions.
 ```
 
-- [ ] **Step 4: Record whatever Tasks 6 and 7 measured**
+- [x] **Step 4: Record whatever Tasks 6 and 7 measured**
 
 Add the compare-and-comment and options-with-history figures from Tasks 6 and 7 to the `qwen2.5-coder:7b` section, each with its model, temperature, and condition. If either task recorded a negative result — a candidate that did not beat baseline — record that too. A measured negative is more valuable than silence, because it stops the next person retrying the same idea.
 
-- [ ] **Step 5: Verify the table stays consistent**
+- [x] **Step 5: Verify the table stays consistent**
 
 ```bash
 cd /Users/joefreeman/Documents/GitHub/freemansoft/Flutter-AdaptiveCards
@@ -1371,7 +1371,7 @@ npm run format:md:chat && npm run check:md:chat
 
 Expected: 14 rows, 6 columns, Prettier clean.
 
-- [ ] **Step 6: Changelog and commit**
+- [x] **Step 6: Changelog and commit**
 
 ```markdown
 - Added: `ModelBehavior.md` now records the fence rate, the full multi-turn

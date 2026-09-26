@@ -80,7 +80,7 @@ dart run tool/pana/check_pana.dart --report-only
 
 Expected: no score regression attributable to `.pubignore` (cards may still be below floor for unrelated reasons; charts/host stay ~40).
 
-- [ ] **Step 6: Commit** (only when user confirms)
+- [x] **Step 6: Commit** (only when user confirms)
 
 ```bash
 git add packages/*/.pubignore packages/*/CHANGELOG.md docs/pub-score-pana.md docs/superpowers/specs/2026-08-06-consumer-minimal-pubignore-design.md docs/superpowers/plans/2026-08-06-consumer-minimal-pubignore.md .claude/skills/adaptive-cards-release-engineer/SKILL.md

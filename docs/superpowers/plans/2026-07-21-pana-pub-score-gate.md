@@ -100,7 +100,7 @@ is the test suite, and it runs in CI.
 - Produces: `PanaScore parsePanaJson(String jsonText)` — sums `report.sections[].grantedPoints` / `.maxPoints` and collects the ids of non-`passed` sections. Throws `FormatException` on a malformed report.
 - Produces: `class PanaScore { final int granted; final int max; final List<String> failedSections; }`
 
-- [ ] **Step 1: Create the floors file**
+- [x] **Step 1: Create the floors file**
 
 Create `tool/pana_floors.yaml`:
 
@@ -131,7 +131,7 @@ flutter_adaptive_charts_fs: 40
 flutter_adaptive_cards_host_fs: 40
 ```
 
-- [ ] **Step 2: Write the failing self-test**
+- [x] **Step 2: Write the failing self-test**
 
 Create `tool/pana/check_pana.dart` with the self-test and stub declarations only —
 the pure functions come in Step 4, so this compiles-and-fails first:
@@ -295,7 +295,7 @@ fvm dart run tool/pana/check_pana.dart --self-test
 
 Expected: an unhandled `UnimplementedError` thrown from `parseFloors`, non-zero exit.
 
-- [ ] **Step 4: Implement the three pure functions**
+- [x] **Step 4: Implement the three pure functions**
 
 Replace the three `throw UnimplementedError();` bodies in `tool/pana/check_pana.dart`:
 
@@ -359,7 +359,7 @@ PanaScore parsePanaJson(String jsonText) {
 }
 ```
 
-- [ ] **Step 5: Run the self-test to verify it passes**
+- [x] **Step 5: Run the self-test to verify it passes**
 
 ```bash
 fvm dart run tool/pana/check_pana.dart --self-test
@@ -367,7 +367,7 @@ fvm dart run tool/pana/check_pana.dart --self-test
 
 Expected: ten `ok   - ...` lines followed by `self-test: PASS`, exit 0.
 
-- [ ] **Step 6: Format and analyze**
+- [x] **Step 6: Format and analyze**
 
 ```bash
 fvm dart format tool/pana/check_pana.dart
@@ -376,7 +376,7 @@ fvm flutter analyze
 
 Expected: `dart format` reports the file formatted (or unchanged); `flutter analyze` reports `No issues found!`.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add tool/pana_floors.yaml tool/pana/check_pana.dart
@@ -397,7 +397,7 @@ git commit -m "feat(tool): add pana pub-score gate parsers and floors file"
 - Consumes: `parseFloors`, `parsePanaJson`, `PanaScore` from Task 1.
 - Produces: CLI contract — `--report-only` never sets a non-zero exit code; `--self-test` runs the parser checks and exits; `--only <package>` scores just one package; no flags means enforcing.
 
-- [ ] **Step 1: Replace `main` and add the runner**
+- [x] **Step 1: Replace `main` and add the runner**
 
 In `tool/pana/check_pana.dart`, replace the whole `void main(List<String> args) { ... }`
 stub with the following, and add the two helpers plus the `_Row` class immediately
@@ -542,7 +542,7 @@ void _printTable(List<_Row> rows) {
 }
 ```
 
-- [ ] **Step 2: Re-run the self-test**
+- [x] **Step 2: Re-run the self-test**
 
 ```bash
 fvm dart run tool/pana/check_pana.dart --self-test
@@ -572,7 +572,7 @@ Expected: roughly 1–2 minutes, then a table row
 `flutter_adaptive_template_fs  140  150  140  PASS`, a `lost points in documentation 0/10`
 line, and `Pub-score gate: PASS`, exit 0.
 
-- [ ] **Step 5: Run the full set**
+- [x] **Step 5: Run the full set**
 
 ```bash
 fvm dart run tool/pana/check_pana.dart --report-only
@@ -604,7 +604,7 @@ git checkout tool/pana_floors.yaml
 Expected: `flutter_adaptive_template_fs 140 150 150 FAIL`, then
 `Pub-score gate: FAIL` and `exit=1`. The `git checkout` restores the real floor.
 
-- [ ] **Step 7: Format, analyze, commit**
+- [x] **Step 7: Format, analyze, commit**
 
 ```bash
 fvm dart format tool/pana/check_pana.dart
@@ -628,7 +628,7 @@ Expected: `No issues found!` from analyze before committing.
 - Consumes: `tool/pana/check_pana.dart` and `tool/pana_floors.yaml` from Tasks 1–2.
 - Produces: a `pana` job named "Pub score (pana)" on the same `push: [main]` + `pull_request` triggers the workflow already declares.
 
-- [ ] **Step 1: Update the workflow header comment**
+- [x] **Step 1: Update the workflow header comment**
 
 In `.github/workflows/validate.yaml`, replace the first line:
 
@@ -644,7 +644,7 @@ with:
 #   - pana: the four published packages meet their pub.dev score floors.
 ```
 
-- [ ] **Step 2: Append the pana job**
+- [x] **Step 2: Append the pana job**
 
 Add to the end of `.github/workflows/validate.yaml`, at the same indentation as
 the existing `markdown-format:` job key:
@@ -683,7 +683,7 @@ pana:
       run: dart run tool/pana/check_pana.dart --report-only
 ```
 
-- [ ] **Step 3: Verify the workflow parses**
+- [x] **Step 3: Verify the workflow parses**
 
 ```bash
 python3 -c "import yaml,sys; d=yaml.safe_load(open('.github/workflows/validate.yaml')); print(sorted(d['jobs'].keys()))"
@@ -691,14 +691,14 @@ python3 -c "import yaml,sys; d=yaml.safe_load(open('.github/workflows/validate.y
 
 Expected: `['markdown-format', 'pana']`
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add .github/workflows/validate.yaml
 git commit -m "ci: add report-only pana pub-score job to validate workflow"
 ```
 
-- [ ] **Step 5: Confirm the job runs green on the PR**
+- [x] **Step 5: Confirm the job runs green on the PR**
 
 Push the branch and open a PR, then watch the run. Expected: the "Pub score (pana)"
 job succeeds, its log contains the four-row table, and it ends with
@@ -725,7 +725,7 @@ Note: there is no pana VS Code extension, and the Dart-Code extension does not
 integrate pana. "Available in VS Code" therefore means a bootstrap step plus
 Run Task entries.
 
-- [ ] **Step 1: Add the tasks**
+- [x] **Step 1: Add the tasks**
 
 In `.vscode/tasks.json`, add these three entries to the `tasks` array, after the
 existing `Setup Adaptive Chat Server venv` entry:
@@ -790,7 +790,7 @@ Then add a sibling `inputs` array to the top-level object, after the `tasks` arr
 The picker deliberately lists only the four published packages — it is the guard
 against pointing pana at the repo root or at `flutter_adaptive_cards_test_support`.
 
-- [ ] **Step 2: Verify the tasks file is valid JSON**
+- [x] **Step 2: Verify the tasks file is valid JSON**
 
 ```bash
 python3 -c "import json; d=json.load(open('.vscode/tasks.json')); print([t['label'] for t in d['tasks']]); print(d['inputs'][0]['options'])"
@@ -798,7 +798,7 @@ python3 -c "import json; d=json.load(open('.vscode/tasks.json')); print([t['labe
 
 Expected: the five task labels including the three new ones, then the four package names.
 
-- [ ] **Step 3: Recommend the Dart and Flutter extensions**
+- [x] **Step 3: Recommend the Dart and Flutter extensions**
 
 Replace the contents of `.vscode/extensions.json` with:
 
@@ -812,7 +812,7 @@ Replace the contents of `.vscode/extensions.json` with:
 }
 ```
 
-- [ ] **Step 4: Activate pana during workspace bootstrap**
+- [x] **Step 4: Activate pana during workspace bootstrap**
 
 Append to `scripts/setup-workspace.sh`:
 
@@ -841,7 +841,7 @@ Open the Command Palette, run **Tasks: Run Task** → **pana: one package** →
 `flutter_adaptive_template_fs`. Expected: a dedicated terminal showing the table
 row `flutter_adaptive_template_fs 140 150 140 PASS`.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add .vscode/tasks.json .vscode/extensions.json scripts/setup-workspace.sh scripts/setup-workspace.ps1
@@ -862,7 +862,7 @@ git commit -m "chore(vscode): add pana tasks, package picker, and bootstrap acti
 - Consumes: everything from Tasks 1–4.
 - Produces: the canonical reference page the floors file, the workflow comments, and the release skill all point at.
 
-- [ ] **Step 1: Write the reference page**
+- [x] **Step 1: Write the reference page**
 
 Create `docs/pub-score-pana.md`:
 
@@ -988,7 +988,7 @@ See also: [`docs/testing-coverage.md`](testing-coverage.md), the sibling
 line-coverage gate this one is modelled on.
 ````
 
-- [ ] **Step 2: Format the new doc**
+- [x] **Step 2: Format the new doc**
 
 ```bash
 npm run format:md
@@ -997,7 +997,7 @@ npm run check:md
 
 Expected: `check:md` reports all matched files use Prettier code style. (`docs/superpowers/**` is Prettier-ignored, so this plan file is untouched.)
 
-- [ ] **Step 3: Add the release-time re-score step**
+- [x] **Step 3: Add the release-time re-score step**
 
 In `.claude/skills/adaptive-cards-release-engineer/SKILL.md`, insert this note in
 **§5 Publishing to pub.dev**, immediately after the line
@@ -1024,7 +1024,7 @@ floors in `tool/pana_floors.yaml` to the low baseline for the next cycle. See
 [`docs/pub-score-pana.md`](../../../docs/pub-score-pana.md).
 ````
 
-- [ ] **Step 4: Verify no stale references**
+- [x] **Step 4: Verify no stale references**
 
 ```bash
 git grep -n 'pana' docs/ .github/ .vscode/ tool/ scripts/ .claude/skills/ | grep -v '^docs/superpowers/'
@@ -1034,7 +1034,7 @@ Expected: every hit points at `docs/pub-score-pana.md`, `tool/pana_floors.yaml`,
 `tool/pana/check_pana.dart`, or the pinned `pana 0.23.14` activation — no
 references to files that were not created.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add docs/pub-score-pana.md .claude/skills/adaptive-cards-release-engineer/SKILL.md
@@ -1080,7 +1080,7 @@ Expected: `Changed packages/flutter_adaptive_cards_fs/lib/src/utils/utils.dart`
 and `exit=1`. Confirm `fvm flutter analyze` still reports `No issues found!` on
 that same drifted tree if you want to see why analyze cannot replace this job.
 
-- [ ] **Step 2: Add the job**
+- [x] **Step 2: Add the job**
 
 Add to the end of `.github/workflows/validate.yaml`, at the same indentation as
 the existing `markdown-format:` and `pana:` job keys:
@@ -1113,7 +1113,7 @@ dart-format:
 `tool/` is included so `tool/pana/check_pana.dart` from Task 1 stays formatted;
 it is outside `packages/` and would otherwise never be checked.
 
-- [ ] **Step 3: Update the workflow header comment**
+- [x] **Step 3: Update the workflow header comment**
 
 The header comment written in Task 3 lists two jobs. Replace that block with:
 
@@ -1124,7 +1124,7 @@ The header comment written in Task 3 lists two jobs. Replace that block with:
 #   - dart-format: Dart sources under packages/ and tool/ are dart format-clean.
 ```
 
-- [ ] **Step 4: Verify the workflow parses and the check passes**
+- [x] **Step 4: Verify the workflow parses and the check passes**
 
 ```bash
 python3 -c "import yaml; d=yaml.safe_load(open('.github/workflows/validate.yaml')); print(sorted(d['jobs'].keys()))"
@@ -1133,7 +1133,7 @@ fvm dart format --output=none --set-exit-if-changed packages/ tool/; echo "exit=
 
 Expected: `['dart-format', 'markdown-format', 'pana']`, then `exit=0`.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add .github/workflows/validate.yaml
@@ -1148,7 +1148,7 @@ Run every check before claiming the plan is complete. Paste the command output �
 exit codes and pass/fail counts — per the AGENTS.md plan completion gate, and
 invoke **`superpowers:verification-before-completion`**.
 
-- [ ] **Step 1: Analyze the workspace**
+- [x] **Step 1: Analyze the workspace**
 
 ```bash
 fvm flutter analyze
@@ -1156,7 +1156,7 @@ fvm flutter analyze
 
 Expected: `No issues found!`
 
-- [ ] **Step 2: Formatting**
+- [x] **Step 2: Formatting**
 
 ```bash
 fvm dart format --output=none --set-exit-if-changed packages/ tool/
@@ -1165,7 +1165,7 @@ npm run check:md
 
 Expected: both exit 0. This is the same command Task 6's CI job runs.
 
-- [ ] **Step 3: Gate self-test**
+- [x] **Step 3: Gate self-test**
 
 ```bash
 fvm dart run tool/pana/check_pana.dart --self-test
@@ -1173,7 +1173,7 @@ fvm dart run tool/pana/check_pana.dart --self-test
 
 Expected: `self-test: PASS`, exit 0.
 
-- [ ] **Step 4: Full pub-score sweep**
+- [x] **Step 4: Full pub-score sweep**
 
 ```bash
 fvm dart run tool/pana/check_pana.dart --report-only
@@ -1182,7 +1182,7 @@ fvm dart run tool/pana/check_pana.dart --report-only
 Expected: four rows, every package at or above its floor,
 `Pub-score gate: REPORT-ONLY (not failing the build)`, exit 0.
 
-- [ ] **Step 5: Main library test suite**
+- [x] **Step 5: Main library test suite**
 
 No file under `packages/` changed in this plan, so the suite is a regression
 check only:
@@ -1194,12 +1194,12 @@ fvm flutter test --exclude-tags=golden
 
 Expected: all tests pass. Return to the repo root afterwards.
 
-- [ ] **Step 6: Confirm CI is green**
+- [x] **Step 6: Confirm CI is green**
 
 Both jobs in the validate workflow — "Markdown format (Prettier)" and
 "Pub score (pana)" — must pass on the PR, along with the existing test workflow.
 
-- [ ] **Step 7: Finish the branch**
+- [x] **Step 7: Finish the branch**
 
 Invoke **`superpowers:finishing-a-development-branch`** only after every step
 above has passed.

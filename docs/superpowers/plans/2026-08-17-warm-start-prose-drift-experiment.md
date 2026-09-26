@@ -94,7 +94,7 @@ N1's hypothesis is that the shape rule loses to distance. This adds the ability 
 
   Task 2 adds `--seed-card` beside it; Task 3 uses `reinforceReminder`.
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Create `adaptive_chat_server_dart/test/probe_reinforce_test.dart`:
 
@@ -172,7 +172,7 @@ Run: `cd adaptive_chat_server_dart && fvm dart test test/probe_reinforce_test.da
 
 Expected: compile failure — `buildProbeMessages` is not defined.
 
-- [ ] **Step 3: Extract the message builder and add the parameter**
+- [x] **Step 3: Extract the message builder and add the parameter**
 
 In `adaptive_chat_server_dart/tool/model_probes/probe_support.dart`, add above `probeOnce`:
 
@@ -215,13 +215,13 @@ and replace the inline `'messages': [...]` list in its `jsonEncode` call with:
       ),
 ```
 
-- [ ] **Step 4: Run the tests to verify they pass**
+- [x] **Step 4: Run the tests to verify they pass**
 
 Run: `cd adaptive_chat_server_dart && fvm dart test`
 
 Expected: PASS — the 4 new tests plus everything Plan 1 left green. The other probes call `probeOnce` with named arguments only and never pass `reminder`, so its `null` default leaves their message lists byte-identical.
 
-- [ ] **Step 5: Add the reminder text and the flag**
+- [x] **Step 5: Add the reminder text and the flag**
 
 In `adaptive_chat_server_dart/tool/model_probes/shape_cases.dart`, append:
 
@@ -295,7 +295,7 @@ Expected: help text lists `--reinforce`; the run prints `===== baseline [reinfor
 curl -s http://127.0.0.1:11434/api/generate -d '{"model":"qwen2.5-coder:7b","keep_alive":0}' > /dev/null
 ```
 
-- [ ] **Step 7: Changelog, gates, commit**
+- [x] **Step 7: Changelog, gates, commit**
 
 ```markdown
 - Added: `shape_ab.dart --reinforce` (candidate N1) injects a shape reminder
@@ -336,7 +336,7 @@ N2's hypothesis is that the conversation's established format is what the model 
 - Consumes: `shapeHistoryUser`, `shapeHistoryAssistant` from Plan 1 Task 2; the `reinforce` threading from Task 1.
 - Produces: `const String seedCardUser`, `const String seedCardAssistant` in `shape_cases.dart`; `shape_ab.dart` gains `--seed-card`.
 
-- [ ] **Step 1: Add the seed exchange**
+- [x] **Step 1: Add the seed exchange**
 
 In `adaptive_chat_server_dart/tool/model_probes/shape_cases.dart`, append:
 
@@ -359,7 +359,7 @@ const seedCardAssistant =
     '{"title":"CET","value":"+0100"}]}]';
 ```
 
-- [ ] **Step 2: Wire the flag**
+- [x] **Step 2: Wire the flag**
 
 In `adaptive_chat_server_dart/tool/model_probes/shape_ab.dart`, add to the parser after `--reinforce`:
 
@@ -433,7 +433,7 @@ curl -s http://127.0.0.1:11434/api/generate -d '{"model":"qwen2.5-coder:7b","kee
 
 Expected: `history turns : 4` and a verdict. Record it — it is a preview of N2's effect on this prompt, though not a substitute for Task 4's screening run.
 
-- [ ] **Step 4: Changelog, gates, commit**
+- [x] **Step 4: Changelog, gates, commit**
 
 ```markdown
 - Added: `shape_ab.dart --seed-card` (candidate N2) prepends a synthetic
@@ -472,7 +472,7 @@ Not every chat template respects a second `system` message. Some fold only the f
 - Consumes: `--reinforce` from Task 1.
 - Produces: a per-model verdict on whether a second system message is delivered. Task 4 needs it to know whether N1's numbers mean anything on each model.
 
-- [ ] **Step 1: Understand the signal before running anything**
+- [x] **Step 1: Understand the signal before running anything**
 
 `shape_ab.dart` prints outcome labels, not reply bytes, so "did the reply contain BANANA?" is not directly observable through it. Reading the label is, so the check is built as an **inverted signal**: give the reminder an instruction that would _break_ a card, then see whether a case that passes without the reminder fails with it.
 
@@ -483,7 +483,7 @@ So a `PASS` → `FAIL` transition on a case the model reliably passes is positiv
 
 The asymmetry matters and must be reported honestly: **no change is not proof of non-delivery.** It could mean the message was dropped, or that it arrived and the model ignored it. Either way N1's numbers on that model cannot be trusted, which is the operational conclusion — but write it as "delivery unconfirmed", not "message dropped".
 
-- [ ] **Step 2: Temporarily replace the reminder text**
+- [x] **Step 2: Temporarily replace the reminder text**
 
 ```bash
 cd adaptive_chat_server_dart
@@ -500,7 +500,7 @@ const reinforceReminder =
 
 A deliberate, temporary edit, reverted in Step 4 and never committed.
 
-- [ ] **Step 3: Run the paired check on each screening model, one at a time**
+- [x] **Step 3: Run the paired check on each screening model, one at a time**
 
 Each model needs a case it passes **without** the reminder, so the pair is run back to back. `choice1` is the case with the most recorded history; if a model fails `choice1` cold-start at baseline, substitute any case Plan 1's baseline shows it passing cold-start, and note the substitution.
 
@@ -522,7 +522,7 @@ Read the **cold-start** block of each pair — it is the condition least likely 
 - **delivery unconfirmed** — no change. N1's numbers for this model are `n/a` in Task 4, not a null result.
 - **inconclusive** — the case failed even without the reminder, so there was no baseline to break. Substitute a different case and re-run.
 
-- [ ] **Step 4: Revert the temporary edit**
+- [x] **Step 4: Revert the temporary edit**
 
 ```bash
 cd adaptive_chat_server_dart
@@ -532,7 +532,7 @@ git diff --stat tool/model_probes/shape_cases.dart
 
 Expected: no output from `git diff --stat` — the file is byte-identical to the committed version. **Do not proceed until this is clean**; measuring the experiment with the BANANA text in place would invalidate every N1 number.
 
-- [ ] **Step 5: Record the delivery-check result**
+- [x] **Step 5: Record the delivery-check result**
 
 Add to `adaptive_chat_server_dart/ModelBehavior.md`, in the `## Cross-model results` section:
 
@@ -549,7 +549,7 @@ Add to `adaptive_chat_server_dart/ModelBehavior.md`, in the `## Cross-model resu
 
 Replace `<per-model results>` with the three actual verdicts.
 
-- [ ] **Step 6: Changelog, format, commit**
+- [x] **Step 6: Changelog, format, commit**
 
 ```markdown
 - Added: a delivery check for mid-conversation `system` messages, recorded in
@@ -584,7 +584,7 @@ Six configurations per model. The deciding model runs at `--samples 2`; the thre
 - Consumes: `--reinforce` (Task 1), `--seed-card` (Task 2), the delivery-check verdicts (Task 3), Plan 1's baseline, the four `#### Shape coverage — …` baselines already in `ModelBehavior.md`.
 - Produces: per-candidate with-history and cold-start scores for four models. Task 5 stacks whatever won.
 
-- [ ] **Step 1: Build the three candidate prompt files**
+- [x] **Step 1: Build the three candidate prompt files**
 
 ```bash
 cd adaptive_chat_server_dart
@@ -646,7 +646,7 @@ done
 
 Expected: each diff shows one added block and nothing else.
 
-- [ ] **Step 2: Pick the screening subset**
+- [x] **Step 2: Pick the screening subset**
 
 The subset spans the failure surface: two ChoiceSet cases, another input, two display shapes, one chart.
 
@@ -679,7 +679,7 @@ the model's baseline"):
   own baseline on the subset; a drop is the flag this model exists to catch,
   not evidence for or against the candidate's mechanism.
 
-- [ ] **Step 3: Screen the deciding model at `--samples 2`**
+- [x] **Step 3: Screen the deciding model at `--samples 2`**
 
 ```bash
 cd adaptive_chat_server_dart
@@ -704,7 +704,7 @@ Note the prompt candidates are passed via `--baseline`, not `--candidate`: each 
 
 Expected: 6 blocks, each with cold-start, with-history, and an erosion line. Confirm `{"models":[]}` at the end.
 
-- [ ] **Step 4: Screen the three informing models at `--samples 1`**
+- [x] **Step 4: Screen the three informing models at `--samples 1`**
 
 Same loop, one model at a time, `--samples 1`:
 
@@ -730,7 +730,7 @@ done 2>&1 | tee /tmp/screen-informing.txt
 
 For any model where Task 3 found the reminder is not delivered, the `reinforce` run's numbers are `n/a`, not a result. Say so in the write-up.
 
-- [ ] **Step 5: Tabulate**
+- [x] **Step 5: Tabulate**
 
 Build this table from the two transcripts (`/tmp/screen-qwen.txt`, `/tmp/screen-informing.txt`). Every cell is with-history / cold-start for the six-case subset:
 
@@ -745,7 +745,7 @@ Build this table from the two transcripts (`/tmp/screen-qwen.txt`, `/tmp/screen-
 
 Also record N2's average latency against baseline's, since N2 costs tokens on every request.
 
-- [ ] **Step 6: Apply the promotion bar and record**
+- [x] **Step 6: Apply the promotion bar and record**
 
 A candidate advances when **both** hold on `qwen2.5-coder:7b`:
 
@@ -773,7 +773,7 @@ Advancing to the stacked run: `<ids, or "none">`.
 not worth retrying. A measured negative is the point of recording losers.>
 ```
 
-- [ ] **Step 7: Changelog, format, commit**
+- [x] **Step 7: Changelog, format, commit**
 
 ```markdown
 - Added: screening results for five warm-start drift candidates (P1 recency,
@@ -893,7 +893,7 @@ A six-case subset chosen to span the failure surface may not represent all 25. T
 - Consumes: Task 5's surviving configuration.
 - Produces: the full-set evidence Task 8's promotion decision rests on.
 
-- [ ] **Step 1: Run the survivor on the full 25 cases**
+- [x] **Step 1: Run the survivor on the full 25 cases**
 
 Models, one at a time: the four screening models plus the two remaining
 total-collapse models (`llama3-groq-tool-use:8b`, `nemotron-3.5-lightning:30b`)
@@ -918,13 +918,13 @@ done 2>&1 | tee /tmp/confirm-run.txt
 lightning model is the one to expect hours from; confirm `{"models":[]}`
 between every model and never let two of these be resident at once.
 
-- [ ] **Step 2: Compare against recorded baselines**
+- [x] **Step 2: Compare against recorded baselines**
 
 For each model, compare the survivor's cold-start and with-history figures against that model's baseline. Four of the six already have a full 25-case `shape_ab.dart` baseline recorded in `ModelBehavior.md` (`qwen2.5-coder:7b` from Plan 1 Task 6; `granite4.1:8b`, `gpt-oss:20b`, `llama3-chatqa:8b` from the 2026-08-17 baselines this amendment is built on). For `llama3-groq-tool-use:8b` and `nemotron-3.5-lightning:30b`, no `shape_ab.dart` baseline exists yet (only their `choiceset_ab.dart` 0/6 collapse figure) — run baseline for these two on the same case set first, one model at a time.
 
 Flag, without treating as automatic vetoes: any model whose with-history score **drops**, and any model whose cold-start score drops. Per the spec, harm to a non-default model is a trade for the human to weigh with numbers in view — record both movements and say plainly that it is a trade.
 
-- [ ] **Step 3: Record and commit**
+- [x] **Step 3: Record and commit**
 
 Add to `ModelBehavior.md`:
 
@@ -970,7 +970,7 @@ Task 6 measured whether the change helps the shapes it targets. This measures wh
 - Consumes: Task 6's confirmed configuration.
 - Produces: the pass/fail that decides whether Task 8 promotes or reverts.
 
-- [ ] **Step 1: Run both gates on the shipped prompt first, for a same-session baseline**
+- [x] **Step 1: Run both gates on the shipped prompt first, for a same-session baseline**
 
 ```bash
 cd adaptive_chat_server_dart
@@ -980,7 +980,7 @@ fvm dart run tool/model_probes/prompt_ab.dart --model qwen2.5-coder:7b --samples
 
 Record both. Measuring the baseline in the same session removes "was it always like that?" from the later comparison.
 
-- [ ] **Step 2: Run both gates against the candidate**
+- [x] **Step 2: Run both gates against the candidate**
 
 `temperature_stress.dart` reads the shipped prompt file directly and has no `--candidate` flag, so it must be run with the candidate temporarily in place:
 
@@ -1000,7 +1000,7 @@ Expected: `git diff --stat` prints nothing — the shipped prompt is restored. *
 
 If a non-prompt candidate is the survivor, these gates cannot exercise it — neither `temperature_stress.dart` nor `prompt_ab.dart` sends a reminder or a seed. Say so explicitly rather than reporting a clean gate that did not test the change: the honest statement is "the standing gates do not cover message-assembly changes," and the full-set confirmation in Task 6 is the evidence that has to carry that weight.
 
-- [ ] **Step 3: Judge and record**
+- [x] **Step 3: Judge and record**
 
 Both gates must be at or above their Step 1 figures. A drop on either is treated as caused by this change until proven otherwise — re-run the affected case against the unmodified prompt to attribute it rather than dismissing it as temperature noise.
 
@@ -1012,7 +1012,7 @@ at `t=0` and `<base>` → `<cand>` at `t=0.6`; code A/B `<base>` → `<cand>`.
 `<Clean, or which case regressed and how it was attributed.>`
 ```
 
-- [ ] **Step 4: Changelog, format, commit**
+- [x] **Step 4: Changelog, format, commit**
 
 ```markdown
 - Added: regression-gate results for the warm-start drift survivor —
@@ -1046,7 +1046,7 @@ Exactly one of the three paths below applies. Read all three before choosing, an
 - Consumes: every prior task's results.
 - Produces: the shipped state, or a recorded negative.
 
-- [ ] **Step 1: Choose the path**
+- [x] **Step 1: Choose the path**
 
 **Path A — a prompt candidate is promoted.** Requires: `qwen2.5-coder:7b` with-history up, its cold-start not down, Task 6 confirming on the full set, Task 7's gates clean.
 
@@ -1093,7 +1093,7 @@ priming. `<Which of the two negatives applies, stated plainly.>`
 Do not retry these five without a materially different mechanism.
 ```
 
-- [ ] **Step 4: Changelog, gates, commit**
+- [x] **Step 4: Changelog, gates, commit**
 
 Path A or B:
 

@@ -64,7 +64,7 @@
 
   Tasks 3 and 4 both use these.
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 Create `adaptive_chat_server_dart/test/probe_walker_test.dart`:
 
@@ -179,7 +179,7 @@ Run: `cd adaptive_chat_server_dart && fvm dart test test/probe_walker_test.dart`
 
 Expected: compile failure — `collectElementTypes` and `cardContainsAnyType` are not defined. A failure naming those two symbols confirms the test is reaching the right file; any other error means the relative import is wrong, so fix that rather than the test.
 
-- [ ] **Step 3: Implement the walker**
+- [x] **Step 3: Implement the walker**
 
 Append to `adaptive_chat_server_dart/tool/model_probes/probe_support.dart`:
 
@@ -217,13 +217,13 @@ bool cardContainsAnyType(
 ) => collectElementTypes(body).intersection(wanted).isNotEmpty;
 ```
 
-- [ ] **Step 4: Run the tests to verify they pass**
+- [x] **Step 4: Run the tests to verify they pass**
 
 Run: `cd adaptive_chat_server_dart && fvm dart test test/probe_walker_test.dart`
 
 Expected: PASS, 10 tests.
 
-- [ ] **Step 5: Refactor `choiceset_ab.dart` onto the shared walker**
+- [x] **Step 5: Refactor `choiceset_ab.dart` onto the shared walker**
 
 In `adaptive_chat_server_dart/tool/model_probes/choiceset_ab.dart`, delete the entire private `_hasChoiceSet` function (it starts `bool _hasChoiceSet(String reply) {` and ends with `return body.any(contains);` plus its closing brace) and replace it with:
 
@@ -236,7 +236,7 @@ bool _hasChoiceSet(String reply) {
 
 Keep the function name and signature: its call site (`final ok = _hasChoiceSet(outcome.reply);`) and every other line of the file stay exactly as they are. The `tryParseCardBody` import is already present.
 
-- [ ] **Step 6: Verify the refactor changed nothing observable**
+- [x] **Step 6: Verify the refactor changed nothing observable**
 
 Run: `cd adaptive_chat_server_dart && fvm dart analyze && fvm dart test`
 
@@ -248,7 +248,7 @@ Run: `cd adaptive_chat_server_dart && fvm dart run tool/model_probes/choiceset_a
 
 Expected: usage text, exit 0, no network call. (If this starts a probe run instead of printing usage, the `--help` early-return has regressed — that was fixed in an earlier plan and must stay.)
 
-- [ ] **Step 7: Changelog, gates, commit**
+- [x] **Step 7: Changelog, gates, commit**
 
 Add to the top of `## [Unreleased]` in `adaptive_chat_server_dart/CHANGELOG.md`:
 
@@ -297,7 +297,7 @@ The table is the crux of this probe: a wrong expectation silently fails every mo
 
   Task 3 adds `judgeShape` to this same file. Task 4 consumes all of the above.
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 Create `adaptive_chat_server_dart/test/shape_cases_test.dart`:
 
@@ -404,7 +404,7 @@ Run: `cd adaptive_chat_server_dart && fvm dart test test/shape_cases_test.dart`
 
 Expected: compile failure — `shape_cases.dart` does not exist. That is the expected RED state.
 
-- [ ] **Step 3: Create the case table**
+- [x] **Step 3: Create the case table**
 
 Create `adaptive_chat_server_dart/tool/model_probes/shape_cases.dart`:
 
@@ -624,7 +624,7 @@ const shapeCases = <ShapeCase>[
 ];
 ```
 
-- [ ] **Step 4: Run the tests to verify they pass**
+- [x] **Step 4: Run the tests to verify they pass**
 
 Run: `cd adaptive_chat_server_dart && fvm dart test test/shape_cases_test.dart`
 
@@ -632,7 +632,7 @@ Expected: PASS, 7 tests.
 
 If the schema test fails naming a type, **do not edit the test to accept it** — the type is either misspelled in the table or genuinely absent from `card_schema.json`, and both are real problems the test exists to catch. Report which.
 
-- [ ] **Step 5: Changelog, gates, commit**
+- [x] **Step 5: Changelog, gates, commit**
 
 ```markdown
 - Added: `shape_cases.dart` — a 25-case table naming, for each prompt, the
@@ -676,7 +676,7 @@ The existing `judgeReply` answers "card or prose". This adds the shape layer on 
 
   Task 4 consumes both.
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 Create `adaptive_chat_server_dart/test/shape_judge_test.dart`:
 
@@ -836,7 +836,7 @@ Run: `cd adaptive_chat_server_dart && fvm dart test test/shape_judge_test.dart`
 
 Expected: compile failure — `judgeShape` and `ShapeResult` are not defined.
 
-- [ ] **Step 3: Implement the classifier**
+- [x] **Step 3: Implement the classifier**
 
 Add to `adaptive_chat_server_dart/tool/model_probes/shape_cases.dart`. The imports at the top of that file become:
 
@@ -969,13 +969,13 @@ ShapeResult judgeShape(ShapeCase c, ProbeOutcome outcome) {
 }
 ```
 
-- [ ] **Step 4: Run the tests to verify they pass**
+- [x] **Step 4: Run the tests to verify they pass**
 
 Run: `cd adaptive_chat_server_dart && fvm dart test test/shape_judge_test.dart`
 
 Expected: PASS, 11 tests.
 
-- [ ] **Step 5: Changelog, gates, commit**
+- [x] **Step 5: Changelog, gates, commit**
 
 ```markdown
 - Added: `judgeShape` in `shape_cases.dart`, a seven-outcome classifier
@@ -1012,7 +1012,7 @@ Two conditions per case, an erosion delta between them, and case selection that 
 - Consumes: `ShapeCase`, `shapeCases`, `shapeHistoryUser`, `shapeHistoryAssistant`, `judgeShape`, `ShapeResult` from Task 2/3; `probeOnce`, `parseProbeArgs`, `ProbeArgs` from `probe_support.dart`.
 - Produces: the executable probe. Plan 2 consumes its CLI surface (`--only`, `--candidate`, and the flags it adds there).
 
-- [ ] **Step 1: Write the runner**
+- [x] **Step 1: Write the runner**
 
 Create `adaptive_chat_server_dart/tool/model_probes/shape_ab.dart`:
 
@@ -1214,7 +1214,7 @@ fvm dart run tool/model_probes/shape_ab.dart --model qwen2.5-coder:7b --only pro
 
 Expected: one case, both conditions, and `shapes 1/1` or `shapes 0/1` per condition. This is the cheapest possible live smoke test — one prompt, two calls.
 
-- [ ] **Step 5: Changelog, gates, commit**
+- [x] **Step 5: Changelog, gates, commit**
 
 ```markdown
 - Added: `shape_ab.dart`, a shape-aware probe. It runs all 25 cases
@@ -1249,7 +1249,7 @@ git commit -m "feat(chat-server): add the shape-aware model probe runner"
 - Consumes: the finished probe from Task 4.
 - Produces: nothing later tasks depend on.
 
-- [ ] **Step 1: Add the script-table row**
+- [x] **Step 1: Add the script-table row**
 
 In `adaptive_chat_server_dart/tool/model_probes/README.md`, add to the script table, directly beneath the `choiceset_ab.dart` row:
 
@@ -1257,7 +1257,7 @@ In `adaptive_chat_server_dart/tool/model_probes/README.md`, add to the script ta
 | `shape_ab.dart` | Which element types does this model actually emit, cold vs with history? |
 ```
 
-- [ ] **Step 2: Add the usage note**
+- [x] **Step 2: Add the usage note**
 
 Add below the existing `choiceset_ab.dart` note in the same README:
 
@@ -1277,7 +1277,7 @@ asked the user for a value), `prose` (no card at all), and `broken` (invalid
 JSON, or prose wrapping a card).
 ```
 
-- [ ] **Step 3: Add the "What these found" bullet**
+- [x] **Step 3: Add the "What these found" bullet**
 
 The README's "What these found" section holds probe-side findings. Add:
 
@@ -1289,7 +1289,7 @@ The README's "What these found" section holds probe-side findings. Add:
   passed on plain Markdown.
 ```
 
-- [ ] **Step 4: Changelog, gates, commit**
+- [x] **Step 4: Changelog, gates, commit**
 
 ```markdown
 - Added: `tool/model_probes/README.md` documents `shape_ab.dart`, its four
@@ -1324,7 +1324,7 @@ The first real measurement. Plan 2 cannot be interpreted without it, because a s
 - Produces: the baseline cold-start and with-history pass-sets for
   `qwen2.5-coder:7b` — Plan 2 Stage 1 compares against these.
 
-- [ ] **Step 1: Run the full baseline**
+- [x] **Step 1: Run the full baseline**
 
 Only `qwen2.5-coder:7b` is resident for this task. Confirm nothing else is loaded first:
 
@@ -1350,7 +1350,7 @@ curl -s http://127.0.0.1:11434/api/ps
 
 Expected: `{"models":[]}`.
 
-- [ ] **Step 3: Record the result in `ModelBehavior.md`**
+- [x] **Step 3: Record the result in `ModelBehavior.md`**
 
 Two edits.
 
@@ -1377,7 +1377,7 @@ no-input vs wrong-shape, and what collectElementTypes reported instead>`.
 
 If a shape failed under **both** conditions, say so explicitly in that second paragraph. That distinction is the whole reason both conditions are run, and Plan 2's screening subset depends on it.
 
-- [ ] **Step 4: Verify the table survived the edit**
+- [x] **Step 4: Verify the table survived the edit**
 
 ```bash
 cd adaptive_chat_server_dart
@@ -1386,7 +1386,7 @@ awk -F'|' '/^\| / && / GB / && !/---/ && !/^\| Model/ {print NF-2}' ModelBehavio
 
 Expected: a single line reading `6` — every model row still has six columns.
 
-- [ ] **Step 5: Changelog, format, commit**
+- [x] **Step 5: Changelog, format, commit**
 
 ```markdown
 - Added: first `shape_ab.dart` baseline — `qwen2.5-coder:7b`, 25 cases,

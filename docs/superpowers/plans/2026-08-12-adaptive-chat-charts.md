@@ -49,7 +49,7 @@ The chart widgets are only reachable today through the `ElementCreator` closures
 
 This was trialed during design: exporting these four files analyzes clean under `very_good_analysis`, and `ChartChrome`, `ChartLegendEntry`, `GaugeSegment`, `GaugeValueFormat`, and `GaugePainter` do **not** leak through. The `show` clauses below keep it that way.
 
-- [ ] **Step 1: Write the failing barrel test**
+- [x] **Step 1: Write the failing barrel test**
 
 Create `packages/flutter_adaptive_charts_fs/test/widgets_barrel_test.dart`:
 
@@ -107,7 +107,7 @@ but are not asserted here — `isA<AdaptivePieChart>()` already fails to compile
 if the widget class is not exported, and a `State` type has no useful
 assertion outside a pumped tree.
 
-- [ ] **Step 2: Run the test to verify it fails**
+- [x] **Step 2: Run the test to verify it fails**
 
 ```bash
 cd packages/flutter_adaptive_charts_fs
@@ -116,7 +116,7 @@ fvm flutter test test/widgets_barrel_test.dart
 
 Expected: FAIL at compile time — `Error: Couldn't resolve the package 'flutter_adaptive_charts_fs/flutter_adaptive_charts_widgets_fs.dart'`.
 
-- [ ] **Step 3: Create the widgets barrel**
+- [x] **Step 3: Create the widgets barrel**
 
 Create `packages/flutter_adaptive_charts_fs/lib/flutter_adaptive_charts_widgets_fs.dart`:
 
@@ -149,7 +149,7 @@ export 'package:flutter_adaptive_charts_fs/src/charts/pie_donut_chart.dart'
     show AdaptivePieChart, AdaptivePieChartState;
 ```
 
-- [ ] **Step 4: Run the test to verify it passes**
+- [x] **Step 4: Run the test to verify it passes**
 
 ```bash
 cd packages/flutter_adaptive_charts_fs
@@ -160,7 +160,7 @@ Expected: PASS, 2 tests. If `BarChartType.values` is not length 4, read `lib/src
 
 If a builder call throws during construction (rather than returning a widget), the chart widget does real work in its constructor. Do not work around it by pumping — report it as a concern; it is a finding about the widget, not about this barrel.
 
-- [ ] **Step 5: Document the entrypoint in the package README**
+- [x] **Step 5: Document the entrypoint in the package README**
 
 In `packages/flutter_adaptive_charts_fs/README.md`, immediately after the `## Getting started` code block (the one showing `AdaptiveCardsCanvas.map` with `CardTypeRegistry`), add:
 
@@ -191,7 +191,7 @@ cd /Users/joefreeman/Documents/GitHub/freemansoft/Flutter-AdaptiveCards && \
   packages/flutter_adaptive_charts_fs/README.md
 ```
 
-- [ ] **Step 6: Add the changelog entry**
+- [x] **Step 6: Add the changelog entry**
 
 The repo requires a changelog bullet whenever any file under a `packages/<name>/` directory changes. Add to the `## [Unreleased]` section of `packages/flutter_adaptive_charts_fs/CHANGELOG.md` (create the section directly under the title if it does not exist yet — check the file's existing heading style first and match it):
 
@@ -212,7 +212,7 @@ cd /Users/joefreeman/Documents/GitHub/freemansoft/Flutter-AdaptiveCards && \
   packages/flutter_adaptive_charts_fs/CHANGELOG.md
 ```
 
-- [ ] **Step 7: Verify the main barrel is untouched**
+- [x] **Step 7: Verify the main barrel is untouched**
 
 ```bash
 cd /Users/joefreeman/Documents/GitHub/freemansoft/Flutter-AdaptiveCards
@@ -221,7 +221,7 @@ git diff --stat -- packages/flutter_adaptive_charts_fs/lib/flutter_adaptive_char
 
 Expected: **empty output**. Any diff means the default consumer API changed, which this design explicitly forbids.
 
-- [ ] **Step 8: Run the charts package suite and the analyzer**
+- [x] **Step 8: Run the charts package suite and the analyzer**
 
 ```bash
 cd packages/flutter_adaptive_charts_fs && fvm flutter test --exclude-tags=golden
@@ -230,7 +230,7 @@ cd /Users/joefreeman/Documents/GitHub/freemansoft/Flutter-AdaptiveCards && fvm f
 
 Expected: all charts tests pass; analyzer reports **No issues found**.
 
-- [ ] **Step 9: Commit**
+- [x] **Step 9: Commit**
 
 ```bash
 git add packages/flutter_adaptive_charts_fs/lib/flutter_adaptive_charts_widgets_fs.dart \
@@ -273,7 +273,7 @@ Task 1's widgets barrel makes `find.byType(AdaptivePieChart)` available; use it 
 
 **Ordering:** Task 1 must be complete, or the widgets-barrel import will not resolve.
 
-- [ ] **Step 1: Add the charts dependency**
+- [x] **Step 1: Add the charts dependency**
 
 In `adaptive_chat_client/pubspec.yaml`, add to `dependencies:` (keeping the block alphabetical, immediately after `flutter_adaptive_cards_host_fs`):
 
@@ -282,7 +282,7 @@ flutter_adaptive_charts_fs:
   path: ../packages/flutter_adaptive_charts_fs
 ```
 
-- [ ] **Step 2: Resolve dependencies**
+- [x] **Step 2: Resolve dependencies**
 
 Run from the **repo root** (the client is a pub workspace member, so it resolves there, not in its own directory):
 
@@ -292,7 +292,7 @@ fvm flutter pub get
 
 Expected: exits 0, `flutter_adaptive_charts_fs` resolved from path.
 
-- [ ] **Step 3: Write the failing canvas-level test**
+- [x] **Step 3: Write the failing canvas-level test**
 
 Create `adaptive_chat_client/test/chart_reply_render_test.dart`:
 
@@ -405,7 +405,7 @@ void main() {
 }
 ```
 
-- [ ] **Step 4: Run the test to verify it fails**
+- [x] **Step 4: Run the test to verify it fails**
 
 ```bash
 cd adaptive_chat_client && fvm flutter test test/chart_reply_render_test.dart
@@ -413,7 +413,7 @@ cd adaptive_chat_client && fvm flutter test test/chart_reply_render_test.dart
 
 Expected: FAIL at compile time — `Error: Couldn't resolve the package 'adaptive_chat_client/src/chat_card_registry.dart'` (the file does not exist yet).
 
-- [ ] **Step 5: Create the registry**
+- [x] **Step 5: Create the registry**
 
 Create `adaptive_chat_client/lib/src/chat_card_registry.dart`:
 
@@ -437,7 +437,7 @@ final CardTypeRegistry chatCardTypeRegistry = CardTypeRegistry(
 );
 ```
 
-- [ ] **Step 6: Run the test to verify it passes**
+- [x] **Step 6: Run the test to verify it passes**
 
 ```bash
 cd adaptive_chat_client && fvm flutter test test/chart_reply_render_test.dart
@@ -445,7 +445,7 @@ cd adaptive_chat_client && fvm flutter test test/chart_reply_render_test.dart
 
 Expected: PASS, 3 tests.
 
-- [ ] **Step 7: Commit the registry**
+- [x] **Step 7: Commit the registry**
 
 ```bash
 git add adaptive_chat_client/pubspec.yaml \
@@ -461,7 +461,7 @@ Overlay extensions are omitted -- the client never patches chart data."
 
 `pubspec.lock` at the repo root is tracked; include it if Step 2 changed it.
 
-- [ ] **Step 8: Write the failing end-to-end ChatPage test**
+- [x] **Step 8: Write the failing end-to-end ChatPage test**
 
 `chat_card_registry.dart` existing is not the same as `ChatPage` using it. Add this test to `adaptive_chat_client/test/chat_page_test.dart`.
 
@@ -549,7 +549,7 @@ Then add this test inside `void main() { … }`, after the existing
   });
 ```
 
-- [ ] **Step 9: Run the test to verify it fails**
+- [x] **Step 9: Run the test to verify it fails**
 
 ```bash
 cd adaptive_chat_client && fvm flutter test test/chat_page_test.dart
@@ -557,7 +557,7 @@ cd adaptive_chat_client && fvm flutter test test/chat_page_test.dart
 
 Expected: FAIL on the new test — `Expected: exactly one matching candidate / Actual: _WidgetTypeFinder:<zero widgets with type "AdaptivePieChart">`, because `_buildLog` still uses the default registry and rendered `Type Chart.Pie not found…` instead.
 
-- [ ] **Step 10: Wire the registry into the chat log**
+- [x] **Step 10: Wire the registry into the chat log**
 
 In `adaptive_chat_client/lib/src/chat_page.dart`, add the import alongside the existing `package:adaptive_chat_client/src/...` imports (alphabetical — before `compose_card.dart`):
 
@@ -588,7 +588,7 @@ to:
 
 Leave `_buildCompose`'s canvas alone — the compose card is a fixed local `Input.Text` + `Action.Submit` card and never contains a chart.
 
-- [ ] **Step 11: Run the test to verify it passes**
+- [x] **Step 11: Run the test to verify it passes**
 
 ```bash
 cd adaptive_chat_client && fvm flutter test test/chat_page_test.dart
@@ -596,7 +596,7 @@ cd adaptive_chat_client && fvm flutter test test/chat_page_test.dart
 
 Expected: PASS, all tests in the file.
 
-- [ ] **Step 12: Run the full client suite and analyzer**
+- [x] **Step 12: Run the full client suite and analyzer**
 
 ```bash
 cd adaptive_chat_client && fvm flutter test
@@ -605,7 +605,7 @@ cd /Users/joefreeman/Documents/GitHub/freemansoft/Flutter-AdaptiveCards && fvm f
 
 Expected: all client tests pass; analyzer reports **No issues found**.
 
-- [ ] **Step 13: Commit the wiring**
+- [x] **Step 13: Commit the wiring**
 
 ```bash
 git add adaptive_chat_client/lib/src/chat_page.dart \
@@ -641,7 +641,7 @@ registry. Covered end to end via a MockClient chart reply."
 
 The prompt and the schema are two files with no compiler to keep them in agreement. The test below derives the expected type list _from the prompt_ and checks it against the schema, so it fails until both are updated — and keeps failing if either drifts later.
 
-- [ ] **Step 1: Write the failing drift test**
+- [x] **Step 1: Write the failing drift test**
 
 Create `adaptive_chat_server_dart/test/card_schema_test.dart`:
 
@@ -715,7 +715,7 @@ void main() {
 }
 ```
 
-- [ ] **Step 2: Run the test to verify it fails**
+- [x] **Step 2: Run the test to verify it fails**
 
 ```bash
 cd adaptive_chat_server_dart && dart test test/card_schema_test.dart
@@ -723,7 +723,7 @@ cd adaptive_chat_server_dart && dart test test/card_schema_test.dart
 
 Expected: FAIL — the first test reports `Expected: {'Chart.Pie', …} Actual: <{}>` because the prompt advertises no chart types yet. The third test passes already.
 
-- [ ] **Step 3: Add the Charts block to the card system prompt**
+- [x] **Step 3: Add the Charts block to the card system prompt**
 
 In `adaptive_chat_server_dart/assets/card_system_prompt.txt`, insert the following **after** the `Image` bullet (the line ending `"altText":"A photo of the Golden Gate Bridge"}`) and **before** the blank line preceding `Do NOT include any Action`:
 
@@ -754,7 +754,7 @@ chart here: to compare two series, send two separate charts or a Table.
 
 Do not reformat or reflow any existing line in the file.
 
-- [ ] **Step 4: Run the test to confirm the second failure**
+- [x] **Step 4: Run the test to confirm the second failure**
 
 ```bash
 cd adaptive_chat_server_dart && dart test test/card_schema_test.dart
@@ -762,7 +762,7 @@ cd adaptive_chat_server_dart && dart test test/card_schema_test.dart
 
 Expected: the first test now PASSES; the second FAILS — `Expected: contains all of {'Chart.Pie', …} Actual: <{TextBlock, FactSet, …}>` because the schema enum has not been updated.
 
-- [ ] **Step 5: Add the six types to the schema enum**
+- [x] **Step 5: Add the six types to the schema enum**
 
 In `adaptive_chat_server_dart/assets/card_schema.json`, extend `$defs.Element.properties.type.enum`. Change:
 
@@ -786,7 +786,7 @@ to:
           ]
 ```
 
-- [ ] **Step 6: Run the test to verify it passes**
+- [x] **Step 6: Run the test to verify it passes**
 
 ```bash
 cd adaptive_chat_server_dart && dart test test/card_schema_test.dart
@@ -794,7 +794,7 @@ cd adaptive_chat_server_dart && dart test test/card_schema_test.dart
 
 Expected: PASS, 3 tests.
 
-- [ ] **Step 7: Add chart cases to the card-detection tests**
+- [x] **Step 7: Add chart cases to the card-detection tests**
 
 `card_detect.dart` needs **no change** — it already accepts any object with a non-empty `type` string. These are characterization tests that lock that in for charts specifically; they are expected to pass on first run.
 
@@ -829,7 +829,7 @@ Add to `adaptive_chat_server_dart/test/card_detect_test.dart`, inside the existi
     });
 ```
 
-- [ ] **Step 8: Run the detection tests**
+- [x] **Step 8: Run the detection tests**
 
 ```bash
 cd adaptive_chat_server_dart && dart test test/card_detect_test.dart
@@ -837,7 +837,7 @@ cd adaptive_chat_server_dart && dart test test/card_detect_test.dart
 
 Expected: PASS, including the two new tests.
 
-- [ ] **Step 9: Update the server README**
+- [x] **Step 9: Update the server README**
 
 In `adaptive_chat_server_dart/README.md`, find the palette list under **Card replies (display-only)**:
 
@@ -876,7 +876,7 @@ cd /Users/joefreeman/Documents/GitHub/freemansoft/Flutter-AdaptiveCards && \
   adaptive_chat_server_dart/README.md
 ```
 
-- [ ] **Step 10: Add the changelog entry**
+- [x] **Step 10: Add the changelog entry**
 
 Add to the top of the `## [Unreleased]` list in `adaptive_chat_server_dart/CHANGELOG.md`:
 
@@ -897,7 +897,7 @@ cd /Users/joefreeman/Documents/GitHub/freemansoft/Flutter-AdaptiveCards && \
   adaptive_chat_server_dart/CHANGELOG.md
 ```
 
-- [ ] **Step 11: Run the full server suite and analyzer**
+- [x] **Step 11: Run the full server suite and analyzer**
 
 ```bash
 cd adaptive_chat_server_dart && dart test && dart analyze
@@ -905,7 +905,7 @@ cd adaptive_chat_server_dart && dart test && dart analyze
 
 Expected: all tests pass; `dart analyze` reports **No issues found**.
 
-- [ ] **Step 12: Commit**
+- [x] **Step 12: Commit**
 
 ```bash
 git add adaptive_chat_server_dart/assets/card_system_prompt.txt \
@@ -933,11 +933,11 @@ prompt/schema drift fails the build."
 
 Per the repo's plan completion gate, run the whole suite, not just the per-task tests, and paste real output before claiming completion.
 
-- [ ] **Step 1: Invoke the verification skill**
+- [x] **Step 1: Invoke the verification skill**
 
 Use `superpowers:verification-before-completion`. Every claim below needs pasted command output including the exit code.
 
-- [ ] **Step 2: Analyzer across the workspace**
+- [x] **Step 2: Analyzer across the workspace**
 
 ```bash
 cd /Users/joefreeman/Documents/GitHub/freemansoft/Flutter-AdaptiveCards
@@ -946,7 +946,7 @@ fvm flutter analyze; echo "ANALYZE EXIT: $?"
 
 Expected: `No issues found!`, exit 0.
 
-- [ ] **Step 3: Client test suite**
+- [x] **Step 3: Client test suite**
 
 ```bash
 cd /Users/joefreeman/Documents/GitHub/freemansoft/Flutter-AdaptiveCards/adaptive_chat_client
@@ -955,7 +955,7 @@ fvm flutter test -r expanded; echo "CLIENT EXIT: $?"
 
 Expected: all tests pass, exit 0. Matches the `client:` job in `.github/workflows/adaptive_chat.yml`.
 
-- [ ] **Step 4: Server test suite**
+- [x] **Step 4: Server test suite**
 
 ```bash
 cd /Users/joefreeman/Documents/GitHub/freemansoft/Flutter-AdaptiveCards/adaptive_chat_server_dart
@@ -964,7 +964,7 @@ dart pub get && dart test; echo "SERVER EXIT: $?"
 
 Expected: all tests pass, exit 0. Matches the `dart-server:` job.
 
-- [ ] **Step 5: Markdown formatting**
+- [x] **Step 5: Markdown formatting**
 
 ```bash
 cd /Users/joefreeman/Documents/GitHub/freemansoft/Flutter-AdaptiveCards
@@ -974,7 +974,7 @@ npm run check:md; echo "MD DOCS EXIT: $?"
 
 Expected: both report all files use Prettier style, exit 0. `check:md:chat` matches the `markdown-format:` job; `check:md` covers the spec and this plan under `docs/`.
 
-- [ ] **Step 6: Charts package test suite**
+- [x] **Step 6: Charts package test suite**
 
 The widgets barrel puts this published package in scope, so its own suite must pass.
 
@@ -985,7 +985,7 @@ fvm flutter test --exclude-tags=golden; echo "CHARTS EXIT: $?"
 
 Expected: all tests pass, exit 0.
 
-- [ ] **Step 7: Confirm the `packages/` blast radius is exactly four files**
+- [x] **Step 7: Confirm the `packages/` blast radius is exactly four files**
 
 ```bash
 cd /Users/joefreeman/Documents/GitHub/freemansoft/Flutter-AdaptiveCards
@@ -1009,7 +1009,7 @@ git diff --stat main...HEAD -- tool/coverage_floors.yaml
 
 Expected: **empty output**. If a floor appears to need lowering, that is a signal to add tests, not to edit the file — stop and report.
 
-- [ ] **Step 8: Manual smoke check (report, do not automate)**
+- [x] **Step 8: Manual smoke check (report, do not automate)**
 
 This is the only check that proves a chart actually appears. Requires a running Ollama with the model pulled.
 
@@ -1029,6 +1029,6 @@ Expected: a pie chart in the assistant bubble. A broken-image icon with `Type Ch
 
 If Ollama is unavailable, say so explicitly rather than claiming the check passed.
 
-- [ ] **Step 9: Report**
+- [x] **Step 9: Report**
 
 Summarize: what shipped, the pasted exit codes from Steps 2-7, and the smoke-check result (or an explicit note that it was not run). Do not invoke `superpowers:finishing-a-development-branch` until Steps 2-7 are green.
