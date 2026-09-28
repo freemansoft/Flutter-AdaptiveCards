@@ -9,6 +9,20 @@ Pairs with the Dart `shelf` backend in
 [`../adaptive_chat_server_dart`](../adaptive_chat_server_dart).
 Design notes: [`docs/superpowers/specs/2026-08-09-adaptive-chat-server-dart-design.md`](../docs/superpowers/specs/2026-08-09-adaptive-chat-server-dart-design.md).
 
+```mermaid
+flowchart TB
+  PERSON["Person"]
+  CLIENT["Chat client<br/>adaptive_chat_client (Flutter)"]
+  SERVER["Chat server<br/>adaptive_chat_server_dart (shelf)"]
+  OLLAMA["Ollama<br/>local model, /api/chat"]
+  PERSON -->|"types a message"| CLIENT
+  CLIENT -->|"renders card bubbles"| PERSON
+  CLIENT -->|"POST .../interactions"| SERVER
+  SERVER -->|"envelope of Adaptive Cards"| CLIENT
+  SERVER -->|"system prompt + history + turn"| OLLAMA
+  OLLAMA -->|"reply text or card JSON"| SERVER
+```
+
 ## What makes it "server-driven"
 
 - **The client is deliberately dumb.** It renders only what the server returns and

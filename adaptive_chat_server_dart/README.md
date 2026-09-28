@@ -13,6 +13,20 @@ implementation is now the only backend.
 
 Design notes: [`docs/superpowers/specs/2026-08-09-adaptive-chat-server-dart-design.md`](../docs/superpowers/specs/2026-08-09-adaptive-chat-server-dart-design.md).
 
+```mermaid
+flowchart TB
+  PERSON["Person"]
+  CLIENT["Chat client<br/>adaptive_chat_client (Flutter)"]
+  SERVER["Chat server<br/>adaptive_chat_server_dart (shelf)"]
+  OLLAMA["Ollama<br/>local model, /api/chat"]
+  PERSON -->|"types a message"| CLIENT
+  CLIENT -->|"renders card bubbles"| PERSON
+  CLIENT -->|"POST .../interactions"| SERVER
+  SERVER -->|"envelope of Adaptive Cards"| CLIENT
+  SERVER -->|"system prompt + history + turn"| OLLAMA
+  OLLAMA -->|"reply text or card JSON"| SERVER
+```
+
 ## Architecture
 
 The server is **authoritative for everything on screen**: it emits pre-styled
@@ -146,10 +160,11 @@ rebuilds the conversation's history from the store — walking
 pair per prior interaction — and passes it to `responder.reply(text, history)`
 with the **full** history. `OllamaResponder` then sends **system prompt +
 seed pair (if `--seed-card-file` named one) + history + current turn** to
-`/api/chat` (see the request-flow diagrams above) — history trimmed to a
-recent window as described next, the seed pair a fixed two turns on every
-call (see **Seed-card prefix** below for what it costs and why it's there). Because history is built from one
-conversation's `order`, each `conversationId` gets an independent context.
+`/api/chat` (see **Request flow** below) — history trimmed to a recent window
+as described next, the seed pair a fixed two turns on every call (see
+**Seed-card prefix** below for what it costs and why it's there). Because
+history is built from one conversation's `order`, each `conversationId` gets
+an independent context.
 
 **Retained in full; trimmed only on send.** The store keeps the **entire**
 conversation (durable log + idempotent replay). What is bounded is only the
@@ -414,6 +429,15 @@ the network.
 
 ### Request flow
 
+The two diagrams below show the same `POST .../interactions` request at two
+levels of detail.
+
+The first follows the request through the **route** in `app.dart`: header
+validation, the store lookup, auto-vivifying an expired conversation,
+idempotent replay of an already-seen `X-Interaction-Id`, rebuilding history,
+and authoring the bubbles and envelope in `cards.dart`. `OllamaResponder`
+appears as a single `reply(message, history)` call.
+
 ```mermaid
 ---
 title: "Ollama interaction — route to envelope"
@@ -436,7 +460,7 @@ sequenceDiagram
             S-->>R: null
             R->>S: create(conversationId: cid)<br/>auto-vivify, default user/assistant labels
             R->>K: noticeCard(...) — "this conversation no longer exists"
-            Note over R,K: The notice is prepended to this one envelope;<br/>any envelope opening with it answers<br/>X-Chat-Notice: conversation-recovered
+            Note over R,K: The notice is prepended to this one envelope,<br/>and any envelope opening with it answers<br/>X-Chat-Notice: conversation-recovered
         end
         alt already-seen id (idempotent replay)
             R->>S: getInteraction(cid, iid)
@@ -450,7 +474,7 @@ sequenceDiagram
             R->>O: reply(message, history)
             O->>O: load system prompt + seed card (per request) + trim history
             O->>L: POST /api/chat<br/>{system + seed pair + history + turn, num_ctx, temperature (--ollama-temperature), think:false}
-            L-->>O: message.content (or failure -> diagnostic text)
+            L-->>O: message.content (or failure: diagnostic text)
             O-->>R: Reply(text, cardBody)
             alt cardBody is not null
                 R->>K: assistantCardBubble(cardBody)
@@ -465,6 +489,13 @@ sequenceDiagram
     end
 ```
 
+The second expands that `reply(message, history)` call. It covers
+loading the system prompt and optional seed card on each request, trimming
+history, the `/api/chat` body, the diagnostic reply returned for each Ollama
+failure, and the `card_detect.dart` check that decides whether the reply is
+rendered as a card or as Markdown text. It stops at the `Reply` handed back to
+the route, so it does not show the store, the bubbles, or the envelope.
+
 ```mermaid
 ---
 title: "OllamaResponder.reply — system prompt, history, card detection"
@@ -473,8 +504,8 @@ sequenceDiagram
     autonumber
     participant R as Route
     participant O as OllamaResponder
-    participant F as system-prompt file<br/>assets/card_system_prompt.txt or --system-prompt-file
-    participant N as seed-card file<br/>assets/seed_card.json or --seed-card-file
+    participant F as system-prompt file (card or default prompt)
+    participant N as seed-card file (seed_card.json, optional)
     participant L as local Ollama /api/chat
     participant D as card_detect.dart tryParseCardBody
 
