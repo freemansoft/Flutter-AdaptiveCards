@@ -13,6 +13,26 @@ mapped to an API call that returns structured domain data, with a deterministic
 mapping layer turning that into a card. The demo is thin without any real application
 tier, instead relying on the model for JSON card creation.
 
+## Terms used in this article
+
+The first three name parts of the demo. The rest qualify a score. Probe and
+flag names are the repository's own.
+
+| Term                                   | What it means here                                                                                                                                                                                                                                                                               |
+| -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Adaptive Card element**              | One component type from the Adaptive Cards schema, such as `Input.ChoiceSet`, `Table` or `TextBlock`. A card body is a list of them, and the client renders each one as a widget.                                                                                                                |
+| **Card system prompt** and **palette** | The instructions the chat server sends ahead of every question, [`assets/card_system_prompt.txt`](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/assets/card_system_prompt.txt). Its palette is the list of element types the model may use.           |
+| **Detector**                           | The chat server code, [`lib/src/card_detect.dart`](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/lib/src/card_detect.dart), that decides whether a reply is a card or prose and extracts the card body. The probes score replies with this same code. |
+| **Probe** and **sweep**                | A probe is one script that sends a fixed question set to one model over Ollama's `/api/chat` and scores each reply. A sweep runs every probe against each model in turn, one model at a time.                                                                                                    |
+| **Test set**                           | The questions one probe sends. Three sets score a model here: everyday, stress and shape. Each has its own denominator, given in the table further down.                                                                                                                                         |
+| **Shape coverage**, `n/25`             | The shape set's score: how many of its 25 cases the reply answered with one of the element types the question called for. It is not accuracy. A model can answer every question correctly in prose and score 1/25.                                                                               |
+| **Cold start** and **with history**    | The shape probe's two conditions: the question asked first, or asked after ordinary prose exchanges replayed the way the chat server sends history.                                                                                                                                              |
+| **Seed card**                          | A synthetic two-turn exchange, a pick-one question and a bare card answering it, that the server prepends to the history so a card is the established format. Every shape figure here is seeded.                                                                                                 |
+| **`--samples 2`**                      | Each shape case runs twice and passes only if both runs pass, so a one-case difference between two models is noise.                                                                                                                                                                              |
+| **Tool channel**                       | Ollama's function-calling API. The server declares a `render_adaptive_card` function, and a model that calls it returns the card as the call's arguments, already parsed, instead of as text.                                                                                                    |
+| **Stall**                              | A call that exceeds the probe's 120 s per-call ceiling and scores as a failure. A slow model and a busy machine look the same to the probe.                                                                                                                                                      |
+| **Resident**                           | Loaded in memory by an Ollama runner. Every figure here was taken with one model resident at a time.                                                                                                                                                                                             |
+
 ## The model's reply is the UI, not text about it
 
 Adaptive card generation works as a test problem for local models, and the
@@ -256,18 +276,37 @@ model, run all of its probes, record the result, unload, move on.
 
 ## Four things generalize past this demo
 
-Test the shape your workload actually
-needs rather than a chat benchmark, because a model can sweep one and fail the
-other. Judge replies with the same detector your server actually runs, not with
-a second definition of correct. Measure with conversation history, not only cold
-start, since one prose exchange was enough to change the answer here. And state the
-test set and the condition beside every score, because `18/25` without them is
-not interpretable.
+Each holds for any workload that asks a local model for schema-shaped JSON.
 
-Four articles follow: the tuning process: fourteen levers tried on this
-workload, which shipped, and what is still open; the two-host comparison, the
-same benchmark on a 64 GB M1 Max and a 16 GB M5; and then the tool channel and
-measurement hygiene.
+- Test the shape your workload needs, not a chat benchmark. A model can pass
+  one and fail the other.
+- Judge replies with the detector your server runs. A second definition of
+  correct gives a score the server would disagree with.
+- Measure with conversation history, not only from a cold start. One prose
+  exchange changed the answer here.
+- State the test set and the condition beside every score. `18/25` on its own
+  cannot be read.
+
+Seven articles follow this one. [The tuning
+process](https://joe.blog.freemansoft.com/2026/09/we-tried-14-levers-to-get-reliable-card.html)
+tries fourteen levers on this workload and says which shipped. [The two-host
+comparison](https://joe.blog.freemansoft.com/2026/09/benchmarking-local-model-llm-generated.html)
+runs the same benchmark on a 64 GB M1 Max and a 16 GB M5. [The tool channel
+article](https://joe.blog.freemansoft.com/2026/09/ollamas-tool-channel-produces-better.html)
+measures Ollama's tool channel against prose on every model that calls it.
+[The measurement
+rules](https://joe.blog.freemansoft.com/2026/09/eight-measurement-rules-from-local.html)
+collect eight rules from the harness mistakes the sweeps made. [The
+context-window
+article](https://joe.blog.freemansoft.com/2026/09/ollama-silently-drops-history-message.html)
+shows Ollama dropping a history message larger than the window, with no error.
+[The full-context
+article](https://joe.blog.freemansoft.com/2026/09/a-full-context-breaks-three-local.html)
+measures what a filled window costs each model's card coverage. [The
+prompt-cache
+article](https://joe.blog.freemansoft.com/2026/09/on-ollama-models-memory-type-and-its.html)
+explains how much of a cached system prompt a new conversation reuses, by
+memory type and runner.
 
 The project is at
 [https://github.com/freemansoft/Flutter-AdaptiveCards](https://github.com/freemansoft/Flutter-AdaptiveCards),
