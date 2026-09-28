@@ -1,0 +1,4 @@
+# Store all text files with LF line endings in the repository and working copy,
+# regardless of each contributor's core.autocrlf setting. Binary files are
+# auto-detected and left untouched.
+* text=auto eol=lf
