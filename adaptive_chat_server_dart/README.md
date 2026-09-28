@@ -14,7 +14,7 @@ implementation is now the only backend.
 Design notes: [`docs/superpowers/specs/2026-08-09-adaptive-chat-server-dart-design.md`](../docs/superpowers/specs/2026-08-09-adaptive-chat-server-dart-design.md).
 
 ```mermaid
-flowchart LR
+flowchart TB
   PERSON["Person"]
   CLIENT["Chat client<br/>adaptive_chat_client (Flutter)"]
   SERVER["Chat server<br/>adaptive_chat_server_dart (shelf)"]
