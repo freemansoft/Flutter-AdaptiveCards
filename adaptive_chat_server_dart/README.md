@@ -13,6 +13,20 @@ implementation is now the only backend.
 
 Design notes: [`docs/superpowers/specs/2026-08-09-adaptive-chat-server-dart-design.md`](../docs/superpowers/specs/2026-08-09-adaptive-chat-server-dart-design.md).
 
+```mermaid
+flowchart LR
+  PERSON["Person"]
+  CLIENT["Chat client<br/>adaptive_chat_client (Flutter)"]
+  SERVER["Chat server<br/>adaptive_chat_server_dart (shelf)"]
+  OLLAMA["Ollama<br/>local model, /api/chat"]
+  PERSON -->|"types a message"| CLIENT
+  CLIENT -->|"renders card bubbles"| PERSON
+  CLIENT -->|"POST .../interactions"| SERVER
+  SERVER -->|"envelope of Adaptive Cards"| CLIENT
+  SERVER -->|"system prompt + history + turn"| OLLAMA
+  OLLAMA -->|"reply text or card JSON"| SERVER
+```
+
 ## Architecture
 
 The server is **authoritative for everything on screen**: it emits pre-styled
