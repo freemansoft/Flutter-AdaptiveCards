@@ -195,7 +195,8 @@ one borderline call fails the whole case. Everyday and stress run each case
 once, at `--samples 1`.
 
 With-history shape coverage across the fifteen models measured runs from
-**25/25 to 1/25**. Six of them:
+**25/25 to 1/25**. The table shows six of the fifteen, chosen to span that
+range.
 
 | Model               | Size    | Cold-start | With history |
 | ------------------- | ------- | ---------- | ------------ |
@@ -225,7 +226,7 @@ constraint behind that recommendation: seven of the fifteen models do not fit a
 16 GB host at all. A later article names those seven and measures what the
 smaller machine costs.
 
-## Seven of fifteen models return the card through Ollama's tool channel
+## About half the models return the card through Ollama's tool channel
 
 Every score above depends on the chat server finding card JSON inside a text
 reply, and the detector exists because that is unreliable.
@@ -269,14 +270,12 @@ nothing in the scores above predicts where a model lands.
 | **3**  | calls it even when the question is prose | A card nobody asked for           |
 | **2**  | cannot call functions at all             | An ordinary text reply            |
 
-One of the three that never picks the card function was trained specifically for
-tool use. One of the two that cannot call functions at all is the model the
-server ships as its default.
-
-The split is not a fixed property of a model either. Re-running the probe after
-rewording the system prompt, with the same schema and the same question, moved
-four of the fifteen models between rows, in both directions. A model that can
-be talked into calling the function can be talked out of it again.
+The split is not a fixed property of a model. Re-running the probe after
+rewording the system prompt moved four of the fifteen models between rows, in
+both directions.
+[The tool channel article](https://joe.blog.freemansoft.com/2026/09/ollamas-tool-channel-produces-better.html)
+gives each model's row and measures the tool channel against prose on every
+model that calls it.
 
 ## A busy machine and a slow model look identical to a probe
 
