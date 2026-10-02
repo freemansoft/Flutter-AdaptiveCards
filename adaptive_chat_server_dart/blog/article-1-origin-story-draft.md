@@ -15,21 +15,22 @@ tier, instead relying on the model for JSON card creation.
 
 ## Terms used in this article
 
-The first three name parts of the demo. The rest qualify a score. Probe and
-flag names are the repository's own.
+The first four terms are implementation details of the demo. The rest belong
+to the test and scoring mechanism. Probe and flag names are the repository's
+own.
 
 | Term                                   | What it means here                                                                                                                                                                                                                                                                               |
 | -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | **Adaptive Card element**              | One component type from the Adaptive Cards schema, such as `Input.ChoiceSet`, `Table` or `TextBlock`. A card body is a list of them, and the client renders each one as a widget.                                                                                                                |
 | **Card system prompt** and **palette** | The instructions the chat server sends ahead of every question, [`assets/card_system_prompt.txt`](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/assets/card_system_prompt.txt). Its palette is the list of element types the model may use.           |
 | **Detector**                           | The chat server code, [`lib/src/card_detect.dart`](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/lib/src/card_detect.dart), that decides whether a reply is a card or prose and extracts the card body. The probes score replies with this same code. |
+| **Tool channel**                       | Ollama's function-calling API. The server declares a `render_adaptive_card` function, and a model that calls it returns the card as the call's arguments, already parsed, instead of as text.                                                                                                    |
 | **Probe** and **sweep**                | A probe is one script that sends a fixed question set to one model over Ollama's `/api/chat` and scores each reply. A sweep runs every probe against each model in turn, one model at a time.                                                                                                    |
 | **Test set**                           | The questions one probe sends. Three sets score a model here: everyday, stress and shape. Each has its own denominator, given in the table further down.                                                                                                                                         |
 | **Shape coverage**, `n/25`             | The shape set's score: how many of its 25 cases the reply answered with one of the element types the question called for. It is not accuracy. A model can answer every question correctly in prose and score 1/25.                                                                               |
 | **Cold start** and **with history**    | The shape probe's two conditions. Both open with the seed card exchange. Cold start then asks the question; with history first adds one ordinary prose exchange, replayed the way the chat server sends history.                                                                                 |
 | **Seed card**                          | A synthetic two-turn exchange, a pick-one question and a bare card answering it, that the server prepends to the history so a card is the established format. Every shape score here is seeded. The everyday and stress sets send one question with no seed and no history.                      |
 | **`--samples 2`**                      | Each shape case runs twice and passes only if both runs pass, so a one-case difference between two models is noise.                                                                                                                                                                              |
-| **Tool channel**                       | Ollama's function-calling API. The server declares a `render_adaptive_card` function, and a model that calls it returns the card as the call's arguments, already parsed, instead of as text.                                                                                                    |
 | **Stall**                              | A call that exceeds the probe's 120 s per-call ceiling and scores as a failure. A slow model and a busy machine look the same to the probe.                                                                                                                                                      |
 | **Resident**                           | Loaded in memory by an Ollama runner. Every figure here was taken with one model resident at a time.                                                                                                                                                                                             |
 
@@ -63,6 +64,63 @@ the question, a pick-from-a-set question wants a control the user can click,
 or it does not. The format either survives the conversation's prior turns or
 drifts back to Markdown. That combination is what made this workload worth
 measuring.
+
+## Each test set asks a different question of the same reply
+
+Everything here was measured against a local Ollama on an Apple
+M1 Max with 64 GB. A later article runs the same benchmark
+on a second machine.
+
+Each set asks one question of a model's replies, so a score is only readable
+next to the name of its set. Everyday and stress ask whether a reply renders.
+Shape asks whether it used the right element type.
+
+| Set (script)                         | What it sends, and how the denominator is built                                                                                     | What it asks of the reply                                                                                                                                             | What it is for                               |
+| ------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------- |
+| Everyday (`temperature_matrix.dart`) | 7 ordinary requests, one per common kind of reply, × 3 temperatures (`0`, `0.2`, `0.6`) = **21**                                    | Does the reply render, as a card or as clean prose?                                                                                                                   | Is this model usable at all?                 |
+| Stress (`temperature_stress.dart`)   | 5 hard requests (code, big table, nested form, escaped strings, two structures in one reply) × 2 temperatures (`0`, `0.6`) = **10** | Does the reply still render when the request is hard?                                                                                                                 | Which model or setting should we ship?       |
+| Shape (`shape_ab.dart`)              | **25** cases, scored cold start and with history, `--samples 2`                                                                     | Did the reply use one of the element types that would answer this question? Each case names its own accepted set, since more than one element is often equally right. | Does the card do the job the question asked? |
+
+One shape case is a control with an empty accepted set: "In two sentences, why
+is the sky blue?" passes only as prose.
+
+One question from each set:
+
+- **Everyday**: "What size shirt should I order? Offer S, M, L, XL."
+- **Stress**: "Build me a full expense report form: a title, a date picker, an
+  amount field, a category dropdown with 6 categories, a multiline notes box,
+  and submit/cancel buttons."
+- **Shape**: "what are my options for deployment targets", whose accepted set
+  is a single element: it passes only on an `Input.ChoiceSet`.
+
+The table has three rows because those are the three sets that score a _model_.
+The probe directory holds others that ask different questions. `prompt_ab.dart`
+holds the model fixed and A/B-tests two card system prompts against each other
+over the same user questions. The tuning article uses it to catch a prompt edit
+that regressed. `tool_call_probe.dart`, used further down, asks whether a model
+will return a card through Ollama's tool channel instead of as message text.
+
+## One prose exchange can turn a card answer into Markdown
+
+Cold start and with history are the shape probe's two conditions. Both open
+with the seed card exchange. Cold start then asks the question; with history
+first adds one ordinary prose exchange.
+
+The effect was first measured before the seed card existed. On 2026-08-14,
+`qwen2.5-coder:7b` at `t=0` answered "what are my options for deployment
+targets" with an `Input.ChoiceSet` when it was the first thing asked. With
+**one** ordinary exchange ahead of it, a question answered in Markdown, the same
+question came back as 867 characters of Markdown; with two exchanges, 903. No
+card either time. The seed card closed most of that gap, and in the seeded run
+`qwen2.5-coder:7b` no longer loses this case to history.
+
+Losing the card format does not require a long conversation. Model replies
+appear to follow the format the conversation is already in, so a question that
+would have produced a card can come back as prose once prose is what precedes
+it. That is a per-question effect rather than a latch: the same model, seeded
+and with one prose exchange, still produces the right element on 18 of 25 shape
+cases. A cold-start score therefore describes a condition most users are not in,
+which is why every score below carries its condition.
 
 ## `llama3-chatqa:8b` passes the everyday and stress sets in prose and scores 1/25 on shape
 
@@ -122,80 +180,6 @@ one user-visible failure that no score in this series counts.
 [The measurement rules article](https://joe.blog.freemansoft.com/2026/09/eight-measurement-rules-from-local.html)
 covers the harness mistakes that did reach the scores.
 
-The first chat server prototype had no card detector. The chat server's detector
-arrived before the test probes, and it was iterated on as a result of the evolving tests. It accepts three JSON forms that can hold a card, because local
-models emit all three:
-
-- a whole `AdaptiveCard` object
-- a bare array of Adaptive Card elements
-- a single Adaptive Card element
-
-The chat server's detector restores missing enclosing brackets, because a small model asked for two
-elements often writes them comma-separated with no array around them. It
-attempts a plain parse before stripping Markdown fences, because the fence
-stripping had truncated a valid card whose own text opened a fenced code
-block. It reports why it rejected a JSON-looking reply, because "not a card" is
-not a log line anyone can act on. The vocabulary check also came from the
-sweeps, which kept producing cards that passed the detector and still showed
-the user an error placeholder in place of an element.
-
-## Each test set asks a different question of the same reply
-
-Everything here was measured against a local Ollama on an Apple
-M1 Max with 64 GB. A later article runs the same benchmark
-on a second machine.
-
-Each set asks one question of a model's replies, so a score is only readable
-next to the name of its set. Everyday and stress ask whether a reply renders.
-Shape asks whether it used the right element type.
-
-| Set (script)                         | What it sends, and how the denominator is built                                                                                     | What it asks of the reply                                                                                                                                             | What it is for                               |
-| ------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------- |
-| Everyday (`temperature_matrix.dart`) | 7 ordinary requests, one per common kind of reply, × 3 temperatures (`0`, `0.2`, `0.6`) = **21**                                    | Does the reply render, as a card or as clean prose?                                                                                                                   | Is this model usable at all?                 |
-| Stress (`temperature_stress.dart`)   | 5 hard requests (code, big table, nested form, escaped strings, two structures in one reply) × 2 temperatures (`0`, `0.6`) = **10** | Does the reply still render when the request is hard?                                                                                                                 | Which model or setting should we ship?       |
-| Shape (`shape_ab.dart`)              | **25** cases, scored cold start and with history, `--samples 2`                                                                     | Did the reply use one of the element types that would answer this question? Each case names its own accepted set, since more than one element is often equally right. | Does the card do the job the question asked? |
-
-One shape case is a control with an empty accepted set: "In two sentences, why
-is the sky blue?" passes only as prose.
-
-One question from each set:
-
-- **Everyday**: "What size shirt should I order? Offer S, M, L, XL."
-- **Stress**: "Build me a full expense report form: a title, a date picker, an
-  amount field, a category dropdown with 6 categories, a multiline notes box,
-  and submit/cancel buttons."
-- **Shape**: "what are my options for deployment targets", whose accepted set
-  is a single element: it passes only on an `Input.ChoiceSet`.
-
-The table has three rows because those are the three sets that score a _model_.
-The probe directory holds others that ask different questions. `prompt_ab.dart`
-holds the model fixed and A/B-tests two card system prompts against each other
-over the same user questions. The tuning article uses it to catch a prompt edit
-that regressed. `tool_call_probe.dart`, used further down, asks whether a model
-will return a card through Ollama's tool channel instead of as message text.
-
-## One prose exchange can turn a card answer into Markdown
-
-Cold start and with history are the shape probe's two conditions. Both open
-with the seed card exchange. Cold start then asks the question; with history
-first adds one ordinary prose exchange.
-
-The effect was first measured before the seed card existed. On 2026-08-14,
-`qwen2.5-coder:7b` at `t=0` answered "what are my options for deployment
-targets" with an `Input.ChoiceSet` when it was the first thing asked. With
-**one** ordinary exchange ahead of it, a question answered in Markdown, the same
-question came back as 867 characters of Markdown; with two exchanges, 903. No
-card either time. The seed card closed most of that gap, and in the seeded run
-`qwen2.5-coder:7b` no longer loses this case to history.
-
-Losing the card format does not require a long conversation. Model replies
-appear to follow the format the conversation is already in, so a question that
-would have produced a card can come back as prose once prose is what precedes
-it. That is a per-question effect rather than a latch: the same model, seeded
-and with one prose exchange, still produces the right element on 18 of 25 shape
-cases. A cold-start score therefore describes a condition most users are not in,
-which is why every score below carries its condition.
-
 ## Shape coverage runs from 25/25 to 1/25 across fifteen models
 
 Before any score: these are all measured on the configuration the server ships,
@@ -235,17 +219,43 @@ history
 `qwen2.5-coder:7b`, and `nemotron-3-nano:4b`). Judge on the with-history column,
 because that is the condition a user is in.
 
-Everything above depends on finding JSON inside a text reply. The detector
-exists because that is unreliable. Ollama offers a way to avoid it, called tool
-calling.
+For low-memory machines, the best-performing model
+is `granite4.1:8b`: 21/25 with history in 5.0 GB. Hardware is the
+constraint behind that recommendation: seven of the fifteen models do not fit a
+16 GB host at all. A later article names those seven and measures what the
+smaller machine costs.
+
+## Seven of fifteen models return the card through Ollama's tool channel
+
+Every score above depends on the chat server finding card JSON inside a text
+reply, and the detector exists because that is unreliable.
+
+The first chat server prototype had no card detector. The chat server's detector
+arrived before the test probes, and it was iterated on as a result of the
+evolving tests. It accepts three JSON forms that can hold a card, because local
+models emit all three:
+
+- a whole `AdaptiveCard` object
+- a bare array of Adaptive Card elements
+- a single Adaptive Card element
+
+The chat server's detector restores missing enclosing brackets, because a small
+model asked for two elements often writes them comma-separated with no array
+around them. It attempts a plain parse before stripping Markdown fences, because
+the fence stripping had truncated a valid card whose own text opened a fenced
+code block. It reports why it rejected a JSON-looking reply, because "not a
+card" is not a log line anyone can act on. The vocabulary check also came from
+the sweeps, which kept producing cards that passed the detector and still showed
+the user an error placeholder in place of an element.
+
+Ollama offers a way to avoid parsing text at all, called tool calling.
 
 Tool calling works like this. The server tells the model about one function,
 `render_adaptive_card`, and says the model may call it. A model that takes the
 offer does not write a reply at all. It asks to call that function, and the card
 is the data it passes to the call. Ollama hands that back in a field of its own,
-already parsed, separate from the message text. That field is the tool
-channel. Nothing is
-left in the text for the server to fish out.
+already parsed, separate from the message text. That field is the tool channel.
+Nothing is left in the text for the server to fish out.
 
 Not every model can do this, and ones that cannot do not say so. The model
 answers with ordinary text. A model that _can_ call functions may also never
@@ -267,12 +277,6 @@ The split is not a fixed property of a model either. Re-running the probe after
 rewording the system prompt, with the same schema and the same question, moved
 four of the fifteen models between rows, in both directions. A model that can
 be talked into calling the function can be talked out of it again.
-
-For low-memory machines, the best-performing model
-is `granite4.1:8b`: 21/25 with history in 5.0 GB. Hardware is the
-constraint behind that recommendation: seven of the fifteen models do not fit a
-16 GB host at all. A later article names those seven and measures what the
-smaller machine costs.
 
 ## A busy machine and a slow model look identical to a probe
 
