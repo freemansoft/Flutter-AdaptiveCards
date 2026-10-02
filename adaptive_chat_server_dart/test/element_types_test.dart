@@ -8,8 +8,8 @@ import 'package:test/test.dart';
 // (loadKnownElementTypes) and the walker that flags a reply's `type` values
 // straying outside it (unknownElementTypes). What this guards: an invented or
 // misspelled element `type` is still valid JSON, so it passes card detection
-// and then silently renders as an empty blank — the one failure mode no
-// probe can score, because every probe judges a reply by whether it parses.
+// and then renders as an error placeholder — the one failure mode no probe
+// score counts, because every probe judges a reply by whether it parses.
 // Ordinary behavioral tests, but note the boundary: every schema here is a
 // synthetic file written to a temp dir for the duration of one test, so
 // these exercise the parsing/fallback logic in isolation — nothing here

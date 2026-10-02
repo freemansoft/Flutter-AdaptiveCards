@@ -577,14 +577,14 @@ class OllamaResponder({
     } else {
       final unknown = unknownElementTypes(cardBody, _knownElementTypes);
       if (unknown.isNotEmpty) {
-        // Warned, not rejected: an unrecognized type renders as a blank, but
-        // suppressing the whole card over one bad nested element may be
-        // worse. The fire rate observed here is the evidence for whether to
-        // promote this to a rejection.
+        // Warned, not rejected: an unrecognized type renders as an error
+        // placeholder, but suppressing the whole card over one bad nested
+        // element may be worse. The fire rate observed here is the evidence
+        // for whether to promote this to a rejection.
         _log.warning(
           'Model reply contains unrecognized element type(s) '
-          '(model=$_model): ${unknown.join(", ")} — these render as empty '
-          'blanks. Card rendered anyway.',
+          '(model=$_model): ${unknown.join(", ")} — these render as '
+          'error placeholders. Card rendered anyway.',
         );
       }
     }

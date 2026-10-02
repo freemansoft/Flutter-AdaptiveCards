@@ -32,7 +32,7 @@ how each was scored. Probe and flag names are the repository's own.
 | **Promoted**, **reverted** and **no effect** | A lever's outcome: shipped in the server's configuration, backed out after a regression, or left unshipped because no score moved.                                                                                                                                                                                                         |
 | **Tool channel**                             | Ollama's function-calling API. The server declares a `render_adaptive_card` function, and the model returns the card as the call's arguments, already parsed, instead of as text.                                                                                                                                                          |
 
-## Giving the explanation a place in the card worked; banning prose did not
+## Redirecting the model's explanation into the card worked better than banning it
 
 `qwen2.5-coder:7b` answered a request to explain a snippet of code with a
 valid Adaptive Card, then appended the explanation after it. A reply is
@@ -71,14 +71,17 @@ the content of any individual edit:
 | Context assembly   | 3      | one largest effect measured, one model-dependent and shipped opt-in, one no effect |
 | Decoding           | 3      | two promoted, one per-model and unreliable                                         |
 | System prompt text | 6      | two promoted, one reverted for a regression, three no effect                       |
-| Server code        | 1      | the only durable fix                                                               |
+| Server code checks | 1      | the only durable fix                                                               |
 | Output channel     | 1      | failed, not shipped                                                                |
 
-Read down the Outcome column. Of the six levers that change _what the model
-sees before the question_ or _how it decodes_, four ship today, one of those
-four opt-in, and the largest effect in the notebook is among them. Of the
-six that change _the system prompt text_, two ship, one was reverted for a
-regression, and three had no measurable effect.
+Read down the Outcome column.
+
+- Six levers change _what the model
+  sees before the question_ or _how it decodes_.
+- Four ship today, one of those
+  four opt-in, and the largest effect in the notebook is among them.
+- Six change _the system prompt text_. Two ship. One was reverted for a
+  regression. Three had no measurable effect.
 
 That ratio is easy to over-read: the levers were tried at different times, each
 against whatever configuration was already in place, not run head-to-head. The
@@ -89,13 +92,15 @@ The levers are not shown to be independent either: one that measured as no
 effect alone might pay once paired with another, as `think: false` and
 `temperature: 0` do below.
 
-Two things travel with any reading of fourteen levers across five kinds: it is
-a pattern in one ledger, not a rate to extrapolate, and one of the three
-context rows is a null that may simply be undelivered. What the ledger is good
-for is ordering: write the card prompt first, because nothing else in the
-table substitutes for it; when edits to it stop moving a score, reach for
-context and decoding; and none of the three kinds makes a malformed card safe,
-which is what the server-code row is for.
+Two more caveats apply. The fourteen results come from one project's tuning,
+so they show which kinds of change helped here, not how often each kind helps
+elsewhere. And the repeated `system` message may have scored no effect only
+because some chat templates never deliver it to the model.
+
+The table does suggest an order of work. Write the card prompt first, because
+no other lever substitutes for it. When edits to the prompt stop moving a
+score, try context and decoding changes. None of those three kinds makes a
+malformed card safe; that takes a check in the server code.
 
 ## The prompt file and the synthetic card history had the biggest effects
 

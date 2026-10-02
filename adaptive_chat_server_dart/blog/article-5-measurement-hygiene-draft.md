@@ -368,7 +368,7 @@ with.
 The diagram shows the three checks a model's reply meets on its way to the
 user, in order, and where the probes attach. Only the first changes where a
 reply goes. The second logs a warning, and the third renders what it cannot
-use as a blank. The diagram shows the chat server's default path, with no
+use as an error placeholder. The diagram shows the chat server's default path, with no
 `format` constraint.
 
 ```mermaid
@@ -377,7 +377,7 @@ flowchart LR
   D -- text --> T[sent as plain text]
   D -- card --> U[unknownElementTypes<br/>logs a warning, card sent anyway]
   U --> C[Flutter client<br/>full Adaptive Cards parse]
-  C --> B[an unknown element<br/>renders as an empty space]
+  C --> B[an unknown element<br/>renders as an error placeholder]
   P[probe scoring] -. calls the same function .-> D
 ```
 
@@ -385,8 +385,8 @@ The detector's job is only to decide card or text. It checks that a reply has
 the shape of a card, not that its element types exist or that each element
 has its required fields. So `{"type": "Bogus.Element"}` and an
 `Input.ChoiceSet` with no `choices` both score as cards. The Flutter client
-does the full Adaptive Cards parse, and renders an unknown element as an empty
-space.
+does the full Adaptive Cards parse, and renders an unknown element as an error
+placeholder naming the type.
 
 A second server check, `unknownElementTypes`, compares each element type
 against the shipped `card_schema.json` and logs a warning. Since 2026-09-16

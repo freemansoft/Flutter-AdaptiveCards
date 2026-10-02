@@ -1043,7 +1043,7 @@ void main() {
 
     // Pins the deliberate "warn, don't reject" design choice from reply()'s
     // own comment: suppressing an entire card over one bad nested element
-    // may be worse than rendering a blank for just that element. A
+    // may be worse than an error placeholder for just that element. A
     // regression here would start silently dropping otherwise-good cards.
     test('the card is still returned, not downgraded to text', () async {
       writeVocabulary(['TextBlock', 'Badge']);

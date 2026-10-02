@@ -2,9 +2,11 @@
 /// reply that strays outside it.
 ///
 /// An invented or misspelled `type` is still valid JSON, so it passes card
-/// detection and then renders as an empty blank rather than an error. That
-/// makes it the one failure users can see and no probe can score, because
-/// every probe judges a reply by whether it parses as a card. Reading the
+/// detection and then renders in the client as an error placeholder naming
+/// the unknown type. That makes it the one failure users can see that no
+/// probe score counts, because every probe scores a reply by whether it
+/// parses as a card; the shape probe records this check per call but does
+/// not score it. Reading the
 /// vocabulary from the shipped schema — rather than a list kept here — means
 /// the check tracks what the client actually renders.
 ///
