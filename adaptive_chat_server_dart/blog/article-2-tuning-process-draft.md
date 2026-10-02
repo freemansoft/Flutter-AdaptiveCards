@@ -88,10 +88,9 @@ no other lever substitutes for it. When edits to the prompt stop moving a
 score, try context and decoding changes. None of those three kinds makes a
 malformed card safe; that takes a check in the server code.
 
-The diagram places each kind where it acts on a request, from what the model
-sees before the question to what the user sees. A reply takes one output path.
-The dashed tool channel was measured by the probes only and did not ship; its
-replies are scored by the same detector.
+The diagram places each type of lever where it acts upon a request.
+A reply only has one output path.
+The dashed tool channel was measured by the same detector but did not ship.
 
 ```mermaid
 flowchart TB
