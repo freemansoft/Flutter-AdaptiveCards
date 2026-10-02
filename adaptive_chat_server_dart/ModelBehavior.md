@@ -925,9 +925,10 @@ top-level JSON objects separated by a newline, the failure the prose prompt's
 prompt drops as emission mechanics.
 
 **Valid JSON is not a valid card, and the two need separate checks.** An
-invented type parses, passes card detection, and renders as an empty blank,
-which [`element_types.dart`](lib/src/element_types.dart) describes as the one
-failure users see and no probe could score. `shape_ab.dart` now records
+invented type parses, passes card detection, and renders as an error
+placeholder naming the unknown type, which
+[`element_types.dart`](lib/src/element_types.dart) describes as the one failure
+users see that no probe score counts. `shape_ab.dart` now records
 `unknownTypes` per call, running the server's own `unknownElementTypes()`
 against the vocabulary in `card_schema.json`, so future runs measure it.
 

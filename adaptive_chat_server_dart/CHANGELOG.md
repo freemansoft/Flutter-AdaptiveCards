@@ -2,6 +2,11 @@
 
 ## [0.18.0]
 
+- An unrecognized element type renders in the client as an error placeholder
+  naming the type, not as a blank. The `unknownElementTypes` warning, the
+  `element_types.dart` library doc, two test comments, the notebook and
+  article 5 now say so, and no longer say that no probe can score it: the
+  shape probe records the check per call, though no score counts it.
 - Notebook: **the MLX runner's first-divergence cost is not the Qwen3.5
   architecture.** `nemotron-3-nano-mlx:4b-bf16`, the Hugging Face
   `NVIDIA-Nemotron-3-Nano-4B-BF16` safetensors build (`nemotron_h`, a Mamba2
