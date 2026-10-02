@@ -32,33 +32,19 @@ how each was scored. Probe and flag names are the repository's own.
 | **Promoted**, **reverted** and **no effect** | A lever's outcome: shipped in the server's configuration, backed out after a regression, or left unshipped because no score moved.                                                                                                                                                                                                         |
 | **Tool channel**                             | Ollama's function-calling API. The server declares a `render_adaptive_card` function, and the model returns the card as the call's arguments, already parsed, instead of as text.                                                                                                                                                          |
 
-## Redirecting the model's explanation into the card worked better than banning it
-
-`qwen2.5-coder:7b` answered a request to explain a snippet of code with a
-valid Adaptive Card, then appended the explanation after it. A reply is
-either a card or prose, with nothing in between: the client renders a card
-only when the entire reply is one, so appending the explanation demoted the
-whole thing to text and the user saw raw JSON. The obvious repair was to
-tell the model harder not to write anything after the card. That did not
-work. It scored the same and stopped producing cards at all, answering
-every code question in Markdown. What worked was telling it where the
-explanation goes: a `TextBlock` beside the `CodeBlock`. Redirect a
-behavior rather than forbidding it.
-
-The tuning remediated four failure modes.
+## Four failure modes drove the tuning
 
 - Raw JSON shown to the user as text.
 - A card truncated mid-generation.
 - Prose appended after an otherwise valid card.
 - A conversation that drifts back to Markdown and stays there.
-  - One prose
-    exchange ahead of an options question was enough to turn a working
-    `Input.ChoiceSet` into 867 characters of Markdown on `qwen2.5-coder:7b` at
-    `t=0`.
+  - Before the seed card existed, one prose exchange ahead of
+    an options question was enough to turn a working `Input.ChoiceSet` into
+    867 characters of Markdown on `qwen2.5-coder:7b` at `t=0`.
 
 ## We tried fourteen levers, starting with the system prompt
 
-Fourteen levers were pulled against those failures and each one recorded with
+Fourteen levers were pulled against the four failure modes and each one recorded with
 its outcome and its evidence, in
 [the tuning ledger](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md#the-tuning-ledger--everything-tried-and-whether-it-helped)
 of that notebook. The ledger groups each lever by _kind_, meaning which layer of
@@ -101,6 +87,30 @@ The table does suggest an order of work. Write the card prompt first, because
 no other lever substitutes for it. When edits to the prompt stop moving a
 score, try context and decoding changes. None of those three kinds makes a
 malformed card safe; that takes a check in the server code.
+
+The diagram places each kind where it acts on a request, from what the model
+sees before the question to what the user sees. A reply takes one output path.
+The dashed tool channel was measured by the probes only and did not ship; its
+replies are scored by the same detector.
+
+```mermaid
+flowchart TB
+  Q[user question] --> CTX
+  subgraph CTX["Context assembly: 3 levers, 2 shipped"]
+    direction LR
+    P["System prompt text: 6 levers, 2 shipped<br/>card_system_prompt.txt"]
+    S[seed card, opt-in]
+    H[trimmed history]
+    P ~~~ S ~~~ H
+  end
+  CTX --> REQ["Decoding: 3 levers, 2 shipped<br/>POST /api/chat: temperature, think, format"]
+  REQ --> M[model]
+  M --> OUT["Output channel: 1 lever,<br/>not shipped<br/>one path per reply"]
+  OUT -- message text --> DET["Server code checks: 1 lever, the only durable fix<br/>card_detect.dart"]
+  OUT -. "tool channel: parsed arguments<br/>probes only" .-> DET
+  DET -- card --> CARD[client renders the card]
+  DET -- rejected --> TXT[client shows the reply as text]
+```
 
 ## The prompt file and the synthetic card history had the biggest effects
 
@@ -241,16 +251,24 @@ probe sets; two moved a score enough to ship.
 | Make the Markdown-permission section's heading less prominent              | No effect           | Same screening; failed.                                                      |
 | Narrow the escape-hatch wording further still                              | No effect           | Same screening; failed.                                                      |
 
-The redirect edit is the one the article opened on. On `qwen2.5-coder:7b`, the
-notebook's hard cases, the requests that were breaking card output at the
-time, went **6/10 → 15/15 at `t=0`** and **7/10 → 14/15 at `t=0.6`**. The
-denominators differ between the before and after runs, so read each side as a
-rate rather than subtracting the counts; the notebook does not say why the
-case count changed between the two measurements. The `t=0.6` figure is worth carrying, because a fix
-that holds at `t=0` does not always hold hotter, and this one did. Concretely,
-the same code question that used to come back as a card followed by an
-explanation, rendered as raw text, now comes back as one card with the
-explanation in a `TextBlock` next to the `CodeBlock`.
+Redirecting the model's explanation into the card worked better than banning
+it. `qwen2.5-coder:7b` answered a request to explain a snippet of code with a
+valid Adaptive Card, then appended the explanation after it. The client renders
+a card only when the entire reply is is valid card(s), so the user saw raw JSON.
+The obvious
+repair was to tell the model harder not to write anything after the card. It
+scored the same and stopped producing cards at all, answering every code
+question in Markdown. The redirect told the model where the explanation goes
+instead: a `TextBlock` beside the `CodeBlock`.
+
+On `qwen2.5-coder:7b`, the notebook's hard cases, the requests that were
+breaking card output at the time, went **6/10 → 15/15 at `t=0`** and **7/10 →
+14/15 at `t=0.6`**. The denominators differ between the before and after runs,
+so read each side as a rate rather than subtracting the counts; the notebook
+does not say why the case count changed between the two measurements. The
+`t=0.6` figure is worth carrying, because a fix that holds at `t=0` does not
+always hold hotter, and this one did. The screenshots show the same code
+question before and after.
 
 | Before                                                                                                                                      | After                                                                                                                        |
 | ------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
