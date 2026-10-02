@@ -88,7 +88,7 @@ no other lever substitutes for it. When edits to the prompt stop moving a
 score, try context and decoding changes. None of those three kinds makes a
 malformed card safe; that takes a check in the server code.
 
-The diagram places each type of lever where it acts upon a request.
+The diagram places each kind of lever where it acts upon a request.
 A reply only has one output path.
 The dashed tool channel was measured by the same detector but did not ship.
 
