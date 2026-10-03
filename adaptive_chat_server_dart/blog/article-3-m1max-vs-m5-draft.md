@@ -5,8 +5,7 @@ In
 a demonstration Dart chat server hands a question to a local Ollama model and
 asks for the answer as Adaptive Card JSON, a strict, closed-vocabulary schema,
 which a Flutter client renders as interactive UI rather than as text. We built
-a set of test probes that measure how well fifteen local models manage that
-well and how fast. We built the probes on a 64 GB machine and then compared the
+a set of test probes that measure how well fifteen local models manage that, and how fast. We built the probes on a 64 GB machine and then compared the
 results to a machine with a quarter of the memory.
 
 ## Two machines, one set of test probes
@@ -46,7 +45,7 @@ the ratios as a direction, not a per-model figure. The 16 GB recommendation
 rests on fit and response scores.
 
 Every figure below comes from
-[`ModelBehavior.md`](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md),
+[`ModelBehavior.md`](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/afa24f413c5e23d1b1487bff5770af20b907d377/adaptive_chat_server_dart/ModelBehavior.md),
 a lab notebook in the
 [`freemansoft/Flutter-AdaptiveCards`](https://github.com/freemansoft/Flutter-AdaptiveCards)
 repository.
@@ -93,14 +92,14 @@ decides a model's fit, meaning the size of the model's parameter file, not the
 | `qwen3.6:27b-coding-nvfp4`                          | 18.4 GB | ❌    |
 | `qwen3.8:27b-nvfp4`                                 | 16.9 GB | ❌    |
 
-The marginal model for 16GB machines is `qwen3.5:9b` at 6.1 GB. The other seven
-do not fully fit within 16GB at all with their size and quant settings.
+The marginal model for 16 GB machines is `qwen3.5:9b` at 6.1 GB. The other seven
+do not fit 16 GB at their size and quantization.
 
 Model weights are not the whole memory budget. `gpt-oss:20b` is **12.8 GB**
 against a 16 GB machine and is still a ❌, because those weights share the pool
 with macOS and the runtime, so the usable ceiling sits below the number on the
 box. ❌ means "do not recommend this as the default on a 16 GB host", not
-"untested". Every one marked as ❌ for 16GB was measured on the 64 GB machine.
+"untested". Every model marked ❌ for 16 GB was measured on the 64 GB machine.
 
 The best pick for a 16 GB host is `granite4.1:8b`: 21 of 25 shape cases, in
 5.0 GB. A response score counts only whether the reply used an element type that
@@ -110,7 +109,7 @@ would answer the question, so this measures coverage, not accuracy.
 notebook to do so under any condition, and at 12.8 GB it is still a ❌ for
 16 GB. Moving to the smaller machine costs four test cases out of twenty-five.
 The notebook's
-[roster](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md#candidate-models),
+[roster](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/afa24f413c5e23d1b1487bff5770af20b907d377/adaptive_chat_server_dart/ModelBehavior.md#candidate-models),
 where the ✅/⚠️/❌ marks above come from, calls `gpt-oss:20b` "the exception the
 16 GB column exists to flag".
 
@@ -127,7 +126,7 @@ so the other scores have not been re-taken against it.
 ## All eight models ran slower on the M5, 1.15x to 1.44x with one outlier
 
 The eight models that fit or nearly fit then ran on both hosts, recorded in
-[the notebook's per-host performance section](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md#performance-by-host-and-runtime).
+[the notebook's per-host performance section](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/afa24f413c5e23d1b1487bff5770af20b907d377/adaptive_chat_server_dart/ModelBehavior.md#performance-by-host-and-runtime).
 Median s/call is the like-for-like column: the same 25 shape cases on each
 machine, with the load call and any stalled call excluded. The sweep and stall
 columns describe the run rather than the model, and they part company with the
@@ -162,10 +161,10 @@ xychart-beta horizontal
     bar [1.15, 1.15, 1.22, 1.23, 1.40, 1.43, 1.44, 2.32]
 ```
 
-**Every model is slower on the M5 just not as much as I expected. Seven of the
+**Every model is slower on the M5, though not by as much as expected. Seven of the
 eight ratios fall inside 1.0-1.5x.** Two hardware differences could account for
 that, compute and memory bandwidth. [The
-notebook](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md#performance-by-host-and-runtime)
+notebook](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/afa24f413c5e23d1b1487bff5770af20b907d377/adaptive_chat_server_dart/ModelBehavior.md#performance-by-host-and-runtime)
 puts this 8-core M5 at roughly parity with or ahead of the 32-core M1 Max GPU on
 AI compute, scaling Apple's published core counts and multipliers. That estimate
 assumes the runtime uses the Neural Accelerator in each M5 GPU core. Ollama's
@@ -239,7 +238,7 @@ Four caveats apply to the table.
 These re-runs are controls, not updated figures: each measures one model twice
 on the same machine. Only `llama3.2:latest`'s second run replaced its first, and
 the latency table above uses it. All five are in
-[the same notebook section](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md#performance-by-host-and-runtime).
+[the same notebook section](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/afa24f413c5e23d1b1487bff5770af20b907d377/adaptive_chat_server_dart/ModelBehavior.md#performance-by-host-and-runtime).
 
 | Model              | Host   | First run                           | Second run                     | Second ÷ first                  |
 | ------------------ | ------ | ----------------------------------- | ------------------------------ | ------------------------------- |
@@ -269,8 +268,7 @@ Fit only shortlists the eight, among which `granite4.1:8b` (5.0 GB) scores
 21/25 and `qwen3.5:9b` (6.1 GB) 19/25, while `llama3.2:latest` (1.9 GB) scores
 15/25 and `llama3-chatqa:8b` (4.3 GB) **1/25**, all seeded, with-history
 figures. All four run on the small machine, so the recommendation is
-**`granite4.1:8b`**. With 64 GB, use `gpt-oss:20b` that is four
-response better at 25/25.
+**`granite4.1:8b`**. With 64 GB, use `gpt-oss:20b`, which scores four cases better at 25/25.
 
 Three measurement rules came out of running the same probes twice on different
 hardware.
@@ -288,4 +286,4 @@ hardware.
 The repository is
 [https://github.com/freemansoft/Flutter-AdaptiveCards](https://github.com/freemansoft/Flutter-AdaptiveCards),
 and the lab notebook these figures come from is
-[https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md).
+[https://github.com/freemansoft/Flutter-AdaptiveCards/blob/afa24f413c5e23d1b1487bff5770af20b907d377/adaptive_chat_server_dart/ModelBehavior.md](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/afa24f413c5e23d1b1487bff5770af20b907d377/adaptive_chat_server_dart/ModelBehavior.md).
