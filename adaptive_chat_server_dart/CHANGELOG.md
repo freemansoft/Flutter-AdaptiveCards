@@ -2,6 +2,9 @@
 
 ## [0.18.0]
 
+- `shape_ab.dart` records Ollama's per-call `prompt_eval_*`, `eval_*` and
+  `load_duration` fields as `timings`, so a latency comparison can separate
+  prompt processing from token generation.
 - An unrecognized element type renders in the client as an error placeholder
   naming the type, not as a blank. The `unknownElementTypes` warning, the
   `element_types.dart` library doc, two test comments, the notebook and

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:test/test.dart';
 
 // Relative: both files live outside lib/.
+import '../tool/model_probes/probe_results.dart';
 import '../tool/model_probes/probe_support.dart';
 
 // judgeReply is the one place a probe turns a raw reply into a
@@ -25,6 +26,19 @@ void main() {
     test('defaults to null when the caller has no count', () {
       final outcome = judgeReply('why is the sky blue', 12);
       expect(outcome.promptEvalCount, isNull);
+    });
+
+    test('carries Ollama phase timings into the outcome', () {
+      final outcome = judgeReply(
+        'why is the sky blue',
+        12,
+        timings: const OllamaTimings(evalCount: 9, evalNs: 90000000),
+      );
+      expect(outcome.timings!.evalNs, 90000000);
+    });
+
+    test('leaves timings null when the caller has none', () {
+      expect(judgeReply('why is the sky blue', 12).timings, isNull);
     });
   });
 

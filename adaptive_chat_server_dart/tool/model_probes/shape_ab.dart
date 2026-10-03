@@ -137,6 +137,7 @@ Future<Set<String>> runCondition({
           // so "the reply was a card" and "the card was renderable" stay
           // separable, which a pass/fail label alone cannot express.
           unknownTypes: unrenderableTypes(outcome.reply, knownTypes),
+          timings: outcome.timings,
         ),
       );
       stdout.writeln(
