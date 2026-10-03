@@ -31,8 +31,10 @@ measurements.
 | Rated memory bandwidth     | 400 GB/s                               | 153 GB/s                |
 | Cooling                    | fans                                   | fanless                 |
 
-The Neural Engine is left out. Ollama does not appear to use it on either chip,
-so it has no part in these figures. Benchmarks that score the Neural Engine,
+The table leaves out the 16-core Neural Engine, a separate unit from the GPU's
+Neural Accelerators. Ollama's MLX runner uses the accelerators and not the
+Neural Engine, and Ollama does not appear to use the Neural Engine on either
+chip, so it has no part in these figures. Benchmarks that score the Neural Engine,
 such as Geekbench AI, therefore say nothing about these medians.
 
 Both hosts ran models back-to-back for hours, so each median below carries
@@ -160,20 +162,24 @@ eight ratios fall inside 1.0-1.5x.** Two hardware differences could account for
 that, compute and memory bandwidth. [The
 notebook](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md#performance-by-host-and-runtime)
 puts this 8-core M5 at roughly parity with or ahead of the 32-core M1 Max GPU on
-AI compute, scaling Apple's published core counts and multipliers. That
-estimate assumes the runtime uses the Neural Accelerator in each M5 GPU core.
-Ollama's MLX runner does, through Apple's MLX framework on macOS 26.2 or later,
-but it served only the two `nvfp4` builds, and neither fits 16 GB. All eight
-models in the latency table are GGUF builds, and no run checked whether the
-runner serving them uses the accelerators. If it leaves them idle, the M5
-brings 8 GPU cores against 32, and compute stands beside bandwidth as a
-candidate. [Apple's own MLX measurements](https://machinelearning.apple.com/research/exploring-llms-mlx-m5) point toward bandwidth either
-way: on the M5 the accelerators cut time to first token 3.33x to 3.97x against
-the M4, while token generation, which Apple describes as bounded by memory
-bandwidth, gained 1.19x to 1.27x. Memory
+AI compute, scaling Apple's published core counts and multipliers. That estimate
+assumes the runtime uses the Neural Accelerator in each M5 GPU core. Ollama's
+MLX runner does, through Apple's MLX framework on macOS 26.2 or later, but it
+served only the two `nvfp4` builds, and neither fits 16 GB. All eight models in
+the latency table are GGUF builds, and no run checked whether the runner serving
+them uses the accelerators. If that runner uses them, the notebook's parity
+estimate applies and bandwidth remains the stronger explanation. If it leaves
+them idle, the M5's 8 GPU cores meet the M1 Max's 32 without them, and compute
+stands beside bandwidth as a candidate. The core count understates the M5, whose
+GPU is four generations newer in architecture and includes a Neural Accelerator
+in each core. [Apple's own MLX
+measurements](https://machinelearning.apple.com/research/exploring-llms-mlx-m5)
+point toward bandwidth either way: on the M5 the accelerators cut time to first
+token 3.33x to 3.97x against the M4, while token generation, which Apple
+describes as bounded by memory bandwidth, gained 1.19x to 1.27x. Memory
 bandwidth is where the two part: **153 GB/s** on the M5 against **400 GB/s** on
-the M1 Max. Single-stream token generation spends its time streaming the
-model's weights out of memory, not on arithmetic, so it is bandwidth-bound, and
+the M1 Max. Single-stream token generation spends its time streaming the model's
+weights out of memory, not on arithmetic, so it is bandwidth-bound, and
 bandwidth is the ratio consistent with these medians.
 
 The widest ratio in the table is the least meaningful one. `llama3-chatqa:8b`
