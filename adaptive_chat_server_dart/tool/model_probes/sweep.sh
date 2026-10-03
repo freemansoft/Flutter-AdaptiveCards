@@ -24,6 +24,7 @@
 #   export SWEEP_RESULTS=tool/model_probes/results-m5-16gb-ollama0333
 #   tool/model_probes/sweep.sh                # every model
 #   tool/model_probes/sweep.sh granite4.1:8b  # just one
+#   SWEEP_COOLDOWN=600 tool/model_probes/sweep.sh m1 m2   # 10 min idle before each
 set -u
 
 cd "$(dirname "$0")/../.." || exit 1
@@ -45,6 +46,12 @@ fi
 RES=$SWEEP_RESULTS
 LOG=${SWEEP_LOG:-/tmp/sweep-logs}
 mkdir -p "$LOG"
+# Seconds of idle before each model, default none. The 2026-08-28 M5 sweep
+# ran eight models back to back and only the first started on an idle host;
+# re-runs then moved single-model medians 1.03x to 1.54x by sweep position
+# alone. A fixed cooldown gives every model the same starting state, so
+# position stops being a variable rather than a bias to estimate afterwards.
+COOLDOWN=${SWEEP_COOLDOWN:-0}
 
 # Ordered by *stall risk*, not by weight. Runtime tracks timeouts, not model
 # size: granite4.1:3b is 2.0 GB and stalls, while qwen3.8:27b-nvfp4 is eight
@@ -104,6 +111,10 @@ for M in $MODELS; do
   mkdir -p "$D"
   echo "##### MODEL $M $(date +%T) #####"
   wait_for_idle
+  if (( COOLDOWN > 0 )); then
+    echo ">>> COOLDOWN ${COOLDOWN}s $(date +%T)"
+    sleep "$COOLDOWN"
+  fi
   run "$M json_format" "$D/json_format_probe.json" \
     tool/model_probes/json_format_probe.dart --model "$M" --samples 2
   run "$M tool_call" "$D/tool_call_probe.json" \

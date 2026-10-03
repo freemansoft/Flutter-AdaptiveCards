@@ -8,6 +8,8 @@
 - `perf_table.py --phases` reports median prompt-processing and generation
   time per model from the new per-call `timings`, with host-to-host ratios
   under `--compare`.
+- `sweep.sh` honors `SWEEP_COOLDOWN` (seconds of idle before each model) so
+  a multi-model sweep can start every model from the same host state.
 - An unrecognized element type renders in the client as an error placeholder
   naming the type, not as a blank. The `unknownElementTypes` warning, the
   `element_types.dart` library doc, two test comments, the notebook and
