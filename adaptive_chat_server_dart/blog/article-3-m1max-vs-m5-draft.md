@@ -119,6 +119,11 @@ scores **15/25**, a **+6** seed gain, while `qwen2.5-coder:7b` scores **18/25**
 either way. A 16 GB recommendation has to name the configuration, not just the
 model.
 
+Every response score here predates a later edit to the card system prompt,
+which added `Input.Rating` and repaired the `rating_ask` case on most of the
+models tested. Only `granite4.1:3b` has been re-swept under the shipped prompt,
+so the other scores have not been re-taken against it.
+
 ## All eight models ran slower on the M5, 1.15x to 1.44x with one outlier
 
 The eight models that fit or nearly fit then ran on both hosts, recorded in
@@ -229,11 +234,11 @@ Four caveats apply to the table.
    here as what a short exchange costs, which is what the demo's own traffic
    looks like, and not as what a long conversation costs.
 
-### Re-running a model on the same machine moves its median by up to 1.54x
+### Re-running a model on the same machine moves its median as far as switching machines
 
-Four of the eight models were measured a second time against their own
-published run, to find out how far one in-sweep figure can move on its own —
-five re-runs in total, since `granite4.1:8b` was tested twice. All five are in
+These re-runs are controls, not updated figures: each measures one model twice
+on the same machine. Only `llama3.2:latest`'s second run replaced its first, and
+the latency table above uses it. All five are in
 [the same notebook section](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md#performance-by-host-and-runtime).
 
 | Model              | Host   | First run                           | Second run                     | Second ÷ first                  |
@@ -244,35 +249,19 @@ five re-runs in total, since `granite4.1:8b` was tested twice. All five are in
 | `granite4.1:8b`    | M5     | position 0 of the eight-model sweep | after 7h37m idle               | **1.12x** (p25 1.07 / p75 1.15) |
 | `qwen2.5-coder:7b` | M5     | 17 min into the eight-model sweep   | after 31 min idle              | 1.03x                           |
 
-The published figure is the first run for every model except `llama3.2:latest`,
-where it is the second.
+The re-runs spread from 1.03x to 1.54x, as wide as the host-to-host ratios of
+1.15x to 1.44x, which is why the latency table gives a direction and not a
+per-model figure.
 
-The idle re-run of `llama3.2:latest` matched the M1 Max response scores, and its
-median barely moved. The model was never slow; something else on the machine
-was, and what it was is not recorded. The second run is the one in the latency
-table above. The rule it left behind: re-run a suspicious result on an idle
-machine before publishing, because a busy machine and a slow model look the
-same from the probe's side.
-
-The `qwen3.5:9b` runs measure what sweep position alone costs, and the replies
-did not move with it: 0 of 100 calls differed between the cold and hot runs.
-Position moves latency and leaves coverage alone. The M5 column carries the
-same exposure, since its eight models come from one sweep that ran 10:27 to
-14:32, and models measured later had more sustained load behind them.
-
-The fanless MacBook Air is the obvious place to look for a thermal penalty, so
-`granite4.1:8b` was re-run twice to test it. A thermal reading predicts a slow
-hot re-run and a baseline idle one. Instead the idle re-run came nearly as
-slow, with a tight spread: two nominally cold measurements, twelve hours apart,
-differ this much. That reproducibility variance absorbs most of the hot
-re-run's gap. `qwen2.5-coder:7b` moved the other way, slower after idling than
-in-sweep, and two models moving in opposite directions is not a machine
-property. The M1 Max's own hot/cold spread above, on a machine with fans, is
-wider than either M5 figure, so a swing this size does not need a fanless
-chassis to explain it. Throttling is not ruled out, only unmeasured: **no run
-read die temperature or clock frequency**. No figure carries a correction. Read
-the M5 column as one sweep's figures carrying a position-dependent bias about
-the size of its reproducibility floor.
+- `qwen3.5:9b` ran 1.54x slower after an eight-hour sweep than cold, with 0 of
+  100 replies changed: position moves latency, not coverage. The M5's eight
+  models came from one four-hour sweep and carry the same exposure.
+- `llama3.2:latest` first ran on a busy M5 with 40 stalls. Idle, its median
+  barely moved and its stalls fell to 2: the machine was slow, not the model.
+- `granite4.1:8b` and `qwen2.5-coder:7b` tested the fanless Air for throttling.
+  Both ran slower after an idle period than in their first run, which a thermal
+  reading does not predict. Throttling is unmeasured, not ruled out: **no run
+  read die temperature or clock frequency**.
 
 ## The eight models that fit in 16 GB pass from 21/25 to 1/25 of the shape cases
 
