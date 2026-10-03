@@ -14,23 +14,23 @@ a lab notebook in that repository.
 The first two describe the ledger, the rest name what the levers changed and
 how each was scored. Probe and flag names are the repository's own.
 
-| Term                                         | What it means here                                                                                                                                                                                                                                                                                                                                                         |
-| -------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Lever**                                    | One change tried against the card failures, recorded in the notebook's tuning ledger with its outcome and evidence. Fourteen are counted here.                                                                                                                                                                                                                             |
-| **Kind**                                     | The area a lever adjusts. Context assembly is what precedes the question in the message list. System prompt text is the instructions. Decoding is the settings sent on the request, such as `temperature`. Output channel is whether the card comes back as text or as a tool call. Server code checks are the checks run on the reply. No lever adjusts the model itself. |
-| **Card system prompt** and **palette**       | The instructions the chat server sends ahead of every question, [`assets/card_system_prompt.txt`](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/assets/card_system_prompt.txt). Its palette is the list of Adaptive Card element types the model may use, such as `Input.ChoiceSet` or `Table`.                                 |
-| **Escape hatch**                             | The clause in the card system prompt that permits a plain Markdown answer when no element type fits the question.                                                                                                                                                                                                                                                          |
-| **Seed card**, **seeded** and **unaided**    | A synthetic two-turn exchange, a pick-one question and a bare card answering it, prepended ahead of the history. Seeded runs include it; unaided runs leave it out.                                                                                                                                                                                                        |
-| **Detector**                                 | [`lib/src/card_detect.dart`](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/lib/src/card_detect.dart), the server code that decides whether a reply is a card and extracts its body. A reply it rejects reaches the user as text.                                                                                                |
-| **Shape**, `n/25`                            | The 25 questions of `shape_ab.dart`, each paired with the element types that would answer it. A case passes when the reply uses one of them. It is not a correctness score.                                                                                                                                                                                                |
-| **Cold start** and **with history**          | The shape probe's two conditions: the question asked first, or asked after ordinary prose exchanges replayed the way the chat server sends history.                                                                                                                                                                                                                        |
-| **`--samples 2`**                            | Each shape case runs twice and passes only if both runs pass, so a one-shape difference is noise.                                                                                                                                                                                                                                                                          |
-| **Code A/B set**                             | Eight code-flavored questions that `prompt_ab.dart` replays against two prompt files, scored out of 8. It is the regression check that caught the one reverted edit.                                                                                                                                                                                                       |
-| **Hard cases**                               | The requests that were breaking card output when an edit was made. Their count changed between measurements, so each side of a before-and-after reads as a rate.                                                                                                                                                                                                           |
-| **Negative control**                         | The shape case that wants a prose answer, present to catch a model that answers everything as a card.                                                                                                                                                                                                                                                                      |
-| **`t=0`**                                    | Temperature 0, greedy decoding. `t=0.6` is the one hotter setting measured.                                                                                                                                                                                                                                                                                                |
-| **Promoted**, **reverted** and **no effect** | A lever's outcome: shipped in the server's configuration, backed out after a regression, or left unshipped because no score moved.                                                                                                                                                                                                                                         |
-| **Tool channel**                             | Ollama's function-calling API. The server declares a `render_adaptive_card` function, and the model returns the card as the call's arguments, already parsed, instead of as text.                                                                                                                                                                                          |
+| Term                                         | What it means here                                                                                                                                                                                                                                                                                                                                                 |
+| -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Lever**                                    | One change tried against the card failures, recorded in the notebook's tuning ledger with its outcome and evidence. Fourteen are counted here.                                                                                                                                                                                                                     |
+| **Kind**                                     | The area a lever adjusts. Context assembly precedes the question in the message list. System prompt text is the instructions. Decoding is the settings sent on the request, such as `temperature`. Output channel is whether the card comes back as text or as a tool call. Server code checks are the checks run on the reply. No lever adjusts the model itself. |
+| **Card system prompt** and **palette**       | The instructions the chat server sends ahead of every question, [`assets/card_system_prompt.txt`](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/assets/card_system_prompt.txt). Its palette is the list of Adaptive Card element types the model may use, such as `Input.ChoiceSet` or `Table`.                         |
+| **Escape hatch**                             | The clause in the card system prompt that permits a plain Markdown answer when no element type fits the question.                                                                                                                                                                                                                                                  |
+| **Seed card**, **seeded** and **unaided**    | A synthetic two-turn exchange, a pick-one question and a bare card answering it, prepended ahead of the history. Seeded runs include it; unaided runs leave it out.                                                                                                                                                                                                |
+| **Detector**                                 | [`lib/src/card_detect.dart`](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/lib/src/card_detect.dart), the server code that decides whether a reply is a card and extracts its body. A reply it rejects reaches the user as text.                                                                                        |
+| **Shape**, `n/25`                            | The 25 questions of `shape_ab.dart`, each paired with the element types that would answer it. A case passes when the reply uses one of them. It is not a correctness score.                                                                                                                                                                                        |
+| **Cold start** and **with history**          | The shape probe's two conditions: the question asked first, or asked after ordinary prose exchanges replayed the way the chat server sends history.                                                                                                                                                                                                                |
+| **`--samples 2`**                            | Each shape case runs twice and passes only if both runs pass, so a one-shape difference is noise.                                                                                                                                                                                                                                                                  |
+| **Code A/B set**                             | Eight code-flavored questions that `prompt_ab.dart` replays against two prompt files, scored out of 8. It is the regression check that caught the one reverted edit.                                                                                                                                                                                               |
+| **Hard cases**                               | The requests that were breaking card output when an edit was made. Their count changed between measurements, so each side of a before-and-after reads as a rate.                                                                                                                                                                                                   |
+| **Negative control**                         | The shape case that wants a prose answer, present to catch a model that answers everything as a card.                                                                                                                                                                                                                                                              |
+| **`t=0`**                                    | Temperature 0, greedy decoding. `t=0.6` is the one hotter setting measured.                                                                                                                                                                                                                                                                                        |
+| **Promoted**, **reverted** and **no effect** | A lever's outcome: shipped in the server's configuration, backed out after a regression, or left unshipped because no score moved.                                                                                                                                                                                                                                 |
+| **Tool channel**                             | Ollama's function-calling API. The server declares a `render_adaptive_card` function, and the model returns the card as the call's arguments, already parsed, instead of as text.                                                                                                                                                                                  |
 
 ## Four failure modes drove the tuning
 
@@ -44,49 +44,11 @@ how each was scored. Probe and flag names are the repository's own.
 
 ## We tried fourteen levers, starting with the system prompt
 
-Fourteen levers were pulled against the four failure modes and each one recorded with
-its outcome and its evidence, in
-[the tuning ledger](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md#the-tuning-ledger--everything-tried-and-whether-it-helped)
-of that notebook. The ledger groups each lever by _kind_, meaning the area the
-change adjusts rather than what the change says. It groups them
-that way because the outcomes track that grouping more closely than they track
-the content of any individual edit:
-
-| Kind               | Levers | Outcome                                                                            |
-| ------------------ | ------ | ---------------------------------------------------------------------------------- |
-| Context assembly   | 3      | one largest effect measured, one model-dependent and shipped opt-in, one no effect |
-| Decoding           | 3      | two promoted, one per-model and unreliable                                         |
-| System prompt text | 6      | two promoted, one reverted for a regression, three no effect                       |
-| Server code checks | 1      | the only durable fix                                                               |
-| Output channel     | 1      | failed, not shipped                                                                |
-
-Read down the Outcome column.
-
-- Six levers change _what the model
-  sees before the question_ or _how it decodes_.
-- Four ship today, one of those
-  four opt-in, and the largest effect in the notebook is among them.
-- Six change _the system prompt text_. Two ship. One was reverted for a
-  regression. Three had no measurable effect.
-
-That ratio is easy to over-read: the levers were tried at different times, each
-against whatever configuration was already in place, not run head-to-head. The
-prompt-text rows are edits to a prompt that already worked, a harder place to
-move a score from than an empty one, and the largest context-row effect, 0/8 to
-8/8, is really the prompt's own palette and rules, counted on the context line.
-The levers are not shown to be independent either: one that measured as no
-effect alone might pay once paired with another, as `think: false` and
-`temperature: 0` do below.
-
-Two more caveats apply. The fourteen results come from one project's tuning,
-so they show which kinds of change helped here, not how often each kind helps
-elsewhere. And the repeated `system` message may have scored no effect only
-because some chat templates never deliver it to the model.
-
-The table does suggest an order of work. Write the card prompt first, because
-no other lever substitutes for it. When edits to the prompt stop moving a
-score, try context and decoding changes. None of those three kinds makes a
-malformed card safe; that takes a check in the server code.
+Fourteen levers were pulled against the four failure modes.
+The impact of each was recorded in the
+[notebook's tuning ledger](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md#the-tuning-ledger--everything-tried-and-whether-it-helped).
+The ledger groups each lever by _kind_, the area the
+change adjusts.
 
 The diagram places each kind of lever where it acts upon a request.
 A reply only has one output path.
@@ -110,6 +72,47 @@ flowchart TB
   DET -- card --> CARD[client renders the card]
   DET -- rejected --> TXT[client shows the reply as text]
 ```
+
+The table counts the levers in each kind and their outcomes:
+
+| Kind               | Levers | Outcome                                                                            |
+| ------------------ | ------ | ---------------------------------------------------------------------------------- |
+| System prompt text | 6      | Two promoted, one reverted for a regression, three no effect                       |
+| Context assembly   | 3      | One largest effect measured, one model-dependent and shipped opt-in, one no effect |
+| Decoding           | 3      | Two promoted, one per-model and unreliable                                         |
+| Output channel     | 1      | Failed, not shipped                                                                |
+| Server code checks | 1      | The only durable fix                                                               |
+
+The 14 levers fall into three groups:
+
+- **System prompt text, 6 levers.** Two ship, one was reverted for a
+  regression, and three had no measurable effect.
+- **Context assembly and decoding, 6 levers together.** These change what the
+  model sees before the question or how it decodes. Four ship today: two of the
+  three context levers, one of them the opt-in seed card, and two of the three
+  decoding levers. The largest effect in the notebook, the prompt-file swap, is
+  one of the four.
+- **Output channel and server code checks, 1 lever each.** The detector ships;
+  the tool channel does not.
+
+That ratio is easy to over-read: the levers were tried at different times, each
+against whatever configuration was already in place, not run head-to-head. The
+prompt-text rows are edits to a prompt that already worked, a harder place to
+move a score from than an empty one, and the largest context-row effect, 0/8 to
+8/8, is really the prompt's own palette and rules, counted on the context line.
+The levers are not shown to be independent either: one that measured as no
+effect alone might pay once paired with another, as `think: false` and
+`temperature: 0` do below.
+
+Two more caveats apply. The fourteen results come from one project's tuning,
+so they show which kinds of change helped here, not how often each kind helps
+elsewhere. And the repeated `system` message may have scored no effect only
+because some chat templates never deliver it to the model.
+
+The table does suggest an order of work. Write the card prompt first, because
+no other lever substitutes for it. When edits to the prompt stop moving a
+score, try context and decoding changes. None of those three kinds makes a
+malformed card safe; that takes a check in the server code.
 
 ## The prompt file and the synthetic card history had the biggest effects
 
