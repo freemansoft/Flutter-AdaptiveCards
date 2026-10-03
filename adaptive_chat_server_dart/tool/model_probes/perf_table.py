@@ -38,6 +38,12 @@ Do not read a probe-class pattern off this without checking it across models. Th
 greedy/sampled split looks large on `llama3-chatqa:8b` (1.30x against 2.16x) and
 nearly vanishes over all eight (mean 1.25x against 1.33x), with two models
 running the other way.
+
+`--phases` splits the median call into Ollama's own prompt-processing and
+generation timings (`timings` on each `shape_ab-seeded.json` call, recorded
+from 2026-10). Prompt processing is compute-bound and generation is
+bandwidth-bound, so a host comparison that moves one and not the other names
+the resource. Runs recorded before `timings` existed print `n/a`.
 """
 
 import argparse
@@ -175,6 +181,82 @@ def read_model_probes(model_dir):
     return model, out
 
 
+def read_phases(model_dir):
+    """Median prompt and generation time from `shape_ab-seeded.json`.
+
+    Same population as the median s/call column: the first call (which carries
+    the model load) and stalls are dropped. Ollama reports nanoseconds; the
+    report prints milliseconds. Calls recorded before `timings` existed are
+    skipped and counted, never read as zero.
+    """
+    path = model_dir / MEDIAN_PROBE
+    if not path.exists():
+        return None
+    run = json.loads(path.read_text())
+    prompt, gen, rate = [], [], []
+    for c in run["calls"][1:]:
+        t = c.get("timings")
+        if is_stall(c) or not t:
+            continue
+        if t.get("promptEvalNs") is not None:
+            prompt.append(t["promptEvalNs"] / 1e6)
+        if t.get("evalNs"):
+            gen.append(t["evalNs"] / 1e6)
+            if t.get("evalCount"):
+                rate.append(t["evalCount"] / (t["evalNs"] / 1e9))
+
+    def med(v):
+        return sorted(v)[len(v) // 2] if v else None
+
+    return {
+        "model": run["model"],
+        "prompt_ms": med(prompt),
+        "gen_ms": med(gen),
+        "gen_tps": med(rate),
+        "timed": len(gen),
+    }
+
+
+def print_phases(results_dir, compare_dir):
+    def rows(d):
+        out = {}
+        for model_dir in sorted(pathlib.Path(d).iterdir()):
+            if model_dir.is_dir():
+                r = read_phases(model_dir)
+                if r:
+                    out[r["model"]] = r
+        return out
+
+    here = rows(results_dir)
+    base = rows(compare_dir) if compare_dir else {}
+    head = "| Model | Prompt ms | Gen ms | Gen tok/s | Timed calls |"
+    rule = "| ----- | --------- | ------ | --------- | ----------- |"
+    if base:
+        head += " Prompt ratio | Gen ratio |"
+        rule += " ------------ | --------- |"
+    print(head)
+    print(rule)
+
+    def fmt(v, spec):
+        return "n/a" if v is None else format(v, spec)
+
+    def ratio(a, b):
+        return "n/a" if not a or not b else f"{a / b:.2f}x"
+
+    for model, r in sorted(here.items()):
+        line = (
+            f"| `{model}` | {fmt(r['prompt_ms'], '.0f')} | {fmt(r['gen_ms'], '.0f')} "
+            f"| {fmt(r['gen_tps'], '.1f')} | {r['timed']} |"
+        )
+        if base:
+            b = base.get(model, {})
+            line += (
+                f" {ratio(r['prompt_ms'], b.get('prompt_ms'))} "
+                f"| {ratio(r['gen_ms'], b.get('gen_ms'))} |"
+            )
+        print(line)
+
+
 def print_by_probe(results_dir, compare_dir):
     rows = []
     for model_dir in sorted(pathlib.Path(results_dir).iterdir()):
@@ -232,10 +314,19 @@ def main():
         action="store_true",
         help="split wall clock per probe instead of summing it",
     )
+    ap.add_argument(
+        "--phases",
+        action="store_true",
+        help="split the median call into prompt processing and generation",
+    )
     args = ap.parse_args()
 
     if args.by_probe:
         print_by_probe(args.results_dir, args.compare)
+        return
+
+    if args.phases:
+        print_phases(args.results_dir, args.compare)
         return
 
     rows = read_dir(args.results_dir)
