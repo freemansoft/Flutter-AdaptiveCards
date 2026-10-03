@@ -17,6 +17,24 @@ MacBook Pro 14-inch (`MacBookPro18,4`) and a fanless 16 GB M5 MacBook Air
 performance differences when running the same models on two Apple Silicon chips
 with different memory sizes and bandwidth.
 
+The table below gives each host as Apple specifies it. The GPU core counts are
+each machine's own report; the bandwidth figures are vendor ratings, not probe
+measurements.
+
+|                            | M1 Max host                            | M5 host                 |
+| -------------------------- | -------------------------------------- | ----------------------- |
+| Machine                    | MacBook Pro 14-inch (`MacBookPro18,4`) | MacBook Air (`Mac17,3`) |
+| Chip tier                  | M1 Max                                 | M5, base tier           |
+| GPU cores                  | 32                                     | 8                       |
+| Neural Accelerators in GPU | none                                   | one per GPU core        |
+| Unified memory             | 64 GB                                  | 16 GB                   |
+| Rated memory bandwidth     | 400 GB/s                               | 153 GB/s                |
+| Cooling                    | fans                                   | fanless                 |
+
+The Neural Engine is left out. Ollama does not appear to use it on either chip,
+so it has no part in these figures. Benchmarks that score the Neural Engine,
+such as Geekbench AI, therefore say nothing about these medians.
+
 Both hosts ran models back-to-back for hours, so each median below carries
 whatever position in that run its model drew. One control on the M1 Max puts a
 number on that: the same model runs **1.54x** slower right after an eight-hour
@@ -139,10 +157,20 @@ xychart-beta horizontal
 
 **Every model is slower on the M5 just not as much as I expected. Seven of the
 eight ratios fall inside 1.0-1.5x.** Two hardware differences could account for
-that, compute and memory bandwidth, and compute is the less likely. [The
+that, compute and memory bandwidth. [The
 notebook](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md#performance-by-host-and-runtime)
-puts this 8-core M5 at roughly parity with or ahead of the 32-core M1 Max on AI
-compute, scaling Apple's published core counts and multipliers. Memory
+puts this 8-core M5 at roughly parity with or ahead of the 32-core M1 Max GPU on
+AI compute, scaling Apple's published core counts and multipliers. That
+estimate assumes the runtime uses the Neural Accelerator in each M5 GPU core.
+Ollama's MLX runner does, through Apple's MLX framework on macOS 26.2 or later,
+but it served only the two `nvfp4` builds, and neither fits 16 GB. All eight
+models in the latency table are GGUF builds, and no run checked whether the
+runner serving them uses the accelerators. If it leaves them idle, the M5
+brings 8 GPU cores against 32, and compute stands beside bandwidth as a
+candidate. [Apple's own MLX measurements](https://machinelearning.apple.com/research/exploring-llms-mlx-m5) point toward bandwidth either
+way: on the M5 the accelerators cut time to first token 3.33x to 3.97x against
+the M4, while token generation, which Apple describes as bounded by memory
+bandwidth, gained 1.19x to 1.27x. Memory
 bandwidth is where the two part: **153 GB/s** on the M5 against **400 GB/s** on
 the M1 Max. Single-stream token generation spends its time streaming the
 model's weights out of memory, not on arithmetic, so it is bandwidth-bound, and
