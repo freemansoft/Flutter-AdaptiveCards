@@ -1,0 +1,100 @@
+{
+  "probe": "temperature_stress",
+  "model": "granite4.1:3b",
+  "measuredAt": "2026-10-03",
+  "machine": "Apple M1 Max / 64 GB",
+  "ollama": "0.35.1",
+  "samples": 1,
+  "assets": {
+    "card_system_prompt.txt": "8cbfde243266",
+    "seed_card.json": "4ac746114475"
+  },
+  "summary": {
+    "calls": 10,
+    "passed": 7,
+    "cards": 4,
+    "prose": 3
+  },
+  "calls": [
+    {
+      "case": "codeblock",
+      "sample": 0,
+      "pass": true,
+      "label": "prose",
+      "setting": "greedy(t=0)",
+      "ms": 4033
+    },
+    {
+      "case": "bigtable",
+      "sample": 0,
+      "pass": false,
+      "label": "broken: invalid JSON: FormatException: Unexpected end of input (at character 2388)\n...ays\\nChristmas\"},{\"type\":\"TextBlock\",\"text\":\"Boxing Day (December 26)\"}]}]}\n                                                                              ^\n",
+      "setting": "greedy(t=0)",
+      "ms": 13588
+    },
+    {
+      "case": "nested",
+      "sample": 0,
+      "pass": true,
+      "label": "card[7]",
+      "setting": "greedy(t=0)",
+      "ms": 6054
+    },
+    {
+      "case": "multiline",
+      "sample": 0,
+      "pass": true,
+      "label": "card[1]",
+      "setting": "greedy(t=0)",
+      "ms": 2880
+    },
+    {
+      "case": "mixed",
+      "sample": 0,
+      "pass": true,
+      "label": "prose",
+      "setting": "greedy(t=0)",
+      "ms": 3744
+    },
+    {
+      "case": "codeblock",
+      "sample": 0,
+      "pass": true,
+      "label": "prose",
+      "setting": "recommended(t=0.6)",
+      "ms": 3660
+    },
+    {
+      "case": "bigtable",
+      "sample": 0,
+      "pass": false,
+      "label": "broken: invalid JSON: FormatException: Unexpected character (at character 65)\n{\"type\":\"Table\",\"columns\":[{\"width\":2},{\"width\":4},{\"width\":6}]}\"\n                                                                ^\n",
+      "setting": "recommended(t=0.6)",
+      "ms": 533
+    },
+    {
+      "case": "nested",
+      "sample": 0,
+      "pass": true,
+      "label": "card[6]",
+      "setting": "recommended(t=0.6)",
+      "ms": 5954
+    },
+    {
+      "case": "multiline",
+      "sample": 0,
+      "pass": true,
+      "label": "card[1]",
+      "setting": "recommended(t=0.6)",
+      "ms": 2889
+    },
+    {
+      "case": "mixed",
+      "sample": 0,
+      "pass": false,
+      "label": "prose-with-card (user sees raw JSON)",
+      "setting": "recommended(t=0.6)",
+      "ms": 4682
+    }
+  ]
+}

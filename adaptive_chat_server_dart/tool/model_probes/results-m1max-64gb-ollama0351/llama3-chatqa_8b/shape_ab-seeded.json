@@ -1,0 +1,1527 @@
+{
+  "probe": "shape_ab",
+  "model": "llama3-chatqa:8b",
+  "variant": "seeded",
+  "measuredAt": "2026-10-03",
+  "machine": "Apple M1 Max / 64 GB",
+  "ollama": "0.35.1",
+  "samples": 2,
+  "temperature": 0.0,
+  "assets": {
+    "card_system_prompt.txt": "8cbfde243266",
+    "seed_card.json": "4ac746114475"
+  },
+  "summary": {
+    "cases": 25,
+    "coldStart": 4,
+    "withHistory": 1
+  },
+  "calls": [
+    {
+      "case": "date",
+      "sample": 0,
+      "pass": false,
+      "label": "prose",
+      "condition": "cold",
+      "ms": 330,
+      "timings": {
+        "promptEvalCount": 3892,
+        "promptEvalNs": 237053000,
+        "evalCount": 1,
+        "evalNs": 1000,
+        "loadNs": 23463125
+      }
+    },
+    {
+      "case": "date",
+      "sample": 1,
+      "pass": false,
+      "label": "prose",
+      "condition": "cold",
+      "ms": 87,
+      "timings": {
+        "promptEvalCount": 3892,
+        "promptEvalNs": 36268000,
+        "evalCount": 1,
+        "evalNs": 1000,
+        "loadNs": 26238750
+      }
+    },
+    {
+      "case": "time",
+      "sample": 0,
+      "pass": false,
+      "label": "prose",
+      "condition": "cold",
+      "ms": 137,
+      "timings": {
+        "promptEvalCount": 3891,
+        "promptEvalNs": 113324000,
+        "evalCount": 1,
+        "evalNs": 1000,
+        "loadNs": 10180083
+      }
+    },
+    {
+      "case": "time",
+      "sample": 1,
+      "pass": false,
+      "label": "prose",
+      "condition": "cold",
+      "ms": 40,
+      "timings": {
+        "promptEvalCount": 3891,
+        "promptEvalNs": 22850000,
+        "evalCount": 1,
+        "evalNs": 1000,
+        "loadNs": 6484667
+      }
+    },
+    {
+      "case": "toggle",
+      "sample": 0,
+      "pass": false,
+      "label": "prose",
+      "condition": "cold",
+      "ms": 124,
+      "timings": {
+        "promptEvalCount": 3889,
+        "promptEvalNs": 101550000,
+        "evalCount": 1,
+        "evalNs": 1000,
+        "loadNs": 8352750
+      }
+    },
+    {
+      "case": "toggle",
+      "sample": 1,
+      "pass": false,
+      "label": "prose",
+      "condition": "cold",
+      "ms": 55,
+      "timings": {
+        "promptEvalCount": 3889,
+        "promptEvalNs": 24101000,
+        "evalCount": 1,
+        "evalNs": 1000,
+        "loadNs": 13434375
+      }
+    },
+    {
+      "case": "text",
+      "sample": 0,
+      "pass": false,
+      "label": "prose",
+      "condition": "cold",
+      "ms": 131,
+      "timings": {
+        "promptEvalCount": 3892,
+        "promptEvalNs": 109416000,
+        "evalCount": 1,
+        "evalNs": 1000,
+        "loadNs": 8332458
+      }
+    },
+    {
+      "case": "text",
+      "sample": 1,
+      "pass": false,
+      "label": "prose",
+      "condition": "cold",
+      "ms": 52,
+      "timings": {
+        "promptEvalCount": 3892,
+        "promptEvalNs": 23685000,
+        "evalCount": 1,
+        "evalNs": 1000,
+        "loadNs": 11831417
+      }
+    },
+    {
+      "case": "number",
+      "sample": 0,
+      "pass": false,
+      "label": "prose",
+      "condition": "cold",
+      "ms": 127,
+      "timings": {
+        "promptEvalCount": 3891,
+        "promptEvalNs": 106255000,
+        "evalCount": 1,
+        "evalNs": 1000,
+        "loadNs": 8077791
+      }
+    },
+    {
+      "case": "number",
+      "sample": 1,
+      "pass": false,
+      "label": "prose",
+      "condition": "cold",
+      "ms": 49,
+      "timings": {
+        "promptEvalCount": 3891,
+        "promptEvalNs": 23715000,
+        "evalCount": 1,
+        "evalNs": 1000,
+        "loadNs": 10494333
+      }
+    },
+    {
+      "case": "choice1",
+      "sample": 0,
+      "pass": false,
+      "label": "prose",
+      "condition": "cold",
+      "ms": 126,
+      "timings": {
+        "promptEvalCount": 3889,
+        "promptEvalNs": 106177000,
+        "evalCount": 1,
+        "evalNs": 1000,
+        "loadNs": 7669542
+      }
+    },
+    {
+      "case": "choice1",
+      "sample": 1,
+      "pass": false,
+      "label": "prose",
+      "condition": "cold",
+      "ms": 50,
+      "timings": {
+        "promptEvalCount": 3889,
+        "promptEvalNs": 23547000,
+        "evalCount": 1,
+        "evalNs": 1000,
+        "loadNs": 10467833
+      }
+    },
+    {
+      "case": "choice2",
+      "sample": 0,
+      "pass": false,
+      "label": "prose",
+      "condition": "cold",
+      "ms": 127,
+      "timings": {
+        "promptEvalCount": 3888,
+        "promptEvalNs": 104670000,
+        "evalCount": 1,
+        "evalNs": 1000,
+        "loadNs": 7901666
+      }
+    },
+    {
+      "case": "choice2",
+      "sample": 1,
+      "pass": false,
+      "label": "prose",
+      "condition": "cold",
+      "ms": 48,
+      "timings": {
+        "promptEvalCount": 3888,
+        "promptEvalNs": 23466000,
+        "evalCount": 1,
+        "evalNs": 1000,
+        "loadNs": 10548208
+      }
+    },
+    {
+      "case": "choice3",
+      "sample": 0,
+      "pass": false,
+      "label": "prose",
+      "condition": "cold",
+      "ms": 125,
+      "timings": {
+        "promptEvalCount": 3888,
+        "promptEvalNs": 103232000,
+        "evalCount": 1,
+        "evalNs": 1000,
+        "loadNs": 7449625
+      }
+    },
+    {
+      "case": "choice3",
+      "sample": 1,
+      "pass": false,
+      "label": "prose",
+      "condition": "cold",
+      "ms": 48,
+      "timings": {
+        "promptEvalCount": 3888,
+        "promptEvalNs": 23643000,
+        "evalCount": 1,
+        "evalNs": 1000,
+        "loadNs": 10361834
+      }
+    },
+    {
+      "case": "choice4",
+      "sample": 0,
+      "pass": false,
+      "label": "prose",
+      "condition": "cold",
+      "ms": 126,
+      "timings": {
+        "promptEvalCount": 3889,
+        "promptEvalNs": 103320000,
+        "evalCount": 1,
+        "evalNs": 1000,
+        "loadNs": 7515292
+      }
+    },
+    {
+      "case": "choice4",
+      "sample": 1,
+      "pass": false,
+      "label": "prose",
+      "condition": "cold",
+      "ms": 49,
+      "timings": {
+        "promptEvalCount": 3889,
+        "promptEvalNs": 23883000,
+        "evalCount": 1,
+        "evalNs": 1000,
+        "loadNs": 11207834
+      }
+    },
+    {
+      "case": "choice5",
+      "sample": 0,
+      "pass": false,
+      "label": "prose",
+      "condition": "cold",
+      "ms": 122,
+      "timings": {
+        "promptEvalCount": 3888,
+        "promptEvalNs": 102530000,
+        "evalCount": 1,
+        "evalNs": 1000,
+        "loadNs": 7870667
+      }
+    },
+    {
+      "case": "choice5",
+      "sample": 1,
+      "pass": false,
+      "label": "prose",
+      "condition": "cold",
+      "ms": 49,
+      "timings": {
+        "promptEvalCount": 3888,
+        "promptEvalNs": 23358000,
+        "evalCount": 1,
+        "evalNs": 1000,
+        "loadNs": 10666958
+      }
+    },
+    {
+      "case": "choice6",
+      "sample": 0,
+      "pass": false,
+      "label": "prose",
+      "condition": "cold",
+      "ms": 126,
+      "timings": {
+        "promptEvalCount": 3889,
+        "promptEvalNs": 105241000,
+        "evalCount": 1,
+        "evalNs": 1000,
+        "loadNs": 7789541
+      }
+    },
+    {
+      "case": "choice6",
+      "sample": 1,
+      "pass": false,
+      "label": "prose",
+      "condition": "cold",
+      "ms": 48,
+      "timings": {
+        "promptEvalCount": 3889,
+        "promptEvalNs": 23386000,
+        "evalCount": 1,
+        "evalNs": 1000,
+        "loadNs": 10414125
+      }
+    },
+    {
+      "case": "pie",
+      "sample": 0,
+      "pass": false,
+      "label": "prose",
+      "condition": "cold",
+      "ms": 124,
+      "timings": {
+        "promptEvalCount": 3898,
+        "promptEvalNs": 102587000,
+        "evalCount": 1,
+        "evalNs": 1000,
+        "loadNs": 7967875
+      }
+    },
+    {
+      "case": "pie",
+      "sample": 1,
+      "pass": false,
+      "label": "prose",
+      "condition": "cold",
+      "ms": 49,
+      "timings": {
+        "promptEvalCount": 3898,
+        "promptEvalNs": 23380000,
+        "evalCount": 1,
+        "evalNs": 1000,
+        "loadNs": 10520667
+      }
+    },
+    {
+      "case": "bar",
+      "sample": 0,
+      "pass": false,
+      "label": "prose",
+      "condition": "cold",
+      "ms": 137,
+      "timings": {
+        "promptEvalCount": 3893,
+        "promptEvalNs": 116696000,
+        "evalCount": 1,
+        "evalNs": 1000,
+        "loadNs": 7681958
+      }
+    },
+    {
+      "case": "bar",
+      "sample": 1,
+      "pass": false,
+      "label": "prose",
+      "condition": "cold",
+      "ms": 51,
+      "timings": {
+        "promptEvalCount": 3893,
+        "promptEvalNs": 23523000,
+        "evalCount": 1,
+        "evalNs": 1000,
+        "loadNs": 11423125
+      }
+    },
+    {
+      "case": "line",
+      "sample": 0,
+      "pass": false,
+      "label": "prose",
+      "condition": "cold",
+      "ms": 134,
+      "timings": {
+        "promptEvalCount": 3892,
+        "promptEvalNs": 113877000,
+        "evalCount": 1,
+        "evalNs": 1000,
+        "loadNs": 7837792
+      }
+    },
+    {
+      "case": "line",
+      "sample": 1,
+      "pass": false,
+      "label": "prose",
+      "condition": "cold",
+      "ms": 49,
+      "timings": {
+        "promptEvalCount": 3892,
+        "promptEvalNs": 23405000,
+        "evalCount": 1,
+        "evalNs": 1000,
+        "loadNs": 10468583
+      }
+    },
+    {
+      "case": "gauge",
+      "sample": 0,
+      "pass": true,
+      "label": "Chart.Gauge",
+      "condition": "cold",
+      "ms": 1587,
+      "unknownTypes": [],
+      "timings": {
+        "promptEvalCount": 3896,
+        "promptEvalNs": 123397000,
+        "evalCount": 62,
+        "evalNs": 1443924000,
+        "loadNs": 7696375
+      }
+    },
+    {
+      "case": "gauge",
+      "sample": 1,
+      "pass": true,
+      "label": "Chart.Gauge",
+      "condition": "cold",
+      "ms": 1961,
+      "unknownTypes": [],
+      "timings": {
+        "promptEvalCount": 3896,
+        "promptEvalNs": 26567000,
+        "evalCount": 62,
+        "evalNs": 1910049000,
+        "loadNs": 9954000
+      }
+    },
+    {
+      "case": "rating_show",
+      "sample": 0,
+      "pass": false,
+      "label": "prose",
+      "condition": "cold",
+      "ms": 151,
+      "timings": {
+        "promptEvalCount": 3899,
+        "promptEvalNs": 125177000,
+        "evalCount": 1,
+        "evalNs": 1000,
+        "loadNs": 11035000
+      }
+    },
+    {
+      "case": "rating_show",
+      "sample": 1,
+      "pass": false,
+      "label": "prose",
+      "condition": "cold",
+      "ms": 60,
+      "timings": {
+        "promptEvalCount": 3899,
+        "promptEvalNs": 24735000,
+        "evalCount": 1,
+        "evalNs": 1000,
+        "loadNs": 14851250
+      }
+    },
+    {
+      "case": "rating_ask",
+      "sample": 0,
+      "pass": false,
+      "label": "prose",
+      "condition": "cold",
+      "ms": 152,
+      "timings": {
+        "promptEvalCount": 3895,
+        "promptEvalNs": 130434000,
+        "evalCount": 1,
+        "evalNs": 1000,
+        "loadNs": 8602000
+      }
+    },
+    {
+      "case": "rating_ask",
+      "sample": 1,
+      "pass": false,
+      "label": "prose",
+      "condition": "cold",
+      "ms": 54,
+      "timings": {
+        "promptEvalCount": 3895,
+        "promptEvalNs": 23783000,
+        "evalCount": 1,
+        "evalNs": 1000,
+        "loadNs": 13266125
+      }
+    },
+    {
+      "case": "carousel",
+      "sample": 0,
+      "pass": false,
+      "label": "prose",
+      "condition": "cold",
+      "ms": 125,
+      "timings": {
+        "promptEvalCount": 3899,
+        "promptEvalNs": 104362000,
+        "evalCount": 1,
+        "evalNs": 1000,
+        "loadNs": 8617167
+      }
+    },
+    {
+      "case": "carousel",
+      "sample": 1,
+      "pass": false,
+      "label": "prose",
+      "condition": "cold",
+      "ms": 50,
+      "timings": {
+        "promptEvalCount": 3899,
+        "promptEvalNs": 23405000,
+        "evalCount": 1,
+        "evalNs": 1000,
+        "loadNs": 10745625
+      }
+    },
+    {
+      "case": "table",
+      "sample": 0,
+      "pass": false,
+      "label": "prose",
+      "condition": "cold",
+      "ms": 138,
+      "timings": {
+        "promptEvalCount": 3893,
+        "promptEvalNs": 118735000,
+        "evalCount": 1,
+        "evalNs": 1000,
+        "loadNs": 7744084
+      }
+    },
+    {
+      "case": "table",
+      "sample": 1,
+      "pass": false,
+      "label": "prose",
+      "condition": "cold",
+      "ms": 48,
+      "timings": {
+        "promptEvalCount": 3893,
+        "promptEvalNs": 23497000,
+        "evalCount": 1,
+        "evalNs": 1000,
+        "loadNs": 10819417
+      }
+    },
+    {
+      "case": "facts",
+      "sample": 0,
+      "pass": false,
+      "label": "prose",
+      "condition": "cold",
+      "ms": 142,
+      "timings": {
+        "promptEvalCount": 3894,
+        "promptEvalNs": 122850000,
+        "evalCount": 1,
+        "evalNs": 1000,
+        "loadNs": 7882458
+      }
+    },
+    {
+      "case": "facts",
+      "sample": 1,
+      "pass": false,
+      "label": "prose",
+      "condition": "cold",
+      "ms": 52,
+      "timings": {
+        "promptEvalCount": 3894,
+        "promptEvalNs": 23637000,
+        "evalCount": 1,
+        "evalNs": 1000,
+        "loadNs": 11740542
+      }
+    },
+    {
+      "case": "columnset",
+      "sample": 0,
+      "pass": true,
+      "label": "Column, ColumnSet, TextBlock",
+      "condition": "cold",
+      "ms": 2452,
+      "unknownTypes": [],
+      "timings": {
+        "promptEvalCount": 3890,
+        "promptEvalNs": 112111000,
+        "evalCount": 76,
+        "evalNs": 2320282000,
+        "loadNs": 7614709
+      }
+    },
+    {
+      "case": "columnset",
+      "sample": 1,
+      "pass": true,
+      "label": "Column, ColumnSet, TextBlock",
+      "condition": "cold",
+      "ms": 2424,
+      "unknownTypes": [],
+      "timings": {
+        "promptEvalCount": 3890,
+        "promptEvalNs": 30286000,
+        "evalCount": 76,
+        "evalNs": 2370887000,
+        "loadNs": 9907834
+      }
+    },
+    {
+      "case": "codeblock",
+      "sample": 0,
+      "pass": false,
+      "label": "prose",
+      "condition": "cold",
+      "ms": 171,
+      "timings": {
+        "promptEvalCount": 3901,
+        "promptEvalNs": 150425000,
+        "evalCount": 1,
+        "evalNs": 1000,
+        "loadNs": 8819875
+      }
+    },
+    {
+      "case": "codeblock",
+      "sample": 1,
+      "pass": false,
+      "label": "prose",
+      "condition": "cold",
+      "ms": 55,
+      "timings": {
+        "promptEvalCount": 3901,
+        "promptEvalNs": 26037000,
+        "evalCount": 1,
+        "evalNs": 1000,
+        "loadNs": 10845417
+      }
+    },
+    {
+      "case": "progress",
+      "sample": 0,
+      "pass": true,
+      "label": "ProgressBar",
+      "condition": "cold",
+      "ms": 490,
+      "unknownTypes": [],
+      "timings": {
+        "promptEvalCount": 3891,
+        "promptEvalNs": 123585000,
+        "evalCount": 15,
+        "evalNs": 342948000,
+        "loadNs": 9303333
+      }
+    },
+    {
+      "case": "progress",
+      "sample": 1,
+      "pass": true,
+      "label": "ProgressBar",
+      "condition": "cold",
+      "ms": 525,
+      "unknownTypes": [],
+      "timings": {
+        "promptEvalCount": 3891,
+        "promptEvalNs": 36139000,
+        "evalCount": 15,
+        "evalNs": 467807000,
+        "loadNs": 8408417
+      }
+    },
+    {
+      "case": "badge",
+      "sample": 0,
+      "pass": false,
+      "label": "prose",
+      "condition": "cold",
+      "ms": 175,
+      "timings": {
+        "promptEvalCount": 3892,
+        "promptEvalNs": 151227000,
+        "evalCount": 1,
+        "evalNs": 1000,
+        "loadNs": 9434000
+      }
+    },
+    {
+      "case": "badge",
+      "sample": 1,
+      "pass": false,
+      "label": "prose",
+      "condition": "cold",
+      "ms": 58,
+      "timings": {
+        "promptEvalCount": 3892,
+        "promptEvalNs": 25267000,
+        "evalCount": 1,
+        "evalNs": 1000,
+        "loadNs": 13724958
+      }
+    },
+    {
+      "case": "prose",
+      "sample": 0,
+      "pass": true,
+      "label": "prose-ok",
+      "condition": "cold",
+      "ms": 1813,
+      "timings": {
+        "promptEvalCount": 3891,
+        "promptEvalNs": 116703000,
+        "evalCount": 54,
+        "evalNs": 1670741000,
+        "loadNs": 9530167
+      }
+    },
+    {
+      "case": "prose",
+      "sample": 1,
+      "pass": true,
+      "label": "prose-ok",
+      "condition": "cold",
+      "ms": 1690,
+      "timings": {
+        "promptEvalCount": 3891,
+        "promptEvalNs": 24994000,
+        "evalCount": 54,
+        "evalNs": 1640233000,
+        "loadNs": 10245209
+      }
+    },
+    {
+      "case": "date",
+      "sample": 0,
+      "pass": false,
+      "label": "prose",
+      "condition": "warm",
+      "ms": 361,
+      "timings": {
+        "promptEvalCount": 3942,
+        "promptEvalNs": 337328000,
+        "evalCount": 1,
+        "evalNs": 1000,
+        "loadNs": 10076083
+      }
+    },
+    {
+      "case": "date",
+      "sample": 1,
+      "pass": false,
+      "label": "prose",
+      "condition": "warm",
+      "ms": 43,
+      "timings": {
+        "promptEvalCount": 3942,
+        "promptEvalNs": 24435000,
+        "evalCount": 1,
+        "evalNs": 1000,
+        "loadNs": 7620792
+      }
+    },
+    {
+      "case": "time",
+      "sample": 0,
+      "pass": false,
+      "label": "prose",
+      "condition": "warm",
+      "ms": 248,
+      "timings": {
+        "promptEvalCount": 3941,
+        "promptEvalNs": 116448000,
+        "evalCount": 6,
+        "evalNs": 110781000,
+        "loadNs": 7801250
+      }
+    },
+    {
+      "case": "time",
+      "sample": 1,
+      "pass": false,
+      "label": "prose",
+      "condition": "warm",
+      "ms": 157,
+      "timings": {
+        "promptEvalCount": 3941,
+        "promptEvalNs": 22071000,
+        "evalCount": 6,
+        "evalNs": 111004000,
+        "loadNs": 9337375
+      }
+    },
+    {
+      "case": "toggle",
+      "sample": 0,
+      "pass": false,
+      "label": "prose",
+      "condition": "warm",
+      "ms": 150,
+      "timings": {
+        "promptEvalCount": 3939,
+        "promptEvalNs": 129570000,
+        "evalCount": 1,
+        "evalNs": 1000,
+        "loadNs": 6450125
+      }
+    },
+    {
+      "case": "toggle",
+      "sample": 1,
+      "pass": false,
+      "label": "prose",
+      "condition": "warm",
+      "ms": 54,
+      "timings": {
+        "promptEvalCount": 3939,
+        "promptEvalNs": 25174000,
+        "evalCount": 1,
+        "evalNs": 1000,
+        "loadNs": 12854041
+      }
+    },
+    {
+      "case": "text",
+      "sample": 0,
+      "pass": false,
+      "label": "prose",
+      "condition": "warm",
+      "ms": 137,
+      "timings": {
+        "promptEvalCount": 3942,
+        "promptEvalNs": 117177000,
+        "evalCount": 1,
+        "evalNs": 1000,
+        "loadNs": 8006083
+      }
+    },
+    {
+      "case": "text",
+      "sample": 1,
+      "pass": false,
+      "label": "prose",
+      "condition": "warm",
+      "ms": 51,
+      "timings": {
+        "promptEvalCount": 3942,
+        "promptEvalNs": 23653000,
+        "evalCount": 1,
+        "evalNs": 1000,
+        "loadNs": 11713042
+      }
+    },
+    {
+      "case": "number",
+      "sample": 0,
+      "pass": false,
+      "label": "prose",
+      "condition": "warm",
+      "ms": 131,
+      "timings": {
+        "promptEvalCount": 3941,
+        "promptEvalNs": 112461000,
+        "evalCount": 1,
+        "evalNs": 1000,
+        "loadNs": 7717458
+      }
+    },
+    {
+      "case": "number",
+      "sample": 1,
+      "pass": false,
+      "label": "prose",
+      "condition": "warm",
+      "ms": 48,
+      "timings": {
+        "promptEvalCount": 3941,
+        "promptEvalNs": 23350000,
+        "evalCount": 1,
+        "evalNs": 1000,
+        "loadNs": 10949125
+      }
+    },
+    {
+      "case": "choice1",
+      "sample": 0,
+      "pass": false,
+      "label": "prose",
+      "condition": "warm",
+      "ms": 133,
+      "timings": {
+        "promptEvalCount": 3939,
+        "promptEvalNs": 111281000,
+        "evalCount": 1,
+        "evalNs": 1000,
+        "loadNs": 7870458
+      }
+    },
+    {
+      "case": "choice1",
+      "sample": 1,
+      "pass": false,
+      "label": "prose",
+      "condition": "warm",
+      "ms": 49,
+      "timings": {
+        "promptEvalCount": 3939,
+        "promptEvalNs": 23652000,
+        "evalCount": 1,
+        "evalNs": 1000,
+        "loadNs": 10512541
+      }
+    },
+    {
+      "case": "choice2",
+      "sample": 0,
+      "pass": false,
+      "label": "prose",
+      "condition": "warm",
+      "ms": 128,
+      "timings": {
+        "promptEvalCount": 3938,
+        "promptEvalNs": 106377000,
+        "evalCount": 1,
+        "evalNs": 1000,
+        "loadNs": 7884500
+      }
+    },
+    {
+      "case": "choice2",
+      "sample": 1,
+      "pass": false,
+      "label": "prose",
+      "condition": "warm",
+      "ms": 49,
+      "timings": {
+        "promptEvalCount": 3938,
+        "promptEvalNs": 23340000,
+        "evalCount": 1,
+        "evalNs": 1000,
+        "loadNs": 10499250
+      }
+    },
+    {
+      "case": "choice3",
+      "sample": 0,
+      "pass": false,
+      "label": "prose",
+      "condition": "warm",
+      "ms": 124,
+      "timings": {
+        "promptEvalCount": 3938,
+        "promptEvalNs": 105683000,
+        "evalCount": 1,
+        "evalNs": 1000,
+        "loadNs": 7565083
+      }
+    },
+    {
+      "case": "choice3",
+      "sample": 1,
+      "pass": false,
+      "label": "prose",
+      "condition": "warm",
+      "ms": 48,
+      "timings": {
+        "promptEvalCount": 3938,
+        "promptEvalNs": 23742000,
+        "evalCount": 1,
+        "evalNs": 1000,
+        "loadNs": 10045917
+      }
+    },
+    {
+      "case": "choice4",
+      "sample": 0,
+      "pass": false,
+      "label": "prose",
+      "condition": "warm",
+      "ms": 124,
+      "timings": {
+        "promptEvalCount": 3939,
+        "promptEvalNs": 105143000,
+        "evalCount": 1,
+        "evalNs": 1000,
+        "loadNs": 7190708
+      }
+    },
+    {
+      "case": "choice4",
+      "sample": 1,
+      "pass": false,
+      "label": "prose",
+      "condition": "warm",
+      "ms": 47,
+      "timings": {
+        "promptEvalCount": 3939,
+        "promptEvalNs": 23257000,
+        "evalCount": 1,
+        "evalNs": 1000,
+        "loadNs": 10417250
+      }
+    },
+    {
+      "case": "choice5",
+      "sample": 0,
+      "pass": false,
+      "label": "prose",
+      "condition": "warm",
+      "ms": 127,
+      "timings": {
+        "promptEvalCount": 3938,
+        "promptEvalNs": 105240000,
+        "evalCount": 1,
+        "evalNs": 1000,
+        "loadNs": 7725917
+      }
+    },
+    {
+      "case": "choice5",
+      "sample": 1,
+      "pass": false,
+      "label": "prose",
+      "condition": "warm",
+      "ms": 48,
+      "timings": {
+        "promptEvalCount": 3938,
+        "promptEvalNs": 23478000,
+        "evalCount": 1,
+        "evalNs": 1000,
+        "loadNs": 10408667
+      }
+    },
+    {
+      "case": "choice6",
+      "sample": 0,
+      "pass": false,
+      "label": "prose",
+      "condition": "warm",
+      "ms": 128,
+      "timings": {
+        "promptEvalCount": 3939,
+        "promptEvalNs": 107104000,
+        "evalCount": 1,
+        "evalNs": 1000,
+        "loadNs": 8085584
+      }
+    },
+    {
+      "case": "choice6",
+      "sample": 1,
+      "pass": false,
+      "label": "prose",
+      "condition": "warm",
+      "ms": 48,
+      "timings": {
+        "promptEvalCount": 3939,
+        "promptEvalNs": 23554000,
+        "evalCount": 1,
+        "evalNs": 1000,
+        "loadNs": 10133375
+      }
+    },
+    {
+      "case": "pie",
+      "sample": 0,
+      "pass": false,
+      "label": "prose",
+      "condition": "warm",
+      "ms": 122,
+      "timings": {
+        "promptEvalCount": 3948,
+        "promptEvalNs": 102926000,
+        "evalCount": 1,
+        "evalNs": 1000,
+        "loadNs": 7669000
+      }
+    },
+    {
+      "case": "pie",
+      "sample": 1,
+      "pass": false,
+      "label": "prose",
+      "condition": "warm",
+      "ms": 70,
+      "timings": {
+        "promptEvalCount": 3948,
+        "promptEvalNs": 24586000,
+        "evalCount": 1,
+        "evalNs": 1000,
+        "loadNs": 16419416
+      }
+    },
+    {
+      "case": "bar",
+      "sample": 0,
+      "pass": false,
+      "label": "prose",
+      "condition": "warm",
+      "ms": 137,
+      "timings": {
+        "promptEvalCount": 3943,
+        "promptEvalNs": 118593000,
+        "evalCount": 1,
+        "evalNs": 1000,
+        "loadNs": 6186250
+      }
+    },
+    {
+      "case": "bar",
+      "sample": 1,
+      "pass": false,
+      "label": "prose",
+      "condition": "warm",
+      "ms": 55,
+      "timings": {
+        "promptEvalCount": 3943,
+        "promptEvalNs": 25901000,
+        "evalCount": 1,
+        "evalNs": 1000,
+        "loadNs": 12589042
+      }
+    },
+    {
+      "case": "line",
+      "sample": 0,
+      "pass": false,
+      "label": "prose",
+      "condition": "warm",
+      "ms": 137,
+      "timings": {
+        "promptEvalCount": 3942,
+        "promptEvalNs": 115727000,
+        "evalCount": 1,
+        "evalNs": 1000,
+        "loadNs": 8185333
+      }
+    },
+    {
+      "case": "line",
+      "sample": 1,
+      "pass": false,
+      "label": "prose",
+      "condition": "warm",
+      "ms": 53,
+      "timings": {
+        "promptEvalCount": 3942,
+        "promptEvalNs": 24177000,
+        "evalCount": 1,
+        "evalNs": 1000,
+        "loadNs": 12135667
+      }
+    },
+    {
+      "case": "gauge",
+      "sample": 0,
+      "pass": false,
+      "label": "prose",
+      "condition": "warm",
+      "ms": 143,
+      "timings": {
+        "promptEvalCount": 3946,
+        "promptEvalNs": 124100000,
+        "evalCount": 1,
+        "evalNs": 1000,
+        "loadNs": 7966500
+      }
+    },
+    {
+      "case": "gauge",
+      "sample": 1,
+      "pass": false,
+      "label": "prose",
+      "condition": "warm",
+      "ms": 39,
+      "timings": {
+        "promptEvalCount": 3946,
+        "promptEvalNs": 22831000,
+        "evalCount": 1,
+        "evalNs": 1000,
+        "loadNs": 6500792
+      }
+    },
+    {
+      "case": "rating_show",
+      "sample": 0,
+      "pass": false,
+      "label": "prose",
+      "condition": "warm",
+      "ms": 123,
+      "timings": {
+        "promptEvalCount": 3949,
+        "promptEvalNs": 106168000,
+        "evalCount": 1,
+        "evalNs": 1000,
+        "loadNs": 6270459
+      }
+    },
+    {
+      "case": "rating_show",
+      "sample": 1,
+      "pass": false,
+      "label": "prose",
+      "condition": "warm",
+      "ms": 49,
+      "timings": {
+        "promptEvalCount": 3949,
+        "promptEvalNs": 23970000,
+        "evalCount": 1,
+        "evalNs": 1000,
+        "loadNs": 10085667
+      }
+    },
+    {
+      "case": "rating_ask",
+      "sample": 0,
+      "pass": false,
+      "label": "prose",
+      "condition": "warm",
+      "ms": 145,
+      "timings": {
+        "promptEvalCount": 3945,
+        "promptEvalNs": 126153000,
+        "evalCount": 1,
+        "evalNs": 1000,
+        "loadNs": 7749916
+      }
+    },
+    {
+      "case": "rating_ask",
+      "sample": 1,
+      "pass": false,
+      "label": "prose",
+      "condition": "warm",
+      "ms": 52,
+      "timings": {
+        "promptEvalCount": 3945,
+        "promptEvalNs": 23795000,
+        "evalCount": 1,
+        "evalNs": 1000,
+        "loadNs": 10242208
+      }
+    },
+    {
+      "case": "carousel",
+      "sample": 0,
+      "pass": false,
+      "label": "prose",
+      "condition": "warm",
+      "ms": 835,
+      "timings": {
+        "promptEvalCount": 3949,
+        "promptEvalNs": 103041000,
+        "evalCount": 26,
+        "evalNs": 709449000,
+        "loadNs": 9397250
+      }
+    },
+    {
+      "case": "carousel",
+      "sample": 1,
+      "pass": false,
+      "label": "prose",
+      "condition": "warm",
+      "ms": 840,
+      "timings": {
+        "promptEvalCount": 3949,
+        "promptEvalNs": 25476000,
+        "evalCount": 26,
+        "evalNs": 786600000,
+        "loadNs": 11973708
+      }
+    },
+    {
+      "case": "table",
+      "sample": 0,
+      "pass": false,
+      "label": "prose",
+      "condition": "warm",
+      "ms": 2174,
+      "timings": {
+        "promptEvalCount": 3943,
+        "promptEvalNs": 150785000,
+        "evalCount": 65,
+        "evalNs": 1998831000,
+        "loadNs": 9453291
+      }
+    },
+    {
+      "case": "table",
+      "sample": 1,
+      "pass": false,
+      "label": "prose",
+      "condition": "warm",
+      "ms": 2141,
+      "timings": {
+        "promptEvalCount": 3943,
+        "promptEvalNs": 30322000,
+        "evalCount": 65,
+        "evalNs": 2094190999,
+        "loadNs": 6491958
+      }
+    },
+    {
+      "case": "facts",
+      "sample": 0,
+      "pass": false,
+      "label": "prose",
+      "condition": "warm",
+      "ms": 184,
+      "timings": {
+        "promptEvalCount": 3944,
+        "promptEvalNs": 159637000,
+        "evalCount": 1,
+        "evalNs": 1000,
+        "loadNs": 9328750
+      }
+    },
+    {
+      "case": "facts",
+      "sample": 1,
+      "pass": false,
+      "label": "prose",
+      "condition": "warm",
+      "ms": 54,
+      "timings": {
+        "promptEvalCount": 3944,
+        "promptEvalNs": 26005000,
+        "evalCount": 1,
+        "evalNs": 1000,
+        "loadNs": 11091708
+      }
+    },
+    {
+      "case": "columnset",
+      "sample": 0,
+      "pass": false,
+      "label": "prose",
+      "condition": "warm",
+      "ms": 3802,
+      "timings": {
+        "promptEvalCount": 3940,
+        "promptEvalNs": 121002000,
+        "evalCount": 114,
+        "evalNs": 3656966000,
+        "loadNs": 9113167
+      }
+    },
+    {
+      "case": "columnset",
+      "sample": 1,
+      "pass": false,
+      "label": "prose",
+      "condition": "warm",
+      "ms": 3787,
+      "timings": {
+        "promptEvalCount": 3940,
+        "promptEvalNs": 31548000,
+        "evalCount": 114,
+        "evalNs": 3732542000,
+        "loadNs": 9712459
+      }
+    },
+    {
+      "case": "codeblock",
+      "sample": 0,
+      "pass": false,
+      "label": "prose",
+      "condition": "warm",
+      "ms": 158,
+      "timings": {
+        "promptEvalCount": 3951,
+        "promptEvalNs": 133038999,
+        "evalCount": 1,
+        "evalNs": 1000,
+        "loadNs": 9906042
+      }
+    },
+    {
+      "case": "codeblock",
+      "sample": 1,
+      "pass": false,
+      "label": "prose",
+      "condition": "warm",
+      "ms": 62,
+      "timings": {
+        "promptEvalCount": 3951,
+        "promptEvalNs": 24869000,
+        "evalCount": 1,
+        "evalNs": 1000,
+        "loadNs": 16930958
+      }
+    },
+    {
+      "case": "progress",
+      "sample": 0,
+      "pass": false,
+      "label": "prose",
+      "condition": "warm",
+      "ms": 141,
+      "timings": {
+        "promptEvalCount": 3941,
+        "promptEvalNs": 118366000,
+        "evalCount": 1,
+        "evalNs": 1000,
+        "loadNs": 8383167
+      }
+    },
+    {
+      "case": "progress",
+      "sample": 1,
+      "pass": false,
+      "label": "prose",
+      "condition": "warm",
+      "ms": 54,
+      "timings": {
+        "promptEvalCount": 3941,
+        "promptEvalNs": 23967000,
+        "evalCount": 1,
+        "evalNs": 1000,
+        "loadNs": 12248334
+      }
+    },
+    {
+      "case": "badge",
+      "sample": 0,
+      "pass": false,
+      "label": "prose",
+      "condition": "warm",
+      "ms": 137,
+      "timings": {
+        "promptEvalCount": 3942,
+        "promptEvalNs": 115596000,
+        "evalCount": 1,
+        "evalNs": 1000,
+        "loadNs": 8039500
+      }
+    },
+    {
+      "case": "badge",
+      "sample": 1,
+      "pass": false,
+      "label": "prose",
+      "condition": "warm",
+      "ms": 50,
+      "timings": {
+        "promptEvalCount": 3942,
+        "promptEvalNs": 23582000,
+        "evalCount": 1,
+        "evalNs": 1000,
+        "loadNs": 11373250
+      }
+    },
+    {
+      "case": "prose",
+      "sample": 0,
+      "pass": true,
+      "label": "prose-ok",
+      "condition": "warm",
+      "ms": 985,
+      "timings": {
+        "promptEvalCount": 3941,
+        "promptEvalNs": 115957000,
+        "evalCount": 30,
+        "evalNs": 848963000,
+        "loadNs": 7812666
+      }
+    },
+    {
+      "case": "prose",
+      "sample": 1,
+      "pass": true,
+      "label": "prose-ok",
+      "condition": "warm",
+      "ms": 976,
+      "timings": {
+        "promptEvalCount": 3941,
+        "promptEvalNs": 36768000,
+        "evalCount": 30,
+        "evalNs": 919210000,
+        "loadNs": 8384708
+      }
+    }
+  ]
+}
