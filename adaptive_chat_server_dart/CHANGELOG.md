@@ -306,12 +306,14 @@ stop` did run, the runner never finished evicting, and the "7 minutes
   send, which is the shape a prompt-cache hit would produce; two models
   (`nemotron-3-nano:4b`, `qwen3.5:9b`) sit at 1,492 to 4,295 ms on the first
   send, consistent with reprocessing the whole prompt. Shape scores agree
-  within one case across the hosts except `granite4.1:3b`, whose M5 unaided
-  with-history `2/25` rests on 2 scored cases of 25 after a 56-stall cascade;
-  that flag has changed host rather than gone away. `powermetrics` on the M5
-  records 722 to 1,578 MHz (median 890) over 2,318 GPU-active samples with
-  Heavy thermal pressure on 2,198 of them and no downward drift, and reports
-  no die temperature. Archives: `results-m1max-64gb-ollama0351/` and
+  within one case across the hosts except `llama3.2:latest` unaided with
+  history, 13/25 on the M5 against 11/25 on the M1 Max, and `granite4.1:3b`,
+  whose M5 unaided with-history `2/25` rests on 2 scored cases of 25 after a
+  56-stall cascade; that flag has changed host rather than gone away.
+  `powermetrics` on the M5 records 722 to 1,578 MHz (median 890) over 2,318
+  GPU-active samples with Heavy thermal pressure on 2,198 of them and no
+  downward drift, and reports no die temperature. Archives:
+  `results-m1max-64gb-ollama0351/` and
   `results-m5-16gb-ollama0351/`; `results-m1max-64gb-ollama0340/` is now a
   closed archive with a `HISTORICAL.md` marker.
 
