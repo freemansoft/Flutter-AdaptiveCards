@@ -21,7 +21,7 @@ When the notebook and a draft disagree, the notebook wins.
 | --- | -------------------------------------------------------------------------------------------------------------- | --------------------------------- | --------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 1   | An SDUI demo that turned into a local-model benchmark                                                          | `article-1-origin-story-*`        | [post](https://joe.blog.freemansoft.com/2026/09/an-sdui-demo-that-turned-into-local.html)     | **Published**, republished 2026-10-01 with the 2026-09-28 terms table and series paragraph, corrected error-placeholder and seed-card claims, and the sections reordered so each term is defined before it is scored                                                                                                                                                                                                                                                                                              |
 | 2   | We tried 14 levers to get reliable card JSON from a local model                                                | `article-2-tuning-process-*`      | [post](https://joe.blog.freemansoft.com/2026/09/we-tried-14-levers-to-get-reliable-card.html) | **Published**, republished 2026-10-01 with the 2026-09-28 terms table, the invalid-JSON correction, and a plain-word pass on the caveats paragraph. Republished 2026-10-02 with the request-path diagram, the failure modes opening the article, and the code-explanation anecdote merged into the system prompt section                                                                                                                                                                                          |
-| 3   | Benchmarking local LLM generated Adaptive Card JSON on a 64 GB M1 Max and 16 GB M5                             | `article-3-m1max-vs-m5-*`         | [post](https://joe.blog.freemansoft.com/2026/09/benchmarking-local-model-llm-generated.html)  | **Published.** Revised 2026-09-08, mermaid chart, register pass 2026-09-12, cut pass 2026-09-14, review and restructure 2026-10-03                                                                                                                                                                                                                                                                                                                                                                                |
+| 3   | Benchmarking local LLM generated Adaptive Card JSON on a 64 GB M1 Max and 16 GB M5                             | `article-3-m1max-vs-m5-*`         | [post](https://joe.blog.freemansoft.com/2026/09/benchmarking-local-model-llm-generated.html)  | **Published.** Revised 2026-09-08, mermaid chart, register pass 2026-09-12, cut pass 2026-09-14, review and restructure 2026-10-03, figures re-derived from the matched Ollama 0.35.1 re-sweep 2026-10-04, re-run section cut and the article narrowed to 0.35.1 figures 2026-10-04                                                                                                                                                                                                                               |
 | 4   | Ollama's tool channel beats prose for card JSON on every model that calls it                                   | `article-4-tool-channel-*`        | [post](https://joe.blog.freemansoft.com/2026/09/ollamas-tool-channel-produces-better.html)    | **Published** 2026-09-17, after the rewrite against the re-measurement and a review pass. Retitled and republished 2026-09-18                                                                                                                                                                                                                                                                                                                                                                                     |
 | 5   | Eight measurement rules from a local-model benchmark on Ollama                                                 | `article-5-measurement-hygiene-*` | [post](https://joe.blog.freemansoft.com/2026/09/eight-measurement-rules-from-local.html)      | **Published** 2026-09-18, rewritten rules first with the Ollama 0.34.0 `granite4.1:3b` control. The draft now says an unknown element renders as an error placeholder, not an empty space; that awaits a republish                                                                                                                                                                                                                                                                                                |
 | 6   | Ollama silently drops a history message larger than its context window                                         | `article-6-context-fill-*`        | [post](https://joe.blog.freemansoft.com/2026/09/ollama-silently-drops-history-message.html)   | **Published** 2026-09-20, after the review against the notebook, the Ollama 0.34.0 re-runs, a flowchart and a retitle                                                                                                                                                                                                                                                                                                                                                                                             |
@@ -185,15 +185,16 @@ phase-1-canary findings built on top of it.
 
 **Article 3: the two hosts.** The 16 GB fit question outright, including the
 detail article 1 defers to it. The M5 ÷ M1 Max ratio band, read at matched
-Ollama versions, and why it does not track weight. The `llama3.2:latest`
-artifact row. The 1.54x sweep-position bias that bounds how precisely any
-single row's ratio can be read. Thermal throttling as plausible and unproven.
+Ollama versions, and why it does not track weight. The per-call phase split
+that puts the host gap in generation. That each model ran once per host, so no
+row's ratio is a reproducibility-tested figure. Thermal throttling as plausible
+and unproven. Its measured figures all come from the matched Ollama 0.35.1
+sweeps on both hosts, so it compares machines and never runtimes; the earlier
+same-host re-runs and the `llama3.2:latest` artifact row stay in the notebook.
 
-Both hosts run the same Ollama line, so the article compares machines and never
-runtimes: a figure from a pre-0.33 runtime does not appear in it. Stall
-counts not being comparable across runtimes belongs to article 5, which owns it
-as a methodological finding rather than as a host comparison, on 0.33.x and
-0.34.0 figures only.
+Stall counts not being comparable across runtimes belongs to article 5, which
+owns it as a methodological finding rather than as a host comparison, on 0.33.x
+and 0.34.0 figures only.
 
 Every figure in it was measured against a nearly empty context, a probe call
 being a system prompt, one question and at most a two-turn seed. That is a
@@ -241,10 +242,13 @@ see.
 
 Its prose runs to about 2,300 words, past the 2,000 target, because it owns eight rules and each carries its own measurement. The prompt-cache readings were split out to article 8 on 2026-09-18 for that reason and because they support no rule.
 
-_Defers:_ the `llama3.2:latest` M5 artifact row and the throttling analysis to
-article 3; it recaps article 3's sweep-position control in one paragraph, as a
-second instance of the same discipline that resolves the stall counts: isolate
-the confound, measure it, do not read a mechanism off a net number.
+_Defers:_ the throttling analysis to article 3, which carries the M5 GPU clock
+reading. The `llama3.2:latest` M5 artifact row now sits in the notebook, under
+[Performance, by host and runtime](../ModelBehavior.md#performance-by-host-and-runtime),
+because article 3 dropped its re-run section. Article 5 recaps the
+sweep-position control in one paragraph, as a second instance of the same
+discipline that resolves the stall counts: isolate the confound, measure it, do
+not read a mechanism off a net number.
 
 **Article 6: the filled context.** Everything about running a model with its
 window actually full. The allocation rule, `min(requested, trained window)`,
@@ -389,7 +393,7 @@ figures and the series' names, which every article and the skill depend on.
   Never quote one against the other. Tuning figures additionally carry their
   model and temperature: `6/10 → 15/15` is not quotable without `at t=0`.
 - **Shape figures are seeded unless stated otherwise**, and the seed is worth
-  +10 to −2 by model, so a seeded score named without its configuration is
+  +12 to −3 by model, so a seeded score named without its configuration is
   half a fact.
 - **The noise floor is ±1.** Shape figures are `--samples 2`, meaning every case
   runs twice and is scored a pass only if both runs passed, so one borderline
