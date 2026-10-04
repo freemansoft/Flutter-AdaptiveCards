@@ -130,7 +130,7 @@ nemotron-3-nano:4b granite4.1:3b`, passed explicitly as `sweep.sh`
 
 **Files:** none
 
-- [ ] **Step 1: Get the code**
+- [x] **Step 1: Get the code**
 
 ```bash
 cd ~/Documents/GitHub/freemansoft/Flutter-AdaptiveCards
@@ -148,7 +148,7 @@ git switch main && git pull && git switch -c measure/matched-resweep-phase-timin
 git switch docs/article-3-hardware-table && git pull && git switch -c measure/matched-resweep-phase-timings
 ```
 
-- [ ] **Step 2: Confirm the toolchain**
+- [x] **Step 2: Confirm the toolchain**
 
 ```bash
 fvm install            # installs the pinned SDK from .fvmrc
@@ -185,7 +185,7 @@ Task 1 on a red baseline.
 - Consumed by Task 2: each call object in `shape_ab-seeded.json` may carry
   `"timings": {"promptEvalNs": <int>, "evalNs": <int>, "evalCount": <int>, ...}`.
 
-- [ ] **Step 1: Write the failing `OllamaTimings` and `ProbeCall` tests**
+- [x] **Step 1: Write the failing `OllamaTimings` and `ProbeCall` tests**
 
 Append to `test/probe_results_test.dart`, inside `main()`:
 
@@ -263,7 +263,7 @@ Append to `test/probe_results_test.dart`, inside `main()`:
   });
 ```
 
-- [ ] **Step 2: Run the tests to verify they fail**
+- [x] **Step 2: Run the tests to verify they fail**
 
 ```bash
 cd adaptive_chat_server_dart
@@ -273,7 +273,7 @@ fvm dart test test/probe_results_test.dart
 Expected: compile failure, `OllamaTimings` is undefined and `ProbeCall` has
 no `timings` parameter.
 
-- [ ] **Step 3: Add `OllamaTimings` to `probe_results.dart`**
+- [x] **Step 3: Add `OllamaTimings` to `probe_results.dart`**
 
 Insert above `class const ProbeCall(`:
 
@@ -356,7 +356,7 @@ class const OllamaTimings({
 
 `probe_results.dart` already imports `dart:convert`.
 
-- [ ] **Step 4: Add `timings` to `ProbeCall`**
+- [x] **Step 4: Add `timings` to `ProbeCall`**
 
 In `class const ProbeCall(`, after the `unknownTypes` field:
 
@@ -382,7 +382,7 @@ In `toJson()`, add as the last entry:
     if (timings != null) 'timings': timings!.toJson(),
 ```
 
-- [ ] **Step 5: Run the tests to verify they pass**
+- [x] **Step 5: Run the tests to verify they pass**
 
 ```bash
 fvm dart test test/probe_results_test.dart
@@ -390,7 +390,7 @@ fvm dart test test/probe_results_test.dart
 
 Expected: PASS, including the existing tests.
 
-- [ ] **Step 6: Write the failing `judgeReply` pass-through test**
+- [x] **Step 6: Write the failing `judgeReply` pass-through test**
 
 Append to the `judgeReply promptEvalCount` group in
 `test/probe_support_test.dart`:
@@ -417,7 +417,7 @@ import:
 import '../tool/model_probes/probe_results.dart';
 ```
 
-- [ ] **Step 7: Run it to verify it fails**
+- [x] **Step 7: Run it to verify it fails**
 
 ```bash
 fvm dart test test/probe_support_test.dart
@@ -425,7 +425,7 @@ fvm dart test test/probe_support_test.dart
 
 Expected: compile failure, `judgeReply` has no `timings` parameter.
 
-- [ ] **Step 8: Thread `timings` through `probe_support.dart`**
+- [x] **Step 8: Thread `timings` through `probe_support.dart`**
 
 Add the import beside the other relative-free imports at the top of
 `probe_support.dart` (after the `package:` imports):
@@ -477,7 +477,7 @@ Change the last line of `probeOnce` (currently
   );
 ```
 
-- [ ] **Step 9: Record the timings in `shape_ab.dart`**
+- [x] **Step 9: Record the timings in `shape_ab.dart`**
 
 In the `ProbeCall(` built inside the case loop (`shape_ab.dart:126-140`), add
 after `unknownTypes:`:
@@ -486,7 +486,7 @@ after `unknownTypes:`:
           timings: outcome.timings,
 ```
 
-- [ ] **Step 10: Run the full probe test set and the analyzer**
+- [x] **Step 10: Run the full probe test set and the analyzer**
 
 ```bash
 fvm dart test
@@ -498,7 +498,7 @@ Expected: all tests pass, `No issues found!`, format exit 0. Fix any
 `public_member_api_docs` or `use_declaring_parameters` finding before
 moving on.
 
-- [ ] **Step 11: Smoke-test against a live model (Mac with Ollama running)**
+- [x] **Step 11: Smoke-test against a live model (Mac with Ollama running)**
 
 ```bash
 fvm dart run tool/model_probes/shape_ab.dart --model llama3.2:latest \
@@ -509,7 +509,7 @@ python3 -c "import json;c=json.load(open('/tmp/timings-smoke.json'))['calls'];pr
 Expected: every non-stalled call carries `timings` with nonzero
 `promptEvalNs`, `evalNs`, `evalCount`. Delete `/tmp/timings-smoke.json`.
 
-- [ ] **Step 12: Changelog and commit**
+- [x] **Step 12: Changelog and commit**
 
 Add under `## [Unreleased]` in `adaptive_chat_server_dart/CHANGELOG.md`:
 
@@ -543,7 +543,7 @@ git commit -m "feat(probes): record Ollama per-call phase timings in shape_ab"
   plus `| Prompt ratio | Gen ratio |` columns with `--compare`. Ratios are
   `results_dir ÷ compare_dir`, matching the existing ratio column.
 
-- [ ] **Step 1: Write the fixture and the expected output (the failing check)**
+- [x] **Step 1: Write the fixture and the expected output (the failing check)**
 
 ```bash
 mkdir -p /tmp/phases-fixture/a/m /tmp/phases-fixture/b/m
@@ -576,7 +576,7 @@ tokens in 2.0 s is 50.0 tok/s):
 | `m` | 500 | 2000 | 50.0 | 3 | 2.00x | 2.00x |
 ```
 
-- [ ] **Step 2: Implement `--phases`**
+- [x] **Step 2: Implement `--phases`**
 
 Add after `read_model_probes` in `perf_table.py`:
 
@@ -685,7 +685,7 @@ bandwidth-bound, so a host comparison that moves one and not the other names
 the resource. Runs recorded before `timings` existed print `n/a`.
 ```
 
-- [ ] **Step 3: Run the fixture check**
+- [x] **Step 3: Run the fixture check**
 
 ```bash
 python3 tool/model_probes/perf_table.py /tmp/phases-fixture/a --compare /tmp/phases-fixture/b --phases
@@ -697,7 +697,7 @@ Expected: the first prints the header, rule, and exactly
 cells and `0` timed calls for every model (old runs have no timings), with no
 traceback. Then `rm -rf /tmp/phases-fixture`.
 
-- [ ] **Step 4: Confirm the existing report is unchanged**
+- [x] **Step 4: Confirm the existing report is unchanged**
 
 ```bash
 python3 tool/model_probes/perf_table.py tool/model_probes/results-m5-16gb-ollama0331 \
@@ -709,7 +709,7 @@ models and 2.3x for `llama3-chatqa:8b`, the one-decimal form of the
 notebook's cross-host ratios. Any difference means Step 2 touched the
 default report.
 
-- [ ] **Step 5: Changelog and commit**
+- [x] **Step 5: Changelog and commit**
 
 ```markdown
 - `perf_table.py --phases` reports median prompt-processing and generation
@@ -738,7 +738,7 @@ git commit -m "feat(probes): perf_table --phases splits the median call by phase
   first probe, including the first model, so every model starts from the
   same idle interval.
 
-- [ ] **Step 1: Add the variable and the comment**
+- [x] **Step 1: Add the variable and the comment**
 
 After `mkdir -p "$LOG"`:
 
@@ -751,7 +751,7 @@ After `mkdir -p "$LOG"`:
 COOLDOWN=${SWEEP_COOLDOWN:-0}
 ```
 
-- [ ] **Step 2: Apply it in the model loop**
+- [x] **Step 2: Apply it in the model loop**
 
 Replace the first `wait_for_idle` inside `for M in $MODELS; do` with:
 
@@ -769,7 +769,7 @@ Add one usage line to the header comment, after the `just one` example:
 #   SWEEP_COOLDOWN=600 tool/model_probes/sweep.sh m1 m2   # 10 min idle before each
 ```
 
-- [ ] **Step 3: Verify syntax and behavior**
+- [x] **Step 3: Verify syntax and behavior**
 
 ```bash
 zsh -n tool/model_probes/sweep.sh && echo syntax-ok
@@ -780,7 +780,7 @@ Expected: `syntax-ok`; three code lines plus the header example. A live
 check happens in Task 5 Step 3, where the log must show `>>> COOLDOWN 600s`
 before each model.
 
-- [ ] **Step 4: Changelog and commit**
+- [x] **Step 4: Changelog and commit**
 
 ```markdown
 - `sweep.sh` honors `SWEEP_COOLDOWN` (seconds of idle before each model) so
@@ -805,7 +805,7 @@ git commit -m "feat(probes): sweep.sh SWEEP_COOLDOWN idles before each model"
 `<VER>` is the server version with the dots removed: 0.34.0 is `0340`,
 0.34.1 is `0341`.
 
-- [ ] **Step 1: Read both servers' versions**
+- [x] **Step 1: Read both servers' versions**
 
 On each Mac:
 
@@ -820,7 +820,7 @@ Record all four on each host. If client and server differ, fix the
 client (`ollama --version` is what `detectOllamaVersion()` stamps into the
 files).
 
-- [ ] **Step 2: Pick one version for both hosts**
+- [x] **Step 2: Pick one version for both hosts**
 
 Install the same release on both, the newest one both can run. Do not
 proceed with different patch versions. Then pull the current weights on the
@@ -837,7 +837,7 @@ Expected: the digests match `results-m5-16gb-ollama0331/MODELS.md` (for
 example `granite4.1:8b 444af1c4b2fe`). A changed digest is a different
 measurement; record it in `MODELS.md` and tell the user before sweeping.
 
-- [ ] **Step 3: Name the directories**
+- [x] **Step 3: Name the directories**
 
 - **Branch A, `<VER>` is not `0340`:** use `results-m1max-64gb-ollama<VER>/`
   and `results-m5-16gb-ollama<VER>/`. Neither name collides with an existing
@@ -862,7 +862,7 @@ directories `results-m1max-64gb-ollama0340-sweep/` and
 dimension. Run `fvm dart run tool/model_probes/check_results.dart` and
 `fvm dart test` after the rename; both must pass before any sweep.
 
-- [ ] **Step 4: Write the provenance files**
+- [x] **Step 4: Write the provenance files**
 
 Each new directory gets a `MODELS.md` in the format of
 `results-m5-16gb-ollama0331/MODELS.md`: host line (chip / memory, Ollama
@@ -883,7 +883,7 @@ Ollama's per-call `timings`. <M5 only: `powermetrics.txt` holds GPU frequency
 and thermal-pressure samples taken during the sweep.>
 ```
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add tool/model_probes/results-*-ollama<VER>*/
@@ -901,12 +901,12 @@ git commit -m "measure(probes): provenance for the matched <VER> re-sweep direct
 - Create: `adaptive_chat_server_dart/tool/model_probes/results-m5-16gb-ollama<VER>[-sweep]/<model>/*.json`
 - Create: `.../powermetrics.txt`
 
-- [ ] **Step 1: Prepare the host**
+- [x] **Step 1: Prepare the host**
 
 Plug in power, close other apps, leave the lid open, disable sleep for the
 run (`caffeinate` below). Note the room temperature if known.
 
-- [ ] **Step 2: Start `powermetrics` in a second terminal**
+- [x] **Step 2: Start `powermetrics` in a second terminal**
 
 ```bash
 sudo powermetrics --samplers gpu_power,thermal -i 10000 \
@@ -918,7 +918,7 @@ thermal pressure level. Apple Silicon `powermetrics` does not report die
 temperature; record that absence rather than substituting another tool's
 reading.
 
-- [ ] **Step 3: Run the sweep**
+- [x] **Step 3: Run the sweep**
 
 ```bash
 cd adaptive_chat_server_dart
@@ -933,7 +933,7 @@ Expected: about 2.5-3 hours of probes plus 80 minutes of cooldown. The log
 shows `>>> COOLDOWN 600s` before each `##### MODEL`, and ends with
 `##### SWEEP COMPLETE`.
 
-- [ ] **Step 4: Stop `powermetrics` and file it**
+- [x] **Step 4: Stop `powermetrics` and file it**
 
 Ctrl-C the `powermetrics` terminal, then:
 
@@ -944,7 +944,7 @@ grep -c 'GPU HW active frequency' "$SWEEP_RESULTS/powermetrics.txt"
 
 Expected: a sample count near the sweep length in seconds divided by 10.
 
-- [ ] **Step 5: Check the run**
+- [x] **Step 5: Check the run**
 
 ```bash
 fvm dart run tool/model_probes/check_results.dart
@@ -957,7 +957,7 @@ the seeded call count minus one minus its stalls. Any model with more than a
 handful of stalls: stop and report before Task 6, with the stalled cases
 from its `shape_ab-seeded.json`.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add "$SWEEP_RESULTS"
@@ -972,10 +972,10 @@ git commit -m "measure(probes): M5 / 16 GB matched re-sweep of the eight candida
 
 - Create: `adaptive_chat_server_dart/tool/model_probes/results-m1max-64gb-ollama<VER>[-sweep]/<model>/*.json`
 
-- [ ] **Step 1: Same host preparation as Task 5 Step 1.** `powermetrics` is
+- [x] **Step 1: Same host preparation as Task 5 Step 1.** `powermetrics` is
       optional on this host; if run, file it the same way.
 
-- [ ] **Step 2: Run the sweep with the same order and cooldown**
+- [x] **Step 2: Run the sweep with the same order and cooldown**
 
 ```bash
 cd adaptive_chat_server_dart
@@ -986,7 +986,7 @@ caffeinate -i tool/model_probes/sweep.sh granite4.1:8b qwen2.5-coder:7b \
   nemotron-3-nano:4b granite4.1:3b 2>&1 | tee /tmp/sweep-m1max.log
 ```
 
-- [ ] **Step 3: Check, then commit**
+- [x] **Step 3: Check, then commit**
 
 Same checks as Task 5 Step 5, then:
 
@@ -1004,7 +1004,7 @@ git commit -m "measure(probes): M1 Max / 64 GB matched re-sweep of the eight can
 - Create: `.superpowers/sdd/2026-10-03-matched-resweep/FIGURES.md` (working
   ledger, the pattern the 2026-09-01 plan used; not published)
 
-- [ ] **Step 1: Confirm every seeded call is timed**
+- [x] **Step 1: Confirm every seeded call is timed**
 
 ```bash
 cd adaptive_chat_server_dart
@@ -1022,7 +1022,7 @@ done
 Expected: `0` for every model on both hosts. A nonzero count means an old
 file was reused; delete that model's file and re-run that model alone.
 
-- [ ] **Step 2: Produce every table the notebook and article will quote**
+- [x] **Step 2: Produce every table the notebook and article will quote**
 
 ```bash
 M5=tool/model_probes/results-m5-16gb-ollama<VER>[-sweep]
@@ -1039,7 +1039,7 @@ from `shape_ab-seeded.json` / `shape_ab-unaided.json` (the probe prints
 `shapes N/25` per condition in its log, and `sync_shape_table.dart`'s
 scoring is the reference).
 
-- [ ] **Step 3: Write down what the phase split shows, and what it does not**
+- [x] **Step 3: Write down what the phase split shows, and what it does not**
 
 In `FIGURES.md`, one short paragraph per finding, each naming its figures:
 
@@ -1064,7 +1064,7 @@ No commit: `.superpowers/` is a working area.
 - Modify: `adaptive_chat_server_dart/ModelBehavior.md` (new `####` subsection
   at the end of "Performance, by host and runtime", before the next `###`)
 
-- [ ] **Step 1: Add the subsection**
+- [x] **Step 1: Add the subsection**
 
 Heading states the finding in the notebook's style, for example
 `#### Matched Ollama <VER> re-sweep: <prompt/generation finding in one clause>`.
@@ -1085,7 +1085,7 @@ Do not edit the fifteen-model shape-coverage table or the closed 0.33.x
 cross-host table; add a one-line pointer under the 0.33.x cross-host table
 to the new subsection.
 
-- [ ] **Step 2: Verify and commit**
+- [x] **Step 2: Verify and commit**
 
 ```bash
 cd ..
@@ -1109,7 +1109,7 @@ follow its Revise mode. The subagent commit exception does not apply:
 show the changed prose to the user and wait for confirmation before
 committing.
 
-- [ ] **Step 1: Replace the tables with the new figures**
+- [x] **Step 1: Replace the tables with the new figures**
 
 - Host table: the Ollama row becomes `<VER>` on both hosts.
 - Latency table: the eight rows from Task 7 Step 2, same columns.
@@ -1119,7 +1119,7 @@ committing.
 - Re-run table: keep it as the historical control, with one sentence saying
   it comes from the 0.33.x runs, or cut it if the user prefers.
 
-- [ ] **Step 2: Cut the caveats the new data removes**
+- [x] **Step 2: Cut the caveats the new data removes**
 
 Expected removals, each to be confirmed against `FIGURES.md` before cutting:
 the two-version note, the eviction limit, the `granite4.1:3b` cascade limit
@@ -1128,7 +1128,7 @@ artifact bullet, and the `Input.Rating` "predates" paragraph. Rewrite the
 bandwidth subsection from the phase table: it can now state which phase
 carries the gap instead of "may".
 
-- [ ] **Step 3: Run the blog skill's verification block and show the prose**
+- [x] **Step 3: Run the blog skill's verification block and show the prose**
 
 Run every command in the skill's Verification section against the article
 (length, figure-token diff against the branch point, em dashes, first
@@ -1144,7 +1144,7 @@ git commit -m "docs(chat-server): article 3 figures from the matched <VER> re-sw
 
 ### Final Task: Full verification
 
-- [ ] **Step 1: Run the suites and gates**
+- [x] **Step 1: Run the suites and gates**
 
 ```bash
 cd adaptive_chat_server_dart
@@ -1160,7 +1160,7 @@ git status --short
 Expected: `No issues found!`; all tests pass; `check_results` OK with the
 two new directories counted; format exit 0; Prettier clean; a clean tree.
 
-- [ ] **Step 2: Report** the commands' output (exit codes, pass counts) per
+- [x] **Step 2: Report** the commands' output (exit codes, pass counts) per
       `superpowers:verification-before-completion`, then ask the user whether to
       push the branch and open a PR. Do not push without that confirmation.
 
@@ -1181,3 +1181,40 @@ two new directories counted; format exit 0; Prettier clean; a clean tree.
   source read of Ollama's runner or an MLX-vs-GGUF build of one model).
 - Repeated sweeps per host for a reproducibility distribution.
 - Regenerating the fifteen-model shape-coverage table.
+
+## Execution notes (2026-10-03 to 2026-10-04)
+
+Every task above ran; the checkboxes are ticked where the step was done as
+written or with one of the deviations below. Branch
+`measure/matched-resweep-phase-timings`, stacked on
+`docs/article-3-hardware-table` (PR #116, still open at the time).
+
+- **Version.** Both hosts ran Ollama **0.35.1**, not 0.34.0, so Task 4 took
+  branch A: `results-m1max-64gb-ollama0351/` and `results-m5-16gb-ollama0351/`,
+  no rename. `results-m1max-64gb-ollama0340/` gained a `HISTORICAL.md` in
+  Task 8 because the M1 Max no longer has 0.34.0 installed.
+- **Task 5** ran on the M5 by hand, in parallel with Task 6, from the pushed
+  branch; its results were pushed to this branch and the M1 Max commits were
+  rebased on top. `granite4.1:3b` stalled on 56 of 100 unaided shape calls on
+  the M5 (one contiguous block; seeded and cascade arms clean). The run was
+  kept and the stall is recorded as a finding rather than re-run.
+- **Task 2 was amended twice after the sweeps.** One-token replies (an
+  `eval_duration` of 1 µs) are excluded from tokens per second. The prompt
+  median is split by **sample index** (`Prompt first ms` / `Prompt repeat ms`),
+  not by condition: in 16 of 16 model-host pairs the first time a case's prompt
+  is seen is slow and the repeat is a prompt-cache hit, and cold and warm are
+  within noise of each other. The plan's "split the median call into its two
+  phases" was underspecified on this point.
+- **Task 7's ledger** lives at
+  `.superpowers/sdd/2026-10-03-matched-host-resweep-phase-timings/figures/`,
+  not the path named above.
+- **Task 9 went further than the plan.** At the user's direction the article
+  now quotes only 0.35.1 figures, and its "Re-running a model on the same
+  host" section was cut (the reproducibility caveat became one limit with a
+  notebook link; the throttling paragraph moved to the bandwidth subsection
+  with the M5 GPU-clock reading). The 16 GB pick stays `granite4.1:8b`, with
+  `qwen3.5:9b`'s figures beside it.
+- **Prompt phase finding.** Generation ratios are 1.12x to 1.65x against the
+  2.61x rated-bandwidth gap; the prompt phase is a cache hit on repeats and is
+  material only on `nemotron-3-nano:4b` and `qwen3.5:9b`, which are consistent
+  with reprocessing the whole prompt (mechanism not established).
