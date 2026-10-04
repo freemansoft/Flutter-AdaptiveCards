@@ -187,7 +187,9 @@ def read_phases(model_dir):
     Same population as the median s/call column: the first call (which carries
     the model load) and stalls are dropped. Ollama reports nanoseconds; the
     report prints milliseconds. Calls recorded before `timings` existed are
-    skipped and counted, never read as zero.
+    skipped and counted, never read as zero. A one-token reply has no
+    generation interval and Ollama stamps it as a microsecond, so such calls
+    stay in the generation-ms median but are excluded from tokens per second.
     """
     path = model_dir / MEDIAN_PROBE
     if not path.exists():
@@ -202,7 +204,7 @@ def read_phases(model_dir):
             prompt.append(t["promptEvalNs"] / 1e6)
         if t.get("evalNs"):
             gen.append(t["evalNs"] / 1e6)
-            if t.get("evalCount"):
+            if t.get("evalCount", 0) >= 2:
                 rate.append(t["evalCount"] / (t["evalNs"] / 1e9))
 
     def med(v):

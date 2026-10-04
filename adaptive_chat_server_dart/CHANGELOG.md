@@ -7,7 +7,9 @@
   prompt processing from token generation.
 - `perf_table.py --phases` reports median prompt-processing and generation
   time per model from the new per-call `timings`, with host-to-host ratios
-  under `--compare`.
+  under `--compare`. One-token replies are excluded from the tokens-per-second
+  figure: Ollama stamps a microsecond generation interval for them, which
+  would otherwise read as an artifact figure in the millions.
 - `sweep.sh` honors `SWEEP_COOLDOWN` (seconds of idle before each model) so
   a multi-model sweep can start every model from the same host state.
 - An unrecognized element type renders in the client as an error placeholder
