@@ -32,9 +32,10 @@ import 'package:path/path.dart' as p;
 /// rather than only that the call got slower. A cold-start prompt call is
 /// often a prompt-cache hit rather than a forward pass, so it does not show
 /// the compute-bound figure -- see `perf_table.py`'s `--phases` report,
-/// which reads this field and splits the prompt median by condition for
-/// that reason. Durations are nanoseconds, verbatim from Ollama; every field
-/// is null when the reply did not carry it.
+/// which reads this field and splits the prompt median by sample index
+/// (first versus repeat) for that reason. Durations are nanoseconds,
+/// verbatim from Ollama; every field is null when the reply did not carry
+/// it.
 class const OllamaTimings({
   /// `prompt_eval_count`: prompt tokens Ollama reports evaluating.
   final int? promptEvalCount,

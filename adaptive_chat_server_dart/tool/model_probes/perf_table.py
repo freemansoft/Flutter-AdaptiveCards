@@ -41,19 +41,26 @@ running the other way.
 
 `--phases` splits the median call into Ollama's own prompt and generation
 timings (`timings` on each `shape_ab-seeded.json` call, recorded from
-2026-10), with the prompt median reported separately for the cold and warm
-conditions: the two populations differ by up to 30x (one model's sorted
-prompt ms run 78, 79, 83, 3163, 3163, 3175 around the midpoint), so a pooled
-median lands on whichever side of that gap has more calls rather than on a
-meaningful figure. Checking `promptEvalCount` against `promptEvalNs` on a
-sample of calls suggests the cold median is largely a prompt-cache hit
-rather than a forward pass (tens of thousands of tokens/s is a lookup
-speed, not a processing speed) and the warm median is the uncached
-prompt-processing figure -- inferred from that check, not measured directly.
-Never divide `promptEvalCount` by `promptEvalNs` to get a rate for this
-reason. Generation stays pooled across conditions: cold and warm generation
-medians are within 6% of each other. Runs recorded before `timings` existed
-print `n/a`.
+2026-10), with the prompt median reported separately for the first and
+repeat time a case's prompt is seen within a condition: `shape_ab` runs each
+case twice per condition (`sample` 0 and 1), and the first run of a prompt
+costs Ollama a cache miss while the second is a cache hit. Splitting by
+`condition` (cold/warm) instead, as an earlier version of this report did,
+does not separate these -- cold and warm are within noise of each other, and
+the apparent condition split was an artifact of population size (49 cold
+calls versus 50 warm, so the integer-divide median index lands on opposite
+sides of the same sample-0/sample-1 gap). Checking `promptEvalCount` against
+`promptEvalNs` on a sample of calls suggests the first-sample figure is, for
+most models, the uncached tail of the case prompt behind a cached system
+prompt; for `nemotron-3-nano:4b` and `qwen3.5:9b` it runs 1.5-4 s, consistent
+with the whole prompt being processed rather than only the tail (inferred
+from that check, not measured directly -- the mechanism is not established).
+The repeat-sample figure is a prompt-cache hit, a lookup cost rather than a
+processing one (tens of thousands of tokens/s is a lookup speed, not a
+processing speed). Never divide `promptEvalCount` by `promptEvalNs` to get a
+rate for this reason. Generation stays pooled across samples: first- and
+repeat-sample generation medians are within 6% of each other. Runs recorded
+before `timings` existed print `n/a`.
 """
 
 import argparse
@@ -193,18 +200,20 @@ def read_model_probes(model_dir):
 
 def read_phases(model_dir):
     """Median prompt and generation time from `shape_ab-seeded.json`, prompt
-    split into the cold and warm conditions.
+    split into the first and repeat time each case's prompt is seen.
 
-    Prompt ms is bimodal within a condition -- roughly half of even the cold
-    calls carry the slow, uncached figure -- but the cold median lands on the
-    fast side and the warm median on the slow side, so reporting them
-    separately keeps a median from landing on the boundary between the two
-    rather than reading as a single meaningful figure (see the module
-    docstring's `--phases` paragraph for the check this rests on). A call
-    with no `condition` counts toward neither. Generation stays pooled
-    across conditions. Never divide `promptEvalCount` by `promptEvalNs` to
-    get a rate: a cache hit reports tens of thousands of tokens/s, a lookup
-    speed rather than a processing one.
+    `shape_ab` runs each case twice per condition, recording `sample: 0` for
+    the first run and `sample: 1` for the second. The first time Ollama sees
+    a case's prompt it is a cache miss; the second time it is a cache hit,
+    which is why the prompt-ms population is bimodal. Splitting by `sample`
+    separates the two clusters cleanly; splitting by `condition` (cold/warm,
+    an earlier version of this function) does not, because both conditions
+    mix sample 0 and sample 1 roughly evenly (see the module docstring's
+    `--phases` paragraph). A call with no `sample` field counts toward
+    neither. Generation stays pooled across samples. Never divide
+    `promptEvalCount` by `promptEvalNs` to get a rate: a cache hit reports
+    tens of thousands of tokens/s, a lookup speed rather than a processing
+    one.
 
     Same population as the median s/call column otherwise: the first call
     (which carries the model load) and stalls are dropped. Ollama reports
@@ -220,26 +229,26 @@ def read_phases(model_dir):
     ratio columns would not: a uniform unit error cancels in a ratio and
     only shows up in the absolute ms figures). A `shape_ab-seeded.json` with
     a load call plus three timed calls --
-    `condition: cold, promptEvalNs: [400e6, 500e6, 600e6], evalNs: [1e9, 2e9,
+    `sample: 0, promptEvalNs: [400e6, 500e6, 600e6], evalNs: [1e9, 2e9,
     3e9], evalCount: 100` each -- plus a fourth, one-token call --
-    `condition: cold, promptEvalNs: 500e6, evalNs: 1000, evalCount: 1` --
+    `sample: 0, promptEvalNs: 500e6, evalNs: 1000, evalCount: 1` --
     and a trailing stall, read against a `--compare` dir holding the same
     three timed calls at half those prompt/eval values and no fourth call,
     prints exactly:
 
         | `m` | 500 | n/a | 2000 | 50.0 | 1 | 4 | 2.00x | n/a | 2.00x |
 
-    Prompt cold median 500 ms from [400, 500, 500, 600]; no warm calls, so
-    n/a; gen median 2000 ms from [0.001, 1000, 2000, 3000]; the one-token
-    call is excluded from the tok/s median, which stays 50.0 from the three
-    100-token calls; one one-token call; four timed calls; ratios against
-    the halved compare dir are 2.00x / n/a / 2.00x.
+    Prompt-first median 500 ms from [400, 500, 500, 600]; no repeat-sample
+    calls, so n/a; gen median 2000 ms from [0.001, 1000, 2000, 3000]; the
+    one-token call is excluded from the tok/s median, which stays 50.0 from
+    the three 100-token calls; one one-token call; four timed calls; ratios
+    against the halved compare dir are 2.00x / n/a / 2.00x.
     """
     path = model_dir / MEDIAN_PROBE
     if not path.exists():
         return None
     run = json.loads(path.read_text())
-    prompt_cold, prompt_warm, gen, rate = [], [], [], []
+    prompt_first, prompt_repeat, gen, rate = [], [], [], []
     one_token = 0
     for c in run["calls"][1:]:
         t = c.get("timings")
@@ -247,10 +256,11 @@ def read_phases(model_dir):
             continue
         pns = t.get("promptEvalNs")
         if pns is not None:
-            if c.get("condition") == "cold":
-                prompt_cold.append(pns / 1e6)
-            elif c.get("condition") == "warm":
-                prompt_warm.append(pns / 1e6)
+            sample = c.get("sample")
+            if sample == 0:
+                prompt_first.append(pns / 1e6)
+            elif isinstance(sample, int) and sample >= 1:
+                prompt_repeat.append(pns / 1e6)
         if t.get("evalNs"):
             gen.append(t["evalNs"] / 1e6)
             if (t.get("evalCount") or 0) >= 2:
@@ -263,8 +273,8 @@ def read_phases(model_dir):
 
     return {
         "model": run["model"],
-        "prompt_cold_ms": med(prompt_cold),
-        "prompt_warm_ms": med(prompt_warm),
+        "prompt_first_ms": med(prompt_first),
+        "prompt_repeat_ms": med(prompt_repeat),
         "gen_ms": med(gen),
         "gen_tps": med(rate),
         "one_token": one_token,
@@ -285,16 +295,16 @@ def print_phases(results_dir, compare_dir):
     here = rows(results_dir)
     base = rows(compare_dir) if compare_dir else {}
     head = (
-        "| Model | Prompt cold ms | Prompt warm ms | Gen ms | Gen tok/s "
+        "| Model | Prompt first ms | Prompt repeat ms | Gen ms | Gen tok/s "
         "| One-token calls | Timed calls |"
     )
     rule = (
-        "| ----- | --------------- | --------------- | ------ | --------- "
+        "| ----- | ---------------- | ----------------- | ------ | --------- "
         "| ---------------- | ----------- |"
     )
     if base:
-        head += " Prompt cold ratio | Prompt warm ratio | Gen ratio |"
-        rule += " ------------------ | ------------------ | --------- |"
+        head += " Prompt first ratio | Prompt repeat ratio | Gen ratio |"
+        rule += " -------------------- | -------------------- | --------- |"
     print(head)
     print(rule)
 
@@ -320,15 +330,15 @@ def print_phases(results_dir, compare_dir):
 
     for model, r in sorted(here.items()):
         line = (
-            f"| `{model}` | {fmt_ms(r['prompt_cold_ms'])} "
-            f"| {fmt_ms(r['prompt_warm_ms'])} | {fmt_ms(r['gen_ms'])} "
+            f"| `{model}` | {fmt_ms(r['prompt_first_ms'])} "
+            f"| {fmt_ms(r['prompt_repeat_ms'])} | {fmt_ms(r['gen_ms'])} "
             f"| {fmt(r['gen_tps'], '.1f')} | {r['one_token']} | {r['timed']} |"
         )
         if base:
             b = base.get(model, {})
             line += (
-                f" {ratio(r['prompt_cold_ms'], b.get('prompt_cold_ms'))} "
-                f"| {ratio(r['prompt_warm_ms'], b.get('prompt_warm_ms'))} "
+                f" {ratio(r['prompt_first_ms'], b.get('prompt_first_ms'))} "
+                f"| {ratio(r['prompt_repeat_ms'], b.get('prompt_repeat_ms'))} "
                 f"| {ratio(r['gen_ms'], b.get('gen_ms'))} |"
             )
         print(line)

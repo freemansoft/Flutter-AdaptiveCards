@@ -7,13 +7,13 @@
   prompt processing from token generation.
 - `perf_table.py --phases` reports median generation time per model from the
   new per-call `timings`, with host-to-host ratios under `--compare`. The
-  prompt median is reported separately for the cold and warm conditions,
-  because the two populations differ by up to 30x and a pooled median lands
-  on whichever side has more calls rather than on a meaningful figure.
-  One-token replies are counted in a dedicated column and excluded from the
-  tokens-per-second figure: Ollama stamps a microsecond generation interval
-  for them, which would otherwise read as an artifact figure in the
-  millions.
+  prompt median is reported separately for the first and repeat time a
+  case's prompt is seen (by `sample` index), because the two populations
+  differ by up to 30x and a pooled median lands on whichever side has more
+  calls rather than on a meaningful figure. One-token replies are counted in
+  a dedicated column and excluded from the tokens-per-second figure: Ollama
+  stamps a microsecond generation interval for them, which would otherwise
+  read as an artifact figure in the millions.
 - `sweep.sh` honors `SWEEP_COOLDOWN` (seconds of idle before each model) so
   a multi-model sweep can start every model from the same host state, and
   rejects a non-numeric or negative value instead of silently treating it
