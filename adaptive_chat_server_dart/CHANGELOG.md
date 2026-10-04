@@ -293,6 +293,27 @@ stop` did run, the runner never finished evicting, and the "7 minutes
   since term 123 pairs with concept 861. Article 5 called the two 52-stall
   sweeps eleven days apart, where 2026-08-20 to 2026-09-01 is twelve. Article 4 announced its question with "This article
   asks", which the register rules replace with the question itself.
+- Notebook: **both hosts re-swept on Ollama 0.35.1, and generation is 1.12x
+  to 1.65x slower on the M5 against a 2.61x rated bandwidth gap.** The eight
+  16 GB-capable candidates were measured on the Apple M1 Max / 64 GB
+  (2026-10-03) and the Apple M5 / 16 GB (2026-10-03/04) on one runtime, one
+  prompt digest (`8cbfde243266`), one model order and `SWEEP_COOLDOWN=600`,
+  so sweep position no longer differs between the hosts. The M5's median call
+  is 1.14x to 1.78x the M1 Max's (median 1.40x) and isolating the phases does
+  not close the gap to the rating: generation alone lands at 1.14x to 1.67x
+  on tokens per second. The `--phases` prompt columns split by sample index,
+  so a repeat prompt costs 17 to 143 ms against 91 to 4,295 ms on its first
+  send, which is the shape a prompt-cache hit would produce; two models
+  (`nemotron-3-nano:4b`, `qwen3.5:9b`) sit at 1,492 to 4,295 ms on the first
+  send, consistent with reprocessing the whole prompt. Shape scores agree
+  within one case across the hosts except `granite4.1:3b`, whose M5 unaided
+  with-history `2/25` rests on 2 scored cases of 25 after a 56-stall cascade;
+  that flag has changed host rather than gone away. `powermetrics` on the M5
+  records 722 to 1,578 MHz (median 890) over 2,318 GPU-active samples with
+  Heavy thermal pressure on 2,198 of them and no downward drift, and reports
+  no die temperature. Archives: `results-m1max-64gb-ollama0351/` and
+  `results-m5-16gb-ollama0351/`; `results-m1max-64gb-ollama0340/` is now a
+  closed archive with a `HISTORICAL.md` marker.
 
 ## [0.17.0]
 
