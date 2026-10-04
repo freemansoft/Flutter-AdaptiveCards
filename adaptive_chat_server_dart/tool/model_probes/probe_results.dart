@@ -29,13 +29,13 @@ import 'package:path/path.dart' as p;
 /// processing the prompt is compute-bound, and generating the reply streams
 /// the weights out of memory for every token, so it is bandwidth-bound.
 /// Recording both is what lets a cross-host ratio say which phase moved,
-/// rather than only that the call got slower. A cold-start prompt call is
-/// often a prompt-cache hit rather than a forward pass, so it does not show
-/// the compute-bound figure -- see `perf_table.py`'s `--phases` report,
-/// which reads this field and splits the prompt median by sample index
-/// (first versus repeat) for that reason. Durations are nanoseconds,
-/// verbatim from Ollama; every field is null when the reply did not carry
-/// it.
+/// rather than only that the call got slower. The second time a case's
+/// prompt is seen is often a prompt-cache hit rather than a forward pass,
+/// so it does not show the compute-bound figure -- see `perf_table.py`'s
+/// `--phases` report, which reads this field and splits the prompt median
+/// by sample index (first versus repeat) for that reason. Durations are
+/// nanoseconds, verbatim from Ollama; every field is null when the reply
+/// did not carry it.
 class const OllamaTimings({
   /// `prompt_eval_count`: prompt tokens Ollama reports evaluating.
   final int? promptEvalCount,

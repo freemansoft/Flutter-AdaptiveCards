@@ -44,17 +44,18 @@ timings (`timings` on each `shape_ab-seeded.json` call, recorded from
 2026-10), with the prompt median reported separately for the first and
 repeat time a case's prompt is seen within a condition: `shape_ab` runs each
 case twice per condition (`sample` 0 and 1), and the first run of a prompt
-costs Ollama a cache miss while the second is a cache hit. Splitting by
-`condition` (cold/warm) instead, as an earlier version of this report did,
-does not separate these -- cold and warm are within noise of each other, and
-the apparent condition split was an artifact of population size (49 cold
-calls versus 50 warm, so the integer-divide median index lands on opposite
-sides of the same sample-0/sample-1 gap). Checking `promptEvalCount` against
-`promptEvalNs` on a sample of calls suggests the first-sample figure is, for
-most models, the uncached tail of the case prompt behind a cached system
-prompt; for `nemotron-3-nano:4b` and `qwen3.5:9b` it runs 1.5-4 s, consistent
-with the whole prompt being processed rather than only the tail (inferred
-from that check, not measured directly -- the mechanism is not established).
+usually costs Ollama a cache miss while the second is a cache hit.
+Splitting by `condition` (cold/warm) instead, as an earlier version of this
+report did, does not separate these -- cold and warm are within noise of
+each other, and the apparent condition split was an artifact of population
+size (49 cold calls versus 50 warm, so the integer-divide median index
+lands on opposite sides of the same sample-0/sample-1 gap). Checking
+`promptEvalCount` against `promptEvalNs` on a sample of calls suggests the
+first-sample figure is, for most models, the uncached tail of the case
+prompt behind a cached system prompt; for `nemotron-3-nano:4b` and
+`qwen3.5:9b` it runs 1.5-4 s, consistent with the whole prompt being
+processed rather than only the tail (inferred from that check, not
+measured directly -- the mechanism is not established).
 The repeat-sample figure is a prompt-cache hit, a lookup cost rather than a
 processing one (tens of thousands of tokens/s is a lookup speed, not a
 processing speed). Never divide `promptEvalCount` by `promptEvalNs` to get a
@@ -204,13 +205,13 @@ def read_phases(model_dir):
 
     `shape_ab` runs each case twice per condition, recording `sample: 0` for
     the first run and `sample: 1` for the second. The first time Ollama sees
-    a case's prompt it is a cache miss; the second time it is a cache hit,
-    which is why the prompt-ms population is bimodal. Splitting by `sample`
-    separates the two clusters cleanly; splitting by `condition` (cold/warm,
-    an earlier version of this function) does not, because both conditions
-    mix sample 0 and sample 1 roughly evenly (see the module docstring's
-    `--phases` paragraph). A call with no `sample` field counts toward
-    neither. Generation stays pooled across samples. Never divide
+    a case's prompt it is usually a cache miss; the second time it is a
+    cache hit, which is why the prompt-ms population is bimodal. Splitting
+    by `sample` separates the two clusters cleanly; splitting by `condition`
+    (cold/warm, an earlier version of this function) does not, because both
+    conditions mix sample 0 and sample 1 roughly evenly (see the module
+    docstring's `--phases` paragraph). A call with no `sample` field counts
+    toward neither. Generation stays pooled across samples. Never divide
     `promptEvalCount` by `promptEvalNs` to get a rate: a cache hit reports
     tens of thousands of tokens/s, a lookup speed rather than a processing
     one.
