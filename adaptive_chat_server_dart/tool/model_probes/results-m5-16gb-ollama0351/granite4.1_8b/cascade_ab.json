@@ -1,0 +1,63 @@
+{
+  "probe": "cascade_ab",
+  "model": "granite4.1:8b",
+  "measuredAt": "2026-10-03",
+  "machine": "Apple M5 / 16 GB",
+  "ollama": "0.35.1",
+  "samples": 2,
+  "temperature": 0.0,
+  "assets": {
+    "card_system_prompt.txt": "8cbfde243266",
+    "seed_card.json": "4ac746114475"
+  },
+  "summary": {
+    "cases": 3,
+    "exercised": 3,
+    "passed": 3,
+    "notExercised": 0
+  },
+  "calls": [
+    {
+      "case": "states",
+      "sample": 0,
+      "pass": true,
+      "label": "multi, kept 5/5",
+      "ms": 14972
+    },
+    {
+      "case": "states",
+      "sample": 1,
+      "pass": true,
+      "label": "multi, kept 5/5",
+      "ms": 14597
+    },
+    {
+      "case": "loglevel",
+      "sample": 0,
+      "pass": true,
+      "label": "multi, kept 4/4",
+      "ms": 12589
+    },
+    {
+      "case": "loglevel",
+      "sample": 1,
+      "pass": true,
+      "label": "multi, kept 4/4",
+      "ms": 12215
+    },
+    {
+      "case": "deploy",
+      "sample": 0,
+      "pass": true,
+      "label": "multi, kept 2/2",
+      "ms": 10218
+    },
+    {
+      "case": "deploy",
+      "sample": 1,
+      "pass": true,
+      "label": "multi, kept 2/2",
+      "ms": 9964
+    }
+  ]
+}
