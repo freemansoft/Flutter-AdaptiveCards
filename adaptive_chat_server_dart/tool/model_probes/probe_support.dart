@@ -270,7 +270,10 @@ class const ProbeOutcome({
   final bool? toolUsed,
 
   /// Ollama's phase timings for the request, when the reply carried them.
-  /// Null on a timeout, an HTTP error, or a body with no timing fields.
+  ///
+  /// The tool channel (`tool_channel.dart`) records these the same way the
+  /// prose channel does. Null on a timeout, an HTTP error, or a body with
+  /// no timing fields.
   final OllamaTimings? timings,
 }) {
   /// Creates an outcome.

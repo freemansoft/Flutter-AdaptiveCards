@@ -13,7 +13,9 @@ Digests are recorded because a tag can be re-published. A latency difference
 against the Apple M5 / 16 GB figures means something different if the
 weights also changed; every digest below matches the digests
 `results-m5-16gb-ollama0331/MODELS.md` recorded from its 2026-08-28 pull, so
-the weights behind each tag are byte-identical on both hosts.
+the weights behind each tag were byte-identical on both hosts as of the
+M5's 2026-08-28 pull; the M5 sweep re-checks at sweep time, so a later M5
+run is the record to trust for its current state.
 
 ```
 granite4.1:3b            6fd349357287  Q4_K_M   2.0 GiB  3.4B

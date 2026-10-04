@@ -29,8 +29,12 @@ import 'package:path/path.dart' as p;
 /// processing the prompt is compute-bound, and generating the reply streams
 /// the weights out of memory for every token, so it is bandwidth-bound.
 /// Recording both is what lets a cross-host ratio say which phase moved,
-/// rather than only that the call got slower. Durations are nanoseconds,
-/// verbatim from Ollama; every field is null when the reply did not carry it.
+/// rather than only that the call got slower. A cold-start prompt call is
+/// often a prompt-cache hit rather than a forward pass, so it does not show
+/// the compute-bound figure -- see `perf_table.py`'s `--phases` report,
+/// which reads this field and splits the prompt median by condition for
+/// that reason. Durations are nanoseconds, verbatim from Ollama; every field
+/// is null when the reply did not carry it.
 class const OllamaTimings({
   /// `prompt_eval_count`: prompt tokens Ollama reports evaluating.
   final int? promptEvalCount,
@@ -145,8 +149,11 @@ class const ProbeCall({
 
   /// Ollama's phase timings for this call, where the probe recorded them.
   ///
-  /// Null on runs recorded before 2026-10 and on any call that did not
-  /// return a reply body (a stall, an HTTP error).
+  /// `shape_ab.dart` is the only writer today, for both its prose and
+  /// tool-channel calls. Null on runs recorded before 2026-10, on a stall or
+  /// HTTP error, and on any call from a different probe file -- including
+  /// `tool_call_probe.dart` and `retry_probe.dart`, which also drive the
+  /// tool channel (`tool_channel.dart`) but do not thread this field through.
   final OllamaTimings? timings,
 }) {
   /// Creates a call record.

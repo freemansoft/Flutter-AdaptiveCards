@@ -48,10 +48,16 @@ LOG=${SWEEP_LOG:-/tmp/sweep-logs}
 mkdir -p "$LOG"
 # Seconds of idle before each model, default none. The 2026-08-28 M5 sweep
 # ran eight models back to back and only the first started on an idle host;
-# re-runs then moved single-model medians 1.03x to 1.54x by sweep position
-# alone. A fixed cooldown gives every model the same starting state, so
-# position stops being a variable rather than a bias to estimate afterwards.
+# re-runs then moved single-model medians by sweep position alone -- 1.03x
+# on the M5's qwen2.5-coder:7b (ModelBehavior.md ~:377) and 1.54x on the M1
+# Max's qwen3.5:9b (~:356). A fixed cooldown gives every model the same
+# starting state, so position stops being a variable rather than a bias to
+# estimate afterwards.
 COOLDOWN=${SWEEP_COOLDOWN:-0}
+if [[ ! $COOLDOWN =~ ^[0-9]+$ ]]; then
+  echo "sweep.sh: SWEEP_COOLDOWN must be a non-negative integer, got '$COOLDOWN'"
+  exit 2
+fi
 
 # Ordered by *stall risk*, not by weight. Runtime tracks timeouts, not model
 # size: granite4.1:3b is 2.0 GB and stalls, while qwen3.8:27b-nvfp4 is eight
