@@ -39,10 +39,8 @@ article does not use.
 
 ## The M5 has fewer GPU cores and less memory bandwidth, but a Neural Accelerator in each GPU core
 
-The table gives each machine as Apple specifies it, apart from the GPU core
-counts. The M5's core count comes from its `system_profiler` output; the M1
-Max's is the owner's reading of the same report. The bandwidth figures are
-vendor ratings, not probe measurements.
+The table gives each machine. The M5's GPU core count comes from its `system_profiler` output; the M1
+Max's is the owner's reading of the same report. The bandwidth figures come from Apple documentation.
 
 |                            | M1 Max host                            | M5 host                 |
 | -------------------------- | -------------------------------------- | ----------------------- |
@@ -146,7 +144,7 @@ Three limits apply to the latency table.
    measurement-hygiene article in this
    series](https://joe.blog.freemansoft.com/2026/09/eight-measurement-rules-from-local.html)
    covers stall pile-ups.
-2. **The probes measured every figure here against a nearly empty context.** A
+2. The probes measured every figure here against a nearly empty context. A
    probe call sends the card system prompt, at most a two-turn seed, two prose
    turns, and one question. [The full-context article in this
    series](https://joe.blog.freemansoft.com/2026/09/a-full-context-breaks-three-local.html)
@@ -160,9 +158,14 @@ Three limits apply to the latency table.
 
 ### Most of the M5's extra time goes to generating the reply, not to reading the prompt
 
-A call has two phases. First the model reads the prompt, which exercises GPU
-compute. Then it generates the reply one token at a time, streaming the weights
-out of memory. That phase depends on bandwidth. Ollama reports the time in
+A call has two phases.
+
+1. First the model reads the prompt, which exercises GPU
+   compute.
+2. Then it generates the reply one token at a time, streaming the weights
+   out of memory. That phase depends on bandwidth.
+
+Ollama reports the time in
 each. The table gives each host's median for each phase, in milliseconds, over
 99 calls per model. Generating the reply costs the M5 0.1 to 1.6 s more per call
 on every model. On six models that is three to five times its extra prompt time.
@@ -263,7 +266,7 @@ ran clean; in earlier notebook runs that host stalled instead.
 6.5 s per call on the M5 against `granite4.1:8b`'s 3.8 s. The pick holds for the
 seeded configuration.
 
-## On a 64 GB host the notebook runs `qwen3.8:27b-nvfp4` in place of `gpt-oss:20b`
+## `qwen3.8:27b-nvfp4` in place of `gpt-oss:20b` is the pick for a 64 GB host
 
 The notebook's default model list for a 64 GB host runs `qwen3.8:27b-nvfp4`,
 16.9 GB of weights. This sweep did not measure it. It replaced `gpt-oss:20b`.
