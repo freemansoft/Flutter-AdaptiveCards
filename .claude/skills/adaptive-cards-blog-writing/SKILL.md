@@ -400,7 +400,8 @@ Section order and article shape)
 **Register** (Register)
 
 - [ ] No em dashes, first-person singular, amplifiers, or closing flourish.
-- [ ] Active voice, and no paragraph opening on a subordinate clause.
+- [ ] Active voice, no paragraph opening on a subordinate clause, and no "X is
+      where / why / what" copula sentence standing in for an actor and a verb.
 - [ ] Sentence mean near 14 words, and nothing past 25 that does not earn it.
 
 **Visuals, tables, sources** (Diagrams and images; Presentation; Attribution;

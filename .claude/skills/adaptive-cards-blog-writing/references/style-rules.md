@@ -299,6 +299,16 @@ branch costs a second call. A reply that parses first time never reaches the
 retry" names them, and splits one long sentence into two short ones. The same
 applies mid-paragraph when the leading clause runs past about eight words.
 
+**Put the actor in the subject, not an abstract noun in front of a copula.**
+"Generation is where the two hosts separate", "Stalls are why the full-sweep
+column is not a second median" and "X is what carries the pick" are passives
+wearing an active verb: the subject is a phase, a count or a property, and the
+thing that acts sits in a subordinate clause. Rewrite with the concrete actor
+and a plain verb: "The two hosts differ in token generation", "The full-sweep
+column includes stall time", "Fit and per-call time carry the pick". The test
+is the same as for the passive rule: name who or what does the thing. A "there
+is", "it is ... that" or "X is where / why / what" opening fails it.
+
 **Sentence length: aim for 14 words, split anything past 25.** The
 Flesch-Kincaid reading tests treat 20 words as the upper end of comfortable, so
 a mean near 14 leaves room for the occasional longer sentence without the
