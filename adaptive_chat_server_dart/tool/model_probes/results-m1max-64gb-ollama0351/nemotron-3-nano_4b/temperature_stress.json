@@ -1,0 +1,100 @@
+{
+  "probe": "temperature_stress",
+  "model": "nemotron-3-nano:4b",
+  "measuredAt": "2026-10-03",
+  "machine": "Apple M1 Max / 64 GB",
+  "ollama": "0.35.1",
+  "samples": 1,
+  "assets": {
+    "card_system_prompt.txt": "8cbfde243266",
+    "seed_card.json": "4ac746114475"
+  },
+  "summary": {
+    "calls": 10,
+    "passed": 8,
+    "cards": 7,
+    "prose": 1
+  },
+  "calls": [
+    {
+      "case": "codeblock",
+      "sample": 0,
+      "pass": true,
+      "label": "card[2]",
+      "setting": "greedy(t=0)",
+      "ms": 4247
+    },
+    {
+      "case": "bigtable",
+      "sample": 0,
+      "pass": false,
+      "label": "broken: invalid JSON: FormatException: Unexpected character (at character 468)\n...een |\\n| November | 30 | Thanksgiving |\\n| December | 31 | Christmas |\\n|\"]\n                                                                             ^\n",
+      "setting": "greedy(t=0)",
+      "ms": 5699
+    },
+    {
+      "case": "nested",
+      "sample": 0,
+      "pass": true,
+      "label": "card[6]",
+      "setting": "greedy(t=0)",
+      "ms": 6531
+    },
+    {
+      "case": "multiline",
+      "sample": 0,
+      "pass": false,
+      "label": "broken: invalid JSON: FormatException: Unexpected character (at character 395)\n...rotection does not conflict with the First or Second Law.\\\"**\\nwrap\":true}]\n                                                                       ^\n",
+      "setting": "greedy(t=0)",
+      "ms": 4261
+    },
+    {
+      "case": "mixed",
+      "sample": 0,
+      "pass": true,
+      "label": "card[2]",
+      "setting": "greedy(t=0)",
+      "ms": 5974
+    },
+    {
+      "case": "codeblock",
+      "sample": 0,
+      "pass": true,
+      "label": "card[2]",
+      "setting": "recommended(t=0.6)",
+      "ms": 4209
+    },
+    {
+      "case": "bigtable",
+      "sample": 0,
+      "pass": true,
+      "label": "prose",
+      "setting": "recommended(t=0.6)",
+      "ms": 5484
+    },
+    {
+      "case": "nested",
+      "sample": 0,
+      "pass": true,
+      "label": "card[7]",
+      "setting": "recommended(t=0.6)",
+      "ms": 6299
+    },
+    {
+      "case": "multiline",
+      "sample": 0,
+      "pass": true,
+      "label": "card[1]",
+      "setting": "recommended(t=0.6)",
+      "ms": 4151
+    },
+    {
+      "case": "mixed",
+      "sample": 0,
+      "pass": true,
+      "label": "card[2]",
+      "setting": "recommended(t=0.6)",
+      "ms": 6164
+    }
+  ]
+}

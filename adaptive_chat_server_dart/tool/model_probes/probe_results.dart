@@ -23,6 +23,86 @@ import 'dart:io';
 import 'package:crypto/crypto.dart';
 import 'package:path/path.dart' as p;
 
+/// Ollama's own per-request phase timings, read from an `/api/chat` reply.
+///
+/// A call's wall clock mixes two phases that different hardware limits:
+/// processing the prompt is compute-bound, and generating the reply streams
+/// the weights out of memory for every token, so it is bandwidth-bound.
+/// Recording both is what lets a cross-host ratio say which phase moved,
+/// rather than only that the call got slower. The second time a case's
+/// prompt is seen is often a prompt-cache hit rather than a forward pass,
+/// so it does not show the compute-bound figure -- see `perf_table.py`'s
+/// `--phases` report, which reads this field and splits the prompt median
+/// by sample index (first versus repeat) for that reason. Durations are
+/// nanoseconds, verbatim from Ollama; every field is null when the reply
+/// did not carry it.
+class const OllamaTimings({
+  /// `prompt_eval_count`: prompt tokens Ollama reports evaluating.
+  final int? promptEvalCount,
+
+  /// `prompt_eval_duration`, nanoseconds.
+  final int? promptEvalNs,
+
+  /// `eval_count`: tokens generated.
+  final int? evalCount,
+
+  /// `eval_duration`, nanoseconds.
+  final int? evalNs,
+
+  /// `load_duration`, nanoseconds: time spent loading the model for this call.
+  final int? loadNs,
+}) {
+  /// Creates a timing record.
+  this;
+
+  /// Rebuilds a record from its JSON form.
+  factory fromJson(Map<String, dynamic> json) => OllamaTimings(
+    promptEvalCount: json['promptEvalCount'] as int?,
+    promptEvalNs: json['promptEvalNs'] as int?,
+    evalCount: json['evalCount'] as int?,
+    evalNs: json['evalNs'] as int?,
+    loadNs: json['loadNs'] as int?,
+  );
+
+  /// Reads the timing fields from an `/api/chat` [body].
+  ///
+  /// Null when the body is not a JSON object or carries none of the fields:
+  /// a timed-out or failed call has no timings, and recording zeros would
+  /// read as an infinitely fast call.
+  static OllamaTimings? fromBody(String body) {
+    final Object? data;
+    try {
+      data = jsonDecode(body);
+    } on FormatException {
+      return null;
+    }
+    if (data is! Map<String, dynamic>) return null;
+    final map = data;
+    int? read(String key) {
+      final v = map[key];
+      return v is int ? v : null;
+    }
+
+    final t = OllamaTimings(
+      promptEvalCount: read('prompt_eval_count'),
+      promptEvalNs: read('prompt_eval_duration'),
+      evalCount: read('eval_count'),
+      evalNs: read('eval_duration'),
+      loadNs: read('load_duration'),
+    );
+    return t.toJson().isEmpty ? null : t;
+  }
+
+  /// JSON form, omitting absent fields.
+  Map<String, dynamic> toJson() => {
+    if (promptEvalCount != null) 'promptEvalCount': promptEvalCount,
+    if (promptEvalNs != null) 'promptEvalNs': promptEvalNs,
+    if (evalCount != null) 'evalCount': evalCount,
+    if (evalNs != null) 'evalNs': evalNs,
+    if (loadNs != null) 'loadNs': loadNs,
+  };
+}
+
 /// One `/api/chat` call and how the server's own judge scored it.
 class const ProbeCall({
   /// The case this call exercised (`table`, `choice1`, …).
@@ -67,6 +147,15 @@ class const ProbeCall({
   /// reply was not a card at all or the vocabulary could not be loaded;
   /// empty when the reply was checked and every type is renderable.
   final List<String>? unknownTypes,
+
+  /// Ollama's phase timings for this call, where the probe recorded them.
+  ///
+  /// `shape_ab.dart` is the only writer today, for both its prose and
+  /// tool-channel calls. Null on runs recorded before 2026-10, on a stall or
+  /// HTTP error, and on any call from a different probe file -- including
+  /// `tool_call_probe.dart` and `retry_probe.dart`, which also drive the
+  /// tool channel (`tool_channel.dart`) but do not thread this field through.
+  final OllamaTimings? timings,
 }) {
   /// Creates a call record.
   this;
@@ -82,6 +171,9 @@ class const ProbeCall({
     ms: json['ms'] as int?,
     toolUsed: json['toolUsed'] as bool?,
     unknownTypes: (json['unknownTypes'] as List?)?.cast<String>(),
+    timings: json['timings'] == null
+        ? null
+        : OllamaTimings.fromJson(json['timings'] as Map<String, dynamic>),
   );
 
   /// Whether the reply was a card rather than prose.
@@ -108,6 +200,7 @@ class const ProbeCall({
     if (ms != null) 'ms': ms,
     if (toolUsed != null) 'toolUsed': toolUsed,
     if (unknownTypes != null) 'unknownTypes': unknownTypes,
+    if (timings != null) 'timings': timings!.toJson(),
   };
 }
 

@@ -24,6 +24,8 @@ import 'package:args/args.dart';
 import 'package:crypto/crypto.dart';
 import 'package:path/path.dart' as p;
 
+import 'probe_results.dart';
+
 /// Default local Ollama endpoint (IPv4 — see the README's `localhost` note).
 const defaultProbeUrl = 'http://127.0.0.1:11434';
 
@@ -266,6 +268,13 @@ class const ProbeOutcome({
   /// tell apart, and a pass rate reads as "the tool channel works" when some
   /// of it measures the message body instead.
   final bool? toolUsed,
+
+  /// Ollama's phase timings for the request, when the reply carried them.
+  ///
+  /// The tool channel (`tool_channel.dart`) records these the same way the
+  /// prose channel does. Null on a timeout, an HTTP error, or a body with
+  /// no timing fields.
+  final OllamaTimings? timings,
 }) {
   /// Creates an outcome.
   this;
@@ -557,7 +566,12 @@ Future<ProbeOutcome> probeOnce({
       reply: body,
     );
   }
-  return judgeReply(content, ms, promptEvalCount: _promptEvalCountOrNull(body));
+  return judgeReply(
+    content,
+    ms,
+    promptEvalCount: _promptEvalCountOrNull(body),
+    timings: OllamaTimings.fromBody(body),
+  );
 }
 
 /// Pulls `message.content` out of an `/api/chat` body, or null if it is absent
@@ -599,7 +613,12 @@ int? _promptEvalCountOrNull(String body) {
 ///
 /// [promptEvalCount] passes through to the returned [ProbeOutcome] verbatim
 /// -- it is Ollama's own count, not derived from [content].
-ProbeOutcome judgeReply(String content, int ms, {int? promptEvalCount}) {
+ProbeOutcome judgeReply(
+  String content,
+  int ms, {
+  int? promptEvalCount,
+  OllamaTimings? timings,
+}) {
   final hash = md5.convert(utf8.encode(content)).toString().substring(0, 8);
   ProbeOutcome outcome({required bool ok, required String label}) =>
       ProbeOutcome(
@@ -610,6 +629,7 @@ ProbeOutcome judgeReply(String content, int ms, {int? promptEvalCount}) {
         hash: hash,
         reply: content,
         promptEvalCount: promptEvalCount,
+        timings: timings,
       );
 
   try {

@@ -1,0 +1,100 @@
+{
+  "probe": "temperature_stress",
+  "model": "granite4.1:3b",
+  "measuredAt": "2026-10-04",
+  "machine": "Apple M5 / 16 GB",
+  "ollama": "0.35.1",
+  "samples": 1,
+  "assets": {
+    "card_system_prompt.txt": "8cbfde243266",
+    "seed_card.json": "4ac746114475"
+  },
+  "summary": {
+    "calls": 10,
+    "passed": 7,
+    "cards": 4,
+    "prose": 3
+  },
+  "calls": [
+    {
+      "case": "codeblock",
+      "sample": 0,
+      "pass": true,
+      "label": "prose",
+      "setting": "greedy(t=0)",
+      "ms": 4061
+    },
+    {
+      "case": "bigtable",
+      "sample": 0,
+      "pass": false,
+      "label": "broken: invalid JSON: FormatException: Unexpected character (at character 2395)\n...days\\nChristmas\"},{\"type\":\"TextBlock\",\"text\":\"Boxing Day (UK/Canada)\"}]}]}\"\n                                                                             ^\n",
+      "setting": "greedy(t=0)",
+      "ms": 14762
+    },
+    {
+      "case": "nested",
+      "sample": 0,
+      "pass": true,
+      "label": "card[7]",
+      "setting": "greedy(t=0)",
+      "ms": 6439
+    },
+    {
+      "case": "multiline",
+      "sample": 0,
+      "pass": true,
+      "label": "card[1]",
+      "setting": "greedy(t=0)",
+      "ms": 3075
+    },
+    {
+      "case": "mixed",
+      "sample": 0,
+      "pass": false,
+      "label": "prose-with-card (user sees raw JSON)",
+      "setting": "greedy(t=0)",
+      "ms": 4984
+    },
+    {
+      "case": "codeblock",
+      "sample": 0,
+      "pass": true,
+      "label": "prose",
+      "setting": "recommended(t=0.6)",
+      "ms": 4785
+    },
+    {
+      "case": "bigtable",
+      "sample": 0,
+      "pass": false,
+      "label": "broken: invalid JSON: FormatException: Unexpected character (at character 77)\n{\"type\":\"Table\",\"columns\":[{\"width\":2},{\"width\":2},{\"width\":3},{\"width\":3}]}\"\n                                                                            ^\n",
+      "setting": "recommended(t=0.6)",
+      "ms": 717
+    },
+    {
+      "case": "nested",
+      "sample": 0,
+      "pass": true,
+      "label": "card[6]",
+      "setting": "recommended(t=0.6)",
+      "ms": 6695
+    },
+    {
+      "case": "multiline",
+      "sample": 0,
+      "pass": true,
+      "label": "card[1]",
+      "setting": "recommended(t=0.6)",
+      "ms": 3102
+    },
+    {
+      "case": "mixed",
+      "sample": 0,
+      "pass": true,
+      "label": "prose",
+      "setting": "recommended(t=0.6)",
+      "ms": 6522
+    }
+  ]
+}

@@ -2,58 +2,73 @@
 
 In
 [`freemansoft/Flutter-AdaptiveCards`](https://github.com/freemansoft/Flutter-AdaptiveCards)
-a demonstration Dart chat server hands a question to a local Ollama model and
-asks for the answer as Adaptive Card JSON, a strict, closed-vocabulary schema,
-which a Flutter client renders as interactive UI rather than as text. We built
-a set of test probes that measure how well fifteen local models manage that
-well and how fast. We built the probes on a 64 GB machine and then compared the
-results to a machine with a quarter of the memory.
+a demonstration Dart chat server hands a question to a local Ollama model. It
+asks for the answer as Adaptive Card JSON. Adaptive Cards is a strict,
+closed-vocabulary schema. A Flutter client renders the JSON as interactive
+UI rather than as text. The project's test probes measure how
+well fifteen local models produce that JSON, and how fast. The
+project built the probes on a 64 GB M1 Max, then ran them on a 16 GB M5.
 
-## Two machines, one set of test probes
+Eight of the fifteen models fit, or nearly fit, in 16 GB. On the M5 each model
+took 1.14x to 1.78x the M1 Max's median time per call. The median of the eight
+ratios is 1.40x. Each model ran once per host, so each ratio gives a direction,
+not a per-model figure. The top three models score within one shape-probe case
+of each other. Memory fit and per-call time therefore decide the 16 GB choice. That
+model is `granite4.1:8b`: 20 of 25 cases on one host and 21 on the other, in 5.0
+GB of weights.
 
-Two Apple machines ran the same probes and the same prompts on a 64 GB M1 Max
-MacBook Pro 14-inch (`MacBookPro18,4`) and a fanless 16 GB M5 MacBook Air
-(`Mac17,3`) used for comparison. The goal was to validate execution and measure
-performance differences when running the same models on two Apple Silicon chips
-with different memory sizes and bandwidth.
-
-Both hosts ran models back-to-back for hours, so each median below carries
-whatever position in that run its model drew. One control on the M1 Max puts a
-number on that: the same model runs **1.54x** slower right after an eight-hour
-sweep than it does cold, and that single-machine spread is wider than seven of
-the eight host-to-host ratios below. A later section shows the control. Read
-the ratios as a direction, not a per-model figure. The 16 GB recommendation
-rests on fit and response scores.
-
-Every figure below comes from
+Every figure below comes from one matched sweep of the two hosts, recorded in
 [`ModelBehavior.md`](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md),
-a lab notebook in the
-[`freemansoft/Flutter-AdaptiveCards`](https://github.com/freemansoft/Flutter-AdaptiveCards)
-repository.
+a lab notebook in the repository. The notebook also holds earlier runs this
+article does not use.
 
 ## Terms used in this article
 
-The first term describes a model, the next three qualify a score, and the last
-three describe a run.
+| Term                                      | What it means here                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| ----------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Probe**                                 | A script in the repository that sends a fixed set of questions to one model and records the replies and their timings. This article names four: the shape probe, the cascade probe, and the everyday and stress probes. "The standard probes" means the whole set a sweep runs against one model, which is larger than those four.                                                                                                                                                                                                                                                                                                                  |
+| **Weights** and the `b` in a model tag    | The weights are the parameter file Ollama loads into memory, and the GB figure in the tables is that file's size. The `b` in a tag such as `granite4.1:8b` counts parameters in billions, which is a different quantity: quantization decides how many bytes each parameter costs, so the three models tagged `:30b` here range from 17.3 GB to 23.7 GB. The GB figure decides fit; the parameter count does not.                                                                                                                                                                                                                                   |
+| **Runner**, **GGUF** and **`nvfp4`**      | Ollama serves each model through a runner process. GGUF builds, which all eight 16 GB candidates are, go to a llama.cpp-based runner, which this article calls the GGUF runner. `nvfp4` in a tag is a 4-bit floating point build.                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| **Shape score**, `n/25` (`shape_ab.dart`) | 25 shape cases, one user question each, paired with the Adaptive Card element types (the schema's UI component types, such as `Input.ChoiceSet` or `Table`) that would acceptably answer it. The probe scores each case on one thing: did the reply use one of them? "What are my options for deployment targets" passes only on an `Input.ChoiceSet`. One case inverts the test, wanting prose and failing on a card. The probe runs each case twice and passes it only if both replies used an acceptable type. Re-runs still move a model by about a case. This is shape coverage, not accuracy: a model can be correct in prose and score 1/25. |
+| **Cold start** and **with history**       | The shape probe's two conditions: the question asked first, or asked after two ordinary prose turns already in the conversation. This article never compares a score under one condition with a score under the other, and figures are with-history unless the text says otherwise.                                                                                                                                                                                                                                                                                                                                                                 |
+| **Seeded** and **unaided**                | The demonstration chat server's card-prompt launch targets run seeded: they prepend a synthetic two-turn card exchange to the context. Unaided is the same probe without it. The seed is worth +12 to −3 shape cases depending on the model, so every score here names its configuration.                                                                                                                                                                                                                                                                                                                                                           |
+| **Median s/call**                         | Median time per call over the seeded shape probe's 100 calls (25 cases, two conditions, two samples), excluding the first call after a model load and excluding stalled calls, which measure the per-call ceiling rather than the model. It excludes stall time, so it compares across hosts; the phase table uses the 99 calls it leaves.                                                                                                                                                                                                                                                                                                          |
+| **First** and **Repeat**                  | The shape probe sends each case twice back to back. First is the first of the two samples within a condition. Repeat is a byte-identical resend immediately after, which Ollama can answer from its prompt cache. Each condition contributes both samples, so neither column measures the difference between cold start and with history.                                                                                                                                                                                                                                                                                                           |
+| **Stall**                                 | A call that exceeds its probe's per-call ceiling, which the probe scores as a failure: 120 s on the shape and cascade probes, 180 s on the others, including the everyday and stress probes. Those two are short sets of one-shot requests. The probe cannot tell a slow model from a busy host.                                                                                                                                                                                                                                                                                                                                                    |
+| **Sweep position**                        | Each host measured its models one after another, in a multi-model sweep lasting hours. A model's position is its slot in that order.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 
-| Term                                                 | What it means here                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
-| ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Weights** and the `b` in a model tag               | The weights are the parameter file Ollama loads into memory, and the GB figure in the fit table is that file's size. The `b` in a tag such as `granite4.1:8b` counts parameters in billions, which is a different quantity: quantization decides how many bytes each parameter costs, so the three models tagged `:30b` here range from 17.3 GB to 23.7 GB. Fit is decided by the GB figure, never by the parameter count.                                                                                                                                                                        |
-| **Response (shape) score**, `n/25` (`shape_ab.dart`) | 25 prompt test cases, one user question each, paired with the Adaptive Card element types (the schema's UI component types, such as `Input.ChoiceSet` or `Table`) that would acceptably answer it. Each is scored on one thing: did the reply use one of them? "What are my options for deployment targets" passes only on an `Input.ChoiceSet`. Each case is run twice and passes only if both runs did, so a one-point difference between two models is noise: one borderline call flips a case. This is shape coverage, not accuracy: a model can be entirely correct in prose and score 1/25. |
-| **Cold start** and **with history**                  | The shape probe's two conditions: the question asked first, or asked with ordinary exchanges already in the conversation. The two differ, and a score under one is never quoted against the other. Figures below are with-history unless the text says otherwise.                                                                                                                                                                                                                                                                                                                                 |
-| **Seeded** and **unaided**                           | Seeded is the configuration the server ships, a synthetic two-turn card exchange prepended to the context. Unaided is the same probe without it. The seed is worth +10 shapes to −2 depending on the model, so a score named without its configuration is half a fact.                                                                                                                                                                                                                                                                                                                            |
-| **Median s/call**                                    | Median over the 25-case shape sweep, excluding the first call after a model load (roughly 6-7x a warm one) and excluding stalled calls, which measure the timeout rather than the model.                                                                                                                                                                                                                                                                                                                                                                                                          |
-| **Full sweep**                                       | Wall clock for the seven standard probes against one model, stalls included. That is time someone waited.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
-| **Stall**                                            | A call that exceeds the probe's 120 s per-call ceiling and is scored a failure. A stall does not name its cause: a slow model and a busy machine are indistinguishable from the probe's side.                                                                                                                                                                                                                                                                                                                                                                                                     |
+## The M5 has fewer GPU cores and less memory bandwidth, but a Neural Accelerator in each GPU core
 
-## Seven models fit in 16 GB outright, and one marginally fits
+The table gives each machine as Apple specifies it, apart from the GPU core
+counts. The M5's core count comes from its `system_profiler` output; the M1
+Max's is the owner's reading of the same report. The bandwidth figures are
+vendor ratings, not probe measurements.
 
-Both hosts are Apple Silicon Macs with unified memory, so there is no separate
-VRAM budget. The number on the box is one pool shared by macOS, the model and
-everything else running on the machine. The table below reads all fifteen
-against a 16 GB host: ✅ fits, ⚠️ marginal, ❌ does not. The Weights column
-decides a model's fit, meaning the size of the model's parameter file, not the
-`b` in its name.
+|                            | M1 Max host                            | M5 host                 |
+| -------------------------- | -------------------------------------- | ----------------------- |
+| Machine                    | MacBook Pro 14-inch (`MacBookPro18,4`) | MacBook Air (`Mac17,3`) |
+| Chip tier                  | M1 Max                                 | M5, base tier           |
+| GPU cores                  | 32                                     | 8                       |
+| Neural Accelerators in GPU | none                                   | one per GPU core        |
+| Unified memory             | 64 GB                                  | 16 GB                   |
+| Rated memory bandwidth     | 400 GB/s                               | 153 GB/s                |
+| Cooling                    | fans                                   | fanless                 |
+| Ollama for these runs      | 0.35.1                                 | 0.35.1                  |
+
+Both hosts swept the same eight models starting 2026-10-03, under Ollama 0.35.1
+and the same card system prompt. That prompt asks for Adaptive Card JSON. Each host
+left 600 s idle before every model. The latency and phase tables below
+therefore compare two machines, not two Ollama versions, at matched sweep
+positions.
+
+Ollama does not appear to use the 16-core Neural Engine. Neural Engine
+benchmarks such as Geekbench AI do not predict the numbers here.
+
+## Eight of fifteen models fit or nearly fit in 16 GB
+
+Both hosts have unified memory, so macOS, the runtime and the model share a
+pool, not a separate VRAM budget. The table reads all fifteen against a 16 GB
+host: ✅ fits, ⚠️ marginal, ❌ does not.
 
 | Model                                               | Weights | 16 GB |
 | --------------------------------------------------- | ------- | ----- |
@@ -73,194 +88,187 @@ decides a model's fit, meaning the size of the model's parameter file, not the
 | `qwen3.6:27b-coding-nvfp4`                          | 18.4 GB | ❌    |
 | `qwen3.8:27b-nvfp4`                                 | 16.9 GB | ❌    |
 
-The marginal model for 16GB machines is `qwen3.5:9b` at 6.1 GB. The other seven
-do not fully fit within 16GB at all with their size and quant settings.
+`qwen3.5:9b`, at 6.1 GB, is the one marginal fit. `gpt-oss:20b` at 12.8 GB is a
+❌ because macOS and the runtime take enough of the pool that it does not fit.
+A ❌ means "do not recommend
+this as the default on a 16 GB host", not "untested". The notebook's earlier 64
+GB runs measured every ❌ model; the matched sweep here covers only the eight
+candidates.
 
-Model weights are not the whole memory budget. `gpt-oss:20b` is **12.8 GB**
-against a 16 GB machine and is still a ❌, because those weights share the pool
-with macOS and the runtime, so the usable ceiling sits below the number on the
-box. ❌ means "do not recommend this as the default on a 16 GB host", not
-"untested". Every one marked as ❌ for 16GB was measured on the 64 GB machine.
+## The M5 took 1.14x to 1.78x the M1 Max's time per call, median 1.40x
 
-The best pick for a 16 GB host is `granite4.1:8b`: 21 of 25 shape cases, in
-5.0 GB. A response score counts only whether the reply used an element type that
-would answer the question, so this measures coverage, not accuracy.
+[The notebook's matched 0.35.1
+re-sweep](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md#matched-ollama-0351-re-sweep-generation-is-112x-to-165x-slower-on-the-m5-against-a-261x-rated-bandwidth-gap)
+records both hosts' runs of the eight candidates. `perf_table.py` derives each
+median at millisecond precision and rounds it to two decimals. The table orders
+models by ratio.
 
-`gpt-oss:20b` scores 25 of 25 on the 64 GB machine. It is the only model in the
-notebook to do so under any condition, and at 12.8 GB it is still a ❌ for
-16 GB. Moving to the smaller machine costs four test cases out of twenty-five.
-The notebook's
-[roster](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md#candidate-models),
-where the ✅/⚠️/❌ marks above come from, calls `gpt-oss:20b` "the exception the
-16 GB column exists to flag".
+| Model                     | Weights | M1 Max s/call | M5 s/call | M5 ÷ M1 Max |
+| ------------------------- | ------- | ------------- | --------- | ----------- |
+| `llama3.2:latest`         | 1.9 GB  | 1.31 s        | 1.49 s    | 1.14x       |
+| `nemotron-3-nano:4b`      | 2.6 GB  | 2.39 s        | 2.82 s    | 1.18x       |
+| `granite4.1:8b`           | 5.0 GB  | 2.83 s        | 3.80 s    | 1.34x       |
+| `qwen3.5:9b`              | 6.1 GB  | 4.68 s        | 6.51 s    | 1.39x       |
+| `granite4.1:3b`           | 2.0 GB  | 1.00 s        | 1.40 s    | 1.40x       |
+| `llama3-groq-tool-use:8b` | 4.3 GB  | 1.89 s        | 3.08 s    | 1.63x       |
+| `qwen2.5-coder:7b`        | 4.4 GB  | 2.25 s        | 3.83 s    | 1.70x       |
+| `llama3-chatqa:8b`        | 4.3 GB  | 0.12 s        | 0.22 s    | 1.78x       |
 
-That 21/25 score is a _seeded_, with-history figure. Unaided, `granite4.1:8b`
-scores **15/25**, a **+6** seed gain, while `qwen2.5-coder:7b` scores **18/25**
-either way. A 16 GB recommendation has to name the configuration, not just the
-model.
-
-## All eight models ran slower on the M5, 1.15x to 1.44x with one outlier
-
-The eight models that fit or nearly fit then ran on both hosts, recorded in
-[the notebook's per-host performance section](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md#performance-by-host-and-runtime).
-Median s/call is the like-for-like column: the same 25 shape cases on each
-machine, with the load call and any stalled call excluded. The sweep and stall
-columns describe the run rather than the model, and they part company with the
-median wherever a call hit the 120 s ceiling. The medians and ratios are the
-notebook's derived cross-host table, computed from the recorded runs by its
-`perf_table.py` script at millisecond precision and rounded here to two
-decimals. Models are ordered by ratio.
-
-| Model                     | Size   | M1 Max s/call | M5 s/call | M5 ÷ M1 Max | M1 Max sweep | M5 sweep | M1 Max stalls | M5 stalls |
-| ------------------------- | ------ | ------------- | --------- | ----------- | ------------ | -------- | ------------- | --------- |
-| `granite4.1:8b`           | 5.0 GB | 2.85 s        | 3.27 s    | 1.15x       | 15 min       | 17 min   | 0             | 0         |
-| `qwen3.5:9b`              | 6.1 GB | 4.92 s        | 5.65 s    | 1.15x       | 24 min       | 29 min   | 0             | 0         |
-| `qwen2.5-coder:7b`        | 4.4 GB | 2.38 s        | 2.90 s    | 1.22x       | 19 min       | 22 min   | 0             | 0         |
-| `llama3.2:latest`         | 1.9 GB | 1.34 s        | 1.65 s    | 1.23x       | 13 min       | 15 min   | 2             | 2         |
-| `nemotron-3-nano:4b`      | 2.6 GB | 2.54 s        | 3.54 s    | 1.40x       | 16 min       | 30 min   | 1             | 4         |
-| `granite4.1:3b`           | 2.0 GB | 0.98 s        | 1.40 s    | 1.43x       | 124 min      | 13 min   | 52            | 1         |
-| `llama3-groq-tool-use:8b` | 4.3 GB | 1.85 s        | 2.67 s    | 1.44x       | 9 min        | 13 min   | 0             | 0         |
-| `llama3-chatqa:8b`        | 4.3 GB | 0.11 s        | 0.25 s    | 2.32x       | 3 min        | 5 min    | 0             | 0         |
-
-Both hosts run the same Ollama line so each model's ratio compares two machines
-and not two runtimes. `qwen3.5:9b` is the model to read carefully even so. Its
-M1 Max figure is the cold arm of the sweep-position control shown later in this
-article, taken at position 0 after 29 minutes idle, where the other seven M1
-Max figures are in-sweep measurements. The hot arm of that control would put
-the model below 1.0x instead of at 1.15x.
+Stalls, calls over the per-call ceiling, are excluded from every median.
+`nemotron-3-nano:4b` recorded 2 on the M1 Max and 3 on the M5, and
+`llama3.2:latest` 4 on the M5. All nine are 180 s everyday-probe timeouts, not
+shape-probe calls. `granite4.1:3b` recorded 56 on the M5, covered in limit 1
+below. Every other model recorded 0. Full sweep times, which add stall time,
+model loading and the other probes, are in the notebook.
 
 ```mermaid
 xychart-beta horizontal
     title "M5 ÷ M1 Max median s/call, eight 16 GB-capable models"
-    x-axis ["granite4.1:8b", "qwen3.5:9b", "qwen2.5-coder:7b", "llama3.2:latest", "nemotron-3-nano:4b", "granite4.1:3b", "llama3-groq-tool-use:8b", "llama3-chatqa:8b"]
-    y-axis "M5 ÷ M1 Max ratio" 1.0 --> 2.4
-    bar [1.15, 1.15, 1.22, 1.23, 1.40, 1.43, 1.44, 2.32]
+    x-axis ["llama3.2:latest", "nemotron-3-nano:4b", "granite4.1:8b", "qwen3.5:9b", "granite4.1:3b", "llama3-groq-tool-use:8b", "qwen2.5-coder:7b", "llama3-chatqa:8b"]
+    y-axis "M5 ÷ M1 Max ratio" 1.0 --> 1.8
+    bar [1.14, 1.18, 1.34, 1.39, 1.40, 1.63, 1.70, 1.78]
 ```
 
-**Every model is slower on the M5 just not as much as I expected. Seven of the
-eight ratios fall inside 1.0-1.5x.** Two hardware differences could account for
-that, compute and memory bandwidth, and compute is the less likely. [The
-notebook](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md#performance-by-host-and-runtime)
-puts this 8-core M5 at roughly parity with or ahead of the 32-core M1 Max on AI
-compute, scaling Apple's published core counts and multipliers. Memory
-bandwidth is where the two part: **153 GB/s** on the M5 against **400 GB/s** on
-the M1 Max. Single-stream token generation spends its time streaming the
-model's weights out of memory, not on arithmetic, so it is bandwidth-bound, and
-bandwidth is the ratio consistent with these medians.
+`llama3-chatqa:8b` pairs the widest ratio, 1.78x, with the smallest absolute
+gap, 0.12 s against 0.22 s. It returned an empty reply on 80 of its 99 M5 calls, which is why its shape score is **1/25**. Its per-call time is mostly prompt reading.
 
-The widest ratio in the table is the least meaningful one. `llama3-chatqa:8b`
-at **2.32x** is 0.11 s against 0.25 s: 140 ms of absolute difference on the
-fastest model in this table, where load and scheduling overhead are a larger
-share of the call than the model's own compute. It heads the table for the
-wrong reason as well. It answers in short prose instead of building a card,
-which is what its **1/25** response score looks like from the latency side.
+The ratio does not track weight. `llama3.2:latest` (1.9 GB) is 1.14x,
+`granite4.1:3b` (2.0 GB) is 1.40x, `qwen2.5-coder:7b` (4.4 GB) is 1.70x, and
+`granite4.1:8b` (5.0 GB) is 1.34x.
 
-`nemotron-3-nano:4b` is the model where the sweep column moves further than the
-median does: 16 minutes to 30, against 1.40x on the median. Its stall count
-moves the same way, 1 to 4, and a stalled call is wall clock the median
-excludes by construction. The notebook records `chart`, a case in the everyday
-set of ordinary one-shot requests that asks for a chart element, as a hang
-trigger for this model that reproduces on both runtimes. The extra M5 minutes
-are consistent with more calls reaching the 120 s ceiling, not with slower
-generation throughout.
+Three limits apply to the latency table.
 
-Model size does not predict speed on either host. The fastest real card
-producer measured is `qwen3-coder:30b` at **1.5 s/call** on the M1 Max, ahead
-of `qwen2.5-coder:7b` at a quarter its size, and it is off this table because
-it needs 17.3 GB. The slowest is `gpt-oss:20b` at **7.2 s**, in 12.8 GB.
+1. `granite4.1:3b`'s 121-minute M5 sweep and 56 stalls record a queue of calls
+   stuck behind one runaway generation. The stalls form one unbroken sequence in
+   its unaided configuration. The first call after that sequence took 67.3 s,
+   against its 240 ms fastest call on that host. Its seeded shape and cascade
+   runs recorded no stall, so its median and its seeded score stand. [The
+   measurement-hygiene article in this
+   series](https://joe.blog.freemansoft.com/2026/09/eight-measurement-rules-from-local.html)
+   covers stall pile-ups.
+2. **The probes measured every figure here against a nearly empty context.** A
+   probe call sends the card system prompt, at most a two-turn seed, two prose
+   turns, and one question. [The full-context article in this
+   series](https://joe.blog.freemansoft.com/2026/09/a-full-context-breaks-three-local.html)
+   covers what filling each model's window costs its shape coverage.
+3. This sweep measured each model once per host, so the same-host
+   reproducibility floor is unmeasured under 0.35.1. [The notebook's
+   "Performance, by host and runtime"
+   section](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md#performance-by-host-and-runtime)
+   holds the earlier same-host re-runs. Those ran under older probes and an older
+   harness.
 
-Four caveats apply to the table.
+### Most of the M5's extra time goes to generating the reply, not to reading the prompt
 
-1. The M1 Max runs for `granite4.1:3b` and `llama3.2:latest` came **after
-   runner eviction**, and the other six **before runner eviction**. Runner
-   eviction is a harness change, described in the measurement-hygiene article
-   in this series, that sends Ollama an unload after a call times out. It is a
-   no-op unless a call times out. Five of those six recorded zero M1 Max
-   stalls, and the sixth, `nemotron-3-nano:4b`, recorded one, matching its
-   count on the earlier runtime, so the comparison holds for them.
-2. `granite4.1:3b`'s M1 Max sweep and stall cells, 124 minutes and 52, are
-   cascade-damaged and are not model figures. The measurement-hygiene article
-   in this series owns that account. Read only the median for that model:
-   0.98 s against 1.40 s, faster on the M1 Max.
-3. Neither Ollama version here is current. The M1 Max host has since moved to
-   **Ollama 0.33.3**, and no figure in this article was re-taken on it.
-4. **Every figure in this article was measured against a nearly empty
-   context.** A probe call sends the card system prompt, one question, and at
-   most a two-turn seed, and a conversation that has filled its window is a
-   different measurement on both axes. A later run with roughly 48,000 tokens
-   in the window costs three of the fifteen models about a third of their
-   shape coverage. Two are 30b models that do not fit 16 GB, and the one in
-   the table above is `qwen2.5-coder:7b`, which lost three cases. The
-   full-context article in this series owns that account. Read the medians
-   here as what a short exchange costs, which is what the demo's own traffic
-   looks like, and not as what a long conversation costs.
+A call has two phases. First the model reads the prompt, which exercises GPU
+compute. Then it generates the reply one token at a time, streaming the weights
+out of memory. That phase depends on bandwidth. Ollama reports the time in
+each. The table gives each host's median for each phase, in milliseconds, over
+99 calls per model. Generating the reply costs the M5 0.1 to 1.6 s more per call
+on every model. On six models that is three to five times its extra prompt time.
+The M5's slowdown sits in the memory-bound phase, which fits its lower
+bandwidth. The compute-bound phase is harder to read.
 
-### Re-running a model on the same machine moves its median by up to 1.54x
+| Model                     | Reading the prompt, M1 Max | Reading the prompt, M5 | Generating the reply, M1 Max | Generating the reply, M5 |
+| ------------------------- | -------------------------- | ---------------------- | ---------------------------- | ------------------------ |
+| `granite4.1:3b`           | 100                        | 179                    | 930                          | 1266                     |
+| `granite4.1:8b`           | 175                        | 444                    | 2751                         | 3570                     |
+| `llama3-chatqa:8b`        | 116                        | 224                    | n/a                          | n/a                      |
+| `llama3-groq-tool-use:8b` | 156                        | 394                    | 1778                         | 2864                     |
+| `llama3.2:latest`         | 91                         | 138                    | 1236                         | 1379                     |
+| `nemotron-3-nano:4b`      | 1958                       | 1492                   | 1502                         | 2485                     |
+| `qwen2.5-coder:7b`        | 138                        | 400                    | 2165                         | 3547                     |
+| `qwen3.5:9b`              | 3392                       | 4295                   | 2525                         | 4142                     |
 
-Four of the eight models were measured a second time against their own
-published run, to find out how far one in-sweep figure can move on its own —
-five re-runs in total, since `granite4.1:8b` was tested twice. All five are in
-[the same notebook section](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md#performance-by-host-and-runtime).
+Six models read the prompt in 0.1 to 0.4 s on either host. That is consistent
+with Ollama serving most of it from a prompt cache, so they offer little compute
+to compare. `nemotron-3-nano:4b` and `qwen3.5:9b` read the prompt in 1.5 to 4.3
+s instead, consistent with reprocessing all of it. Those two split. The M5 reads `nemotron-3-nano:4b`'s prompt in 1.5 s against
+the M1 Max's 2.0 s. It reads `qwen3.5:9b`'s in 4.3 s against 3.4 s. The newer GPU shows no consistent compute
+advantage here. The prompt figures use the first time each case's prompt was
+sent. The repeat is a cache hit and differs between hosts by under 70 ms.
+`llama3-chatqa:8b` returned an empty reply on 80 of 99 calls: one stop token and
+no text. Ollama stamps such a reply with a one-microsecond generation time, so
+its generation cells read `n/a`. [The
+notebook's matched
+re-sweep](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md#matched-ollama-0351-re-sweep-generation-is-112x-to-165x-slower-on-the-m5-against-a-261x-rated-bandwidth-gap)
+holds the host ratios and tokens per second.
 
-| Model              | Host   | First run                           | Second run                     | Second ÷ first                  |
-| ------------------ | ------ | ----------------------------------- | ------------------------------ | ------------------------------- |
-| `llama3.2:latest`  | M5     | in-sweep, 89 min, 40 stalls         | idle machine, 15 min, 2 stalls | 1.06x (1559 ms vs 1650 ms)      |
-| `qwen3.5:9b`       | M1 Max | position 0, after 29 min idle       | 7 s after an eight-hour sweep  | **1.54x** (4924 ms vs 7563 ms)  |
-| `granite4.1:8b`    | M5     | position 0 of the eight-model sweep | 13 s after that sweep          | **1.20x**                       |
-| `granite4.1:8b`    | M5     | position 0 of the eight-model sweep | after 7h37m idle               | **1.12x** (p25 1.07 / p75 1.15) |
-| `qwen2.5-coder:7b` | M5     | 17 min into the eight-model sweep   | after 31 min idle              | 1.03x                           |
+### Memory bandwidth predicts which host is slower, but overstates by how much
 
-The published figure is the first run for every model except `llama3.2:latest`,
-where it is the second.
+The two hosts' rated memory bandwidth differs by **2.61x**. Generating a token
+streams the model's weights out of memory once. A purely bandwidth-bound
+generation phase would therefore run 2.61x slower on the M5. It runs 1.12x to 1.65x slower
+instead, on the seven models whose generation phase is long enough to time.
+Bandwidth predicts which host is slower. It does not predict by how much: the
+measured gap is two fifths to two thirds of the rated one.
 
-The idle re-run of `llama3.2:latest` matched the M1 Max response scores, and its
-median barely moved. The model was never slow; something else on the machine
-was, and what it was is not recorded. The second run is the one in the latency
-table above. The rule it left behind: re-run a suspicious result on an idle
-machine before publishing, because a busy machine and a slow model look the
-same from the probe's side.
+[Apple's own MLX
+measurements](https://machinelearning.apple.com/research/exploring-llms-mlx-m5)
+support the premise. They compare the M5 against the M4, one generation apart
+rather than four. The accelerators cut time to first token 3.33x to 4.06x. Token
+generation, which Apple describes as bandwidth-bound, ran 1.19x to 1.27x
+faster.
 
-The `qwen3.5:9b` runs measure what sweep position alone costs, and the replies
-did not move with it: 0 of 100 calls differed between the cold and hot runs.
-Position moves latency and leaves coverage alone. The M5 column carries the
-same exposure, since its eight models come from one sweep that ran 10:27 to
-14:32, and models measured later had more sustained load behind them.
+Three things could make the gap smaller than the rating predicts, and no
+measurement here isolates any of them.
 
-The fanless MacBook Air is the obvious place to look for a thermal penalty, so
-`granite4.1:8b` was re-run twice to test it. A thermal reading predicts a slow
-hot re-run and a baseline idle one. Instead the idle re-run came nearly as
-slow, with a tight spread: two nominally cold measurements, twelve hours apart,
-differ this much. That reproducibility variance absorbs most of the hot
-re-run's gap. `qwen2.5-coder:7b` moved the other way, slower after idling than
-in-sweep, and two models moving in opposite directions is not a machine
-property. The M1 Max's own hot/cold spread above, on a machine with fans, is
-wider than either M5 figure, so a swing this size does not need a fanless
-chassis to explain it. Throttling is not ruled out, only unmeasured: **no run
-read die temperature or clock frequency**. No figure carries a correction. Read
-the M5 column as one sweep's figures carrying a position-dependent bias about
-the size of its reproducibility floor.
+- **GPU compute.** [The
+  notebook](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md#performance-by-host-and-runtime)
+  estimates this 8-core M5 GPU as level with, or ahead of, the older 32-core M1
+  Max GPU. That estimate holds only if the runtime uses the Neural Accelerator
+  in each M5 GPU core. No measurement here shows whether the GGUF runner does,
+  and the phase table shows no consistent compute advantage.
+- **Achieved bandwidth.** Neither host reaches its rating. If the M1 Max falls
+  further short of 400 GB/s than the M5 does of 153 GB/s, the real ratio is
+  under 2.61x.
+- **Per-call overhead.** Fixed costs that do not scale with bandwidth dilute
+  the ratio.
 
-## The eight models that fit in 16 GB pass from 21/25 to 1/25 of the shape cases
+One thing could make the gap larger than the hardware alone would: the fanless
+Air could throttle. This sweep read the M5's GPU clock at 722 to 1,578 MHz over
+2,318 GPU-active samples, median 890 MHz. `powermetrics` reported its heaviest
+thermal pressure level on 2,198 of them, and the clock showed no downward drift.
+The M1 Max carried no such capture. One host's clock with no drift in it cannot
+rule out throttling or size its effect. A pressure level and a clock are not a
+temperature. Apple Silicon `powermetrics` does not report die temperature.
 
-Fit only shortlists the eight, among which `granite4.1:8b` (5.0 GB) scores
-21/25 and `qwen3.5:9b` (6.1 GB) 19/25, while `llama3.2:latest` (1.9 GB) scores
-15/25 and `llama3-chatqa:8b` (4.3 GB) **1/25**, all seeded, with-history
-figures. All four run on the small machine, so the recommendation is
-**`granite4.1:8b`**. With 64 GB, use `gpt-oss:20b` that is four
-response better at 25/25.
+## `granite4.1:8b` is the 16 GB pick, at 20/25 to 21/25 seeded in 5.0 GB
 
-Three measurement rules came out of running the same probes twice on different
-hardware.
+`granite4.1:8b` is the pick because it balances three things: memory fit,
+per-call time and shape coverage. It fits a 16 GB host with headroom and runs
+faster than the one model that out-scores it. Its seeded score sits within one
+case of the top. The table gives each candidate's with-history shape score,
+seeded and unaided, on both hosts.
 
-1. Record the host and the runtime version into every result file so that the
-   data set can be reliably used in later comparisons.
-2. Derive published tables from the recorded runs instead of transcribing
-   them; the measurement-hygiene article records what that caught.
-3. When a measurement carries a bias whose size is only roughly known, publish
-   the raw figure and state the bias beside it. The M5 medians are skewed by
-   sweep position by an amount the re-runs bound but do not pin down, so no
-   model test result was multiplied by a guessed factor. A corrected figure
-   would hide that it had been corrected.
+| Model                     | Weights | M1 Max seeded | M1 Max unaided | M5 seeded | M5 unaided         |
+| ------------------------- | ------- | ------------- | -------------- | --------- | ------------------ |
+| `qwen3.5:9b`              | 6.1 GB  | 21/25         | 20/25          | 21/25     | 20/25              |
+| `granite4.1:8b`           | 5.0 GB  | 21/25         | 14/25          | 20/25     | 15/25              |
+| `qwen2.5-coder:7b`        | 4.4 GB  | 20/25         | 19/25          | 20/25     | 19/25              |
+| `nemotron-3-nano:4b`      | 2.6 GB  | 18/25         | 6/25           | 18/25     | 6/25               |
+| `llama3-groq-tool-use:8b` | 4.3 GB  | 17/25         | 10/25          | 17/25     | 9/25               |
+| `llama3.2:latest`         | 1.9 GB  | 16/25         | 11/25          | 15/25     | 13/25              |
+| `granite4.1:3b`           | 2.0 GB  | 13/25         | 11/25          | 15/25     | 2/25 (not a score) |
+| `llama3-chatqa:8b`        | 4.3 GB  | 1/25          | 4/25           | 1/25      | 4/25               |
+
+`granite4.1:3b`'s M5 unaided cell is not a score. The stall pile-up in the
+latency limits above took 56 of its 100 unaided calls. Only 5 of its 50
+with-history calls completed, scoring 2 of 25 cases. Only its M1 Max measurement
+ran clean; in earlier notebook runs that host stalled instead.
+
+`granite4.1:8b`'s seed is worth seven cases on the M1 Max and five on the M5.
+`qwen3.5:9b` matches or leads it on both hosts with a one-case seed dependence.
+`qwen3.5:9b` is also the one marginal fit. It is the slowest of the eight, at
+6.5 s per call on the M5 against `granite4.1:8b`'s 3.8 s. The pick holds for the
+seeded configuration.
+
+## On a 64 GB host the notebook runs `qwen3.8:27b-nvfp4` in place of `gpt-oss:20b`
+
+The notebook's default model list for a 64 GB host runs `qwen3.8:27b-nvfp4`,
+16.9 GB of weights. This sweep did not measure it. It replaced `gpt-oss:20b`.
+Shape coverage decided that swap, and `gpt-oss:20b`'s `format` breakage argued
+against keeping it. The notebook's earlier 64 GB runs hold both models' figures.
 
 The repository is
 [https://github.com/freemansoft/Flutter-AdaptiveCards](https://github.com/freemansoft/Flutter-AdaptiveCards),

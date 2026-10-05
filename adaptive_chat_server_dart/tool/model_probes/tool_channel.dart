@@ -19,6 +19,7 @@ import 'package:adaptive_chat_server_dart/src/ollama_responder.dart'
 
 // Relative: this file and its callers live outside `lib/`, so there is no
 // `package:` URI for them.
+import 'probe_results.dart' show OllamaTimings;
 import 'probe_support.dart';
 
 /// The card tool the server would offer, wrapping the schema's element array.
@@ -198,6 +199,7 @@ Future<ProbeOutcome> probeOnceViaTool({
   final outcome = judgeReply(
     replyEquivalent(message, 'render_adaptive_card'),
     ms,
+    timings: OllamaTimings.fromBody(rawBody),
   );
   return ProbeOutcome(
     ok: outcome.ok,
@@ -208,5 +210,6 @@ Future<ProbeOutcome> probeOnceViaTool({
     reply: outcome.reply,
     promptEvalCount: outcome.promptEvalCount,
     toolUsed: used,
+    timings: outcome.timings,
   );
 }

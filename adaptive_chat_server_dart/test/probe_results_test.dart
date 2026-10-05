@@ -326,4 +326,79 @@ void main() {
       }
     });
   });
+
+  group('OllamaTimings', () {
+    test('reads every phase field from an /api/chat body', () {
+      final t = OllamaTimings.fromBody(
+        '{"message":{"content":"x"},"prompt_eval_count":3178,'
+        '"prompt_eval_duration":412000000,"eval_count":96,'
+        '"eval_duration":1850000000,"load_duration":5000000}',
+      );
+      expect(t, isNotNull);
+      expect(t!.promptEvalCount, 3178);
+      expect(t.promptEvalNs, 412000000);
+      expect(t.evalCount, 96);
+      expect(t.evalNs, 1850000000);
+      expect(t.loadNs, 5000000);
+    });
+
+    test('is null when the body carries no timing field', () {
+      expect(OllamaTimings.fromBody('{"message":{"content":"x"}}'), isNull);
+    });
+
+    test('is null rather than throwing on a body that is not JSON', () {
+      expect(OllamaTimings.fromBody('upstream timeout'), isNull);
+    });
+
+    test('ignores a field of the wrong type instead of casting it', () {
+      final t = OllamaTimings.fromBody(
+        '{"eval_count":96,"eval_duration":"1.85s"}',
+      );
+      expect(t!.evalCount, 96);
+      expect(t.evalNs, isNull);
+    });
+
+    test('round-trips through JSON, omitting absent fields', () {
+      const t = OllamaTimings(evalCount: 96, evalNs: 1850000000);
+      expect(t.toJson(), {'evalCount': 96, 'evalNs': 1850000000});
+      final back = OllamaTimings.fromJson(t.toJson());
+      expect(back.evalCount, 96);
+      expect(back.evalNs, 1850000000);
+      expect(back.promptEvalNs, isNull);
+    });
+  });
+
+  group('ProbeCall timings', () {
+    test('serializes timings when present', () {
+      const call = ProbeCall(
+        caseId: 'table',
+        sample: 0,
+        pass: true,
+        label: 'card[1]',
+        ms: 2300,
+        timings: OllamaTimings(promptEvalNs: 400000000, evalNs: 1800000000),
+      );
+      final json = call.toJson();
+      expect(json['timings'], {
+        'promptEvalNs': 400000000,
+        'evalNs': 1800000000,
+      });
+      final back = ProbeCall.fromJson(json);
+      expect(back.timings!.evalNs, 1800000000);
+    });
+
+    test(
+      'omits the key when timings are absent, so older files still read',
+      () {
+        const call = ProbeCall(
+          caseId: 'table',
+          sample: 0,
+          pass: false,
+          label: 'broken: timeout (120s)',
+        );
+        expect(call.toJson().containsKey('timings'), isFalse);
+        expect(ProbeCall.fromJson(call.toJson()).timings, isNull);
+      },
+    );
+  });
 }

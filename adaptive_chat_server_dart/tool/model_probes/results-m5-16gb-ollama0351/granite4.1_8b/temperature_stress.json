@@ -1,0 +1,100 @@
+{
+  "probe": "temperature_stress",
+  "model": "granite4.1:8b",
+  "measuredAt": "2026-10-03",
+  "machine": "Apple M5 / 16 GB",
+  "ollama": "0.35.1",
+  "samples": 1,
+  "assets": {
+    "card_system_prompt.txt": "8cbfde243266",
+    "seed_card.json": "4ac746114475"
+  },
+  "summary": {
+    "calls": 10,
+    "passed": 8,
+    "cards": 4,
+    "prose": 4
+  },
+  "calls": [
+    {
+      "case": "codeblock",
+      "sample": 0,
+      "pass": true,
+      "label": "prose",
+      "setting": "greedy(t=0)",
+      "ms": 9035
+    },
+    {
+      "case": "bigtable",
+      "sample": 0,
+      "pass": true,
+      "label": "prose",
+      "setting": "greedy(t=0)",
+      "ms": 9383
+    },
+    {
+      "case": "nested",
+      "sample": 0,
+      "pass": true,
+      "label": "card[10]",
+      "setting": "greedy(t=0)",
+      "ms": 20727
+    },
+    {
+      "case": "multiline",
+      "sample": 0,
+      "pass": true,
+      "label": "card[1]",
+      "setting": "greedy(t=0)",
+      "ms": 6815
+    },
+    {
+      "case": "mixed",
+      "sample": 0,
+      "pass": false,
+      "label": "prose-with-card (user sees raw JSON)",
+      "setting": "greedy(t=0)",
+      "ms": 14868
+    },
+    {
+      "case": "codeblock",
+      "sample": 0,
+      "pass": true,
+      "label": "prose",
+      "setting": "recommended(t=0.6)",
+      "ms": 9232
+    },
+    {
+      "case": "bigtable",
+      "sample": 0,
+      "pass": true,
+      "label": "prose",
+      "setting": "recommended(t=0.6)",
+      "ms": 8817
+    },
+    {
+      "case": "nested",
+      "sample": 0,
+      "pass": true,
+      "label": "card[10]",
+      "setting": "recommended(t=0.6)",
+      "ms": 11973
+    },
+    {
+      "case": "multiline",
+      "sample": 0,
+      "pass": true,
+      "label": "card[1]",
+      "setting": "recommended(t=0.6)",
+      "ms": 5428
+    },
+    {
+      "case": "mixed",
+      "sample": 0,
+      "pass": false,
+      "label": "prose-with-card (user sees raw JSON)",
+      "setting": "recommended(t=0.6)",
+      "ms": 15141
+    }
+  ]
+}

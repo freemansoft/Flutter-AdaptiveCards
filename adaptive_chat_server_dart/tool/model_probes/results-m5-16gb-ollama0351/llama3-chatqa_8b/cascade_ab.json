@@ -1,0 +1,63 @@
+{
+  "probe": "cascade_ab",
+  "model": "llama3-chatqa:8b",
+  "measuredAt": "2026-10-04",
+  "machine": "Apple M5 / 16 GB",
+  "ollama": "0.35.1",
+  "samples": 2,
+  "temperature": 0.0,
+  "assets": {
+    "card_system_prompt.txt": "8cbfde243266",
+    "seed_card.json": "4ac746114475"
+  },
+  "summary": {
+    "cases": 3,
+    "exercised": 0,
+    "passed": 0,
+    "notExercised": 3
+  },
+  "calls": [
+    {
+      "case": "states",
+      "sample": 0,
+      "pass": false,
+      "label": "t1 prose (no card attempted)",
+      "ms": 894
+    },
+    {
+      "case": "states",
+      "sample": 1,
+      "pass": false,
+      "label": "t1 prose (no card attempted)",
+      "ms": 601
+    },
+    {
+      "case": "loglevel",
+      "sample": 0,
+      "pass": false,
+      "label": "t1 prose (no card attempted)",
+      "ms": 559
+    },
+    {
+      "case": "loglevel",
+      "sample": 1,
+      "pass": false,
+      "label": "t1 prose (no card attempted)",
+      "ms": 577
+    },
+    {
+      "case": "deploy",
+      "sample": 0,
+      "pass": false,
+      "label": "t1 prose (no card attempted)",
+      "ms": 594
+    },
+    {
+      "case": "deploy",
+      "sample": 1,
+      "pass": false,
+      "label": "t1 prose (no card attempted)",
+      "ms": 640
+    }
+  ]
+}

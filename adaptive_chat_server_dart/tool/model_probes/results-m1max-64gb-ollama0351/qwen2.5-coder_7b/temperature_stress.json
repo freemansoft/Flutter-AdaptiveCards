@@ -1,0 +1,100 @@
+{
+  "probe": "temperature_stress",
+  "model": "qwen2.5-coder:7b",
+  "measuredAt": "2026-10-03",
+  "machine": "Apple M1 Max / 64 GB",
+  "ollama": "0.35.1",
+  "samples": 1,
+  "assets": {
+    "card_system_prompt.txt": "8cbfde243266",
+    "seed_card.json": "4ac746114475"
+  },
+  "summary": {
+    "calls": 10,
+    "passed": 10,
+    "cards": 10,
+    "prose": 0
+  },
+  "calls": [
+    {
+      "case": "codeblock",
+      "sample": 0,
+      "pass": true,
+      "label": "card[2]",
+      "setting": "greedy(t=0)",
+      "ms": 4476
+    },
+    {
+      "case": "bigtable",
+      "sample": 0,
+      "pass": true,
+      "label": "card[1]",
+      "setting": "greedy(t=0)",
+      "ms": 68524
+    },
+    {
+      "case": "nested",
+      "sample": 0,
+      "pass": true,
+      "label": "card[5]",
+      "setting": "greedy(t=0)",
+      "ms": 12465
+    },
+    {
+      "case": "multiline",
+      "sample": 0,
+      "pass": true,
+      "label": "card[1]",
+      "setting": "greedy(t=0)",
+      "ms": 3916
+    },
+    {
+      "case": "mixed",
+      "sample": 0,
+      "pass": true,
+      "label": "card[4]",
+      "setting": "greedy(t=0)",
+      "ms": 30066
+    },
+    {
+      "case": "codeblock",
+      "sample": 0,
+      "pass": true,
+      "label": "card[2]",
+      "setting": "recommended(t=0.6)",
+      "ms": 4955
+    },
+    {
+      "case": "bigtable",
+      "sample": 0,
+      "pass": true,
+      "label": "card[1]",
+      "setting": "recommended(t=0.6)",
+      "ms": 66828
+    },
+    {
+      "case": "nested",
+      "sample": 0,
+      "pass": true,
+      "label": "card[5]",
+      "setting": "recommended(t=0.6)",
+      "ms": 12074
+    },
+    {
+      "case": "multiline",
+      "sample": 0,
+      "pass": true,
+      "label": "card[1]",
+      "setting": "recommended(t=0.6)",
+      "ms": 4056
+    },
+    {
+      "case": "mixed",
+      "sample": 0,
+      "pass": true,
+      "label": "card[2]",
+      "setting": "recommended(t=0.6)",
+      "ms": 26847
+    }
+  ]
+}

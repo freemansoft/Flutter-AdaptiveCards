@@ -1,0 +1,188 @@
+{
+  "probe": "temperature_matrix",
+  "model": "nemotron-3-nano:4b",
+  "measuredAt": "2026-10-03",
+  "machine": "Apple M1 Max / 64 GB",
+  "ollama": "0.35.1",
+  "samples": 1,
+  "assets": {
+    "card_system_prompt.txt": "8cbfde243266",
+    "seed_card.json": "4ac746114475"
+  },
+  "summary": {
+    "calls": 21,
+    "passed": 16,
+    "cards": 10,
+    "prose": 6
+  },
+  "calls": [
+    {
+      "case": "date",
+      "sample": 0,
+      "pass": true,
+      "label": "card[3]",
+      "setting": "greedy(t=0)",
+      "ms": 9462
+    },
+    {
+      "case": "choice",
+      "sample": 0,
+      "pass": true,
+      "label": "card[2]",
+      "setting": "greedy(t=0)",
+      "ms": 3826
+    },
+    {
+      "case": "facts",
+      "sample": 0,
+      "pass": false,
+      "label": "broken: invalid JSON: FormatException: Unexpected end of input (at character 317)\n...tle\":\"Water Resistance\",\"value\":\"IP68\"},{\"title\":\"Weight\",\"value\":\"182 g\"}]\n                                                                              ^\n",
+      "setting": "greedy(t=0)",
+      "ms": 4490
+    },
+    {
+      "case": "table",
+      "sample": 0,
+      "pass": true,
+      "label": "prose",
+      "setting": "greedy(t=0)",
+      "ms": 3740
+    },
+    {
+      "case": "chart",
+      "sample": 0,
+      "pass": false,
+      "label": "timeout (180s)",
+      "setting": "greedy(t=0)",
+      "ms": 180022
+    },
+    {
+      "case": "rating",
+      "sample": 0,
+      "pass": true,
+      "label": "card[1]",
+      "setting": "greedy(t=0)",
+      "ms": 8987
+    },
+    {
+      "case": "prose",
+      "sample": 0,
+      "pass": true,
+      "label": "prose",
+      "setting": "greedy(t=0)",
+      "ms": 2797
+    },
+    {
+      "case": "date",
+      "sample": 0,
+      "pass": true,
+      "label": "card[3]",
+      "setting": "low(t=0.2)",
+      "ms": 3063
+    },
+    {
+      "case": "choice",
+      "sample": 0,
+      "pass": true,
+      "label": "card[2]",
+      "setting": "low(t=0.2)",
+      "ms": 4254
+    },
+    {
+      "case": "facts",
+      "sample": 0,
+      "pass": false,
+      "label": "broken: invalid JSON: FormatException: Unexpected character (at character 339)\n...\":\"Storage\",\"value\":\"256GB\"},{\"title\":\"Water Resistance\",\"value\":\"IP68\"}]]}\n                                                                            ^\n",
+      "setting": "low(t=0.2)",
+      "ms": 4731
+    },
+    {
+      "case": "table",
+      "sample": 0,
+      "pass": true,
+      "label": "prose",
+      "setting": "low(t=0.2)",
+      "ms": 3879
+    },
+    {
+      "case": "chart",
+      "sample": 0,
+      "pass": false,
+      "label": "timeout (180s)",
+      "setting": "low(t=0.2)",
+      "ms": 180022
+    },
+    {
+      "case": "rating",
+      "sample": 0,
+      "pass": true,
+      "label": "card[1]",
+      "setting": "low(t=0.2)",
+      "ms": 111045
+    },
+    {
+      "case": "prose",
+      "sample": 0,
+      "pass": true,
+      "label": "prose",
+      "setting": "low(t=0.2)",
+      "ms": 2753
+    },
+    {
+      "case": "date",
+      "sample": 0,
+      "pass": true,
+      "label": "card[1]",
+      "setting": "recommended(t=0.6)",
+      "ms": 2990
+    },
+    {
+      "case": "choice",
+      "sample": 0,
+      "pass": true,
+      "label": "card[2]",
+      "setting": "recommended(t=0.6)",
+      "ms": 3862
+    },
+    {
+      "case": "facts",
+      "sample": 0,
+      "pass": false,
+      "label": "broken: valid JSON but not a renderable card (empty body, missing 'type', or empty/mixed array)",
+      "setting": "recommended(t=0.6)",
+      "ms": 4735
+    },
+    {
+      "case": "table",
+      "sample": 0,
+      "pass": true,
+      "label": "prose",
+      "setting": "recommended(t=0.6)",
+      "ms": 3761
+    },
+    {
+      "case": "chart",
+      "sample": 0,
+      "pass": true,
+      "label": "card[1]",
+      "setting": "recommended(t=0.6)",
+      "ms": 3710
+    },
+    {
+      "case": "rating",
+      "sample": 0,
+      "pass": true,
+      "label": "card[1]",
+      "setting": "recommended(t=0.6)",
+      "ms": 2283
+    },
+    {
+      "case": "prose",
+      "sample": 0,
+      "pass": true,
+      "label": "prose",
+      "setting": "recommended(t=0.6)",
+      "ms": 2775
+    }
+  ]
+}

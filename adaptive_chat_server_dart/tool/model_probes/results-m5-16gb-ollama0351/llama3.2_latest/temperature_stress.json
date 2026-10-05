@@ -1,0 +1,100 @@
+{
+  "probe": "temperature_stress",
+  "model": "llama3.2:latest",
+  "measuredAt": "2026-10-04",
+  "machine": "Apple M5 / 16 GB",
+  "ollama": "0.35.1",
+  "samples": 1,
+  "assets": {
+    "card_system_prompt.txt": "8cbfde243266",
+    "seed_card.json": "4ac746114475"
+  },
+  "summary": {
+    "calls": 10,
+    "passed": 9,
+    "cards": 8,
+    "prose": 1
+  },
+  "calls": [
+    {
+      "case": "codeblock",
+      "sample": 0,
+      "pass": true,
+      "label": "card[3]",
+      "setting": "greedy(t=0)",
+      "ms": 9008
+    },
+    {
+      "case": "bigtable",
+      "sample": 0,
+      "pass": false,
+      "label": "broken: invalid JSON: FormatException: Unexpected character (at line 4, character 74)\n    {\"width\": 1, \"items\": [{\"type\": \"TextBlock\", \"text\": \"Month\"}, \"wrap\": ...\n                                                                         ^\n",
+      "setting": "greedy(t=0)",
+      "ms": 26592
+    },
+    {
+      "case": "nested",
+      "sample": 0,
+      "pass": true,
+      "label": "card[7]",
+      "setting": "greedy(t=0)",
+      "ms": 7744
+    },
+    {
+      "case": "multiline",
+      "sample": 0,
+      "pass": true,
+      "label": "card[3]",
+      "setting": "greedy(t=0)",
+      "ms": 3488
+    },
+    {
+      "case": "mixed",
+      "sample": 0,
+      "pass": true,
+      "label": "card[2]",
+      "setting": "greedy(t=0)",
+      "ms": 2743
+    },
+    {
+      "case": "codeblock",
+      "sample": 0,
+      "pass": true,
+      "label": "card[3]",
+      "setting": "recommended(t=0.6)",
+      "ms": 4578
+    },
+    {
+      "case": "bigtable",
+      "sample": 0,
+      "pass": true,
+      "label": "card[1]",
+      "setting": "recommended(t=0.6)",
+      "ms": 12935
+    },
+    {
+      "case": "nested",
+      "sample": 0,
+      "pass": true,
+      "label": "card[8]",
+      "setting": "recommended(t=0.6)",
+      "ms": 7708
+    },
+    {
+      "case": "multiline",
+      "sample": 0,
+      "pass": true,
+      "label": "card[3]",
+      "setting": "recommended(t=0.6)",
+      "ms": 3157
+    },
+    {
+      "case": "mixed",
+      "sample": 0,
+      "pass": true,
+      "label": "prose",
+      "setting": "recommended(t=0.6)",
+      "ms": 4379
+    }
+  ]
+}

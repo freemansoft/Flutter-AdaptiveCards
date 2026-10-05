@@ -1,0 +1,188 @@
+{
+  "probe": "temperature_matrix",
+  "model": "granite4.1:3b",
+  "measuredAt": "2026-10-03",
+  "machine": "Apple M1 Max / 64 GB",
+  "ollama": "0.35.1",
+  "samples": 1,
+  "assets": {
+    "card_system_prompt.txt": "8cbfde243266",
+    "seed_card.json": "4ac746114475"
+  },
+  "summary": {
+    "calls": 21,
+    "passed": 13,
+    "cards": 9,
+    "prose": 4
+  },
+  "calls": [
+    {
+      "case": "date",
+      "sample": 0,
+      "pass": false,
+      "label": "broken: invalid JSON: FormatException: Unexpected character (at character 41)\n{\"type\":\"Input.Date\",\"id\":\"meetingDate\"}{\"type\":\"Input.Time\",\"id\":\"meetingT...\n                                        ^\n",
+      "setting": "greedy(t=0)",
+      "ms": 6174
+    },
+    {
+      "case": "choice",
+      "sample": 0,
+      "pass": true,
+      "label": "card[1]",
+      "setting": "greedy(t=0)",
+      "ms": 1274
+    },
+    {
+      "case": "facts",
+      "sample": 0,
+      "pass": true,
+      "label": "card[1]",
+      "setting": "greedy(t=0)",
+      "ms": 3854
+    },
+    {
+      "case": "table",
+      "sample": 0,
+      "pass": false,
+      "label": "broken: invalid JSON: FormatException: Unexpected character (at character 170)\n...ck\",\"text\":\"Planet\",\"wrap\":true}]}],[{ \"type\":\"TableCell\",\"items\":[ { \"t...\n                                       ^\n",
+      "setting": "greedy(t=0)",
+      "ms": 8147
+    },
+    {
+      "case": "chart",
+      "sample": 0,
+      "pass": true,
+      "label": "card[1]",
+      "setting": "greedy(t=0)",
+      "ms": 1479
+    },
+    {
+      "case": "rating",
+      "sample": 0,
+      "pass": true,
+      "label": "card[1]",
+      "setting": "greedy(t=0)",
+      "ms": 378
+    },
+    {
+      "case": "prose",
+      "sample": 0,
+      "pass": true,
+      "label": "prose",
+      "setting": "greedy(t=0)",
+      "ms": 1169
+    },
+    {
+      "case": "date",
+      "sample": 0,
+      "pass": false,
+      "label": "broken: invalid JSON: FormatException: Unexpected character (at character 41)\n{\"type\":\"Input.Date\",\"id\":\"meetingDate\"}{\"type\":\"Input.Time\",\"id\":\"meetingT...\n                                        ^\n",
+      "setting": "low(t=0.2)",
+      "ms": 554
+    },
+    {
+      "case": "choice",
+      "sample": 0,
+      "pass": true,
+      "label": "card[1]",
+      "setting": "low(t=0.2)",
+      "ms": 1326
+    },
+    {
+      "case": "facts",
+      "sample": 0,
+      "pass": true,
+      "label": "prose",
+      "setting": "low(t=0.2)",
+      "ms": 8403
+    },
+    {
+      "case": "table",
+      "sample": 0,
+      "pass": false,
+      "label": "duplicate-key (duplicate key \"cells\")",
+      "setting": "low(t=0.2)",
+      "ms": 6081
+    },
+    {
+      "case": "chart",
+      "sample": 0,
+      "pass": true,
+      "label": "card[1]",
+      "setting": "low(t=0.2)",
+      "ms": 1486
+    },
+    {
+      "case": "rating",
+      "sample": 0,
+      "pass": true,
+      "label": "card[1]",
+      "setting": "low(t=0.2)",
+      "ms": 381
+    },
+    {
+      "case": "prose",
+      "sample": 0,
+      "pass": true,
+      "label": "prose",
+      "setting": "low(t=0.2)",
+      "ms": 1236
+    },
+    {
+      "case": "date",
+      "sample": 0,
+      "pass": false,
+      "label": "broken: invalid JSON: FormatException: Unexpected character (at line 2, character 1)\n{\"type\":\"Input.Time\",\"id\":\"meeting_time\",\"text\":\"Select a start time for th...\n^\n",
+      "setting": "recommended(t=0.6)",
+      "ms": 1136
+    },
+    {
+      "case": "choice",
+      "sample": 0,
+      "pass": true,
+      "label": "card[1]",
+      "setting": "recommended(t=0.6)",
+      "ms": 1357
+    },
+    {
+      "case": "facts",
+      "sample": 0,
+      "pass": false,
+      "label": "broken: invalid JSON: FormatException: Unexpected character (at character 587)\n...1wireless charging up to 15\\u202fW\"}},{\"title\":\"Cameras\",\"value\":\"Triple...\n                                       ^\n",
+      "setting": "recommended(t=0.6)",
+      "ms": 9266
+    },
+    {
+      "case": "table",
+      "sample": 0,
+      "pass": false,
+      "label": "duplicate-key (duplicate key \"cells\")",
+      "setting": "recommended(t=0.6)",
+      "ms": 6170
+    },
+    {
+      "case": "chart",
+      "sample": 0,
+      "pass": false,
+      "label": "prose-with-card (user sees raw JSON)",
+      "setting": "recommended(t=0.6)",
+      "ms": 2664
+    },
+    {
+      "case": "rating",
+      "sample": 0,
+      "pass": true,
+      "label": "card[1]",
+      "setting": "recommended(t=0.6)",
+      "ms": 385
+    },
+    {
+      "case": "prose",
+      "sample": 0,
+      "pass": true,
+      "label": "prose",
+      "setting": "recommended(t=0.6)",
+      "ms": 1289
+    }
+  ]
+}

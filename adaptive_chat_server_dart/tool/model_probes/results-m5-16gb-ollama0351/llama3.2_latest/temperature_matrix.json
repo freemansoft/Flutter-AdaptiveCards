@@ -1,0 +1,188 @@
+{
+  "probe": "temperature_matrix",
+  "model": "llama3.2:latest",
+  "measuredAt": "2026-10-04",
+  "machine": "Apple M5 / 16 GB",
+  "ollama": "0.35.1",
+  "samples": 1,
+  "assets": {
+    "card_system_prompt.txt": "8cbfde243266",
+    "seed_card.json": "4ac746114475"
+  },
+  "summary": {
+    "calls": 21,
+    "passed": 15,
+    "cards": 15,
+    "prose": 0
+  },
+  "calls": [
+    {
+      "case": "date",
+      "sample": 0,
+      "pass": true,
+      "label": "card[2]",
+      "setting": "greedy(t=0)",
+      "ms": 8142
+    },
+    {
+      "case": "choice",
+      "sample": 0,
+      "pass": true,
+      "label": "card[1]",
+      "setting": "greedy(t=0)",
+      "ms": 1262
+    },
+    {
+      "case": "facts",
+      "sample": 0,
+      "pass": true,
+      "label": "card[2]",
+      "setting": "greedy(t=0)",
+      "ms": 3806
+    },
+    {
+      "case": "table",
+      "sample": 0,
+      "pass": true,
+      "label": "card[1]",
+      "setting": "greedy(t=0)",
+      "ms": 7314
+    },
+    {
+      "case": "chart",
+      "sample": 0,
+      "pass": true,
+      "label": "card[1]",
+      "setting": "greedy(t=0)",
+      "ms": 2352
+    },
+    {
+      "case": "rating",
+      "sample": 0,
+      "pass": true,
+      "label": "card[2]",
+      "setting": "greedy(t=0)",
+      "ms": 1906
+    },
+    {
+      "case": "prose",
+      "sample": 0,
+      "pass": true,
+      "label": "card[1]",
+      "setting": "greedy(t=0)",
+      "ms": 1300
+    },
+    {
+      "case": "date",
+      "sample": 0,
+      "pass": true,
+      "label": "card[2]",
+      "setting": "low(t=0.2)",
+      "ms": 3889
+    },
+    {
+      "case": "choice",
+      "sample": 0,
+      "pass": true,
+      "label": "card[1]",
+      "setting": "low(t=0.2)",
+      "ms": 1244
+    },
+    {
+      "case": "facts",
+      "sample": 0,
+      "pass": false,
+      "label": "broken: invalid JSON: FormatException: Unexpected character (at character 45)\n[{\"type\":\"TextBlock\",\"text\":\"iPhone 15 Pro\",wrap\":true},{\"type\":\"TextBlock\"...\n                                            ^\n",
+      "setting": "low(t=0.2)",
+      "ms": 4952
+    },
+    {
+      "case": "table",
+      "sample": 0,
+      "pass": true,
+      "label": "card[1]",
+      "setting": "low(t=0.2)",
+      "ms": 10537
+    },
+    {
+      "case": "chart",
+      "sample": 0,
+      "pass": true,
+      "label": "card[1]",
+      "setting": "low(t=0.2)",
+      "ms": 2371
+    },
+    {
+      "case": "rating",
+      "sample": 0,
+      "pass": true,
+      "label": "card[1]",
+      "setting": "low(t=0.2)",
+      "ms": 812
+    },
+    {
+      "case": "prose",
+      "sample": 0,
+      "pass": true,
+      "label": "card[1]",
+      "setting": "low(t=0.2)",
+      "ms": 1311
+    },
+    {
+      "case": "date",
+      "sample": 0,
+      "pass": true,
+      "label": "card[2]",
+      "setting": "recommended(t=0.6)",
+      "ms": 3281
+    },
+    {
+      "case": "choice",
+      "sample": 0,
+      "pass": true,
+      "label": "card[2]",
+      "setting": "recommended(t=0.6)",
+      "ms": 1861
+    },
+    {
+      "case": "facts",
+      "sample": 0,
+      "pass": false,
+      "label": "prose-with-card (user sees raw JSON)",
+      "setting": "recommended(t=0.6)",
+      "ms": 2564
+    },
+    {
+      "case": "table",
+      "sample": 0,
+      "pass": false,
+      "label": "timeout (180s)",
+      "setting": "recommended(t=0.6)",
+      "ms": 180017
+    },
+    {
+      "case": "chart",
+      "sample": 0,
+      "pass": false,
+      "label": "timeout (180s)",
+      "setting": "recommended(t=0.6)",
+      "ms": 180008
+    },
+    {
+      "case": "rating",
+      "sample": 0,
+      "pass": false,
+      "label": "timeout (180s)",
+      "setting": "recommended(t=0.6)",
+      "ms": 180010
+    },
+    {
+      "case": "prose",
+      "sample": 0,
+      "pass": false,
+      "label": "timeout (180s)",
+      "setting": "recommended(t=0.6)",
+      "ms": 180013
+    }
+  ]
+}
