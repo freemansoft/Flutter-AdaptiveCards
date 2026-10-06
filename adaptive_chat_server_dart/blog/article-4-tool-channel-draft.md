@@ -31,6 +31,9 @@ a lab notebook in that repository.
 
 ## Terms used in this article
 
+<details>
+<summary>Show the terms</summary>
+
 | Term                             | What it means here                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 | -------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Channel**                      | Where the model's reply travels. `prose` puts card JSON as text in `message.content`. `tool` puts it in the arguments of a `render_adaptive_card` call. The name comes from the `--channel` flag of the probe `shape_ab.dart`.                                                                                                                                                                                                                                                                                                |
@@ -41,6 +44,8 @@ a lab notebook in that repository.
 | **`--samples 2`**                | Every case runs twice. A case score out of 25 passes only if both runs passed, so one borderline call takes the whole case, and the notebook's noise floor on that score is ±1 case. Most figures here are per-call rates instead, where a difference of a few calls in 96 is not a ranking either.                                                                                                                                                                                                                           |
 | **Cold-start**, **with-history** | The question asked first, or asked with two ordinary conversational turns already in the conversation: a user question about CI/CD and a short Markdown answer.                                                                                                                                                                                                                                                                                                                                                               |
 | **Adoption**                     | How often a model called the tool when one was offered, out of 100 calls. Recorded per call by `shape_ab.dart`.                                                                                                                                                                                                                                                                                                                                                                                                               |
+
+</details>
 
 ## How the two arms are built
 

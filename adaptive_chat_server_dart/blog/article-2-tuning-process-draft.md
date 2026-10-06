@@ -11,6 +11,9 @@ a lab notebook in that repository.
 
 ## Terms used in this article
 
+<details>
+<summary>Show the terms</summary>
+
 The first two describe the ledger, the rest name what the levers changed and
 how each was scored. Probe and flag names are the repository's own.
 
@@ -31,6 +34,8 @@ how each was scored. Probe and flag names are the repository's own.
 | **`t=0`**                                    | Temperature 0, greedy decoding. `t=0.6` is the one hotter setting measured.                                                                                                                                                                                                                                                                                        |
 | **Promoted**, **reverted** and **no effect** | A lever's outcome: shipped in the server's configuration, backed out after a regression, or left unshipped because no score moved.                                                                                                                                                                                                                                 |
 | **Tool channel**                             | Ollama's function-calling API. The server declares a `render_adaptive_card` function, and the model returns the card as the call's arguments, already parsed, instead of as text.                                                                                                                                                                                  |
+
+</details>
 
 ## Four failure modes drove the tuning
 

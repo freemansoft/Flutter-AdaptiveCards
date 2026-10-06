@@ -15,6 +15,9 @@ tier, instead relying on the model for JSON card creation.
 
 ## Terms used in this article
 
+<details>
+<summary>Show the terms</summary>
+
 The first four terms are implementation details of the demo. The rest belong
 to the test and scoring mechanism. Probe and flag names are the repository's
 own.
@@ -33,6 +36,8 @@ own.
 | **`--samples 2`**                      | Each shape case runs twice and passes only if both runs pass, so a one-case difference between two models is noise.                                                                                                                                                                              |
 | **Stall**                              | A call that exceeds the probe's 120 s per-call ceiling and scores as a failure. A slow model and a busy machine look the same to the probe.                                                                                                                                                      |
 | **Resident**                           | Loaded in memory by an Ollama runner. Every figure here was taken with one model resident at a time.                                                                                                                                                                                             |
+
+</details>
 
 ## The model's reply is the UI, not text about it
 
