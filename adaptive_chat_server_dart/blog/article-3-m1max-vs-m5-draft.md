@@ -216,12 +216,17 @@ faster.
 Three things could make the gap smaller than the rating predicts, and no
 measurement here isolates any of them.
 
-- **GPU compute.** [The
-  notebook](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md#performance-by-host-and-runtime)
-  estimates this 8-core M5 GPU as level with, or ahead of, the older 32-core M1
-  Max GPU. That estimate holds only if the runtime uses the Neural Accelerator
-  in each M5 GPU core. No measurement here shows whether the GGUF runner does,
-  and the phase table shows no consistent compute advantage.
+- **GPU compute.** Apple rates the M5's peak GPU compute for AI at over 6x the
+  M1's ([M5 announcement](https://www.apple.com/newsroom/2025/10/apple-unleashes-m5-the-next-big-leap-in-ai-performance-for-apple-silicon/)). Its footnote compares a 10-core M5 with an 8-core M1 on
+  "select industry-standard benchmarks", so per core the claim is about 4.8x.
+  This Air's 8 M5 cores against the M1 Max's 32 M1-generation cores then come
+  to about 1.2x the M1 Max. That assumes an M1 Max core matches an M1 core.
+  [The
+  notebook](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md#performance-by-host-and-runtime) scales the M5 Max's 8x claim the same way and lands in the same
+  place: level with, or ahead of, the M1 Max. Both are inferences from vendor
+  multipliers, not measurements. They hold only if the runtime uses the Neural
+  Accelerator in each M5 GPU core. No measurement here shows whether the GGUF
+  runner does, and the phase table shows no consistent compute advantage.
 - **Achieved bandwidth.** Neither host reaches its rating. If the M1 Max falls
   further short of 400 GB/s than the M5 does of 153 GB/s, the real ratio is
   under 2.61x.
