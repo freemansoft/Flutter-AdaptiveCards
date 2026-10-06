@@ -190,7 +190,9 @@ Then draft in this order, because each step constrains the next:
    each table needs, then the intro, and the title last, because the title has
    to survive the paraphrase test against what the draft actually says.
 5. **Add a terms table** if the article uses more than a few terms a reader
-   outside the repo would not know, and define each of them only there.
+   outside the repo would not know, and define each of them only there. The
+   table folds in a `<details>` block with the heading outside it; the markup
+   is under Terms tables and definitions in the style rules.
 6. **Review the draft against the checklist below** and run the verification
    commands, before showing it to anyone. Send it for a referent pass as well,
    to an agent holding the draft and no repository: the checks above cannot
@@ -216,6 +218,9 @@ running it:
   as `blog-N-<name>.png` beside the drafts, referenced as Markdown images.
   Those are the `src` values `to_blogger.dart` turns into an
   `{{IMAGE_URL:<path>}}` token to fill in after uploading.
+- **The terms table's `<details>` block passes through unchanged.**
+  `to_blogger.dart` renders the table inside it, and Blogger's HTML view keeps
+  the element, so the fold works on the published post with no further step.
 - **Re-point the notebook links** to the commit the figures were read at (see
   Attribution in the style rules).
 
@@ -307,6 +312,10 @@ print('decreased:', dict(tok(old) - tok(new)))
 print('increased:', dict(tok(new) - tok(old)))
 EOF
 
+# Terms table folded: the heading is followed by the <details> wrapper.
+grep -A2 '^## Terms used in this article' "$A" | grep -q '<details>' \
+  || echo 'terms table not folded'
+
 # Em dashes outside table rows. Edits reintroduce them, so count after every pass.
 grep -v '^|' "$A" | grep -o '—' | wc -l
 
@@ -396,6 +405,7 @@ Section order and article shape)
 - [ ] Prose near 1,500 words, with any excess past 2,000 justified in the
       README, and the on-page count under about 3,500.
 - [ ] Each term defined once; every cross-reference resolves.
+- [ ] Terms table folded in `<details>` with the heading outside the fold.
 
 **Register** (Register)
 
