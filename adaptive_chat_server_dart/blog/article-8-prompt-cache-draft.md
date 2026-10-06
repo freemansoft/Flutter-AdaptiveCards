@@ -52,6 +52,9 @@ flowchart TD
 
 ## Terms used in this article
 
+<details>
+<summary>Show the terms</summary>
+
 | Term                       | What it means here                                                                                                                                                                                                                                                     |
 | -------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Runner**                 | The process Ollama starts to serve one loaded model: `llama-server` for the thirteen GGUF builds here, the MLX runner for the two safetensors builds and the two controls. Ollama's server log names the one it starts, and the prefix cache belongs to it.            |
@@ -68,6 +71,8 @@ flowchart TD
 | **First-divergence phase** | Three new conversations on each of two synthetic prompts no earlier call sent. Arm `delta` goes straight there from the first request; arm `echo` sends the same request twice first.                                                                                  |
 | **Interleaved phase**      | Two three-turn conversations alternating on one system prompt, as when a chat server serves two users.                                                                                                                                                                 |
 | **Second branch**          | Four single-question requests on the shared synthetic prompt: two different questions, the first one again, then a third. It asks whether the runner keeps one restorable branch per prompt or several.                                                                |
+
+</details>
 
 ## The probe sends the request shapes a chat server produces, in nine phases
 

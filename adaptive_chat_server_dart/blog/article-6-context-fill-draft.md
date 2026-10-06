@@ -48,6 +48,9 @@ the lab notebook in that repository.
 
 ## Terms used in this article
 
+<details>
+<summary>Show the terms</summary>
+
 | Term                    | What it means here                                                                                                                                                                                                                                                               |
 | ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **`num_ctx`**           | The context window an Ollama request asks for, in tokens. It is a request, not a guarantee.                                                                                                                                                                                      |
@@ -55,6 +58,8 @@ the lab notebook in that repository.
 | **`prompt_eval_count`** | The token count Ollama reports for the prompt it evaluated. Compared with the size of what was sent, it shows what the model received, and this article turns on it.                                                                                                             |
 | **Shape score**, `n/25` | 25 test cases, one question each, paired with the Adaptive Card element types that would answer it. Scored on one thing: did the reply use one of them? This is shape coverage, not accuracy, and a model can be correct in prose and score low. Figures here are `--samples 1`. |
 | **Filler**              | A block of deterministic nonsense sent as one user message ahead of the question, followed by a one-word assistant reply, `Understood.`. The probe sizes it to a token target, so a run can ask what a model does with a window that is mostly used.                             |
+
+</details>
 
 ## The allocated window is `min(requested, trained window)`
 

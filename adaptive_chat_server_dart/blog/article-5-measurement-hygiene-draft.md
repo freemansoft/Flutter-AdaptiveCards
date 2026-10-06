@@ -27,6 +27,9 @@ the lab notebook in that repository.
 
 ## Terms used in this article
 
+<details>
+<summary>Show the terms</summary>
+
 The article uses these words with a specific meaning. Probe and flag names are
 the repository's own.
 
@@ -43,6 +46,8 @@ the repository's own.
 | **Runner**                       | The Ollama process that holds one model's weights in memory and generates for it.                                                                                                                                                                        |
 | **Harness**                      | The probe scripts and the sweep driver: everything between the model and a recorded figure except Ollama itself.                                                                                                                                         |
 | **Queue cascade**                | One abandoned generation that keeps running on the server, so every later call waits behind it and records its own stall.                                                                                                                                |
+
+</details>
 
 ## Eight rules, grouped by when they apply
 

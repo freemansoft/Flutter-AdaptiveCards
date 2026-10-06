@@ -261,6 +261,28 @@ compares. A terms table defined later is not a reason to hold the setup back.
 - **A dense article can carry a "Terms used in this article" table** after the
   opening, as articles 3 and 4 do. Table rows do not count against the length
   cap, so the table is also cheap.
+- **Fold the table, not the heading.** The table sits in a `<details>` block
+  whose `<summary>` reads `Show the terms`, and the
+  `## Terms used in this article` heading stays outside the block, so the
+  section is still in the article outline while the rows take no screen space
+  until the reader opens them. A sentence that describes the table's layout,
+  such as "The first four terms are implementation details of the demo", folds
+  with the table. Leave a blank line after `<summary>` and before
+  `</details>`; without them `package:markdown` emits the rows as text instead
+  of a table. All eight published articles use this markup:
+
+  ```markdown
+  ## Terms used in this article
+
+  <details>
+  <summary>Show the terms</summary>
+
+  | Term | What it means here |
+  | ---- | ------------------ |
+
+  </details>
+  ```
+
 - **Define each term once.** A term defined in the terms table is not defined
   again in the body. A term defined beside its own table, such as a bucket list
   or a derived column, stays there and is left out of the terms table.

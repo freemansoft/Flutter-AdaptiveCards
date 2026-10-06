@@ -30,6 +30,9 @@ the lab notebook in that repository.
 
 ## Terms used in this article
 
+<details>
+<summary>Show the terms</summary>
+
 | Term                    | What it means here                                                                                                                                                                                                                                                                                                                                                                                          |
 | ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Window**              | The context window: the number of tokens Ollama allocates to one request, which holds the system prompt, the history and the question.                                                                                                                                                                                                                                                                      |
@@ -42,6 +45,8 @@ the lab notebook in that repository.
 | **The judge**           | `judgeShape`, the function that assigns each reply one verdict. The repository's other card-shape probes score with the same function, so these verdicts are comparable with theirs.                                                                                                                                                                                                                        |
 | **`--samples 1`**       | Each case runs once and is scored on that one reply. Most figures in the notebook are `--samples 2`, where a case passes only if both runs pass, A one-case difference between two runs is therefore noise, where `--samples 2` figures carry a tighter floor.                                                                                                                                              |
 | **`prompt_eval_count`** | The token count Ollama reports for the prompt it evaluated. The **Prompt tokens, full** column holds it, and it is how each run proves it delivered the history it meant to.                                                                                                                                                                                                                                |
+
+</details>
 
 Every full-window run reports the token count it delivered in the **Prompt
 tokens, full** column. Tokenizers differ enough that a filler sized in
