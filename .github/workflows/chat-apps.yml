@@ -119,6 +119,14 @@ jobs:
         run: dart run tool/model_probes/check_results.dart
         working-directory: ./adaptive_chat_server_dart
 
+      # draw.io writes every colour in an exported SVG as light-dark(), so a
+      # blog diagram turns near-black behind its black arrows in GitHub's dark
+      # theme, and every re-export brings that back. Fix with the same tool,
+      # without --check.
+      - name: Check blog diagrams are pinned to light colours
+        run: dart run tool/blog/pin_svg_light.dart --check
+        working-directory: ./adaptive_chat_server_dart
+
       # See the note on the client job's formatting step. Covers lib/, bin/,
       # test/, and tool/ -- tool/model_probes/ is hand-run tooling, but it is
       # still source we read and edit, so it is held to the same bar.

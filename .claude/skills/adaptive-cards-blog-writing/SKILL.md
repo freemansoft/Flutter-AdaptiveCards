@@ -221,9 +221,10 @@ running it:
   SVG markup is pasted in the HTML view in place of the image token. After
   that, Blogger's HTML formatter can no longer be used on the post. Each
   draw.io export makes the background switch to near-black in dark mode,
-  which hides black arrows on GitHub: pin every `light-dark(...)` value to its
-  light colour and set `color-scheme: light` before committing, and redo it
-  after every re-export. The README's "Publishing to Blogger" has the detail.
+  which hides black arrows on GitHub. After every re-export, run
+  `fvm dart run tool/blog/pin_svg_light.dart` from `adaptive_chat_server_dart/`
+  and check the result before committing; CI fails on a diagram it would
+  still change. The README's "Publishing to Blogger" has the detail.
 - **A committed image is different.** Articles 1 and 2 carry real screenshots
   as `blog-N-<name>.png` beside the drafts, referenced as Markdown images.
   Those are the `src` values `to_blogger.dart` turns into an
