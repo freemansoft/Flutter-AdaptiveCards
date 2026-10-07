@@ -146,6 +146,16 @@ source a later revision edits, and the rendered PNGs are not committed. The
 `{{IMAGE_URL:<path>}}` token is for a committed image instead, as in articles 1
 and 2.
 
+Article 4 carries its diagrams as draw.io SVGs instead
+(`article-4-*.drawio.svg`). One file renders on GitHub and reopens in draw.io
+as the editable source. In the HTML view, replace the image's token with the
+SVG markup. Once SVG markup is in the post, Blogger's HTML formatter can no
+longer be used on it. draw.io exports a background that turns near-black in
+dark mode, which hides the black arrows in GitHub's dark theme: pin it to
+white before committing by replacing each `light-dark(<white>, <dark>)` value
+with the white one and setting `color-scheme: light`. Re-exporting from
+draw.io restores the dark background.
+
 ## What each article owns
 
 An article owns a topic outright: it carries the mechanism, the figures, and the

@@ -136,3 +136,6 @@ widgetbook/widgetbook_screenshot.png
 # No trailing slash: this is a symlink here, and `.agents/` matches only a real
 # directory, so the slash form silently failed to ignore it.
 .agents
+
+# draw.io desktop autosave/lock files written next to the diagram being edited.
+*.dtmp

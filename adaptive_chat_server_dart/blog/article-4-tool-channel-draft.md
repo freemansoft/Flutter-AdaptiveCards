@@ -17,6 +17,8 @@ arrives in `message.tool_calls[0].function.arguments`. Ollama has already
 decoded it into a JSON object, so there is no text for the chat server to
 parse.
 
+![The two arms: a card-shaped question goes to either the prose arm or the tool arm. On the prose arm, card JSON comes back as text in message.content and is parsed, so it can be malformed JSON. On the tool arm, render_adaptive_card is declared and the model either calls it or declines. A call delivers already-decoded JSON in message.tool_calls[0].function.arguments, which is converted back to a string. A decline returns card JSON or prose in message.content, which is parsed like the prose arm. One judge scores both arms.](article-4-arms-flow.drawio.svg)
+
 We measure the tool channel two ways. The first compares asking for card JSON
 in the message body against the same ask with `render_adaptive_card` offered
 as well. The hypothesis is that a card which never has to be written as text
@@ -195,23 +197,7 @@ on 14 of them and `number` and `codeblock` on 12 each, against 2 for
 
 ## A retry on parse failure recovers 43 of 99 broken cards
 
-```mermaid
-flowchart TD
-  Q["Card-shaped question"] --> P["ask in prose\nprose prompt"]
-  P --> D{"does the reply parse\nas a card?"}
-  D -- yes --> DONE["card rendered,\nno second call made"]
-  D -- "invalid JSON" --> R["retry: same question,\nrender_adaptive_card offered"]
-  R --> D2{"did the model\ncall the tool?"}
-  D2 -- yes --> T["tool arguments,\ncannot be malformed JSON"]
-  D2 -- no --> C["message.content again"]
-  T --> J{"one judge"}
-  C --> J
-  J -- recovered --> OK["card recovered"]
-  J -- "still broken" --> BAD["not recovered"]
-  style DONE fill:#6c6,stroke:#060,color:#000
-  style OK fill:#6c6,stroke:#060,color:#000
-  style BAD fill:#f66,stroke:#900,color:#000
-```
+![Retry flow: a card-shaped question is asked in prose, and the reply's message.content is checked for a parse failure. A reply with none, whether a card, prose, or the wrong shape, gets no retry and no second call. A parse failure, invalid JSON or duplicate keys, is retried with the same question and render_adaptive_card offered. If the model calls the tool, the card arrives as tool arguments, which cannot be malformed JSON. If not, the retry reply's message.content is used. One judge then scores the retry as recovered or not recovered.](article-4-retry-flow.drawio.svg)
 
 The retry exists because declaring the tool on every call costs declines.
 Firing it only on a parse failure leaves the calls prose already answered
@@ -225,10 +211,10 @@ variable. `llama3.2:latest` wedged its runner mid-run and was abandoned rather
 than recorded as failures, so the probe covers fourteen models. The retry
 fires on 99 of their 1,344 prose calls, about one in fourteen.
 
-Only the `invalid JSON` branch reaches the retry. A reply that parses the
-first time is done at the `card rendered` node. Prose answers and wrong
-elements never reach the retry either, and on the prose arm they outnumber
-malformed JSON two to one.
+Only the `parse failure` branch, invalid JSON or duplicate keys, reaches the
+retry. Every other reply ends at the `no retry` node: a card that parsed, a
+prose answer, or a card with the wrong elements. On the prose arm, prose
+answers and wrong elements together outnumber malformed JSON two to one.
 
 The 43 of 99 is a total, and the per-model table below is where the useful
 reading is. It comes from [the retry
