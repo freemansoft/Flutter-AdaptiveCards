@@ -213,7 +213,17 @@ running it:
   in the Blogger editor. The draft keeps the mermaid, which is the editable
   source a later revision edits: articles 3, 4, 6 and 7 are all published with
   images over fences that are still in the tree, and the rendered PNGs are not
-  committed. Do not rewrite a fence as an `<img>`.
+  committed. Do not rewrite a fence as an `<img>` unless the user is moving
+  that diagram to draw.io.
+- **A draw.io SVG is the other diagram source.** Article 4 carries
+  `article-4-*.drawio.svg` files, which render on GitHub and reopen in draw.io
+  for editing. The draft references them as Markdown images; on Blogger the
+  SVG markup is pasted in the HTML view in place of the image token. After
+  that, Blogger's HTML formatter can no longer be used on the post. Each
+  draw.io export makes the background switch to near-black in dark mode,
+  which hides black arrows on GitHub: pin every `light-dark(...)` value to its
+  light colour and set `color-scheme: light` before committing, and redo it
+  after every re-export. The README's "Publishing to Blogger" has the detail.
 - **A committed image is different.** Articles 1 and 2 carry real screenshots
   as `blog-N-<name>.png` beside the drafts, referenced as Markdown images.
   Those are the `src` values `to_blogger.dart` turns into an

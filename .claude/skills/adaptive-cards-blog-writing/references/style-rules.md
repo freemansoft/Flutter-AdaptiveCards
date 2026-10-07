@@ -443,7 +443,9 @@ Habits to cut on sight, all of which survived into first drafts:
   labelled edge per alternative, and say in the node or the lead-in that only
   one is taken. A box with two arrows out reads as a pipeline or a fallback.
 - **Mermaid is for the draft; Blogger needs an image.** Render the fence to a
-  PNG before publishing (see the Publish mode in `SKILL.md`). Articles 1 and 2
+  PNG before publishing (see the Publish mode in `SKILL.md`). A draw.io SVG,
+  as in article 4, serves both: it renders on GitHub and is pasted into
+  Blogger as markup. Articles 1 and 2
   use screenshots from the demo client, saved as `blog-N-<name>.png` beside the
   drafts.
 - **Image and chart placeholders are HTML comments** describing what the visual
