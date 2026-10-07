@@ -151,10 +151,12 @@ Article 4 carries its diagrams as draw.io SVGs instead
 as the editable source. In the HTML view, replace the image's token with the
 SVG markup. Once SVG markup is in the post, Blogger's HTML formatter can no
 longer be used on it. draw.io exports a background that turns near-black in
-dark mode, which hides the black arrows in GitHub's dark theme: pin it to
-white before committing by replacing each `light-dark(<white>, <dark>)` value
-with the white one and setting `color-scheme: light`. Re-exporting from
-draw.io restores the dark background.
+dark mode, which hides the black arrows in GitHub's dark theme. Every
+re-export brings it back, so after saving from draw.io run
+`fvm dart run tool/blog/pin_svg_light.dart` from `adaptive_chat_server_dart/`.
+It replaces each `light-dark(<light>, <dark>)` value with the light one and
+sets `color-scheme: light`. CI runs it with `--check` and fails on a diagram
+that still switches.
 
 ## What each article owns
 
