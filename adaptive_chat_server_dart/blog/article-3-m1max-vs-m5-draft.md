@@ -31,7 +31,8 @@ article does not use.
 | ----------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Probe**                                 | A script in the repository that sends a fixed set of questions to one model and records the replies and their timings. This article names four: the shape probe, the cascade probe, and the everyday and stress probes. "The standard probes" means the whole set a sweep runs against one model, which is larger than those four.                                                                                                                                                                                                                                                                                                                  |
 | **Weights** and the `b` in a model tag    | The weights are the parameter file Ollama loads into memory, and the GB figure in the tables is that file's size. The `b` in a tag such as `granite4.1:8b` counts parameters in billions, which is a different quantity: quantization decides how many bytes each parameter costs, so the three models tagged `:30b` here range from 17.3 GB to 23.7 GB. The GB figure decides fit; the parameter count does not.                                                                                                                                                                                                                                   |
-| **Runner**, **GGUF** and **`nvfp4`**      | Ollama serves each model through a runner process. GGUF builds, which all eight 16 GB candidates are, go to a llama.cpp-based runner, which this article calls the GGUF runner. `nvfp4` in a tag is a 4-bit floating point build.                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| **Runner**, **GGUF** and **`nvfp4`**      | Ollama serves each model through a runner process. GGUF builds, which all eight 16 GB candidates are, go to a llama.cpp-based runner, which this article calls the GGUF runner. Safetensors builds go to Ollama's MLX runner, built on Apple's MLX framework; none of the eight uses it. `nvfp4` in a tag is a 4-bit floating-point build.                                                                                                                                                                                                                                                                                                          |
+| **Memory type**                           | How a model's layers hold the context they have read. An attention model keeps an entry per token, so the GGUF runner can resume from any point in a cached prompt. A recurrent model, one with state-space layers, keeps a running state, and the GGUF runner can resume it only from a saved checkpoint. The notebook reads each model's type from the GGUF runner's load log.                                                                                                                                                                                                                                                                    |
 | **Shape score**, `n/25` (`shape_ab.dart`) | 25 shape cases, one user question each, paired with the Adaptive Card element types (the schema's UI component types, such as `Input.ChoiceSet` or `Table`) that would acceptably answer it. The probe scores each case on one thing: did the reply use one of them? "What are my options for deployment targets" passes only on an `Input.ChoiceSet`. One case inverts the test, wanting prose and failing on a card. The probe runs each case twice and passes it only if both replies used an acceptable type. Re-runs still move a model by about a case. This is shape coverage, not accuracy: a model can be correct in prose and score 1/25. |
 | **Cold start** and **with history**       | The shape probe's two conditions: the question asked first, or asked after two ordinary prose turns already in the conversation. This article never compares a score under one condition with a score under the other, and figures are with-history unless the text says otherwise.                                                                                                                                                                                                                                                                                                                                                                 |
 | **Seeded** and **unaided**                | The demonstration chat server's card-prompt launch targets run seeded: they prepend a synthetic two-turn card exchange to the context. Unaided is the same probe without it. The seed is worth +12 to −3 shape cases depending on the model, so every score here names its configuration.                                                                                                                                                                                                                                                                                                                                                           |
@@ -177,21 +178,27 @@ on every model. On six models that is three to five times its extra prompt time.
 The M5's slowdown sits in the memory-bound phase, which fits its lower
 bandwidth. The compute-bound phase is harder to read.
 
-| Model                     | Reading the prompt, M1 Max | Reading the prompt, M5 | Generating the reply, M1 Max | Generating the reply, M5 |
-| ------------------------- | -------------------------- | ---------------------- | ---------------------------- | ------------------------ |
-| `granite4.1:3b`           | 100                        | 179                    | 930                          | 1266                     |
-| `granite4.1:8b`           | 175                        | 444                    | 2751                         | 3570                     |
-| `llama3-chatqa:8b`        | 116                        | 224                    | n/a                          | n/a                      |
-| `llama3-groq-tool-use:8b` | 156                        | 394                    | 1778                         | 2864                     |
-| `llama3.2:latest`         | 91                         | 138                    | 1236                         | 1379                     |
-| `nemotron-3-nano:4b`      | 1958                       | 1492                   | 1502                         | 2485                     |
-| `qwen2.5-coder:7b`        | 138                        | 400                    | 2165                         | 3547                     |
-| `qwen3.5:9b`              | 3392                       | 4295                   | 2525                         | 4142                     |
+| Model                     | Memory type | Reading the prompt, M1 Max | Reading the prompt, M5 | Generating the reply, M1 Max | Generating the reply, M5 |
+| ------------------------- | ----------- | -------------------------- | ---------------------- | ---------------------------- | ------------------------ |
+| `granite4.1:3b`           | attention   | 100                        | 179                    | 930                          | 1266                     |
+| `granite4.1:8b`           | attention   | 175                        | 444                    | 2751                         | 3570                     |
+| `llama3-chatqa:8b`        | attention   | 116                        | 224                    | n/a                          | n/a                      |
+| `llama3-groq-tool-use:8b` | attention   | 156                        | 394                    | 1778                         | 2864                     |
+| `llama3.2:latest`         | attention   | 91                         | 138                    | 1236                         | 1379                     |
+| `nemotron-3-nano:4b`      | recurrent   | 1958                       | 1492                   | 1502                         | 2485                     |
+| `qwen2.5-coder:7b`        | attention   | 138                        | 400                    | 2165                         | 3547                     |
+| `qwen3.5:9b`              | recurrent   | 3392                       | 4295                   | 2525                         | 4142                     |
 
 Six models read the prompt in 0.1 to 0.4 s on either host. That is consistent
 with Ollama serving most of it from a prompt cache, so they offer little compute
 to compare. `nemotron-3-nano:4b` and `qwen3.5:9b` read the prompt in 1.5 to 4.3
-s instead, consistent with reprocessing all of it. Those two split. The M5 reads `nemotron-3-nano:4b`'s prompt in 1.5 s against
+s instead, consistent with reprocessing much of it. Those two are the recurrent
+models. [The notebook's prompt-cache
+runs](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md#recurrent-memory-models-lose-part-of-a-cached-prefix-on-llama-server-too-the-runner-sets-how-much)
+measured both. Each rolled back to a saved checkpoint on every new
+conversation and reprocessed the last 1,025 tokens of a cached prompt. The six attention models resumed
+from the cached prefix every time. This sweep did not measure cache state, so
+the cause is read from the memory type, not observed. Those two split. The M5 reads `nemotron-3-nano:4b`'s prompt in 1.5 s against
 the M1 Max's 2.0 s. It reads `qwen3.5:9b`'s in 4.3 s against 3.4 s. The newer GPU shows no consistent compute
 advantage here. The prompt figures use the first time each case's prompt was
 sent. The repeat is a cache hit and differs between hosts by under 70 ms.
@@ -232,6 +239,9 @@ measurement here isolates any of them.
   multipliers, not measurements. They hold only if the runtime uses the Neural
   Accelerator in each M5 GPU core. No measurement here shows whether the GGUF
   runner does, and the phase table shows no consistent compute advantage.
+  Apple's figures come from its MLX framework. No MLX-served model was
+  measured on the M5. The two in the notebook's set are 27B builds that do
+  not fit 16 GB.
 - **Achieved bandwidth.** Neither host reaches its rating. If the M1 Max falls
   further short of 400 GB/s than the M5 does of 153 GB/s, the real ratio is
   under 2.61x.
