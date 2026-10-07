@@ -192,7 +192,7 @@ bandwidth. The compute-bound phase is harder to read.
 Six models read the prompt in 0.1 to 0.4 s on either host. That is consistent
 with Ollama serving most of it from a prompt cache, so they offer little compute
 to compare. `nemotron-3-nano:4b` and `qwen3.5:9b` read the prompt in 1.5 to 4.3
-s instead, consistent with reprocessing much of it. Those two are the recurrent
+s instead, consistent with reprocessing about a quarter of it. Those two are the recurrent
 models. [The notebook's prompt-cache
 runs](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md#recurrent-memory-models-lose-part-of-a-cached-prefix-on-llama-server-too-the-runner-sets-how-much)
 measured both. Each rolled back to a saved checkpoint on every new
