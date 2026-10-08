@@ -240,6 +240,12 @@ Then reload the VS Code window so the extension picks up the SDK. This wraps
 `fvm install`; see the `adaptive-cards-dart-flutter-fvm` skill for switching the
 pinned version.
 
+VS Code also runs `fvm install` on folder open through the **Setup FVM SDK**
+task in `.vscode/tasks.json`, once you allow automatic tasks for the folder
+(**Tasks: Manage Automatic Tasks**). On a fresh clone the extension starts
+before that task finishes, so one window reload is still needed. The setup
+script remains the path for other editors and for the pana activation step.
+
 ## Defects
 
 Many!

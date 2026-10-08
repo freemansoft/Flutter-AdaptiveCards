@@ -2,6 +2,20 @@
   "version": "2.0.0",
   "tasks": [
     {
+      "label": "Setup FVM SDK",
+      "detail": "Creates the gitignored .fvm/ links that dart.flutterSdkPath points at, from .fvmrc. Reload the window afterwards if they were missing.",
+      "type": "shell",
+      "command": "fvm install",
+      "runOptions": {
+        "runOn": "folderOpen"
+      },
+      "presentation": {
+        "reveal": "silent",
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
       "label": "Setup pana",
       "detail": "Activates the pinned pana CLI used by the pub-score gate.",
       "type": "shell",
