@@ -56,18 +56,24 @@ They are grouped by the point in a benchmark where each applies. The third
 column says what goes wrong when the check is skipped. The last column names
 the section below that holds the measurement.
 
-| When                              | Rule                                                                                             | What goes wrong without it                                       | Evidence below                                                                               |
-| --------------------------------- | ------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
-| Before a sweep                    | Keep one model resident, and wait for the last one to finish evicting                            | a busy machine's stalls read as a slow model                     | `granite4.1:3b` recorded 52 stalls under Ollama 0.32.14 while another runner was evicting    |
-| Before a sweep                    | Anchor the per-call ceiling to what a user would wait for                                        | a raised ceiling turns fast failures into hour-long ones         | The two calls a long ceiling captured still ended in invalid JSON                            |
-| Reading results                   | Separate queued calls from slow ones before trusting a stall count                               | one runaway generation is recorded as dozens of stalls           | One runaway generation was recorded as many stalls under Ollama 0.33.2                       |
-| Reading results                   | Control sweep position before reading one row's ratio as the effect under test                   | position alone moves a median further than most host differences | Sweep position moved one median by 1.54x                                                     |
-| Reading results                   | Check `prompt_eval_count` for silent truncation before reading any token-level number            | a truncated prompt reads as a broken cache                       | An oversized system prompt is cut short without a warning                                    |
-| After a harness or runtime change | Run a corrective change on every affected row, and confirm in the server log that it took effect | a fix that worked for one model is assumed to work for all       | One model's stalls cleared after the unload was added, under Ollama 0.33.2                   |
-| After a harness or runtime change | List every input that changed before crediting a result to the runtime                           | a prompt edit is read as a runtime fix                           | A runaway cost `granite4.1:3b` one stall, not a cascade, under Ollama 0.34.0                 |
-| When reporting                    | Judge with the detector you ship, and state beside the scores what it cannot see                 | an invented element type would score as a card                   | The probes score with the chat server's card detector, which checks shape and not vocabulary |
+| When                              | Rule                                                                                                 | What goes wrong without it                                       | Evidence below                                                                               |
+| --------------------------------- | ---------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| Before a sweep                    | Keep one model resident, and wait for the last one to finish evicting                                | a busy machine's stalls read as a slow model                     | `granite4.1:3b` recorded 52 stalls under Ollama 0.32.14 while another runner was evicting    |
+| Before a sweep                    | Anchor the per-call ceiling to what a user would wait for                                            | a raised ceiling turns fast failures into hour-long ones         | The two calls a long ceiling captured still ended in invalid JSON                            |
+| Reading results                   | Before blaming the model for a stall count, check whether one runaway call queued the rest behind it | one runaway generation is recorded as dozens of stalls           | One runaway generation was recorded as many stalls under Ollama 0.33.2                       |
+| Reading results                   | Before comparing one model's speed across hosts, measure it at the same point in each sweep          | position alone moves a median further than most host differences | Sweep position moved one median by 1.54x                                                     |
+| Reading results                   | Check `prompt_eval_count` for silent truncation before reading any token-level number                | a truncated prompt reads as a broken cache                       | An oversized system prompt is cut short without a warning                                    |
+| After a harness or runtime change | Run a corrective change on every affected row, and confirm in the server log that it took effect     | a fix that worked for one model is assumed to work for all       | One model's stalls cleared after the unload was added, under Ollama 0.33.2                   |
+| After a harness or runtime change | List every input that changed before crediting a result to the runtime                               | a prompt edit is read as a runtime fix                           | A runtime upgrade would have been credited with a prompt edit's fix                          |
+| When reporting                    | Judge with the detector you ship, and state beside the scores what it cannot see                     | an invented element type would score as a card                   | The probes score with the chat server's card detector, which checks shape and not vocabulary |
 
-## `granite4.1:3b` recorded 52 stalls under Ollama 0.32.14 while another runner was evicting
+## The measurements behind each rule
+
+Each section below holds the measurement behind one rule. The first four
+follow the stall incidents in the order they happened. The other four take the
+remaining rules.
+
+### `granite4.1:3b` recorded 52 stalls under Ollama 0.32.14 while another runner was evicting
 
 _Evidence for: keep one model resident, and wait for the last one to finish
 evicting._
@@ -125,9 +131,10 @@ not have that effect. Across 3,555 calls the slow-but-successful rate was 5.0%
 with the previous model unloaded and 5.1% without, so only the stall counts
 moved.
 
-## One runaway generation was recorded as many stalls under Ollama 0.33.2
+### One runaway generation was recorded as many stalls under Ollama 0.33.2
 
-_Evidence for: separate queued calls from slow ones._
+_Evidence for: before blaming the model for a stall count, check whether one
+runaway call queued the rest behind it._
 
 On 2026-09-01 the wait was in place. A full sweep on the M1 Max under Ollama
 0.33.2 still recorded 52 stalls for `granite4.1:3b`, and **31** for
@@ -169,9 +176,11 @@ sequenceDiagram
 ```
 
 A stall count caused by one runaway generation looks different from one caused
-by a model that is slow on each call. The checks below tell them apart. The
-queue-cascade column is what the 0.33.2 runs showed. The slow-model column is
-the pattern expected, and none of these runs produced it.
+by a model that is slow on each call. Each row below is a check to run on a
+high stall count. The middle column is what the 0.33.2 runs showed when one
+runaway generation queued every later call. The right column is what a model
+that is slow on each call would show instead. None of these runs produced
+it.
 
 | Check                    | Queue cascade, as recorded                          | Slow model, as expected              |
 | ------------------------ | --------------------------------------------------- | ------------------------------------ |
@@ -198,9 +207,10 @@ notebook's
 [cascade section](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md#stalls-are-a-queueing-cascade-not-a-runtime-difference)
 holds the full record for this section and the next two.
 
-## One model's stalls cleared after the unload was added, under Ollama 0.33.2
+### One model's stalls cleared after the unload was added, under Ollama 0.33.2
 
-_Evidence for: confirm in the server log that a harness change took effect._
+_Evidence for: run a corrective change on every affected row, and confirm in
+the server log that it took effect._
 
 The harness was then changed to send an unload (`keep_alive: 0`) the moment a
 call times out, instead of only abandoning the connection. The unload was meant
@@ -260,7 +270,7 @@ The last row is the probe's own disconnect doing the same during a sweep,
 which the next section describes. The generations the 0.33.2 sweep abandoned
 kept running after the probe disconnected. Why they did is still unexplained.
 
-## A runaway cost `granite4.1:3b` one stall, not a cascade, under Ollama 0.34.0
+### A runtime upgrade would have been credited with a prompt edit's fix
 
 _Evidence for: list every input that changed before crediting a result to the
 runtime._
@@ -302,9 +312,9 @@ probe scored 2/3, where the M5 scored 3/3. Its one miss answered turn 1 with
 an `Input.Rating`, the element the prompt edit added. The whole sweep took 8
 minutes, against 124 under 0.33.2.
 
-## The two calls a long ceiling captured still ended in invalid JSON
+### The two calls a long ceiling captured still ended in invalid JSON
 
-_Evidence for: anchor the ceiling to what a user would wait for._
+_Evidence for: anchor the per-call ceiling to what a user would wait for._
 
 Probes bound each call with `--timeout`, which defaults to 180 s. Every sweep
 here used 120 s for the shape and follow-up-edit probes. The notebook treats a
@@ -317,9 +327,10 @@ and it stays a diagnostic. Adopting a long ceiling for every sweep would not
 help. Both long calls still ended in invalid JSON, so the longer wait
 recovered no card. It would turn each fast failure into a slow one.
 
-## Sweep position moved one median by 1.54x
+### Sweep position moved one median by 1.54x
 
-_Evidence for: control sweep position._
+_Evidence for: before comparing one model's speed across hosts, measure it at
+the same point in each sweep._
 
 Every row of a serial sweep is measured at a different point in it. A control
 on the M1 Max under Ollama 0.33.2 re-ran `qwen3.5:9b` at two positions. Cold,
@@ -340,9 +351,10 @@ The notebook's
 [performance section](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md#performance-by-host-and-runtime)
 has all three controls.
 
-## An oversized system prompt is cut short without a warning
+### An oversized system prompt is cut short without a warning
 
-_Evidence for: check `prompt_eval_count` for silent truncation._
+_Evidence for: check `prompt_eval_count` for silent truncation before reading
+any token-level number._
 
 Ollama 0.33.3 reports `prompt_eval_cached_count`, the number of prompt tokens
 the runner served from its prefix cache. The first probe built on it reported
@@ -360,9 +372,10 @@ readings that the prompt-cache article in this series reports. The chat
 server's overflow check now warns at request time, confirmed against a live
 server.
 
-## The probes score with the chat server's card detector, which checks shape and not vocabulary
+### The probes score with the chat server's card detector, which checks shape and not vocabulary
 
-_Evidence for: judge with the detector you ship, and say what it cannot see._
+_Evidence for: judge with the detector you ship, and state beside the scores
+what it cannot see._
 
 The chat server decides whether a model's reply is a card or plain text with
 one function, `tryParseCardBody`. The probes import and call the same function,
@@ -373,8 +386,8 @@ with.
 The diagram shows the three checks a model's reply meets on its way to the
 user, in order, and where the probes attach. Only the first changes where a
 reply goes. The second logs a warning, and the third renders what it cannot
-use as an error placeholder. The diagram shows the chat server's default path, with no
-`format` constraint.
+use as an error placeholder. The diagram shows the chat server's default path,
+with no `format` constraint.
 
 ```mermaid
 flowchart LR
