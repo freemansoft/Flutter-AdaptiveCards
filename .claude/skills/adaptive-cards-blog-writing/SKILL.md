@@ -390,6 +390,9 @@ One line per rule. The section named in parentheses in
 - [ ] Model properties taken from the notebook or a model card, not memory.
 - [ ] Every definition fits every row of the table it labels.
 - [ ] Measured and inferred kept apart; no hedge lost in an edit.
+- [ ] Any figure derived from a server log keys on date-and-time, not clock
+      time alone, and its window is attributed to the right model before
+      anything is quoted from it. Both M5 sweeps cross midnight.
 
 **Names** (Terminology; Describing mechanisms)
 
