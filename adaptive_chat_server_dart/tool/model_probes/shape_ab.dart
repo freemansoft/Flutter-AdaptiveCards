@@ -133,9 +133,11 @@ Future<Set<String>> runCondition({
           ms: outcome.ms,
           toolUsed: outcome.toolUsed,
           // Valid JSON is not a valid card: a type outside the client's
-          // vocabulary parses and then renders as a blank. Recorded per call
-          // so "the reply was a card" and "the card was renderable" stay
-          // separable, which a pass/fail label alone cannot express.
+          // vocabulary parses and then renders as an error placeholder naming
+          // it, not as a blank. Recorded per call so "the reply was a card"
+          // and "the card was renderable" stay separable, which a pass/fail
+          // label alone cannot express. Measured once as of the 0.35.1
+          // sweeps: 12 of 2,278 card-parsed calls, all nemotron-3-nano:4b.
           unknownTypes: unrenderableTypes(outcome.reply, knownTypes),
           timings: outcome.timings,
         ),
@@ -315,6 +317,27 @@ Future<void> main(List<String> argv) async {
   final parsed = parser.parse(argv);
   if (parsed['help'] as bool) {
     stdout.writeln(parser.usage);
+    return;
+  }
+  // This probe takes no positional argument, so anything in `rest` is a
+  // mistyped flag rather than input. Refusing matters because the silent case
+  // is indistinguishable from success: `args` recognises a long option only
+  // when the token matches `--[a-zA-Z\-_0-9]+`, so a flag glued to its value
+  // contains a space, is not an option, becomes a positional, and used to be
+  // dropped. A zsh `"${VAR}"` holding `--baseline <path>` produces exactly
+  // that, because zsh does not word-split by default. On 2026-10-09 it ran a
+  // prompt A/B in which both arms sent the shipped prompt and scored an
+  // identical 15/25, and only the recorded prompt digest revealed it.
+  if (parsed.rest.isNotEmpty) {
+    stderr
+      ..writeln('shape_ab: unrecognised argument(s): ${parsed.rest.join(' ')}')
+      ..writeln(
+        'A flag and its value must be separate arguments: '
+        '--baseline <path>, not "--baseline <path>".',
+      )
+      ..writeln()
+      ..writeln(parser.usage);
+    exitCode = 2;
     return;
   }
   final args = parseProbeArgs([

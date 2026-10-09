@@ -60,7 +60,7 @@ Future<String> unload() async {
     final body = await resp.transform(utf8.decoder).join();
     final reason = (jsonDecode(body) as Map)['done_reason'];
     return 'HTTP ${resp.statusCode}, done_reason=$reason';
-  } catch (e) {
+  } on Object catch (e) {
     return 'failed: $e';
   } finally {
     client.close();
@@ -77,7 +77,7 @@ Future<String> slotProbe(HttpClient client, String label) async {
     final resp = await req.close().timeout(const Duration(seconds: 900));
     await resp.transform(utf8.decoder).join();
     return '$label: ${t.elapsedMilliseconds} ms (HTTP ${resp.statusCode})';
-  } catch (e) {
+  } on Object catch (e) {
     return '$label: ${t.elapsedMilliseconds} ms, failed: $e';
   }
 }
@@ -123,7 +123,7 @@ Future<void> phase(
       'HTTP ${resp.statusCode}, eval_count=${d['eval_count']}, '
       'done_reason=${d['done_reason']}',
     );
-  } catch (e) {
+  } on Object catch (e) {
     stdout.writeln(
       '  long call threw at ${t.elapsedMilliseconds} ms: '
       '${e.runtimeType} ${e.toString().split('\n').first}',
@@ -133,9 +133,10 @@ Future<void> phase(
   if (abort) {
     // The question the probes care about: is the slot usable now?
     final probeClient = freshSlotClient ? HttpClient() : client;
-    stdout.writeln(
-      '  ${await slotProbe(probeClient, freshSlotClient ? "slot probe, fresh client" : "slot probe, same client")}',
-    );
+    final label = freshSlotClient
+        ? 'slot probe, fresh client'
+        : 'slot probe, same client';
+    stdout.writeln('  ${await slotProbe(probeClient, label)}');
     if (freshSlotClient) probeClient.close();
   }
   client.close();
@@ -150,10 +151,17 @@ Future<void> main() async {
   warm.close();
 
   await phase('A baseline, undisturbed');
-  await phase('B abort at 3 s, slot probe on a fresh client',
-      abort: true, freshSlotClient: true);
+  await phase(
+    'B abort at 3 s, slot probe on a fresh client',
+    abort: true,
+    freshSlotClient: true,
+  );
   await phase('C abort at 3 s, slot probe on the same client', abort: true);
   await phase('D unload at 3 s, connection left open', doUnload: true);
-  await phase('E abort at 3 s, unload at 13 s',
-      abort: true, doUnload: true, separated: true);
+  await phase(
+    'E abort at 3 s, unload at 13 s',
+    abort: true,
+    doUnload: true,
+    separated: true,
+  );
 }

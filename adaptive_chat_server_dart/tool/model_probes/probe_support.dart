@@ -115,6 +115,18 @@ ProbeArgs parseProbeArgs(List<String> argv, {int defaultSamples = 3}) {
       stdout.writeln(parser.usage);
       exit(0);
     }
+    // No probe takes a positional argument, so `rest` means a mistyped flag.
+    // `args` recognises a long option only when the token matches
+    // `--[a-zA-Z\-_0-9]+`, so a flag glued to its value is not an option at
+    // all: it becomes a positional and, until this check, was dropped without
+    // a word. See the note in `shape_ab.dart` for the run that cost.
+    if (args.rest.isNotEmpty) {
+      throw FormatException(
+        'unrecognised argument(s): ${args.rest.join(' ')}\n'
+        'A flag and its value must be separate arguments: '
+        '--model <name>, not "--model <name>".',
+      );
+    }
     return ProbeArgs(
       model: args['model'] as String,
       url: args['url'] as String,

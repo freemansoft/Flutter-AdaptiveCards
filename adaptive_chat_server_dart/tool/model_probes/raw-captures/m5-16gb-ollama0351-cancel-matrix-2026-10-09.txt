@@ -1,5 +1,5 @@
 # Does probeOnce's abort() free Ollama's generation slot? M5 / 16 GB, Ollama 0.35.1, 2026-10-09.
-# Produced by m5-16gb-ollama0351-cancel-matrix-2026-10-09.dart. Answers ModelBehavior.md
+# Produced by cancel_matrix_m5_ollama0351_2026_10_09.dart. Answers ModelBehavior.md
 # open question 11, which recorded the probes' Dart abort() against /api/chat as untested.
 model=granite4.1:3b num_predict=1150 num_ctx=16384
 warm-up: load: 1971 ms (HTTP 200)
