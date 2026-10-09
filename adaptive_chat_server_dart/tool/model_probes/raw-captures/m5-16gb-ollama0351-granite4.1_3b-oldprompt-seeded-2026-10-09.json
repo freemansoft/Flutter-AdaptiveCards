@@ -1,0 +1,1599 @@
+{
+  "probe": "shape_ab",
+  "model": "granite4.1:3b",
+  "variant": "seeded",
+  "measuredAt": "2026-10-09",
+  "machine": "Apple M5 / 16 GB",
+  "ollama": "0.35.1",
+  "samples": 2,
+  "temperature": 0.0,
+  "assets": {
+    "card_system_prompt.txt": "4bfa327067f8",
+    "seed_card.json": "4ac746114475"
+  },
+  "summary": {
+    "cases": 25,
+    "coldStart": 18,
+    "withHistory": 16
+  },
+  "calls": [
+    {
+      "case": "date",
+      "sample": 0,
+      "pass": true,
+      "label": "Input.Date",
+      "condition": "cold",
+      "ms": 6213,
+      "unknownTypes": [],
+      "timings": {
+        "promptEvalCount": 3810,
+        "promptEvalNs": 5124238000,
+        "evalCount": 24,
+        "evalNs": 496357000,
+        "loadNs": 546341000
+      }
+    },
+    {
+      "case": "date",
+      "sample": 1,
+      "pass": true,
+      "label": "Input.Date",
+      "condition": "cold",
+      "ms": 549,
+      "unknownTypes": [],
+      "timings": {
+        "promptEvalCount": 3810,
+        "promptEvalNs": 23298000,
+        "evalCount": 24,
+        "evalNs": 491962000,
+        "loadNs": 5279625
+      }
+    },
+    {
+      "case": "time",
+      "sample": 0,
+      "pass": false,
+      "label": "prose",
+      "condition": "cold",
+      "ms": 369,
+      "timings": {
+        "promptEvalCount": 3809,
+        "promptEvalNs": 127183000,
+        "evalCount": 11,
+        "evalNs": 217641000,
+        "loadNs": 2180292
+      }
+    },
+    {
+      "case": "time",
+      "sample": 1,
+      "pass": false,
+      "label": "prose",
+      "condition": "cold",
+      "ms": 263,
+      "timings": {
+        "promptEvalCount": 3809,
+        "promptEvalNs": 22396000,
+        "evalCount": 11,
+        "evalNs": 211883000,
+        "loadNs": 4710500
+      }
+    },
+    {
+      "case": "toggle",
+      "sample": 0,
+      "pass": true,
+      "label": "Input.Toggle",
+      "condition": "cold",
+      "ms": 534,
+      "unknownTypes": [],
+      "timings": {
+        "promptEvalCount": 3807,
+        "promptEvalNs": 118714000,
+        "evalCount": 19,
+        "evalNs": 388859000,
+        "loadNs": 2939375
+      }
+    },
+    {
+      "case": "toggle",
+      "sample": 1,
+      "pass": true,
+      "label": "Input.Toggle",
+      "condition": "cold",
+      "ms": 443,
+      "unknownTypes": [],
+      "timings": {
+        "promptEvalCount": 3807,
+        "promptEvalNs": 22815000,
+        "evalCount": 19,
+        "evalNs": 396810000,
+        "loadNs": 2808917
+      }
+    },
+    {
+      "case": "text",
+      "sample": 0,
+      "pass": true,
+      "label": "Input.Text, TextBlock",
+      "condition": "cold",
+      "ms": 968,
+      "unknownTypes": [],
+      "timings": {
+        "promptEvalCount": 3810,
+        "promptEvalNs": 122138000,
+        "evalCount": 38,
+        "evalNs": 825005000,
+        "loadNs": 3330583
+      }
+    },
+    {
+      "case": "text",
+      "sample": 1,
+      "pass": true,
+      "label": "Input.Text, TextBlock",
+      "condition": "cold",
+      "ms": 929,
+      "unknownTypes": [],
+      "timings": {
+        "promptEvalCount": 3810,
+        "promptEvalNs": 25657000,
+        "evalCount": 41,
+        "evalNs": 884529000,
+        "loadNs": 2366166
+      }
+    },
+    {
+      "case": "number",
+      "sample": 0,
+      "pass": true,
+      "label": "Input.Number",
+      "condition": "cold",
+      "ms": 978,
+      "unknownTypes": [],
+      "timings": {
+        "promptEvalCount": 3809,
+        "promptEvalNs": 120761000,
+        "evalCount": 40,
+        "evalNs": 838038000,
+        "loadNs": 2920167
+      }
+    },
+    {
+      "case": "number",
+      "sample": 1,
+      "pass": true,
+      "label": "Input.Number",
+      "condition": "cold",
+      "ms": 893,
+      "unknownTypes": [],
+      "timings": {
+        "promptEvalCount": 3809,
+        "promptEvalNs": 25485000,
+        "evalCount": 40,
+        "evalNs": 847708000,
+        "loadNs": 1963625
+      }
+    },
+    {
+      "case": "choice1",
+      "sample": 0,
+      "pass": true,
+      "label": "Input.ChoiceSet",
+      "condition": "cold",
+      "ms": 1115,
+      "unknownTypes": [],
+      "timings": {
+        "promptEvalCount": 3806,
+        "promptEvalNs": 117624000,
+        "evalCount": 46,
+        "evalNs": 967369000,
+        "loadNs": 4806125
+      }
+    },
+    {
+      "case": "choice1",
+      "sample": 1,
+      "pass": true,
+      "label": "Input.ChoiceSet",
+      "condition": "cold",
+      "ms": 1022,
+      "unknownTypes": [],
+      "timings": {
+        "promptEvalCount": 3806,
+        "promptEvalNs": 26084000,
+        "evalCount": 46,
+        "evalNs": 975029000,
+        "loadNs": 2671708
+      }
+    },
+    {
+      "case": "choice2",
+      "sample": 0,
+      "pass": true,
+      "label": "Input.ChoiceSet",
+      "condition": "cold",
+      "ms": 1451,
+      "unknownTypes": [],
+      "timings": {
+        "promptEvalCount": 3806,
+        "promptEvalNs": 118697000,
+        "evalCount": 60,
+        "evalNs": 1305338000,
+        "loadNs": 3525333
+      }
+    },
+    {
+      "case": "choice2",
+      "sample": 1,
+      "pass": true,
+      "label": "Input.ChoiceSet, TextBlock",
+      "condition": "cold",
+      "ms": 1827,
+      "unknownTypes": [],
+      "timings": {
+        "promptEvalCount": 3806,
+        "promptEvalNs": 26394000,
+        "evalCount": 81,
+        "evalNs": 1775968000,
+        "loadNs": 3032375
+      }
+    },
+    {
+      "case": "choice3",
+      "sample": 0,
+      "pass": true,
+      "label": "Input.ChoiceSet",
+      "condition": "cold",
+      "ms": 1126,
+      "unknownTypes": [],
+      "timings": {
+        "promptEvalCount": 3806,
+        "promptEvalNs": 119910000,
+        "evalCount": 46,
+        "evalNs": 982342000,
+        "loadNs": 2286416
+      }
+    },
+    {
+      "case": "choice3",
+      "sample": 1,
+      "pass": true,
+      "label": "Input.ChoiceSet",
+      "condition": "cold",
+      "ms": 1038,
+      "unknownTypes": [],
+      "timings": {
+        "promptEvalCount": 3806,
+        "promptEvalNs": 26931000,
+        "evalCount": 46,
+        "evalNs": 985181000,
+        "loadNs": 3122708
+      }
+    },
+    {
+      "case": "choice4",
+      "sample": 0,
+      "pass": true,
+      "label": "Input.ChoiceSet",
+      "condition": "cold",
+      "ms": 1299,
+      "unknownTypes": [],
+      "timings": {
+        "promptEvalCount": 3806,
+        "promptEvalNs": 119699000,
+        "evalCount": 54,
+        "evalNs": 1150422000,
+        "loadNs": 3335167
+      }
+    },
+    {
+      "case": "choice4",
+      "sample": 1,
+      "pass": true,
+      "label": "Input.ChoiceSet",
+      "condition": "cold",
+      "ms": 1198,
+      "unknownTypes": [],
+      "timings": {
+        "promptEvalCount": 3806,
+        "promptEvalNs": 26868000,
+        "evalCount": 54,
+        "evalNs": 1145491000,
+        "loadNs": 3207500
+      }
+    },
+    {
+      "case": "choice5",
+      "sample": 0,
+      "pass": true,
+      "label": "Input.ChoiceSet, TextBlock",
+      "condition": "cold",
+      "ms": 1834,
+      "unknownTypes": [],
+      "timings": {
+        "promptEvalCount": 3805,
+        "promptEvalNs": 119881000,
+        "evalCount": 79,
+        "evalNs": 1686779000,
+        "loadNs": 6443250
+      }
+    },
+    {
+      "case": "choice5",
+      "sample": 1,
+      "pass": true,
+      "label": "Input.ChoiceSet, TextBlock",
+      "condition": "cold",
+      "ms": 1730,
+      "unknownTypes": [],
+      "timings": {
+        "promptEvalCount": 3805,
+        "promptEvalNs": 26472000,
+        "evalCount": 79,
+        "evalNs": 1678917000,
+        "loadNs": 3375167
+      }
+    },
+    {
+      "case": "choice6",
+      "sample": 0,
+      "pass": true,
+      "label": "Input.ChoiceSet",
+      "condition": "cold",
+      "ms": 1584,
+      "unknownTypes": [],
+      "timings": {
+        "promptEvalCount": 3807,
+        "promptEvalNs": 124960000,
+        "evalCount": 67,
+        "evalNs": 1433381000,
+        "loadNs": 3567084
+      }
+    },
+    {
+      "case": "choice6",
+      "sample": 1,
+      "pass": true,
+      "label": "Input.ChoiceSet",
+      "condition": "cold",
+      "ms": 1486,
+      "unknownTypes": [],
+      "timings": {
+        "promptEvalCount": 3807,
+        "promptEvalNs": 26739000,
+        "evalCount": 67,
+        "evalNs": 1433225000,
+        "loadNs": 3007208
+      }
+    },
+    {
+      "case": "pie",
+      "sample": 0,
+      "pass": false,
+      "label": "broken: invalid JSON: FormatException: Unterminated string (at character 184)\n...title\":\"Apple\",\"value\":15},{\"title\":\"Google (Android)\",\"value\":13},{\"title>\n                                                                              ^\n",
+      "condition": "cold",
+      "ms": 1241,
+      "timings": {
+        "promptEvalCount": 3816,
+        "promptEvalNs": 132095000,
+        "evalCount": 51,
+        "evalNs": 1085210000,
+        "loadNs": 2901417
+      }
+    },
+    {
+      "case": "pie",
+      "sample": 1,
+      "pass": false,
+      "label": "broken: invalid JSON: FormatException: Unterminated string (at character 184)\n...title\":\"Apple\",\"value\":15},{\"title\":\"Google (Android)\",\"value\":13},{\"title>\n                                                                              ^\n",
+      "condition": "cold",
+      "ms": 1129,
+      "timings": {
+        "promptEvalCount": 3816,
+        "promptEvalNs": 26169000,
+        "evalCount": 51,
+        "evalNs": 1079800000,
+        "loadNs": 2837583
+      }
+    },
+    {
+      "case": "bar",
+      "sample": 0,
+      "pass": true,
+      "label": "Chart.VerticalBar",
+      "condition": "cold",
+      "ms": 1788,
+      "unknownTypes": [],
+      "timings": {
+        "promptEvalCount": 3811,
+        "promptEvalNs": 136807000,
+        "evalCount": 76,
+        "evalNs": 1627296000,
+        "loadNs": 3025209
+      }
+    },
+    {
+      "case": "bar",
+      "sample": 1,
+      "pass": true,
+      "label": "Chart.VerticalBar",
+      "condition": "cold",
+      "ms": 1679,
+      "unknownTypes": [],
+      "timings": {
+        "promptEvalCount": 3811,
+        "promptEvalNs": 26600000,
+        "evalCount": 76,
+        "evalNs": 1626638000,
+        "loadNs": 3491292
+      }
+    },
+    {
+      "case": "line",
+      "sample": 0,
+      "pass": true,
+      "label": "Chart.Line",
+      "condition": "cold",
+      "ms": 1988,
+      "unknownTypes": [],
+      "timings": {
+        "promptEvalCount": 3810,
+        "promptEvalNs": 132743000,
+        "evalCount": 85,
+        "evalNs": 1829349000,
+        "loadNs": 3505583
+      }
+    },
+    {
+      "case": "line",
+      "sample": 1,
+      "pass": true,
+      "label": "Chart.Line",
+      "condition": "cold",
+      "ms": 1875,
+      "unknownTypes": [],
+      "timings": {
+        "promptEvalCount": 3810,
+        "promptEvalNs": 27059000,
+        "evalCount": 85,
+        "evalNs": 1823448000,
+        "loadNs": 3382958
+      }
+    },
+    {
+      "case": "gauge",
+      "sample": 0,
+      "pass": true,
+      "label": "Chart.Gauge",
+      "condition": "cold",
+      "ms": 1486,
+      "unknownTypes": [],
+      "timings": {
+        "promptEvalCount": 3814,
+        "promptEvalNs": 144622000,
+        "evalCount": 61,
+        "evalNs": 1315060000,
+        "loadNs": 2981041
+      }
+    },
+    {
+      "case": "gauge",
+      "sample": 1,
+      "pass": true,
+      "label": "Chart.Gauge",
+      "condition": "cold",
+      "ms": 1362,
+      "unknownTypes": [],
+      "timings": {
+        "promptEvalCount": 3814,
+        "promptEvalNs": 26267000,
+        "evalCount": 61,
+        "evalNs": 1311528000,
+        "loadNs": 4146291
+      }
+    },
+    {
+      "case": "rating_show",
+      "sample": 0,
+      "pass": true,
+      "label": "Rating",
+      "condition": "cold",
+      "ms": 509,
+      "unknownTypes": [],
+      "timings": {
+        "promptEvalCount": 3817,
+        "promptEvalNs": 133865000,
+        "evalCount": 17,
+        "evalNs": 349070000,
+        "loadNs": 2948125
+      }
+    },
+    {
+      "case": "rating_show",
+      "sample": 1,
+      "pass": true,
+      "label": "Rating",
+      "condition": "cold",
+      "ms": 388,
+      "unknownTypes": [],
+      "timings": {
+        "promptEvalCount": 3817,
+        "promptEvalNs": 22653000,
+        "evalCount": 17,
+        "evalNs": 346618000,
+        "loadNs": 1923167
+      }
+    },
+    {
+      "case": "rating_ask",
+      "sample": 0,
+      "pass": false,
+      "label": "no-input: got {Rating} want {Input.ChoiceSet, Input.Number, Input.Rating}",
+      "condition": "cold",
+      "ms": 711,
+      "unknownTypes": [],
+      "timings": {
+        "promptEvalCount": 3813,
+        "promptEvalNs": 142167000,
+        "evalCount": 26,
+        "evalNs": 545727000,
+        "loadNs": 3001584
+      }
+    },
+    {
+      "case": "rating_ask",
+      "sample": 1,
+      "pass": false,
+      "label": "no-input: got {Rating} want {Input.ChoiceSet, Input.Number, Input.Rating}",
+      "condition": "cold",
+      "ms": 591,
+      "unknownTypes": [],
+      "timings": {
+        "promptEvalCount": 3813,
+        "promptEvalNs": 22783000,
+        "evalCount": 26,
+        "evalNs": 541990000,
+        "loadNs": 3475916
+      }
+    },
+    {
+      "case": "carousel",
+      "sample": 0,
+      "pass": false,
+      "label": "broken: invalid JSON: FormatException: Unexpected end of input (at character 1354)\n....\\n• Set up notifications (email, Slack) for success/failure alerts.\"}] }]}\n                                                                              ^\n",
+      "condition": "cold",
+      "ms": 7777,
+      "timings": {
+        "promptEvalCount": 3817,
+        "promptEvalNs": 132946000,
+        "evalCount": 340,
+        "evalNs": 7618792000,
+        "loadNs": 4126333
+      }
+    },
+    {
+      "case": "carousel",
+      "sample": 1,
+      "pass": false,
+      "label": "broken: invalid JSON: FormatException: Unexpected end of input (at character 1290)\n...he correct timezone‑aware environment (e.g., UTC or local time zone).\"}]}]}\n                                                                              ^\n",
+      "condition": "cold",
+      "ms": 7200,
+      "timings": {
+        "promptEvalCount": 3817,
+        "promptEvalNs": 27137000,
+        "evalCount": 322,
+        "evalNs": 7145879000,
+        "loadNs": 3707875
+      }
+    },
+    {
+      "case": "table",
+      "sample": 0,
+      "pass": false,
+      "label": "broken: invalid JSON: FormatException: Unexpected character (at character 172)\n...k\",\"text\":\"Jupiter\",\"wrap\":true}]}],[{type:\"TableCell\",items:[{type:\"Tex...\n                                       ^\n",
+      "condition": "cold",
+      "ms": 7621,
+      "timings": {
+        "promptEvalCount": 3811,
+        "promptEvalNs": 141235000,
+        "evalCount": 333,
+        "evalNs": 7453882000,
+        "loadNs": 3201917
+      }
+    },
+    {
+      "case": "table",
+      "sample": 1,
+      "pass": false,
+      "label": "broken: invalid JSON: FormatException: Unexpected character (at character 172)\n...k\",\"text\":\"Jupiter\",\"wrap\":true}]}],[{type:\"TableCell\",items:[{type:\"Tex...\n                                       ^\n",
+      "condition": "cold",
+      "ms": 7690,
+      "timings": {
+        "promptEvalCount": 3811,
+        "promptEvalNs": 33296000,
+        "evalCount": 333,
+        "evalNs": 7629005000,
+        "loadNs": 3948125
+      }
+    },
+    {
+      "case": "facts",
+      "sample": 0,
+      "pass": true,
+      "label": "FactSet",
+      "condition": "cold",
+      "ms": 1036,
+      "unknownTypes": [],
+      "timings": {
+        "promptEvalCount": 3812,
+        "promptEvalNs": 159091000,
+        "evalCount": 38,
+        "evalNs": 850473000,
+        "loadNs": 3530250
+      }
+    },
+    {
+      "case": "facts",
+      "sample": 1,
+      "pass": true,
+      "label": "FactSet",
+      "condition": "cold",
+      "ms": 912,
+      "unknownTypes": [],
+      "timings": {
+        "promptEvalCount": 3812,
+        "promptEvalNs": 31718000,
+        "evalCount": 38,
+        "evalNs": 857086000,
+        "loadNs": 2943333
+      }
+    },
+    {
+      "case": "columnset",
+      "sample": 0,
+      "pass": false,
+      "label": "broken: invalid JSON: FormatException: Unexpected end of input (at character 266)\n...TextBlock\",\"text\":\"**Postgres**\\nServer, full SQL support\",\"wrap\":true}]}]}\n                                                                              ^\n",
+      "condition": "cold",
+      "ms": 1922,
+      "timings": {
+        "promptEvalCount": 3808,
+        "promptEvalNs": 142891000,
+        "evalCount": 77,
+        "evalNs": 1757271000,
+        "loadNs": 3305083
+      }
+    },
+    {
+      "case": "columnset",
+      "sample": 1,
+      "pass": false,
+      "label": "broken: invalid JSON: FormatException: Unexpected end of input (at character 266)\n...TextBlock\",\"text\":\"**Postgres**\\nServer, full SQL support\",\"wrap\":true}]}]}\n                                                                              ^\n",
+      "condition": "cold",
+      "ms": 1819,
+      "timings": {
+        "promptEvalCount": 3808,
+        "promptEvalNs": 30142000,
+        "evalCount": 77,
+        "evalNs": 1763658000,
+        "loadNs": 3261875
+      }
+    },
+    {
+      "case": "codeblock",
+      "sample": 0,
+      "pass": true,
+      "label": "CodeBlock, TextBlock",
+      "condition": "cold",
+      "ms": 2741,
+      "unknownTypes": [],
+      "timings": {
+        "promptEvalCount": 3820,
+        "promptEvalNs": 160363000,
+        "evalCount": 112,
+        "evalNs": 2552873000,
+        "loadNs": 5661833
+      }
+    },
+    {
+      "case": "codeblock",
+      "sample": 1,
+      "pass": true,
+      "label": "CodeBlock, TextBlock",
+      "condition": "cold",
+      "ms": 2614,
+      "unknownTypes": [],
+      "timings": {
+        "promptEvalCount": 3820,
+        "promptEvalNs": 30866000,
+        "evalCount": 112,
+        "evalNs": 2558107000,
+        "loadNs": 3553083
+      }
+    },
+    {
+      "case": "progress",
+      "sample": 0,
+      "pass": true,
+      "label": "ProgressBar, TextBlock",
+      "condition": "cold",
+      "ms": 969,
+      "unknownTypes": [],
+      "timings": {
+        "promptEvalCount": 3809,
+        "promptEvalNs": 151309000,
+        "evalCount": 35,
+        "evalNs": 790675000,
+        "loadNs": 3489166
+      }
+    },
+    {
+      "case": "progress",
+      "sample": 1,
+      "pass": true,
+      "label": "ProgressBar, TextBlock",
+      "condition": "cold",
+      "ms": 834,
+      "unknownTypes": [],
+      "timings": {
+        "promptEvalCount": 3809,
+        "promptEvalNs": 29912000,
+        "evalCount": 35,
+        "evalNs": 778280000,
+        "loadNs": 3500125
+      }
+    },
+    {
+      "case": "badge",
+      "sample": 0,
+      "pass": true,
+      "label": "Badge",
+      "condition": "cold",
+      "ms": 500,
+      "unknownTypes": [],
+      "timings": {
+        "promptEvalCount": 3810,
+        "promptEvalNs": 150518000,
+        "evalCount": 15,
+        "evalNs": 321594000,
+        "loadNs": 3562417
+      }
+    },
+    {
+      "case": "badge",
+      "sample": 1,
+      "pass": true,
+      "label": "Badge",
+      "condition": "cold",
+      "ms": 629,
+      "unknownTypes": [],
+      "timings": {
+        "promptEvalCount": 3810,
+        "promptEvalNs": 100894000,
+        "evalCount": 15,
+        "evalNs": 350962000,
+        "loadNs": 2588583
+      }
+    },
+    {
+      "case": "prose",
+      "sample": 0,
+      "pass": false,
+      "label": "unwanted-card: got {TextBlock} want prose",
+      "condition": "cold",
+      "ms": 1138,
+      "unknownTypes": [],
+      "timings": {
+        "promptEvalCount": 3809,
+        "promptEvalNs": 135672000,
+        "evalCount": 41,
+        "evalNs": 978249000,
+        "loadNs": 3078084
+      }
+    },
+    {
+      "case": "prose",
+      "sample": 1,
+      "pass": false,
+      "label": "unwanted-card: got {TextBlock} want prose",
+      "condition": "cold",
+      "ms": 919,
+      "unknownTypes": [],
+      "timings": {
+        "promptEvalCount": 3809,
+        "promptEvalNs": 28208000,
+        "evalCount": 40,
+        "evalNs": 866379000,
+        "loadNs": 2924583
+      }
+    },
+    {
+      "case": "date",
+      "sample": 0,
+      "pass": true,
+      "label": "Input.Date",
+      "condition": "warm",
+      "ms": 465,
+      "unknownTypes": [],
+      "timings": {
+        "promptEvalCount": 3864,
+        "promptEvalNs": 188549000,
+        "evalCount": 12,
+        "evalNs": 252149000,
+        "loadNs": 2736042
+      }
+    },
+    {
+      "case": "date",
+      "sample": 1,
+      "pass": true,
+      "label": "Input.Date",
+      "condition": "warm",
+      "ms": 293,
+      "unknownTypes": [],
+      "timings": {
+        "promptEvalCount": 3864,
+        "promptEvalNs": 27287000,
+        "evalCount": 12,
+        "evalNs": 251187000,
+        "loadNs": 1540500
+      }
+    },
+    {
+      "case": "time",
+      "sample": 0,
+      "pass": false,
+      "label": "wrong-shape: got {Input.Date, TextBlock} want {Input.Time}",
+      "condition": "warm",
+      "ms": 1237,
+      "unknownTypes": [],
+      "timings": {
+        "promptEvalCount": 3863,
+        "promptEvalNs": 155324000,
+        "evalCount": 46,
+        "evalNs": 1055574000,
+        "loadNs": 5863334
+      }
+    },
+    {
+      "case": "time",
+      "sample": 1,
+      "pass": false,
+      "label": "wrong-shape: got {Input.Date, TextBlock} want {Input.Time}",
+      "condition": "warm",
+      "ms": 1076,
+      "unknownTypes": [],
+      "timings": {
+        "promptEvalCount": 3863,
+        "promptEvalNs": 25776000,
+        "evalCount": 46,
+        "evalNs": 1023940000,
+        "loadNs": 3054833
+      }
+    },
+    {
+      "case": "toggle",
+      "sample": 0,
+      "pass": true,
+      "label": "Input.Toggle",
+      "condition": "warm",
+      "ms": 584,
+      "unknownTypes": [],
+      "timings": {
+        "promptEvalCount": 3861,
+        "promptEvalNs": 145456000,
+        "evalCount": 19,
+        "evalNs": 416983000,
+        "loadNs": 2377125
+      }
+    },
+    {
+      "case": "toggle",
+      "sample": 1,
+      "pass": true,
+      "label": "Input.Toggle",
+      "condition": "warm",
+      "ms": 465,
+      "unknownTypes": [],
+      "timings": {
+        "promptEvalCount": 3861,
+        "promptEvalNs": 26024000,
+        "evalCount": 19,
+        "evalNs": 408942000,
+        "loadNs": 4020625
+      }
+    },
+    {
+      "case": "text",
+      "sample": 0,
+      "pass": false,
+      "label": "prose",
+      "condition": "warm",
+      "ms": 379,
+      "timings": {
+        "promptEvalCount": 3864,
+        "promptEvalNs": 146213000,
+        "evalCount": 10,
+        "evalNs": 208163000,
+        "loadNs": 3409667
+      }
+    },
+    {
+      "case": "text",
+      "sample": 1,
+      "pass": false,
+      "label": "prose",
+      "condition": "warm",
+      "ms": 245,
+      "timings": {
+        "promptEvalCount": 3864,
+        "promptEvalNs": 26638000,
+        "evalCount": 10,
+        "evalNs": 205071000,
+        "loadNs": 1110292
+      }
+    },
+    {
+      "case": "number",
+      "sample": 0,
+      "pass": false,
+      "label": "prose",
+      "condition": "warm",
+      "ms": 402,
+      "timings": {
+        "promptEvalCount": 3863,
+        "promptEvalNs": 147567000,
+        "evalCount": 11,
+        "evalNs": 230057000,
+        "loadNs": 3101791
+      }
+    },
+    {
+      "case": "number",
+      "sample": 1,
+      "pass": false,
+      "label": "prose",
+      "condition": "warm",
+      "ms": 266,
+      "timings": {
+        "promptEvalCount": 3863,
+        "promptEvalNs": 26527000,
+        "evalCount": 11,
+        "evalNs": 225473000,
+        "loadNs": 1480750
+      }
+    },
+    {
+      "case": "choice1",
+      "sample": 0,
+      "pass": true,
+      "label": "Input.ChoiceSet",
+      "condition": "warm",
+      "ms": 1205,
+      "unknownTypes": [],
+      "timings": {
+        "promptEvalCount": 3860,
+        "promptEvalNs": 139156000,
+        "evalCount": 46,
+        "evalNs": 1040155000,
+        "loadNs": 2975458
+      }
+    },
+    {
+      "case": "choice1",
+      "sample": 1,
+      "pass": true,
+      "label": "Input.ChoiceSet",
+      "condition": "warm",
+      "ms": 1093,
+      "unknownTypes": [],
+      "timings": {
+        "promptEvalCount": 3860,
+        "promptEvalNs": 27478000,
+        "evalCount": 46,
+        "evalNs": 1040183000,
+        "loadNs": 3048833
+      }
+    },
+    {
+      "case": "choice2",
+      "sample": 0,
+      "pass": true,
+      "label": "Input.ChoiceSet",
+      "condition": "warm",
+      "ms": 1552,
+      "unknownTypes": [],
+      "timings": {
+        "promptEvalCount": 3860,
+        "promptEvalNs": 143933000,
+        "evalCount": 60,
+        "evalNs": 1381981000,
+        "loadNs": 3585542
+      }
+    },
+    {
+      "case": "choice2",
+      "sample": 1,
+      "pass": true,
+      "label": "Input.ChoiceSet",
+      "condition": "warm",
+      "ms": 1443,
+      "unknownTypes": [],
+      "timings": {
+        "promptEvalCount": 3860,
+        "promptEvalNs": 27772000,
+        "evalCount": 60,
+        "evalNs": 1390618000,
+        "loadNs": 3436917
+      }
+    },
+    {
+      "case": "choice3",
+      "sample": 0,
+      "pass": true,
+      "label": "Input.ChoiceSet",
+      "condition": "warm",
+      "ms": 1231,
+      "unknownTypes": [],
+      "timings": {
+        "promptEvalCount": 3860,
+        "promptEvalNs": 146730000,
+        "evalCount": 46,
+        "evalNs": 1058135000,
+        "loadNs": 3947083
+      }
+    },
+    {
+      "case": "choice3",
+      "sample": 1,
+      "pass": true,
+      "label": "Input.ChoiceSet",
+      "condition": "warm",
+      "ms": 1109,
+      "unknownTypes": [],
+      "timings": {
+        "promptEvalCount": 3860,
+        "promptEvalNs": 27238000,
+        "evalCount": 46,
+        "evalNs": 1058285000,
+        "loadNs": 3049833
+      }
+    },
+    {
+      "case": "choice4",
+      "sample": 0,
+      "pass": false,
+      "label": "wrong-shape: got {Input.Toggle} want {Input.ChoiceSet}",
+      "condition": "warm",
+      "ms": 606,
+      "unknownTypes": [],
+      "timings": {
+        "promptEvalCount": 3860,
+        "promptEvalNs": 152168000,
+        "evalCount": 19,
+        "evalNs": 426605000,
+        "loadNs": 3530000
+      }
+    },
+    {
+      "case": "choice4",
+      "sample": 1,
+      "pass": false,
+      "label": "wrong-shape: got {Input.Toggle} want {Input.ChoiceSet}",
+      "condition": "warm",
+      "ms": 495,
+      "unknownTypes": [],
+      "timings": {
+        "promptEvalCount": 3860,
+        "promptEvalNs": 28687000,
+        "evalCount": 19,
+        "evalNs": 438638000,
+        "loadNs": 3397333
+      }
+    },
+    {
+      "case": "choice5",
+      "sample": 0,
+      "pass": true,
+      "label": "Input.ChoiceSet, TextBlock",
+      "condition": "warm",
+      "ms": 2103,
+      "unknownTypes": [],
+      "timings": {
+        "promptEvalCount": 3859,
+        "promptEvalNs": 150573000,
+        "evalCount": 82,
+        "evalNs": 1928282000,
+        "loadNs": 2994042
+      }
+    },
+    {
+      "case": "choice5",
+      "sample": 1,
+      "pass": true,
+      "label": "Input.ChoiceSet, TextBlock",
+      "condition": "warm",
+      "ms": 1999,
+      "unknownTypes": [],
+      "timings": {
+        "promptEvalCount": 3859,
+        "promptEvalNs": 28664000,
+        "evalCount": 82,
+        "evalNs": 1942232000,
+        "loadNs": 3514834
+      }
+    },
+    {
+      "case": "choice6",
+      "sample": 0,
+      "pass": true,
+      "label": "Input.ChoiceSet",
+      "condition": "warm",
+      "ms": 1460,
+      "unknownTypes": [],
+      "timings": {
+        "promptEvalCount": 3861,
+        "promptEvalNs": 163798000,
+        "evalCount": 54,
+        "evalNs": 1267976000,
+        "loadNs": 3577458
+      }
+    },
+    {
+      "case": "choice6",
+      "sample": 1,
+      "pass": true,
+      "label": "Input.ChoiceSet",
+      "condition": "warm",
+      "ms": 1343,
+      "unknownTypes": [],
+      "timings": {
+        "promptEvalCount": 3861,
+        "promptEvalNs": 27540000,
+        "evalCount": 54,
+        "evalNs": 1289763000,
+        "loadNs": 3433834
+      }
+    },
+    {
+      "case": "pie",
+      "sample": 0,
+      "pass": true,
+      "label": "Chart.Pie",
+      "condition": "warm",
+      "ms": 1851,
+      "unknownTypes": [],
+      "timings": {
+        "promptEvalCount": 3870,
+        "promptEvalNs": 176134000,
+        "evalCount": 68,
+        "evalNs": 1649398000,
+        "loadNs": 3458166
+      }
+    },
+    {
+      "case": "pie",
+      "sample": 1,
+      "pass": true,
+      "label": "Chart.Pie",
+      "condition": "warm",
+      "ms": 1725,
+      "unknownTypes": [],
+      "timings": {
+        "promptEvalCount": 3870,
+        "promptEvalNs": 28030000,
+        "evalCount": 70,
+        "evalNs": 1670104000,
+        "loadNs": 3467916
+      }
+    },
+    {
+      "case": "bar",
+      "sample": 0,
+      "pass": true,
+      "label": "Chart.VerticalBar",
+      "condition": "warm",
+      "ms": 1929,
+      "unknownTypes": [],
+      "timings": {
+        "promptEvalCount": 3865,
+        "promptEvalNs": 177356000,
+        "evalCount": 70,
+        "evalNs": 1726961000,
+        "loadNs": 3778250
+      }
+    },
+    {
+      "case": "bar",
+      "sample": 1,
+      "pass": true,
+      "label": "Chart.VerticalBar",
+      "condition": "warm",
+      "ms": 1739,
+      "unknownTypes": [],
+      "timings": {
+        "promptEvalCount": 3865,
+        "promptEvalNs": 28106000,
+        "evalCount": 70,
+        "evalNs": 1684221000,
+        "loadNs": 3570959
+      }
+    },
+    {
+      "case": "line",
+      "sample": 0,
+      "pass": true,
+      "label": "Chart.Line",
+      "condition": "warm",
+      "ms": 2205,
+      "unknownTypes": [],
+      "timings": {
+        "promptEvalCount": 3864,
+        "promptEvalNs": 173385000,
+        "evalCount": 80,
+        "evalNs": 2002201000,
+        "loadNs": 4466791
+      }
+    },
+    {
+      "case": "line",
+      "sample": 1,
+      "pass": true,
+      "label": "Chart.Line",
+      "condition": "warm",
+      "ms": 2025,
+      "unknownTypes": [],
+      "timings": {
+        "promptEvalCount": 3864,
+        "promptEvalNs": 28975000,
+        "evalCount": 80,
+        "evalNs": 1966548000,
+        "loadNs": 4352917
+      }
+    },
+    {
+      "case": "gauge",
+      "sample": 0,
+      "pass": true,
+      "label": "Chart.Gauge",
+      "condition": "warm",
+      "ms": 1735,
+      "unknownTypes": [],
+      "timings": {
+        "promptEvalCount": 3868,
+        "promptEvalNs": 189337000,
+        "evalCount": 61,
+        "evalNs": 1519162000,
+        "loadNs": 3611209
+      }
+    },
+    {
+      "case": "gauge",
+      "sample": 1,
+      "pass": true,
+      "label": "Chart.Gauge",
+      "condition": "warm",
+      "ms": 1587,
+      "unknownTypes": [],
+      "timings": {
+        "promptEvalCount": 3868,
+        "promptEvalNs": 28640000,
+        "evalCount": 61,
+        "evalNs": 1528964000,
+        "loadNs": 4104458
+      }
+    },
+    {
+      "case": "rating_show",
+      "sample": 0,
+      "pass": true,
+      "label": "Rating",
+      "condition": "warm",
+      "ms": 580,
+      "unknownTypes": [],
+      "timings": {
+        "promptEvalCount": 3871,
+        "promptEvalNs": 181156000,
+        "evalCount": 16,
+        "evalNs": 372109000,
+        "loadNs": 3602708
+      }
+    },
+    {
+      "case": "rating_show",
+      "sample": 1,
+      "pass": true,
+      "label": "Rating",
+      "condition": "warm",
+      "ms": 421,
+      "unknownTypes": [],
+      "timings": {
+        "promptEvalCount": 3871,
+        "promptEvalNs": 25998000,
+        "evalCount": 16,
+        "evalNs": 382116000,
+        "loadNs": 1460542
+      }
+    },
+    {
+      "case": "rating_ask",
+      "sample": 0,
+      "pass": false,
+      "label": "no-input: got {Rating} want {Input.ChoiceSet, Input.Number, Input.Rating}",
+      "condition": "warm",
+      "ms": 585,
+      "unknownTypes": [],
+      "timings": {
+        "promptEvalCount": 3867,
+        "promptEvalNs": 198658000,
+        "evalCount": 15,
+        "evalNs": 361747000,
+        "loadNs": 3607334
+      }
+    },
+    {
+      "case": "rating_ask",
+      "sample": 1,
+      "pass": false,
+      "label": "no-input: got {Rating} want {Input.ChoiceSet, Input.Number, Input.Rating}",
+      "condition": "warm",
+      "ms": 406,
+      "unknownTypes": [],
+      "timings": {
+        "promptEvalCount": 3867,
+        "promptEvalNs": 26846000,
+        "evalCount": 15,
+        "evalNs": 367905000,
+        "loadNs": 1298583
+      }
+    },
+    {
+      "case": "carousel",
+      "sample": 0,
+      "pass": true,
+      "label": "Carousel, CarouselPage, TextBlock",
+      "condition": "warm",
+      "ms": 10994,
+      "unknownTypes": [],
+      "timings": {
+        "promptEvalCount": 3871,
+        "promptEvalNs": 185824000,
+        "evalCount": 391,
+        "evalNs": 10797302000,
+        "loadNs": 1259458
+      }
+    },
+    {
+      "case": "carousel",
+      "sample": 1,
+      "pass": false,
+      "label": "broken: invalid JSON: FormatException: Unexpected end of input (at character 410)\n...ile (e.g., `.github/workflows/ci.yml` for GitHub Actions).\",\"wrap\":true}]}]\n                                                                              ^\n",
+      "condition": "warm",
+      "ms": 2745,
+      "timings": {
+        "promptEvalCount": 3871,
+        "promptEvalNs": 33531000,
+        "evalCount": 103,
+        "evalNs": 2686011000,
+        "loadNs": 3341208
+      }
+    },
+    {
+      "case": "table",
+      "sample": 0,
+      "pass": false,
+      "label": "broken: invalid JSON: FormatException: Unexpected character (at character 932)\n...\"Diameter\",\"value\":\"49,244 km\"},{\"title\":\"Moons\",\"value\":\"27 known\"}]}]}]}}\n                                                                             ^\n",
+      "condition": "warm",
+      "ms": 7006,
+      "timings": {
+        "promptEvalCount": 3865,
+        "promptEvalNs": 190021000,
+        "evalCount": 256,
+        "evalNs": 6790857000,
+        "loadNs": 3625500
+      }
+    },
+    {
+      "case": "table",
+      "sample": 1,
+      "pass": false,
+      "label": "broken: invalid JSON: FormatException: Unexpected character (at character 932)\n...\"Diameter\",\"value\":\"49,244 km\"},{\"title\":\"Moons\",\"value\":\"27 known\"}]}]}]}}\n                                                                             ^\n",
+      "condition": "warm",
+      "ms": 6866,
+      "timings": {
+        "promptEvalCount": 3865,
+        "promptEvalNs": 34013000,
+        "evalCount": 256,
+        "evalNs": 6810528000,
+        "loadNs": 2589500
+      }
+    },
+    {
+      "case": "facts",
+      "sample": 0,
+      "pass": false,
+      "label": "broken: invalid JSON: FormatException: Unexpected character (at character 137)\n...oMotion, 2400\\u00d72400 resolution\"}},{\"title\":\"Processor\",\"value\":\"Appl...\n                                       ^\n",
+      "condition": "warm",
+      "ms": 10796,
+      "timings": {
+        "promptEvalCount": 3866,
+        "promptEvalNs": 188485000,
+        "evalCount": 382,
+        "evalNs": 10579866000,
+        "loadNs": 3345667
+      }
+    },
+    {
+      "case": "facts",
+      "sample": 1,
+      "pass": false,
+      "label": "broken: invalid JSON: FormatException: Unexpected character (at character 136)\n...roMotion, 1440\\u00d7640 resolution\"}},{\"title\":\"Processor\",\"value\":\"Appl...\n                                       ^\n",
+      "condition": "warm",
+      "ms": 9881,
+      "timings": {
+        "promptEvalCount": 3866,
+        "promptEvalNs": 35405000,
+        "evalCount": 364,
+        "evalNs": 9817369000,
+        "loadNs": 3769916
+      }
+    },
+    {
+      "case": "columnset",
+      "sample": 0,
+      "pass": false,
+      "label": "broken: invalid JSON: FormatException: Unexpected end of input (at character 266)\n...TextBlock\",\"text\":\"**Postgres**\\nServer, full SQL support\",\"wrap\":true}]}]}\n                                                                              ^\n",
+      "condition": "warm",
+      "ms": 2375,
+      "timings": {
+        "promptEvalCount": 3862,
+        "promptEvalNs": 173147000,
+        "evalCount": 77,
+        "evalNs": 2178978000,
+        "loadNs": 3571833
+      }
+    },
+    {
+      "case": "columnset",
+      "sample": 1,
+      "pass": true,
+      "label": "Column, ColumnSet, TextBlock",
+      "condition": "warm",
+      "ms": 2214,
+      "unknownTypes": [],
+      "timings": {
+        "promptEvalCount": 3862,
+        "promptEvalNs": 33961000,
+        "evalCount": 78,
+        "evalNs": 2165370000,
+        "loadNs": 1965916
+      }
+    },
+    {
+      "case": "codeblock",
+      "sample": 0,
+      "pass": true,
+      "label": "CodeBlock, TextBlock",
+      "condition": "warm",
+      "ms": 4198,
+      "unknownTypes": [],
+      "timings": {
+        "promptEvalCount": 3874,
+        "promptEvalNs": 193469000,
+        "evalCount": 140,
+        "evalNs": 3977953000,
+        "loadNs": 3657833
+      }
+    },
+    {
+      "case": "codeblock",
+      "sample": 1,
+      "pass": true,
+      "label": "CodeBlock, TextBlock",
+      "condition": "warm",
+      "ms": 3028,
+      "unknownTypes": [],
+      "timings": {
+        "promptEvalCount": 3874,
+        "promptEvalNs": 30764000,
+        "evalCount": 112,
+        "evalNs": 2976612000,
+        "loadNs": 2802125
+      }
+    },
+    {
+      "case": "progress",
+      "sample": 0,
+      "pass": true,
+      "label": "ProgressBar, TextBlock",
+      "condition": "warm",
+      "ms": 984,
+      "unknownTypes": [],
+      "timings": {
+        "promptEvalCount": 3863,
+        "promptEvalNs": 185138000,
+        "evalCount": 30,
+        "evalNs": 770285000,
+        "loadNs": 4610000
+      }
+    },
+    {
+      "case": "progress",
+      "sample": 1,
+      "pass": true,
+      "label": "ProgressBar, TextBlock",
+      "condition": "warm",
+      "ms": 890,
+      "unknownTypes": [],
+      "timings": {
+        "promptEvalCount": 3863,
+        "promptEvalNs": 30692000,
+        "evalCount": 30,
+        "evalNs": 846259000,
+        "loadNs": 1515167
+      }
+    },
+    {
+      "case": "badge",
+      "sample": 0,
+      "pass": true,
+      "label": "Badge",
+      "condition": "warm",
+      "ms": 729,
+      "unknownTypes": [],
+      "timings": {
+        "promptEvalCount": 3864,
+        "promptEvalNs": 226971000,
+        "evalCount": 17,
+        "evalNs": 490966000,
+        "loadNs": 1236917
+      }
+    },
+    {
+      "case": "badge",
+      "sample": 1,
+      "pass": true,
+      "label": "Badge",
+      "condition": "warm",
+      "ms": 497,
+      "unknownTypes": [],
+      "timings": {
+        "promptEvalCount": 3864,
+        "promptEvalNs": 29719000,
+        "evalCount": 17,
+        "evalNs": 455501000,
+        "loadNs": 1358166
+      }
+    },
+    {
+      "case": "prose",
+      "sample": 0,
+      "pass": true,
+      "label": "prose-ok",
+      "condition": "warm",
+      "ms": 1586,
+      "timings": {
+        "promptEvalCount": 3863,
+        "promptEvalNs": 195949000,
+        "evalCount": 50,
+        "evalNs": 1379783000,
+        "loadNs": 1223167
+      }
+    },
+    {
+      "case": "prose",
+      "sample": 1,
+      "pass": true,
+      "label": "prose-ok",
+      "condition": "warm",
+      "ms": 1473,
+      "timings": {
+        "promptEvalCount": 3863,
+        "promptEvalNs": 29689000,
+        "evalCount": 50,
+        "evalNs": 1432389000,
+        "loadNs": 1252875
+      }
+    }
+  ]
+}
