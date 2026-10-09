@@ -1,0 +1,144 @@
+{
+  "probe": "shape_ab",
+  "model": "granite4.1:3b",
+  "variant": "unaided",
+  "measuredAt": "2026-10-09",
+  "machine": "Apple M5 / 16 GB",
+  "ollama": "0.35.1",
+  "samples": 2,
+  "temperature": 0.0,
+  "assets": {
+    "card_system_prompt.txt": "8cbfde243266",
+    "seed_card.json": "4ac746114475"
+  },
+  "summary": {
+    "cases": 2,
+    "coldStart": 0,
+    "withHistory": 1
+  },
+  "calls": [
+    {
+      "case": "facts",
+      "sample": 0,
+      "pass": false,
+      "label": "prose",
+      "condition": "cold",
+      "ms": 15420,
+      "timings": {
+        "promptEvalCount": 3824,
+        "promptEvalNs": 4767489000,
+        "evalCount": 393,
+        "evalNs": 8791070000,
+        "loadNs": 1806392208
+      }
+    },
+    {
+      "case": "facts",
+      "sample": 1,
+      "pass": false,
+      "label": "prose",
+      "condition": "cold",
+      "ms": 6870,
+      "timings": {
+        "promptEvalCount": 3824,
+        "promptEvalNs": 27972000,
+        "evalCount": 305,
+        "evalNs": 6809305000,
+        "loadNs": 6263542
+      }
+    },
+    {
+      "case": "columnset",
+      "sample": 0,
+      "pass": false,
+      "label": "broken: invalid JSON: FormatException: Unexpected character (at character 144)\n...Embedded, zero setup\",\"wrap\":true}]}},{\"type\":\"Column\",\"width\":1,\"items\"...\n                                       ^\n",
+      "condition": "cold",
+      "ms": 1964,
+      "timings": {
+        "promptEvalCount": 3820,
+        "promptEvalNs": 126889000,
+        "evalCount": 77,
+        "evalNs": 1807701000,
+        "loadNs": 3531042
+      }
+    },
+    {
+      "case": "columnset",
+      "sample": 1,
+      "pass": true,
+      "label": "Column, ColumnSet, TextBlock",
+      "condition": "cold",
+      "ms": 1743,
+      "unknownTypes": [],
+      "timings": {
+        "promptEvalCount": 3820,
+        "promptEvalNs": 29519000,
+        "evalCount": 75,
+        "evalNs": 1688996000,
+        "loadNs": 3013458
+      }
+    },
+    {
+      "case": "facts",
+      "sample": 0,
+      "pass": false,
+      "label": "prose",
+      "condition": "warm",
+      "ms": 9982,
+      "timings": {
+        "promptEvalCount": 3878,
+        "promptEvalNs": 165404000,
+        "evalCount": 421,
+        "evalNs": 9789777000,
+        "loadNs": 3477125
+      }
+    },
+    {
+      "case": "facts",
+      "sample": 1,
+      "pass": false,
+      "label": "prose",
+      "condition": "warm",
+      "ms": 10040,
+      "timings": {
+        "promptEvalCount": 3878,
+        "promptEvalNs": 27306000,
+        "evalCount": 433,
+        "evalNs": 9987544000,
+        "loadNs": 3068333
+      }
+    },
+    {
+      "case": "columnset",
+      "sample": 0,
+      "pass": true,
+      "label": "Badge, Column, ColumnSet, TextBlock",
+      "condition": "warm",
+      "ms": 4210,
+      "unknownTypes": [],
+      "timings": {
+        "promptEvalCount": 3874,
+        "promptEvalNs": 124421000,
+        "evalCount": 184,
+        "evalNs": 4059175000,
+        "loadNs": 3723584
+      }
+    },
+    {
+      "case": "columnset",
+      "sample": 1,
+      "pass": true,
+      "label": "Badge, Column, ColumnSet, TextBlock",
+      "condition": "warm",
+      "ms": 4098,
+      "unknownTypes": [],
+      "timings": {
+        "promptEvalCount": 3874,
+        "promptEvalNs": 23466000,
+        "evalCount": 184,
+        "evalNs": 4049457000,
+        "loadNs": 3242250
+      }
+    }
+  ]
+}

@@ -73,6 +73,26 @@ mechanism, a default, a flag, or a model is a claim the article vouches for.
   way a figure does, and those claims are the ones a check by numeric token
   misses. One review of article 5 found four unsourced figures by checking
   numbers; the other found a fifth, a sentence about what a server log showed.
+- **A duration or a window derived from a server log needs its date, not just
+  its clock time.** Ollama's request lines carry the two in separate fields
+  (`[GIN] 2026/10/04 - 02:17:01`), so an analysis that parses only `HH:MM:SS`
+  treats a window running 23:21 to 00:07 as though it ran backwards. That
+  returned zero requests for one model's window in the M5 sweep, and it was
+  caught only because zero was obviously wrong rather than quietly plausible;
+  a window that merely loses its first hour looks like a result. Both M5
+  sweeps cross midnight. Key on date-and-time or on seconds from a fixed
+  origin, and treat any figure derived by correlating an archive against a log
+  as needing that check before it reaches a draft. Figures the archive already
+  holds are safe: `perf_table.py` sums each call's recorded `ms` and reads no
+  clock.
+- **Attribute a log window to a model before quoting what it contains.** The
+  per-model windows in a sweep log are bounded by model-load lines, which fire
+  only on a load, so a window can extend well past the probes that belong to
+  it. A first pass at article 5's material quoted one model's queue drain,
+  timestamps and durations included, as another model's, because both windows
+  carried the same signature. Check that the window's request count and
+  summed duration match what that model's archive recorded before reading
+  anything out of it.
 - **Report a confirmed narrow hypothesis as confirmed, and the net result
   separately.** Malformed JSON going to zero was the expected effect and it
   held. Four losses were a separate result. Neither makes the channel "a bust"
