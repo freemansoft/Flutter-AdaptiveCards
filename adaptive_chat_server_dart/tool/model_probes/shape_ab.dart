@@ -352,11 +352,13 @@ Future<void> main(List<String> argv) async {
   final cardTool = renderCardTool(loadCardSchema());
   // Flat alternating user/assistant contents, the shape `probeOnce` replays
   // history in. Populated unless --no-seed-card opted out of the seed.
+  // Hoisted so the digest block below can read the file this run actually
+  // sent rather than the one sharing its basename in the assets directory.
+  final seedCardPath =
+      parsed['seed-card-file'] as String? ?? defaultSeedCardPath();
   final seedTurns = <String>[
     if (parsed['seed-card'] as bool)
-      ...loadSeedCardMessages(
-        parsed['seed-card-file'] as String? ?? defaultSeedCardPath(),
-      ).map((m) => m.content),
+      ...loadSeedCardMessages(seedCardPath).map((m) => m.content),
   ];
   if ((parsed['seed-card'] as bool) && seedTurns.isEmpty) {
     stderr.writeln(
@@ -457,12 +459,15 @@ Future<void> main(List<String> argv) async {
       ollama: detectOllamaVersion(),
       samples: args.samples,
       temperature: 0,
-      assets: currentAssetDigests(
-        probeAssetsDir(),
-        assetNames: channel == 'tool'
-            ? [p.basename(baselinePath)]
-            : defaultProbeAssetNames,
-      ),
+      // Digested from the paths this run read, not by basename out of the
+      // assets directory, so a `--baseline` or `--seed-card-file` pointed
+      // outside the tree records what it sent. The prose channel keeps both
+      // entries whether or not the seed was opted out, which is the shape
+      // every archived run carries.
+      assets: assetDigestsOfFiles([
+        baselinePath,
+        if (channel != 'tool') seedCardPath,
+      ]),
       summary: {
         'cases': cases.length,
         'coldStart': shapes(cold),

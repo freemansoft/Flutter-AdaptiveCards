@@ -1,0 +1,39 @@
+# Does probeOnce's abort() free Ollama's generation slot? M5 / 16 GB, Ollama 0.35.1, 2026-10-09.
+# Produced by m5-16gb-ollama0351-cancel-matrix-2026-10-09.dart. Answers ModelBehavior.md
+# open question 11, which recorded the probes' Dart abort() against /api/chat as untested.
+model=granite4.1:3b num_predict=1150 num_ctx=16384
+warm-up: load: 1971 ms (HTTP 200)
+
+--- A baseline, undisturbed ---
+  long call returned at 16687 ms, HTTP 200, eval_count=858, done_reason=stop
+--- B abort at 3 s, slot probe on a fresh client ---
+  t=3006 ms  abort() called
+  long call threw at 3007 ms: HttpException: Request has been aborted
+  slot probe, fresh client: 59 ms (HTTP 200)
+--- C abort at 3 s, slot probe on the same client ---
+  t=3003 ms  abort() called
+  long call threw at 3003 ms: HttpException: Request has been aborted
+  slot probe, same client: 68 ms (HTTP 200)
+--- D unload at 3 s, connection left open ---
+  t=3007 ms  unload -> HTTP 200, done_reason=unload
+  long call returned at 16506 ms, HTTP 200, eval_count=858, done_reason=stop
+--- E abort at 3 s, unload at 13 s ---
+  t=3004 ms  abort() called
+  long call threw at 3004 ms: HttpException: Request has been aborted
+  slot probe, same client: 113 ms (HTTP 200)
+  t=13016 ms  unload -> HTTP 200, done_reason=unload
+
+Server log for the same window:
+  07:38:28 | 200 | 16.672793875s | POST /api/chat     (A)
+  07:38:31 | 500 |  3.005412416s | POST /api/chat     (B abort)
+  07:38:31 | 200 |   57.484125ms | POST /api/chat     (B slot probe)
+  07:38:34 | 500 |    3.0020205s | POST /api/chat     (C abort)
+  07:38:34 | 200 |   67.507125ms | POST /api/chat     (C slot probe)
+  07:38:37 | 200 |    2.191459ms | POST /api/generate (D unload, a no-op)
+  07:38:51 | 200 | 16.503936459s | POST /api/chat     (D ran to completion)
+  07:38:54 | 500 |  3.003097125s | POST /api/chat     (E abort)
+  07:38:54 | 200 |  111.868833ms | POST /api/chat     (E slot probe)
+  07:39:04 | 200 |    8.575292ms | POST /api/generate (E unload, after the fact)
+
+Reading: the disconnect ends the generation and frees the slot; the unload does not.
+Connection reuse is not a factor (59 ms fresh vs 68 ms reused).

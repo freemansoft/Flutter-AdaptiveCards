@@ -72,18 +72,109 @@ MODELS=(
 )
 [[ $# -gt 0 ]] && MODELS=("$@")
 
+# Ollama's own log, sliced per model into the results directory.
+#
+# A stall count is a client-side figure: the probe records what it waited for,
+# not what the server did with the request it abandoned. The two can disagree
+# by an order of magnitude. In the 2026-10-03 M5 sweep `llama3.2:latest`
+# recorded 4 stalls while its server window held 32 requests terminating at a
+# ceiling and 13 queued for up to 104 minutes, and reading that back was luck:
+# the log happened not to have rotated. Archiving the slice with the run makes
+# the server side a recorded fact rather than a later reconstruction.
+#
+# The path is not guessable across installs -- Homebrew's service and the macOS
+# app log to different files, and a hand-started `ollama serve` to neither -- so
+# the known locations are tried in order and SWEEP_SERVER_LOG overrides. A
+# missing log warns and disables slicing; it must not fail a sweep, because the
+# measurements are still good without it.
+if [[ -z ${SWEEP_SERVER_LOG:-} ]]; then
+  for candidate in /opt/homebrew/var/log/ollama.log \
+    /usr/local/var/log/ollama.log "$HOME/.ollama/logs/server.log"; do
+    if [[ -r $candidate ]]; then
+      SWEEP_SERVER_LOG=$candidate
+      break
+    fi
+  done
+fi
+if [[ -n ${SWEEP_SERVER_LOG:-} && -r ${SWEEP_SERVER_LOG:-} ]]; then
+  echo ">>> server log $SWEEP_SERVER_LOG"
+else
+  echo ">>> WARN no readable Ollama log; set SWEEP_SERVER_LOG to archive slices"
+  SWEEP_SERVER_LOG=
+fi
+# 95% of the log is per-token ggml and llama-server chatter with no bearing on
+# a stall. Keeping the request lines and the server's own INFO lines takes a
+# model's window from megabytes to tens of kilobytes, which is a size the
+# archive can carry. SWEEP_LOG_FULL=1 keeps everything for a diagnostic run.
+LOG_KEEP=${SWEEP_LOG_KEEP:-'^\[GIN\]|^time='}
+if [[ ${SWEEP_LOG_FULL:-0} == 1 ]]; then
+  LOG_KEEP='.'
+fi
+
+# Line count of the server log now, or empty if there is no log to slice.
+log_mark() {
+  [[ -n $SWEEP_SERVER_LOG ]] && wc -l <"$SWEEP_SERVER_LOG" | tr -d ' '
+}
+
+# Write the server log written since `mark` into this model's directory.
+#
+# Takes the whole file if the log rotated under us, since line offsets into a
+# replaced file address the wrong lines, and says so in the header so a reader
+# never mistakes a truncated slice for a complete one.
+write_log_slice() {
+  local mark=$1 dest=$2 now note
+  [[ -z $SWEEP_SERVER_LOG || -z $mark ]] && return
+  now=$(log_mark)
+  note="lines $((mark + 1))-$now of $SWEEP_SERVER_LOG"
+  if (( now < mark )); then
+    mark=0
+    note="whole file; it rotated during this model, so the window is not bounded"
+  fi
+  {
+    echo "# Ollama server log slice for $M, $(date -Iseconds)"
+    echo "# $note"
+    echo "# filter: $LOG_KEEP"
+    sed -n "$((mark + 1)),\$p" "$SWEEP_SERVER_LOG" | LC_ALL=C grep -aE "$LOG_KEEP"
+  } >"$dest"
+  echo ">>> log slice $(wc -l <"$dest" | tr -d ' ') lines -> $dest"
+}
+
 slug() { print -r -- "${1//\//__}" | sed 's/:/_/g'; }
+
+# Ollama's HTTP endpoint, for the residency check below.
+OLLAMA_URL=${OLLAMA_PROBE_URL:-http://127.0.0.1:11434}
+
+# Models Ollama currently holds in memory, one name per line; empty when idle.
+#
+# Asks `/api/ps` rather than running `ollama ps`. Measured 2026-10-09 on
+# Ollama 0.35.1: while a runner sat wedged in `Stopping...` after an aborted
+# runaway generation, one `ollama ps` invocation blocked for about 17 minutes
+# while the same question over HTTP answered in milliseconds. The CLI defeats
+# the bound in `wait_for_idle` rather than tripping it, because the hang
+# happens inside the call the loop is waiting on instead of between
+# iterations.
+#
+# An unreachable server reads as idle, which is the same answer the CLI gave
+# and the right one here: a sweep that cannot reach Ollama has a louder
+# problem than residency, and every probe reports it through its own timeout.
+resident_models() {
+  curl -s -m 5 "$OLLAMA_URL/api/ps" 2>/dev/null |
+    grep -o '"name":"[^"]*"' | sed 's/"name":"//;s/"$//'
+}
 
 # Block until Ollama reports nothing resident.
 #
 # `ollama stop` returns immediately and the model evicts in the background, so
 # without this the next probe's first calls race the eviction and are timed
-# against a busy GPU. Bounded so a wedged runner cannot hang the sweep.
+# against a busy GPU. Bounded so a wedged runner cannot hang the sweep -- and a
+# wedged runner is not hypothetical: an aborted runaway leaves one holding the
+# slot at 30% to 130% CPU, where an acknowledged `keep_alive: 0` unload does
+# not clear it.
 wait_for_idle() {
   local waited=0
-  while ollama ps 2>/dev/null | tail -n +2 | grep -q .; do
+  while [[ -n $(resident_models) ]]; do
     if (( waited >= 120 )); then
-      echo ">>> WARN still resident after ${waited}s: $(ollama ps | tail -n +2 | awk '{print $1, $NF}' | tr '\n' ' ')"
+      echo ">>> WARN still resident after ${waited}s: $(resident_models | tr '\n' ' ')"
       return
     fi
     sleep 2
@@ -121,6 +212,9 @@ for M in $MODELS; do
     echo ">>> COOLDOWN ${COOLDOWN}s $(date +%T)"
     sleep "$COOLDOWN"
   fi
+  # Marked after the cooldown so the slice covers this model's requests and
+  # not the previous model's eviction.
+  LOG_MARK=$(log_mark)
   run "$M json_format" "$D/json_format_probe.json" \
     tool/model_probes/json_format_probe.dart --model "$M" --samples 2
   run "$M tool_call" "$D/tool_call_probe.json" \
@@ -153,6 +247,9 @@ for M in $MODELS; do
     tool/model_probes/cascade_ab.dart --model "$M" --samples 2 --timeout 120
   ollama stop "$M" >/dev/null 2>&1
   wait_for_idle
+  # Written after the eviction so the slice carries it: a runner that does not
+  # reap is itself a stall cause, and that shows in the log and nowhere else.
+  write_log_slice "$LOG_MARK" "$D/server-log-slice.txt"
   echo "##### MODEL $M COMPLETE $(date +%T) #####"
 done
 echo "##### SWEEP COMPLETE $(date +%T) #####"

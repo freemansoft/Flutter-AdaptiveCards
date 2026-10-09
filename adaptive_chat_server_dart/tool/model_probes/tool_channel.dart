@@ -161,8 +161,18 @@ Future<ProbeOutcome> probeOnceViaTool({
     rawBody = await response.transform(utf8.decoder).join().timeout(timeout);
   } on TimeoutException {
     // abort() is what makes the bound real: without it a timed-out request
-    // keeps its connection and a handful of them exhausts the pool.
+    // keeps its connection and a handful of them exhausts the pool. Measured
+    // on Ollama 0.35.1: the abort ends the request server-side at the moment
+    // it fires and the generation slot is usable again within 70 ms.
     request.abort();
+    // Matches `probeOnce`, which has evicted on timeout since 2026-09-02.
+    // Without it a stalled tool-channel call left the weights resident, and on
+    // a 16 GB host that is the next model's fit rather than a tidiness
+    // question. The unload does not cancel a generation -- on 0.35.1 one sent
+    // 3 s into an 18 s generation is acknowledged in 2 ms and the generation
+    // still emits every token -- so this frees memory after the abort rather
+    // than doing the cancelling.
+    await evictModel(url, model);
     return timedOut();
   }
   final ms = DateTime.now().difference(started).inMilliseconds;

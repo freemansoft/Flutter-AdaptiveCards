@@ -329,6 +329,7 @@ List<Map<String, String>> buildProbeMessages({
 /// failure is written to stderr as one line naming the model and otherwise
 /// ignored.
 Future<void> evictModel(String url, String model) async {
+  final started = DateTime.now();
   final client = HttpClient();
   try {
     final req = await client
@@ -341,7 +342,26 @@ Future<void> evictModel(String url, String model) async {
   } on Object catch (e) {
     stderr.writeln('evictModel: unload of $model failed: $e');
   } finally {
-    client.close();
+    // force, because the default close() keeps the client alive until every
+    // active connection finishes and a timed-out unload above leaves one
+    // active. One leaked per timed-out call is how a probe ends up holding
+    // sockets it will never read: a 2026-10-09 M5 run sat for 3h01m on 1.49 s
+    // of CPU -- blocked rather than slow -- having taken this path 50 times,
+    // and Ollama logged no request at all through 100 minutes of it. Nothing
+    // here is worth waiting on; the reply is drained above or already lost.
+    client.close(force: true);
+  }
+  // Time spent here lands inside a call that was already scored a timeout, so
+  // it inflates the run's wall clock without producing a measurement. Saying
+  // so on stderr is what makes the difference between a stall count and the
+  // server-side request count attributable rather than a discrepancy found
+  // afterwards in a log that may have rotated.
+  final ms = DateTime.now().difference(started).inMilliseconds;
+  if (ms > 5000) {
+    stderr.writeln(
+      'evictModel: unload of $model took ${ms}ms of harness time after a '
+      'timeout; this call reached no model and earned no figure.',
+    );
   }
 }
 
