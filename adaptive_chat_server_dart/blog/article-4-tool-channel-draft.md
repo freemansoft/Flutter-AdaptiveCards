@@ -1,4 +1,4 @@
-# Ollama's tool channel beats prose for card JSON on every model that calls it
+# A function that never runs: Ollama's tool channel as structured output for card JSON
 
 In
 [`freemansoft/Flutter-AdaptiveCards`](https://github.com/freemansoft/Flutter-AdaptiveCards)
@@ -16,6 +16,14 @@ to give the model a schema to answer into. When the model uses it, the card
 arrives in `message.tool_calls[0].function.arguments`. Ollama has already
 decoded it into a JSON object, so there is no text for the chat server to
 parse.
+
+Ollama has its own structured-output feature, the `format` parameter, which
+asks for the reply as JSON or as JSON matching a schema.
+[An earlier article in this series](https://joe.blog.freemansoft.com/2026/09/we-tried-14-levers-to-get-reliable-card.html)
+left it out of the chat server. Some models honor it, some ignore it without
+saying so, and `gpt-oss:20b` returned an empty body under `json`. Declaring a
+function that never runs is a second route to a structured reply, on the models
+that support tool calling.
 
 ![The two arms: a card-shaped question goes to either the prose arm or the tool arm. On the prose arm, card JSON comes back as text in message.content and is parsed, so it can be malformed JSON. On the tool arm, render_adaptive_card is declared and the model either calls it or declines. A call delivers already-decoded JSON in message.tool_calls[0].function.arguments, which is converted back to a string. A decline returns card JSON or prose in message.content, which is parsed like the prose arm. One judge scores both arms.](article-4-arms-flow.drawio.svg)
 
@@ -87,38 +95,48 @@ This is the first of the two measurements: the prose-only run against the run
 where every request also declares `render_adaptive_card`. Per-call pass rate
 on the 96 card-asking calls in each arm, from [the tool-adoption
 section](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md#tool-adoption-not-card-quality-is-what-the-shape-score-measures)
-of the notebook. The model chooses which calls go through the tool. The "same
-calls" column therefore scores the prose arm on the case, sample and condition
-triples where the tool arm used the tool.
+of the notebook. In the tool arm the model decides call by call whether to use
+the tool, and the table splits the tool arm's 96 calls by that choice. "Tool
+arm, all" scores every call. The next two columns score the calls where the
+model used the tool and the calls where it ignored the tool and answered in the
+message body, with each group's size as n. "Prose arm, matched" scores the
+prose arm on only the case, sample and condition triples where the tool arm
+used the tool, so both columns cover the same questions.
 
-| Model                        | Prose only | Prose only, same calls | Tool declared, all calls | Tool declared, via tool | Tool declared, via message body | Adoption |
-| ---------------------------- | ---------: | ---------------------: | -----------------------: | ----------------------: | ------------------------------: | -------: |
-| `qwen3.6:27b-coding-nvfp4`   |        92% |                    92% |                     100% |         **100%** (n=96) |                               — |   96/100 |
-| `qwen3.8:27b-nvfp4`          |        94% |                    93% |                      94% |          **98%** (n=92) |                        0% (n=4) |   92/100 |
-| `gpt-oss:20b`                |        80% |                    80% |                      80% |          **96%** (n=80) |                       0% (n=16) |   80/100 |
-| `granite4.1:8b`              |        67% |                    69% |                      82% |          **88%** (n=90) |                        0% (n=6) |   90/100 |
-| `qwen3-coder:30b`            |        67% |                    74% |                      78% |          **92%** (n=76) |                      25% (n=20) |   78/100 |
-| `nemotron-3.5-lightning:30b` |        62% |                    79% |                      69% |          **91%** (n=68) |                      14% (n=28) |   68/100 |
-| `nemotron-3-nano:30b`        |        62% |                    67% |                      58% |          **79%** (n=66) |                      13% (n=30) |   66/100 |
+| Model                        | Prose arm, all | Prose arm, matched | Tool arm, all | Tool arm, model used the tool | Tool arm, model ignored the tool | Adoption |
+| ---------------------------- | -------------: | -----------------: | ------------: | ----------------------------: | -------------------------------: | -------: |
+| `qwen3.6:27b-coding-nvfp4`   |            92% |                92% |          100% |               **100%** (n=96) |                                — |   96/100 |
+| `qwen3.8:27b-nvfp4`          |            94% |                93% |           94% |                **98%** (n=92) |                         0% (n=4) |   92/100 |
+| `gpt-oss:20b`                |            80% |                80% |           80% |                **96%** (n=80) |                        0% (n=16) |   80/100 |
+| `granite4.1:8b`              |            67% |                69% |           82% |                **88%** (n=90) |                         0% (n=6) |   90/100 |
+| `qwen3-coder:30b`            |            67% |                74% |           78% |                **92%** (n=76) |                       25% (n=20) |   78/100 |
+| `nemotron-3.5-lightning:30b` |            62% |                79% |           69% |                **91%** (n=68) |                       14% (n=28) |   68/100 |
+| `nemotron-3-nano:30b`        |            62% |                67% |           58% |                **79%** (n=66) |                       13% (n=30) |   66/100 |
 
-The "all calls" column is what a comparison reports when it ignores which
-channel each reply took. It is level with prose on `qwen3.8:27b-nvfp4` and
-`gpt-oss:20b`, and below it on `nemotron-3-nano:30b`. The "via tool" column is
-the same runs, counting only the calls that used the tool.
+The "Tool arm, all" column is what a comparison reports when it ignores which
+channel each reply took. It is level with the prose arm on `qwen3.8:27b-nvfp4`
+and `gpt-oss:20b`, and below it on `nemotron-3-nano:30b`.
 
 **Where the tool is used, it wins on every model**, 79% to 100% against 62% to
 94% on the whole prose arm. On the three models that decline most, the calls
 sent through the tool are the easier ones. Their matched prose rate runs 5 to
 17 points above their whole-arm rate. The tool still leads on every row
-against the matched calls, 67% to 93%. What the blended column measures is
-adoption. Between 4 and 34 calls per 100 never used the tool, and those calls
-pull the arm back toward its prose score.
+against the matched calls, 67% to 93%. What the "Tool arm, all" column
+measures is adoption. Between 4 and 34 calls per 100 never used the tool, and
+those calls pull the arm back toward its prose score.
 
-One caution on the "via message body" column. Most of those calls are ones
-where the model answered in prose. A low score there is largely the decline
-itself being counted as a failure. The exception is `qwen3-coder:30b`, which
-wrote card JSON into the message body on 20 of its 22 non-tool calls, and 5 of
-those passed.
+One caution on the "model ignored the tool" column. A call that skips the tool
+is not a prose-arm call, because the two arms run different reply rules. The
+tool arm's prompt describes two reply shapes, a call to `render_adaptive_card`
+or a plain Markdown answer. The tool prompt has no instruction for
+writing card JSON in the message body. A model that goes down that path but
+skips the tool is left with
+Markdown which is not a valid JSON card. A low score in that
+column is therefore largely the decline itself being counted as a failure. The
+exception is `qwen3-coder:30b`, which wrote card JSON into the message body on
+20 of its 22 non-tool calls, and 5 of those passed. On `gpt-oss:20b`, 9 of the
+16 are not declines: Ollama returned HTTP 500 or timed out. We record that as
+"no tool use".
 
 ## Malformed JSON accounts for most of the gain
 
