@@ -10,18 +10,19 @@ straight to Ollama, one model at a time. Each probe builds its requests the way
 the chat server does and judges every reply with the server's own card
 detector.
 
-Several of those results looked like something a model did when the cause
-was the test setup: the machine, the Ollama runtime, the harness or the probe.
+Several of those results looked like something a model did. The cause was the
+test setup: the machine, the Ollama runtime, the harness or the probe.
 Each rule below is a check that stops one of those mistakes before reaching a
 published number. Five of the eight rules come from a measurement that went
-wrong. The other three guard against a known weakness in the setup: the
-per-call time limit, the point in a long run where a model is measured, and
-what the card detector cannot see.
+wrong. The other three guard against known weaknesses in the setup. Those are the
+per-call time limit, where in a long run a model is measured, and what the
+card detector cannot see.
 
 The rules come first, grouped by when they apply. After them, one section per
 rule describes the measurement behind it. One incident dates from Ollama
-0.32.14. Every other figure was measured under Ollama 0.33.x or 0.34.0. Most
-are from one Apple M1 Max / 64 GB host. Each figure traces to
+0.32.14. The rest were measured under 0.33.x, 0.34.0 or 0.35.1. Four rules
+now rest on 0.35.1 figures from an Apple M5 / 16 GB. The others come from an
+Apple M1 Max / 64 GB. Each figure traces to
 [`ModelBehavior.md`](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md),
 the lab notebook in that repository.
 
@@ -38,7 +39,7 @@ the repository's own.
 | **Sweep**                        | One run of the seven standard probes against one model, driven by `sweep.sh`. A full sweep of every model runs them one model after another.                                                                                                             |
 | **Probe**                        | One script that sends a fixed set of questions to one model and scores each reply. The seven standard probes are a `format` check, a tool-calling check, an everyday set, a stress set, the seeded and unaided shape runs, and the follow-up-edit probe. |
 | **Shape set**, `n/25`            | The 25 questions of `shape_ab.dart`, each paired with the Adaptive Card element types that would answer it. A case passes when the reply uses one of them.                                                                                               |
-| **`--samples 2`**                | Every case runs twice and passes only if both runs pass. The noise floor on an `n/25` score is ±1 case.                                                                                                                                                  |
+| **`--samples 2`**                | Every case runs twice and passes only if both runs pass. Three repeat runs of one model moved no case at all, so the ±1 noise floor assumed below is a loose upper bound.                                                                                |
 | **Cold start**, **with history** | The question asked first, or asked after two ordinary prose turns replayed the way the chat server sends history.                                                                                                                                        |
 | **Seeded**, **unaided**          | Seeded runs put a short synthetic card exchange ahead of the history, as the chat server does. Unaided runs leave it out. Shape figures are seeded unless stated otherwise.                                                                              |
 | **Follow-up-edit probe**         | `cascade_ab.dart`: turn 1 asks for a pick-one list, turn 2 asks to make it multi-select without restating the items. Scored out of 3 cases.                                                                                                              |
@@ -61,8 +62,8 @@ the section below that holds the measurement.
 | Before a sweep                    | Keep one model resident, and wait for the last one to finish evicting                                | a busy machine's stalls read as a slow model                     | `granite4.1:3b` recorded 52 stalls under Ollama 0.32.14 while another runner was evicting    |
 | Before a sweep                    | Anchor the per-call ceiling to what a user would wait for                                            | a raised ceiling turns fast failures into hour-long ones         | The two calls a long ceiling captured still ended in invalid JSON                            |
 | Reading results                   | Before blaming the model for a stall count, check whether one runaway call queued the rest behind it | one runaway generation is recorded as dozens of stalls           | One runaway generation was recorded as many stalls under Ollama 0.33.2                       |
-| Reading results                   | Before comparing one model's speed across hosts, measure it at the same point in each sweep          | position alone moves a median further than most host differences | Sweep position moved one median by 1.54x                                                     |
-| Reading results                   | Check `prompt_eval_count` for silent truncation before reading any token-level number                | a truncated prompt reads as a broken cache                       | An oversized system prompt is cut short without a warning                                    |
+| Reading results                   | Before comparing one model's speed across hosts, measure it at the same point in each sweep          | position alone moves a median further than most host differences | Sweep position moved a median 1.29x and moved no shape score                                 |
+| Reading results                   | Check `prompt_eval_count` for silent truncation before reading any token-level number                | a truncated prompt reads as a broken cache                       | An oversized system prompt is cut to half the window, with no warning                        |
 | After a harness or runtime change | Run a corrective change on every affected row, and confirm in the server log that it took effect     | a fix that worked for one model is assumed to work for all       | One model's stalls cleared after the unload was added, under Ollama 0.33.2                   |
 | After a harness or runtime change | List every input that changed before crediting a result to the runtime                               | a prompt edit is read as a runtime fix                           | A runtime upgrade would have been credited with a prompt edit's fix                          |
 | When reporting                    | Judge with the detector you ship, and state beside the scores what it cannot see                     | an invented element type would score as a card                   | The probes score with the chat server's card detector, which checks shape and not vocabulary |
@@ -82,7 +83,7 @@ On 2026-08-20, under Ollama 0.32.14, a sweep on the M1 Max recorded **52
 stalls** for `granite4.1:3b`. The previous model's runner had not finished
 evicting. It sat at 168% CPU reporting `Stopping...` while this model's probes
 ran. The comparison below sets that run beside a re-run on an idle machine.
-The gap between the columns is what the busy machine cost.
+The gap between the columns measures what the busy machine cost.
 
 | `granite4.1:3b`, M1 Max, Ollama 0.32.14 | previous runner still evicting | idle machine              |
 | --------------------------------------- | ------------------------------ | ------------------------- |
@@ -97,11 +98,10 @@ side a stall looks the same either way: the reply takes longer. The notebook's
 has the full account.
 
 [`sweep.sh`](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/tool/model_probes/sweep.sh)
-now waits for eviction. It runs the seven standard probes against one model,
-then unloads it. Probes send `keep_alive: 30m`, so a finished model stays
-resident until something evicts it, and `ollama stop` returns while eviction
-is still under way. The driver therefore polls `ollama ps` until nothing is
-listed before the next model starts.
+now waits for eviction. Probes send `keep_alive: 30m`, so a finished model
+stays resident until something evicts it, and `ollama stop` returns while
+eviction is still under way. The driver polls until nothing is resident before
+the next model starts.
 
 ```mermaid
 sequenceDiagram
@@ -177,9 +177,9 @@ sequenceDiagram
 
 A stall count caused by one runaway generation looks different from one caused
 by a model that is slow on each call. Each row below is a check to run on a
-high stall count. The middle column is what the 0.33.2 runs showed when one
-runaway generation queued every later call. The right column is what a model
-that is slow on each call would show instead. None of these runs produced
+high stall count. The middle column holds what the 0.33.2 runs showed when one
+runaway generation queued every later call. The right column holds what a
+model slow on each call would show instead. None of these runs produced
 it.
 
 | Check                    | Queue cascade, as recorded                          | Slow model, as expected              |
@@ -191,12 +191,30 @@ it.
 | a long ceiling           | most stalls vanish                                  | the same calls stay slow             |
 
 The server-log readings, including the runner count, were recorded at the
-time. Those logs have since rotated. `granite4.1:3b`'s 52 stalls fall in two
-blocks. The first is 35 stalls, from the end of the seeded probe into the
-start of the unaided one. The second is 17, from the end of the unaided probe
-through the follow-up-edit probe. A generation the server log timed at 70
-minutes accounts for the first block at 120 s a stall. The second block's
+time. Those logs have since rotated. `granite4.1:3b`'s 52 stalls fall in two blocks
+of 35 and 17, each crossing a probe boundary. A generation the server log
+timed at 70 minutes accounts for the first at 120 s a stall. The second block's
 generation was not timed.
+
+What becomes of an abandoned request is measurable on a later sweep whose log
+survives. Ollama records a duration per request. Summing a model's durations and
+dividing by the wall clock of its window counts how many were open at once. A
+probe sending one call at a time, against a server configured for one
+generation, should sit at or below 1.
+
+| Model's window in one sweep | Summed duration | Wall clock | Open at once |
+| --------------------------- | --------------- | ---------- | ------------ |
+| `granite4.1:8b`             | 36.4 min        | 46.5 min   | 0.78x        |
+| `qwen2.5-coder:7b`          | 31.2 min        | 41.4 min   | 0.75x        |
+| `qwen3.5:9b`                | 35.6 min        | 45.7 min   | 0.78x        |
+| `llama3.2:latest`           | 901.8 min       | 125.0 min  | **7.21x**    |
+| `granite4.1:3b`             | 2379.6 min      | 320.9 min  | **7.41x**    |
+
+Three models sit at 0.75x to 0.78x. Their summed duration lands within a few
+percent of what each probe recorded for itself, which validates the method. Those two sit above 7x. Ollama held about seven requests open at once while
+the probe sent them one at a time. A request the probe abandons is retained,
+and they accumulate. That is the queue a stall count sits on top of, and the
+reason a count taken at the client cannot see it.
 
 A one-off re-run of `llama3.2:latest` with `--timeout 7200` resolved **31**
 recorded stalls into **2** slow calls. Both were the same case, at 64.4 and
@@ -234,41 +252,38 @@ again with it. One model's stalls fall and the other's do not.
 
 `llama3.2:latest` lost almost all of its stalls, and its with-history score
 rose from 12/25 to 15/25. `granite4.1:3b` does not move at all. Its two runs
-stall on the same 52 calls, index for index:
+stall on the same 52 calls, index for index, across both shape probes and all
+six follow-up-edit calls. In the run after eviction the first call after the
+block took 86 seconds, which is a queued call draining rather than a model
+load. An eviction that never took effect would leave the run unchanged in the
+same way.
 
-- calls 86 to 99 of the seeded probe;
-- calls 0 to 20 and 89 to 99 of the unaided probe;
-- all 6 calls of the follow-up-edit probe.
+Two of those calls ended in the same second as an unload, which left the
+unload and the probe's disconnect as equal candidates. The table below
+separates the two actions by ten seconds, so the server log attributes each
+termination to one of them. Ollama 0.35.1, against a fixed 1,150-token
+generation that runs 16.7 s undisturbed. The last column is a two-token
+request sent straight afterwards, which an idle server answers in about 0.1 s.
 
-In the run after eviction, the first call after call 20 took 86 seconds. That
-is a queued call draining, not a model load. An eviction that never took
-effect would leave the run unchanged in the same way.
+| Action, 3 s into the generation             | The generation                                                        | Slot free after |
+| ------------------------------------------- | --------------------------------------------------------------------- | --------------- |
+| nothing                                     | ran 16,687 ms, 858 tokens                                             | n/a             |
+| probe disconnect, next call on a new client | threw at 3,007 ms; the server logged a 500 at 3.005 s                 | **59 ms**       |
+| probe disconnect, next call on the same one | threw at 3,003 ms                                                     | **68 ms**       |
+| unload, connection left open                | acknowledged in 2.19 ms, then **ran to 16,506 ms and all 858 tokens** | n/a             |
+| disconnect, then unload ten seconds later   | threw at 3,004 ms; the unload reached a finished request              | **113 ms**      |
 
-The observations below are everything recorded about what an unload does to a
-generation that is already running. No row shows an unload canceling a
-generation on its own. Row four is ambiguous.
+The disconnect ends the generation and frees the slot. The unload does not: it
+is acknowledged in milliseconds and the generation finishes anyway. Reusing
+the probe's own connection for the next call changes nothing, 59 ms against
+68 ms. A connection held open is not the mechanism either. Older runtimes
+agree about the unload, which ran to 20.9 s against an 18 s generation under
+0.33.2 and to 19.6 s under 0.34.0.
 
-| Unload evidence                                             | What the log shows                                                                            |
-| ----------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
-| 0.33.2: `keep_alive: 0` sent 3 s into an 18 s generation    | ran to 20.9 s                                                                                 |
-| 0.33.2: the same test with `ollama stop`                    | ran to 16.3 s                                                                                 |
-| 0.33.2: 53 unloads during the `granite4.1:3b` run           | answered in about 8 ms each; one generation ran 70 minutes with calls queued behind it        |
-| 0.33.2: 2 stalls during the `llama3.2:latest` run           | ended server-side at 2m0s, each in the same second as an unload                               |
-| 0.34.0: `keep_alive: 0` sent 3 s into an 18 s generation    | ran to 20.5 s and 19.6 s, all 1150 tokens                                                     |
-| 0.34.0: the same test with `ollama stop`                    | ran to 20.1 s and 20.0 s, all 1150 tokens                                                     |
-| 0.34.0: client disconnect 3 s into the same generation      | ended at 3.0 s with a 500, both times                                                         |
-| 0.34.0: a two-token request sent 3 s into a live generation | waited 13.9 s; on an idle server it returns in 0.1 s                                          |
-| 0.34.0: the same request sent right after a disconnect      | returned in 0.1 s, both times                                                                 |
-| 0.34.0: 2 runaways during a `granite4.1:3b` run             | ended server-side at 2m0s with a 500, in the same second as the probe's disconnect and unload |
-
-In row four the probe drops its connection and sends the unload in the same
-second, so either could have ended those two calls. The 0.34.0 rows repeat the
-direct test twice each. The target is a fixed 1150-token generation that runs
-18.4 s and 17.2 s undisturbed. Neither unload shortens it. A client disconnect
-does end it: the last two rows show the generation slot is free again at once.
-The last row is the probe's own disconnect doing the same during a sweep,
-which the next section describes. The generations the 0.33.2 sweep abandoned
-kept running after the probe disconnected. Why they did is still unexplained.
+That sharpens rather than settles the sweep's behavior. An isolated disconnect
+frees the slot in under 70 ms, and the generations the 0.33.2 sweep abandoned
+kept running after the probe disconnected. What becomes of an abandoned
+request is measurable, and the section above has it.
 
 ### A runtime upgrade would have been credited with a prompt edit's fix
 
@@ -280,7 +295,7 @@ Ollama 0.34.0 and recorded no stall. Two inputs had changed since the 0.33.2
 run: the runtime, and the card system prompt, which gained an `Input.Rating`
 element on 2026-09-07. A second 0.34.0 run sent the old prompt, so only the
 runtime differs from the 0.33.2 column. The three columns below separate the
-two changes. They cover the two shape probes, which is where 46 of the 52
+two changes. They cover the two shape probes, where 46 of the 52
 stalls fell.
 
 | `granite4.1:3b`, M1 Max, shape probes | 0.33.2, old prompt | 0.34.0, old prompt | 0.34.0, new prompt |
@@ -298,11 +313,18 @@ unload. The next calls took 13.5 s and 9.9 s, so nothing queued. The new
 prompt produces no runaway on either case, and the longest of its 200 calls
 took 9.2 s.
 
-Each change removed a different part of the 52 stalls. The runtime change
-stopped one runaway from becoming a cascade, and the prompt edit removed the
-runaway. Reading the first 0.34.0 run alone would have credited both to the
-runtime. Which change inside 0.34.0 lets a disconnect end the generation is
-not identified.
+Each change removed a different part of the 52 stalls on that host. The
+runtime change stopped one runaway from becoming a cascade, and the prompt
+edit removed the runaway. Reading the first 0.34.0 run alone would have
+credited both to the runtime.
+
+Neither half travels, which is the stronger form of the rule. On the M5 under
+Ollama 0.35.1 this model recorded **56** stalls with the new prompt. That
+sweep's log holds 37 requests queued for up to 115.8 minutes. So there the
+prompt edit did not remove the runaway, and the later runtime did not stop a
+cascade forming. The same sweep recorded **0** stalls for it on the M1 Max.
+Across the four runs the count reads 52, 1, 0 and 56, following neither the
+host nor the runtime.
 
 A clean run of this model exists on a second host, an Apple M5 / 16 GB under
 Ollama 0.33.1. With the old prompt, the 0.34.0 scores match it on all four
@@ -320,57 +342,83 @@ Probes bound each call with `--timeout`, which defaults to 180 s. Every sweep
 here used 120 s for the shape and follow-up-edit probes. The notebook treats a
 reply that takes more than about a minute as unusable, so 120 s is already
 twice that. The slowest model on the M1 Max under 0.33.2, `gpt-oss:20b`,
-medians 7.2 s per call.
+medians 7.2 s per call. The slowest of the eight measured there on a later
+runtime medians 4.68 s.
 
-The one-off `--timeout 7200` run is how the two hour-long calls were found,
-and it stays a diagnostic. Adopting a long ceiling for every sweep would not
+The one-off `--timeout 7200` run found the two hour-long calls, and it stays
+a diagnostic. Adopting a long ceiling for every sweep would not
 help. Both long calls still ended in invalid JSON, so the longer wait
 recovered no card. It would turn each fast failure into a slow one.
 
-### Sweep position moved one median by 1.54x
+### Sweep position moved a median 1.29x and moved no shape score
 
 _Evidence for: before comparing one model's speed across hosts, measure it at
 the same point in each sweep._
 
-Every row of a serial sweep is measured at a different point in it. A control
-on the M1 Max under Ollama 0.33.2 re-ran `qwen3.5:9b` at two positions. Cold,
-at position 0 after 29 minutes idle, it medians **4924 ms**. Hot, seven
-seconds after an eight-hour sweep, it medians **7563 ms**. That is a **1.54x**
-spread from sweep position alone.
+Every row of a serial sweep is measured at a different point in it. A series on the M5
+under Ollama 0.35.1 ran one model's shape probe three times back to back, with
+no idle gap. Position was the only thing that changed. Free memory was read at
+each start.
 
-Both hosts were measured on 0.33.x. Their medians differ by 1.15x to 1.44x on
-seven of the eight models they share. The eighth, `llama3-chatqa:8b`, reads
-2.32x on medians of 107 ms and 248 ms. Position moved `qwen3.5:9b` by more
-than any of the seven. A single row's host ratio can therefore report where
-the model sat in its sweep rather than which host ran it.
+| `granite4.1:8b`, three runs | Free at start | Median  | Cold start | With history |
+| --------------------------- | ------------- | ------- | ---------- | ------------ |
+| position 0                  | 2.79 GB       | 3378 ms | 24/25      | 20/25        |
+| position 1                  | 1.42 GB       | 3574 ms | 24/25      | 20/25        |
+| position 2                  | 0.16 GB       | 4346 ms | 24/25      | 20/25        |
 
-The size of the effect is not settled. Two position controls on the M5
-disagree. `granite4.1:8b` ran 1.20x slower right after a sweep.
-`qwen2.5-coder:7b` measured 1.03x after 31 minutes idle, slightly slower cold.
-The notebook's
+The median climbs **1.29x** and no score moves. Free memory falls across the
+same three runs, and this series does not separate it from position. So the
+effect is real on that host and at least as large as the **1.20x** an earlier
+control reported. Two earlier controls there disagreed, 1.20x against 1.03x.
+Neither recorded what else was resident, which is the likeliest reason.
+
+An earlier M1 Max control, not archived, read **1.54x** between position 0
+and seven seconds after an eight-hour sweep, 4924 ms against 7563 ms.
+
+Across hosts the same eight models differ by 1.14x to 1.78x on one runtime.
+Position moved this model by more than six of those eight. A single row's host
+ratio can therefore report where the model sat in its sweep rather than which
+host ran it.
+
+The two figures want different error bars. Those three runs put the spread on
+a shape score at **zero cases**, eroding the same four cases each time. A
+median needs a position control; a score does not. The notebook's
 [performance section](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md#performance-by-host-and-runtime)
-has all three controls.
+has every control.
 
-### An oversized system prompt is cut short without a warning
+### An oversized system prompt is cut to half the window, with no warning
 
 _Evidence for: check `prompt_eval_count` for silent truncation before reading
 any token-level number._
 
-Ollama 0.33.3 reports `prompt_eval_cached_count`, the number of prompt tokens
-the runner served from its prefix cache. The first probe built on it reported
-near-zero reuse on calls that should have shared a long prefix. The probe's
-system prompt tokenized to roughly 15k against an 8,192-token `num_ctx`.
-Ollama cut it to half the window plus the template header, with no error. That
-is consistent with each turn evaluating a different slice of the prompt, which
-would leave the cache nothing to match.
+Ollama reports `prompt_eval_cached_count`, the number of prompt tokens the
+runner served from its prefix cache. The first probe built on it reported
+near-zero reuse on calls that should have shared a long prefix. Its system
+prompt tokenized to roughly 15k against an 8,192-token `num_ctx`, and Ollama
+cut it with no error.
 
-The sign was `prompt_eval_count` sitting at **4,098 on every turn** of a
-growing conversation. Oversized history behaves differently: the notebook
-records a history message that does not fit being dropped whole. Both show up
-only in `prompt_eval_count`. Sized to fit, the same probe produced the
-readings that the prompt-cache article in this series reports. The chat
-server's overflow check now warns at request time, confirmed against a live
-server.
+How much it cuts is a formula. The table sends one 13,349-token prompt at four
+window sizes, on Ollama 0.35.1. Every call answered HTTP 200.
+
+| `num_ctx` requested | `prompt_eval_count` | `num_ctx / 2 + 2` |
+| ------------------- | ------------------- | ----------------- |
+| 4,096               | 2,050               | 2,050             |
+| 8,192               | **4,098**           | 4,098             |
+| 16,384              | 8,194               | 8,194             |
+| 32,768              | 16,386              | 16,386            |
+
+Half the window plus the template header, decided by the window rather than by
+the prompt, with `prompt_eval_cached_count` at 0 throughout. Under a window it
+fits, the same prompt reports its true 13,349. So the sign is a
+`prompt_eval_count` that holds constant while the history grows. Oversized
+history behaves differently: a message that does not fit is dropped whole.
+Both show up only in `prompt_eval_count`.
+
+The chat server now warns at request time. The warning has two gaps. It
+estimates what was sent as characters divided by four, which under-counts
+dense tokenizers by up to a third. It also compares against the requested
+window rather than the allocated one. It would not have fired on the three
+history drops the notebook measured.
 
 ### The probes score with the chat server's card detector, which checks shape and not vocabulary
 
@@ -407,10 +455,18 @@ does the full Adaptive Cards parse, and renders an unknown element as an error
 placeholder naming the type.
 
 A second server check, `unknownElementTypes`, compares each element type
-against the shipped `card_schema.json` and logs a warning. Since 2026-09-16
-the shape probes record its result on every call, but no score counts it. The
-0.34.0 `granite4.1:3b` runs are the only ones in this article that carry it:
-250 replies parsed as cards, and none used an unknown type.
+against the shipped `card_schema.json` and logs a warning. The shape probes
+record its result on every call, and no score counts it. Across two hosts on
+one runtime, **2,278** replies parsed as cards. Twelve used a type the schema
+does not carry, all from one model: `Input.Paragraph` answering a text case,
+`Chart.ProgressRing` answering a gauge case. The same twelve calls on both
+hosts.
+
+Those twelve were already failing, but on shape rather than vocabulary. Each
+reply also lacked the element type its case wanted, so the shape criterion
+caught them by coincidence. The blind spot is therefore narrower and worse
+than it looks. A model inventing a type that sits in the set its case wanted
+would still pass. Nothing here measures how often that happens.
 
 The repository is
 [https://github.com/freemansoft/Flutter-AdaptiveCards](https://github.com/freemansoft/Flutter-AdaptiveCards),
