@@ -165,8 +165,8 @@ reads as an emission mechanic. These 7 are the one gap the prompts account for
 rather than the choice of channel.
 
 Valid JSON is not a valid card. An element type outside the client's
-vocabulary parses, passes card detection and renders as a blank, and no
-pass-or-fail score sees it. The chat server has checked for that since August.
+vocabulary parses, passes card detection and renders as an error placeholder
+naming the type, and no pass-or-fail score sees it. The chat server has checked for that since August.
 The probes did not, so `shape_ab.dart` now records it per call. These runs
 predate that field, but the judge already records the element types each reply
 contained. None of the 1,400 records in either arm names a type the client
