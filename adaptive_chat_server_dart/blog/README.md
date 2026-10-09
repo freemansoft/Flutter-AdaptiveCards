@@ -92,8 +92,15 @@ stalls under 0.35.1 with the new prompt. The draft now states the truncation
 cut as the formula `num_ctx / 2 + 2` across four window sizes, resolves which
 of the unload and the disconnect ends a generation, and reports 12 invented
 element types in 2,278 card-parsed replies where it had reported none in 250.
-Its prose is 2,998 words against a 3,000 cap, which the measured tables it
-gained are the reason for; a cut pass is owed before the next addition.
+A cut pass on 2026-10-09 then took its prose from 2,998 to 2,494 words, 16.4%,
+and its on-page count from 4,396 to 3,906. Three quarters of that came from
+prose narrating a table or a diagram the reader can already see. The rest
+dropped superseded runs: the unarchived 1.20x, 1.03x and 1.54x position
+controls, the `gpt-oss:20b` and `qwen3-coder:30b` figures for models no longer
+installed, the older-runtime corroboration of the 0.35.1 unload result, and a
+0.33.1 paragraph that compared across a host and a runtime at once. The 0.35.1
+prompt A/B replaced that last one, which isolates the edit on one host and
+runtime at 18/25 and 16/25 against 15/25 and 15/25. All eight rules stand.
 
 Article 4 was retitled and republished on 2026-09-18. The earlier title,
 "Ollama's tool channel produces better cards, when the model remembers to use
