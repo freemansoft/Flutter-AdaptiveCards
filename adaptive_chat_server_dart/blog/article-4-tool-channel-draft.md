@@ -36,7 +36,7 @@ could run. Ask in the message body as usual, and offer the tool only when that
 reply fails to parse.
 
 Every figure below comes from
-[`ModelBehavior.md`](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md),
+[`ModelBehavior.md`](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/1f50ceef/adaptive_chat_server_dart/ModelBehavior.md),
 a lab notebook in that repository.
 
 ## Terms used in this article
@@ -94,7 +94,7 @@ which channel each reply took. `shape_ab.dart` records it per call as
 This is the first of the two measurements: the prose-only run against the run
 where every request also declares `render_adaptive_card`. Per-call pass rate
 on the 96 card-asking calls in each arm, from [the tool-adoption
-section](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md#tool-adoption-not-card-quality-is-what-the-shape-score-measures)
+section](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/1f50ceef/adaptive_chat_server_dart/ModelBehavior.md#tool-adoption-not-card-quality-is-what-the-shape-score-measures)
 of the notebook. In the tool arm the model decides call by call whether to use
 the tool, and the table splits the tool arm's 96 calls by that choice. "Tool
 arm, all" scores every call. The next two columns score the calls where the
@@ -142,7 +142,7 @@ exception is `qwen3-coder:30b`, which wrote card JSON into the message body on
 
 Every failed call in each arm, bucketed by how the judge scored it and summed
 over the 7 models' 672 card-asking calls. The figures are from [the failures
-section](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md#where-the-failures-are)
+section](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/1f50ceef/adaptive_chat_server_dart/ModelBehavior.md#where-the-failures-are)
 of the notebook. `infra` covers HTTP 500s and timeouts and belongs to neither
 channel.
 
@@ -181,7 +181,7 @@ channel one.
 Two ordinary conversational turns are enough to stop three of the seven models
 from calling the tool. The table shows the calls where a model did not use the
 tool, split by condition, from [the history
-section](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md#conversation-history-suppresses-tool-calling-and-more-than-it-suppresses-cards)
+section](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/1f50ceef/adaptive_chat_server_dart/ModelBehavior.md#conversation-history-suppresses-tool-calling-and-more-than-it-suppresses-cards)
 of the notebook. All three columns exclude the negative control, so the two
 condition columns sum to the first.
 
@@ -236,7 +236,7 @@ answers and wrong elements together outnumber malformed JSON two to one.
 
 The 43 of 99 is a total, and the per-model table below is where the useful
 reading is. It comes from [the retry
-section](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md#a-retry-on-parse-failure-recovers-43-of-99-broken-cards-and-the-misses-split-two-ways)
+section](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/1f50ceef/adaptive_chat_server_dart/ModelBehavior.md#a-retry-on-parse-failure-recovers-43-of-99-broken-cards-and-the-misses-split-two-ways)
 of the notebook. Ten of the fourteen models had parse failures; the four
 with none have nothing to retry. Five recover half or more, **33 of their
 45**, and three of those recover every failure. The other five recover 10 of 54.
@@ -310,4 +310,4 @@ thinking turned off. Enabling thinking may give different results.
 The repo is
 [https://github.com/freemansoft/Flutter-AdaptiveCards](https://github.com/freemansoft/Flutter-AdaptiveCards),
 and the lab notebook every figure above came from is
-[https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md).
+[https://github.com/freemansoft/Flutter-AdaptiveCards/blob/1f50ceef/adaptive_chat_server_dart/ModelBehavior.md](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/1f50ceef/adaptive_chat_server_dart/ModelBehavior.md).
