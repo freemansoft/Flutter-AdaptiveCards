@@ -20,6 +20,7 @@ this file.
 10. Attribution
 11. Presentation
 12. Section order and article shape
+13. Altitude: an article is not the notebook
 
 ## 1. Verifying claims
 
@@ -73,6 +74,26 @@ mechanism, a default, a flag, or a model is a claim the article vouches for.
   way a figure does, and those claims are the ones a check by numeric token
   misses. One review of article 5 found four unsourced figures by checking
   numbers; the other found a fifth, a sentence about what a server log showed.
+- **A duration or a window derived from a server log needs its date, not just
+  its clock time.** Ollama's request lines carry the two in separate fields
+  (`[GIN] 2026/10/04 - 02:17:01`), so an analysis that parses only `HH:MM:SS`
+  treats a window running 23:21 to 00:07 as though it ran backwards. That
+  returned zero requests for one model's window in the M5 sweep, and it was
+  caught only because zero was obviously wrong rather than quietly plausible;
+  a window that merely loses its first hour looks like a result. Both M5
+  sweeps cross midnight. Key on date-and-time or on seconds from a fixed
+  origin, and treat any figure derived by correlating an archive against a log
+  as needing that check before it reaches a draft. Figures the archive already
+  holds are safe: `perf_table.py` sums each call's recorded `ms` and reads no
+  clock.
+- **Attribute a log window to a model before quoting what it contains.** The
+  per-model windows in a sweep log are bounded by model-load lines, which fire
+  only on a load, so a window can extend well past the probes that belong to
+  it. A first pass at article 5's material quoted one model's queue drain,
+  timestamps and durations included, as another model's, because both windows
+  carried the same signature. Check that the window's request count and
+  summed duration match what that model's archive recorded before reading
+  anything out of it.
 - **Report a confirmed narrow hypothesis as confirmed, and the net result
   separately.** Malformed JSON going to zero was the expected effect and it
   held. Four losses were a separate result. Neither makes the channel "a bust"
@@ -211,6 +232,26 @@ compares. A terms table defined later is not a reason to hold the setup back.
   promising three test sets sat over forty lines about something else.
 - **One finding per heading.** Two findings joined by "and" become two sections,
   or the second clause moves into the section's first sentence.
+- **State the finding at the altitude a stranger can reuse.** When a section's
+  lesson is bigger than its instance, the heading carries the lesson and the
+  section's first sentence carries the instance with its figure. Article 5's
+  detector section wore all three forms in one day: "The probes score with the
+  chat server's card detector, which checks shape and not vocabulary" described
+  the method; "The card detector passed twelve invented element types as cards"
+  stated the instance; "A pass certifies only what the detector checks" states
+  what a reader running a different system writes in their notes, and the
+  instance sentence now opens the section. The tell is sibling comparison: a
+  heading that names a domain artifact while the other seven findings read
+  generic is an instance wearing a heading's clothes. An incident section is
+  the exception. "`granite4.1:3b` recorded 52 stalls under Ollama 0.32.14 while
+  another runner was evicting" stays specific, because the incident is the
+  finding and the rules table already carries its lesson.
+- **A heading is read without the section's definitions.** Readers meet it in
+  the rules table and while skimming, before any term the section defines.
+  "Sweep position moved a median 1.29x" needed the section to explain what
+  position is; "Running a model later in a sweep moved its median 1.29x" needs
+  nothing. If a heading's key noun requires the body to resolve, say the plain
+  thing the noun stands for.
 - **No clause that reads as an extra entity.** "The same code scores both
   channels, against the unseeded prose run" read as a three-way comparison,
   because the unseeded prose run is one of the two channels. "Both channels are
@@ -601,3 +642,41 @@ When reviewing rather than drafting, structure findings are worth as much as
 wording findings and are easier to leave vague. Name the order you would use
 and what each section would then hold, rather than reporting only that the
 order is wrong.
+
+## 13. Altitude: an article is not the notebook
+
+An article carries the highlights, the decision points, and the controls: what
+a reader needs to know, why it matters, and what was held constant so they can
+trust it. The notebook carries everything else, and the article links to it.
+Stated by the author on 2026-10-20, during article 5's revision.
+
+- **A decision table is a highlight; the forensics behind it are not.** Keep
+  the table that separates two causes or two configurations. Move call
+  indices, per-event seconds, status codes, block boundaries, and raw call
+  counts behind a `ModelBehavior.md` link. The test: if a figure changes what
+  the reader does, it stays; if it only proves the author did the work, it
+  links.
+- **Call out differences driven by memory or architecture explicitly.** A
+  result scoped to a 64 GB host, a recurrent model, or one runner is a
+  decision point in itself; say the scope in the sentence that states the
+  result, not in a footnote.
+- **State the control, not the procedure.** "The weights, prompt digest and
+  host stayed constant" earns its words; the order the probes ran in does
+  not, unless order is the variable.
+- **Hosts are assumed to behave alike; spend words only on a difference.**
+  "The same twelve calls on both hosts" restates the reader's default
+  assumption and was cut from article 5. The inversion is a hypothesis-driven
+  test: a memory-pressure or architecture experiment is run to find a
+  difference, so state the hypothesis and report the verdict either way.
+  There the null is the finding and earns its sentence, as the 64 GB
+  co-residency null does.
+- **The nature and depth of the checks is a highlight, not forensics.** The
+  altitude cut removes event-level data, never the explanation of the
+  verification machinery. Article 5's detector section walks the three layers
+  a reply passes and what each layer cannot see, and stays at full depth: a
+  reader deciding whether to trust the scores needs the checks' nature more
+  than any single figure.
+- **Every detail cut this way needs the link that absorbs it.** A cut without
+  a link orphans the claim; the referent pass treats "the notebook has the
+  full record" with no anchor as a defect.
+

@@ -581,6 +581,23 @@ Map<String, String> currentAssetDigests(
   return out;
 }
 
+/// Digests of the specific files a run sent, keyed by basename.
+///
+/// Prefer this to [currentAssetDigests] wherever a flag can redirect a probe at
+/// a file outside the assets directory. [currentAssetDigests] resolves each
+/// name against `assetsDir`, so a `--baseline` aimed at a historical prompt
+/// records the digest of the current one and the run archives as a measurement
+/// of a prompt it never sent. That is why the 2026-09-18 old-prompt control had
+/// to be kept in `raw-captures/` instead of a `results-*` directory.
+Map<String, String> assetDigestsOfFiles(Iterable<String> paths) {
+  final out = <String, String>{};
+  for (final path in paths) {
+    final digest = assetDigest(File(path));
+    if (digest != null) out[p.basename(path)] = digest;
+  }
+  return out;
+}
+
 /// Where a run belongs on disk: `results/<model-slug>/<probe>[-variant].json`.
 File resultFile(String resultsDir, ProbeRun run) => File(
   p.join(

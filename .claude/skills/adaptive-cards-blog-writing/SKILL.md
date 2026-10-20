@@ -374,6 +374,15 @@ grep -nE '^(Because|Since|While|Although|When|Given|If|After|Once) ' "$A"
 # One of a pair named bare. Point it at whatever the article has two of.
 grep -nE '\b(the|a|that|this) channel\b' "$A" | grep -vE 'tool channel|prose channel'
 
+# Line-wrapped link destinations. CommonMark does not allow a newline inside
+# a bare URL, so a wrapped link renders as literal text instead of a link.
+# Tools that reflow prose (textwrap, some editors) create these silently;
+# Prettier does not repair them, so the format gate passes with them in. On
+# 2026-10-20 two such links were the absorbers for four sections' notebook
+# detail, and every altitude cut behind them was orphaned until a review
+# noticed. Each hit below is a link whose URL continues on the next line.
+grep -nE '\]\(https?://[^)]*$' "$A"
+
 # Markdown format gate. adaptive_chat_server_dart/** is covered by check:md:chat,
 # not by check:md. Fix with npm run format:md:chat.
 npm run check:md:chat
@@ -390,6 +399,9 @@ One line per rule. The section named in parentheses in
 - [ ] Model properties taken from the notebook or a model card, not memory.
 - [ ] Every definition fits every row of the table it labels.
 - [ ] Measured and inferred kept apart; no hedge lost in an edit.
+- [ ] Any figure derived from a server log keys on date-and-time, not clock
+      time alone, and its window is attributed to the right model before
+      anything is quoted from it. Both M5 sweeps cross midnight.
 
 **Names** (Terminology; Describing mechanisms)
 
@@ -415,6 +427,11 @@ Section order and article shape)
 - [ ] Title survives the paraphrase test; README status row matches it.
 - [ ] Prose near 1,500 words, with any excess past 2,000 justified in the
       README, and the on-page count under about 3,500.
+- [ ] Altitude: highlights, decision points and controls stay; call indices,
+      per-event seconds, status codes and raw counts move behind a
+      `ModelBehavior.md` link, and every such cut names the link that absorbs
+      it. Scope a result to its memory or architecture in the sentence that
+      states it.
 - [ ] Each term defined once; every cross-reference resolves.
 - [ ] Terms table folded in `<details>` with the heading outside the fold.
 
