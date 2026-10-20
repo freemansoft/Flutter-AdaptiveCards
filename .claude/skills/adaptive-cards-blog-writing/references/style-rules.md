@@ -232,6 +232,26 @@ compares. A terms table defined later is not a reason to hold the setup back.
   promising three test sets sat over forty lines about something else.
 - **One finding per heading.** Two findings joined by "and" become two sections,
   or the second clause moves into the section's first sentence.
+- **State the finding at the altitude a stranger can reuse.** When a section's
+  lesson is bigger than its instance, the heading carries the lesson and the
+  section's first sentence carries the instance with its figure. Article 5's
+  detector section wore all three forms in one day: "The probes score with the
+  chat server's card detector, which checks shape and not vocabulary" described
+  the method; "The card detector passed twelve invented element types as cards"
+  stated the instance; "A pass certifies only what the detector checks" states
+  what a reader running a different system writes in their notes, and the
+  instance sentence now opens the section. The tell is sibling comparison: a
+  heading that names a domain artifact while the other seven findings read
+  generic is an instance wearing a heading's clothes. An incident section is
+  the exception. "`granite4.1:3b` recorded 52 stalls under Ollama 0.32.14 while
+  another runner was evicting" stays specific, because the incident is the
+  finding and the rules table already carries its lesson.
+- **A heading is read without the section's definitions.** Readers meet it in
+  the rules table and while skimming, before any term the section defines.
+  "Sweep position moved a median 1.29x" needed the section to explain what
+  position is; "Running a model later in a sweep moved its median 1.29x" needs
+  nothing. If a heading's key noun requires the body to resolve, say the plain
+  thing the noun stands for.
 - **No clause that reads as an extra entity.** "The same code scores both
   channels, against the unseeded prose run" read as a three-way comparison,
   because the unseeded prose run is one of the two channels. "Both channels are
