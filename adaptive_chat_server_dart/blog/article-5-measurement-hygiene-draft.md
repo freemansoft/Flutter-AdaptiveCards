@@ -20,8 +20,9 @@ the card detector cannot see.
 
 The rules come first, grouped by when they apply. After them, one section per
 rule describes the measurement behind it. One incident dates from Ollama
-0.32.14. The rest were measured under 0.33.x, 0.34.0 or 0.35.1. Several rules rest on 0.35.1 figures, most from an Apple M5 / 16 GB. The stall
-incidents come from an Apple M1 Max / 64 GB, under 0.32.14 through 0.34.0. Each figure traces to
+0.32.14. The rest were measured under 0.33.x, 0.34.0 or 0.35.1. Several rules rest on 0.35.1 figures, most of them from an Apple M5 / 16 GB.
+The stall incidents that produced the rules date from an Apple M1 Max / 64 GB,
+under 0.32.14 through 0.34.0. Each figure traces to
 [`ModelBehavior.md`](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md),
 the lab notebook in that repository.
 
@@ -38,7 +39,8 @@ the repository's own.
 | **Sweep**                        | One run of the seven standard probes against one model, driven by `sweep.sh`. A full sweep of every model runs them one model after another.                                                                                                             |
 | **Probe**                        | One script that sends a fixed set of questions to one model and scores each reply. The seven standard probes are a `format` check, a tool-calling check, an everyday set, a stress set, the seeded and unaided shape runs, and the follow-up-edit probe. |
 | **Shape set**, `n/25`            | The 25 questions of `shape_ab.dart`, each paired with the Adaptive Card element types that would answer it. A case passes when the reply uses one of them.                                                                                               |
-| **`--samples 2`**                | Every case runs twice and passes only if both runs pass. Three repeat runs of one model moved no case at all, so the ±1 noise floor assumed elsewhere in this series is a loose upper bound.                                                             |
+| **`--samples 2`**                | Every case runs twice and passes only if both runs pass. Three repeat runs of                                                                                                                                                                            |
+| one model moved no case at all.  |
 | **Cold start**, **with history** | The question asked first, or asked after two ordinary prose turns replayed the way the chat server sends history.                                                                                                                                        |
 | **Seeded**, **unaided**          | Seeded runs put a short synthetic card exchange ahead of the history, as the chat server does. Unaided runs leave it out. Shape figures are seeded unless stated otherwise.                                                                              |
 | **Follow-up-edit probe**         | `cascade_ab.dart`: turn 1 asks for a pick-one list, turn 2 asks to make it multi-select without restating the items. Scored out of 3 cases.                                                                                                              |
@@ -80,8 +82,7 @@ evicting._
 
 A sweep on the M1 Max recorded **52 stalls** for `granite4.1:3b` on 2026-08-20,
 under Ollama 0.32.14. The previous model's runner had not finished
-evicting. It sat at 168% CPU reporting `Stopping...` while this model's probes
-ran. The comparison below sets that run beside a re-run on an idle machine.
+evicting. It was still busy, reporting `Stopping...`, while this model's probes ran. The comparison below sets that run beside a re-run on an idle machine.
 The gap between the columns measures what the busy machine cost.
 
 | `granite4.1:3b`, M1 Max, Ollama 0.32.14 | previous runner still evicting | idle machine              |
@@ -96,16 +97,14 @@ the incident. The notebook's
 [sweep section](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md#the-sweep-and-why-the-unload-step-matters)
 has the full account.
 
-A probe started during the eviction window ran 2.4x slower per call, 3171
-against 1324 ms on a quiet machine. A finished model that just sits in memory
-cost nothing measurable: runs with it still loaded scored the same as runs
-without it. That null holds on a 64 GB host, where two models fit side by side,
+A probe started during the eviction window ran 2.4x slower per call than on the
+idle machine above. A finished model that just sits in memory cost nothing measurable. Across 3,555 calls, runs with it still loaded scored the same as runs without it. That null holds on a 64 GB host, where two models fit side by side,
 and it makes the rule cheap. A 16 GB host inverts it: Ollama evicts the
-finished model rather than hold two. Preloading a second model there pushed
-swap to 3.7 GB, and one runaway became a 20-stall block in the run that
-tested it. The teardown is the expensive state, not the
-residency, so the sweep only waits for eviction to finish rather than cold-
-loading every model.
+finished model rather than hold two. A memory-pressure control on the M5, under 0.35.1, pushed swap to 3.7 GB.
+One runaway then became a 20-stall block, the queue cascade the next section
+explains; the notebook's [cascade section](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md#stalls-are-a-queueing-cascade-not-a-runtime-difference) holds that run. The teardown is the expensive state, not the
+residency, so the sweep only waits for
+eviction to finish.
 
 [`sweep.sh`](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/tool/model_probes/sweep.sh)
 now waits for eviction. `ollama stop` returns while eviction is still under
@@ -187,23 +186,20 @@ call.
 
 None of these runs produced the slow-model pattern. `granite4.1:3b`'s 52 stalls
 resolve to two runaway generations, one timed at 70 minutes in the server log.
-The notebook's [cascade section](https://github.com/freemansoft/Flutter-
-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md#stalls-are-
-a-queueing-cascade-not-a-runtime-difference) holds the block-by-block record for this section and the next two.
+The notebook's [cascade section](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md#stalls-are-a-queueing-cascade-not-a-runtime-difference) holds the block-by-block record for this section and the next two.
 
-A later sweep shows what becomes of an abandoned request: the matched M5 sweep
-of 2026-10-03, under Ollama 0.35.1, whose log survives. Ollama records a
-duration per request. Divide a model's summed durations by its window's wall
-clock to count how many were open at once. A probe sending one call at a time,
+A later sweep shows what becomes of an abandoned request: the 2026-10-03 M5 sweep, whose log survives. It is half of a matched pair with the M1 Max under Ollama 0.35.1. Ollama records a
+duration per request. Divide a model's summed durations by the wall clock of its stretch of the sweep
+to count how many were open at once. A probe sending one call at a time,
 against a server configured for one generation, should sit at or below 1.
 
-| Model's window in one sweep | Summed duration | Wall clock | Open at once |
-| --------------------------- | --------------- | ---------- | ------------ |
-| `granite4.1:8b`             | 36.4 min        | 46.5 min   | 0.78x        |
-| `qwen2.5-coder:7b`          | 31.2 min        | 41.4 min   | 0.75x        |
-| `qwen3.5:9b`                | 35.6 min        | 45.7 min   | 0.78x        |
-| `llama3.2:latest`           | 901.8 min       | 125.0 min  | **7.21x**    |
-| `granite4.1:3b`             | 2379.6 min      | 320.9 min  | **7.41x**    |
+| Model's stretch of one sweep | Summed duration | Wall clock | Open at once |
+| ---------------------------- | --------------- | ---------- | ------------ |
+| `granite4.1:8b`              | 36.4 min        | 46.5 min   | 0.78x        |
+| `qwen2.5-coder:7b`           | 31.2 min        | 41.4 min   | 0.75x        |
+| `qwen3.5:9b`                 | 35.6 min        | 45.7 min   | 0.78x        |
+| `llama3.2:latest`            | 901.8 min       | 125.0 min  | **7.21x**    |
+| `granite4.1:3b`              | 2379.6 min      | 320.9 min  | **7.41x**    |
 
 Three models sit at 0.75x to 0.78x. Their summed duration lands within a few
 percent of what each probe recorded for itself, which validates the method. The
@@ -244,20 +240,18 @@ actions by ten seconds, so the server log attributes each termination. The
 target is a generation capped at 1,150 tokens, which runs 16.7 s and emits 858
 tokens undisturbed.
 
-| Action, 3 s into the generation             | The generation                                                        | Slot free after |
-| ------------------------------------------- | --------------------------------------------------------------------- | --------------- |
-| nothing                                     | ran 16,687 ms, 858 tokens                                             | n/a             |
-| probe disconnect, next call on a new client | threw at 3,007 ms; the server logged a 500 at 3.005 s                 | **59 ms**       |
-| probe disconnect, next call on the same one | threw at 3,003 ms                                                     | **68 ms**       |
-| unload, connection left open                | acknowledged in 2.19 ms, then **ran to 16,506 ms and all 858 tokens** | n/a             |
-| disconnect, then unload ten seconds later   | threw at 3,004 ms; the unload reached a finished request              | **113 ms**      |
+| Action, 3 s into the generation             | The generation                                                   | Slot free after |
+| ------------------------------------------- | ---------------------------------------------------------------- | --------------- |
+| nothing                                     | ran to completion, 858 tokens                                    | n/a             |
+| probe disconnect, next call on a new client | the server ended it with an error at once                        | **59 ms**       |
+| probe disconnect, next call on the same one | the server ended it with an error at once                        | **68 ms**       |
+| unload, connection left open                | acknowledged at once, then **ran to completion, all 858 tokens** | n/a             |
+| disconnect, then unload ten seconds later   | the unload reached a finished request                            | **113 ms**      |
 
 The disconnect ends the generation and frees the slot in 59 to 113 ms,
 whichever connection the next call uses. The unload does not: the server
-acknowledges it in milliseconds and the generation finishes anyway. So the
-disconnect, not the unload, ended `llama3.2:latest`'s two calls. Why
-`granite4.1:3b`'s generations kept running past the same disconnect in the
-0.33.2 sweep is not established.
+acknowledges it in milliseconds and the generation finishes anyway. So the disconnect, not the unload, is the standing explanation for
+`llama3.2:latest`'s two calls ending. Why `granite4.1:3b`'s generations kept running past the same disconnect in the 0.33.2 sweep is not established. Neither is why the disconnect cleared nothing before the unload change.
 
 ### A runtime upgrade would have been credited with a prompt edit's fix
 
@@ -292,10 +286,9 @@ A later M5 run under 0.35.1 isolates the prompt edit. The old prompt scores
 18/25 cold and 16/25 with history. The new prompt scores 15/25 and 15/25, so
 the edit costs 3 cases cold and 1 with history.
 
-Neither fix travels across hosts, the stronger form of the rule. In the matched
+Neither fix travels across hosts. In the matched
 0.35.1 sweep the M5 recorded **56** stalls for this model with the new prompt,
-against **0** on the M1 Max. The M5 sweep's log holds 37 requests queued for up
-to 115.8 minutes. An idle re-run of the same configuration on 2026-10-19
+against **0** on the M1 Max. The M5 sweep's log shows another queue cascade. An idle re-run of the same configuration on 2026-10-19
 recorded **1** stall in 100 calls. The 56 is therefore an episode, not a
 property of the configuration. Nothing about the host, the runtime or the
 prompt predicts which run carries a cascade.
@@ -306,13 +299,10 @@ _Evidence for: anchor the per-call ceiling to what a user would wait for._
 
 Probes bound each call with `--timeout`, which defaults to 180 s. Every sweep
 here used 120 s for the shape and follow-up-edit probes. The notebook treats a reply that takes more than about a minute as unusable, so
-120 s is already twice that. The slowest of the eight models in the matched
-0.35.1 re-sweep medians 4.68 s on the M1 Max and 6.51 s on the M5.
+120 s is already twice that. Eight models are small enough to run on both hosts. The slowest of them in the
+matched 0.35.1 re-sweep medians 4.68 s on the M1 Max and 6.51 s on the M5.
 
-A one-off re-run of `llama3.2:latest` with `--timeout 7200` resolved **31**
-recorded stalls into **2** slow calls. Both were the same case, at 64.4 and
-62.1 minutes, and both ended in invalid JSON. The unaided shape run's 19 stalls
-resolved to zero.
+A one-off re-run of `llama3.2:latest` with `--timeout 7200`, on the 0.33.2 M1 Max sweep, resolved **31** recorded stalls into **2** slow calls. Both were the same case, each over an hour, and both ended in invalid JSON. The unaided shape run's 19 stalls resolved to zero; the notebook's [cascade section](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md#stalls-are-a-queueing-cascade-not-a-runtime-difference) holds the diagnostic.
 
 The run stays a diagnostic, and a long ceiling for every sweep would not help.
 The longer wait recovered no card; it would only turn each fast failure into a
@@ -325,10 +315,7 @@ the same point in each sweep._
 
 Every row of a serial sweep is measured at a different point in it. A series on the M5 under Ollama 0.35.1 ran one model's shape probe three times
 back to back, with no idle gap. Position was the only deliberate change. Free
-memory was read at each start; the notebook's [performance
-section](https://github.com/freemansoft/Flutter-
-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md#performance-
-by-host-and-runtime) holds every control.
+memory was read at each start; the notebook's [performance section](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md#performance-by-host-and-runtime) holds every control.
 
 | `granite4.1:8b`, three runs | Free at start | Median  | Cold start | With history |
 | --------------------------- | ------------- | ------- | ---------- | ------------ |
@@ -337,8 +324,8 @@ by-host-and-runtime) holds every control.
 | position 2                  | 0.16 GB       | 4346 ms | 24/25      | 20/25        |
 
 The median climbs **1.29x** and no score moves. Free memory falls across the
-same three runs, and this series does not separate it from position. The combined effect is real on that host, and at least as large as the
-**1.20x** an earlier control on the same host reported.
+same three runs, and this series does not separate it from position. The combined effect is real on that host, and at least as large as the **1.20x** an earlier position control on the same host
+reported.
 
 The same eight models differ by 1.14x to 1.78x across hosts in the matched
 0.35.1 re-sweep. Position moved this model further than two of those eight host
@@ -356,14 +343,13 @@ any token-level number._
 
 Ollama reports two token counts per call: `prompt_eval_count`, the prompt
 tokens the runner evaluated, and `prompt_eval_cached_count`, the tokens it
-served from its prefix cache. The first probe built on the cached count
-reported near-zero reuse on calls that should have shared a long prefix. Its system
-prompt tokenized to roughly 15k against an 8,192-token `num_ctx`, and Ollama
-cut it with no error.
+served from its prefix cache. A probe built on the cached count reported near-zero reuse on calls that should
+have shared a long prefix. Its system prompt tokenized to roughly 15k against
+an 8,192-token `num_ctx`, and Ollama cut it with no error: `prompt_eval_count`
+read 4,098 on every turn.
 
 The cut follows a formula. The table below shows one 13,349-token prompt sent
-at four window sizes under Ollama 0.35.1. Every call answered HTTP 200. The
-8,192 row reproduces the 4,098 the first probe reported.
+at four window sizes under Ollama 0.35.1. Every call answered HTTP 200. The 8,192 row reproduces that probe's 4,098 from a different prompt.
 
 | `num_ctx` requested | `prompt_eval_count` | `num_ctx / 2 + 2` |
 | ------------------- | ------------------- | ----------------- |
@@ -380,9 +366,7 @@ history behaves differently: a message that does not fit is dropped whole.
 Both show up only in `prompt_eval_count`.
 
 The chat server now warns at request time. The warning estimates tokens as
-characters divided by four, and checks the requested window rather than the
-allocated one. It would not have fired on the three whole-message history drops the notebook
-measured.
+characters divided by four, and checks the requested window rather than the larger one Ollama may allocate. It would not have fired on the whole-message history drops the [notebook records](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md#a-filled-context-an-oversized-history-message-is-dropped-whole-and-a-real-one-costs-some-models-a-third-of-their-shapes).
 
 ### The probes score with the chat server's card detector, which checks shape and not vocabulary
 
@@ -416,7 +400,7 @@ placeholder naming the type.
 
 A second server check, `unknownElementTypes`, compares each element type
 against the shipped `card_schema.json` and logs a warning. The shape probes
-record its result on every call, and no score counts it. Across two hosts on one runtime, **2,278** replies parsed as cards. Twelve of
+record its result on every call, and no score counts it. Across two hosts under Ollama 0.35.1, **2,278** replies parsed as cards. Twelve of
 them used a type the schema does not carry, all from `nemotron-3-nano:4b`:
 `Input.Paragraph` answering a text case, `Chart.ProgressRing` answering a gauge
 case.
