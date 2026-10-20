@@ -1,0 +1,90 @@
+
+===== baseline =====
+
+########## cold-start ##########
+PASS  date            6483ms  Input.Date
+PASS  date             264ms  Input.Date
+FAIL  time             574ms  prose
+FAIL  time             309ms  prose
+FAIL  toggle           500ms  prose
+FAIL  toggle           398ms  prose
+FAIL  text             571ms  prose
+FAIL  text             469ms  prose
+FAIL  number           334ms  prose
+FAIL  number           247ms  prose
+PASS  choice1         1173ms  Input.ChoiceSet
+PASS  choice1         1090ms  Input.ChoiceSet
+FAIL  choice2         2730ms  broken: prose-with-card (user sees raw JSON)
+FAIL  choice2         2666ms  broken: prose-with-card (user sees raw JSON)
+PASS  choice3         1126ms  Input.ChoiceSet
+PASS  choice3         1052ms  Input.ChoiceSet
+FAIL  choice4          447ms  broken: invalid JSON: FormatException: Unexpected character (at character 2)
+[Input.Toggle, id: notify, title: Email me updates]
+ ^
+
+FAIL  choice4          364ms  broken: invalid JSON: FormatException: Unexpected character (at character 2)
+[Input.Toggle, id: notify, title: Email me updates]
+ ^
+
+FAIL  choice5         3474ms  broken: invalid JSON: FormatException: Unexpected character (at character 2)
+[Input.ChoiceSet]
+ ^
+
+FAIL  choice5         3353ms  broken: invalid JSON: FormatException: Unexpected character (at character 2)
+[Input.ChoiceSet]
+ ^
+
+FAIL  choice6         2716ms  broken: invalid JSON: FormatException: Unexpected character (at character 2)
+[Input.ChoiceSet,
+ ^
+
+FAIL  choice6         2669ms  broken: invalid JSON: FormatException: Unexpected character (at character 2)
+[Input.ChoiceSet,
+ ^
+
+PASS  pie             2642ms  Chart.Pie
+PASS  pie             2549ms  Chart.Pie
+PASS  bar             1698ms  Chart.VerticalBar
+PASS  bar             1606ms  Chart.VerticalBar
+PASS  line            2964ms  Chart.Line
+PASS  line            3156ms  Chart.Line
+PASS  gauge           1530ms  Chart.Gauge
+PASS  gauge           2610ms  Chart.Gauge
+PASS  rating_show      498ms  Rating
+PASS  rating_show      399ms  Rating
+FAIL  rating_ask       449ms  no-input: got {Rating} want {Input.ChoiceSet, Input.Number, Input.Rating}
+FAIL  rating_ask       341ms  no-input: got {Rating} want {Input.ChoiceSet, Input.Number, Input.Rating}
+FAIL  carousel        9162ms  broken: invalid JSON: FormatException: Unexpected character (at character 2)
+[ColumnSet]
+ ^
+
+FAIL  carousel        8894ms  broken: invalid JSON: FormatException: Unexpected character (at character 2)
+[ColumnSet]
+ ^
+
+FAIL  table           2521ms  prose
+FAIL  table           2423ms  prose
+FAIL  facts           8164ms  prose
+FAIL  facts         120015ms  broken: timeout (120s)
+FAIL  columnset     120008ms  broken: timeout (120s)
+FAIL  columnset     120009ms  broken: timeout (120s)
+FAIL  codeblock     120018ms  broken: timeout (120s)
+FAIL  codeblock     262484ms  broken: timeout (120s)
+FAIL  progress      120012ms  broken: timeout (120s)
+FAIL  progress      120013ms  broken: timeout (120s)
+FAIL  badge         120015ms  broken: timeout (120s)
+FAIL  badge         120018ms  broken: timeout (120s)
+FAIL  prose         120008ms  broken: timeout (120s)
+FAIL  prose         120009ms  broken: timeout (120s)
+== cold-start     shapes 8/25 ==
+
+########## with-history ##########
+FAIL  date          120006ms  broken: timeout (120s)
+FAIL  date          120005ms  broken: timeout (120s)
+FAIL  time          120007ms  broken: timeout (120s)
+FAIL  time          120007ms  broken: timeout (120s)
+FAIL  toggle        120006ms  broken: timeout (120s)
+FAIL  toggle        120008ms  broken: timeout (120s)
+FAIL  text          120007ms  broken: timeout (120s)
+FAIL  text          120007ms  broken: timeout (120s)
+FAIL  number        120011ms  broken: timeout (120s)

@@ -20,6 +20,7 @@ this file.
 10. Attribution
 11. Presentation
 12. Section order and article shape
+13. Altitude: an article is not the notebook
 
 ## 1. Verifying claims
 
@@ -621,3 +622,41 @@ When reviewing rather than drafting, structure findings are worth as much as
 wording findings and are easier to leave vague. Name the order you would use
 and what each section would then hold, rather than reporting only that the
 order is wrong.
+
+## 13. Altitude: an article is not the notebook
+
+An article carries the highlights, the decision points, and the controls: what
+a reader needs to know, why it matters, and what was held constant so they can
+trust it. The notebook carries everything else, and the article links to it.
+Stated by the author on 2026-10-20, during article 5's revision.
+
+- **A decision table is a highlight; the forensics behind it are not.** Keep
+  the table that separates two causes or two configurations. Move call
+  indices, per-event seconds, status codes, block boundaries, and raw call
+  counts behind a `ModelBehavior.md` link. The test: if a figure changes what
+  the reader does, it stays; if it only proves the author did the work, it
+  links.
+- **Call out differences driven by memory or architecture explicitly.** A
+  result scoped to a 64 GB host, a recurrent model, or one runner is a
+  decision point in itself; say the scope in the sentence that states the
+  result, not in a footnote.
+- **State the control, not the procedure.** "The weights, prompt digest and
+  host stayed constant" earns its words; the order the probes ran in does
+  not, unless order is the variable.
+- **Hosts are assumed to behave alike; spend words only on a difference.**
+  "The same twelve calls on both hosts" restates the reader's default
+  assumption and was cut from article 5. The inversion is a hypothesis-driven
+  test: a memory-pressure or architecture experiment is run to find a
+  difference, so state the hypothesis and report the verdict either way.
+  There the null is the finding and earns its sentence, as the 64 GB
+  co-residency null does.
+- **The nature and depth of the checks is a highlight, not forensics.** The
+  altitude cut removes event-level data, never the explanation of the
+  verification machinery. Article 5's detector section walks the three layers
+  a reply passes and what each layer cannot see, and stays at full depth: a
+  reader deciding whether to trust the scores needs the checks' nature more
+  than any single figure.
+- **Every detail cut this way needs the link that absorbs it.** A cut without
+  a link orphans the claim; the referent pass treats "the notebook has the
+  full record" with no anchor as a defect.
+

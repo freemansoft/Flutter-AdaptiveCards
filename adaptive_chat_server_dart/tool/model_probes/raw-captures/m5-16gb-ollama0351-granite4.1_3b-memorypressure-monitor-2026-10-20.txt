@@ -1,0 +1,50 @@
+# Arm B monitor timeline: per-minute server count, ceiling-500s, residency, free pages, swap
+# qwen3.5:9b preloaded 07:48 (evicted by Ollama within 3 min); probe start 07:49:45, cap kill 08:34:38
+  t+0m srv=0 ceil5xx=0 resident=qwen3.5:9b free=0.05GB swap=4083.50M
+  t+1m srv=34 ceil5xx=0 resident=granite4.1:3b free=1.50GB swap=3884.31M
+  t+2m srv=39 ceil5xx=0 resident=granite4.1:3b free=1.08GB swap=3836.31M
+  t+3m srv=39 ceil5xx=0 resident=granite4.1:3b free=0.84GB swap=3788.31M
+  t+4m srv=39 ceil5xx=0 resident=granite4.1:3b free=0.65GB swap=3772.31M
+  t+5m srv=39 ceil5xx=0 resident=granite4.1:3b free=0.28GB swap=3740.31M
+  t+6m srv=40 ceil5xx=1 resident=granite4.1:3b free=0.25GB swap=3716.31M
+  t+7m srv=40 ceil5xx=1 resident=granite4.1:3b free=0.07GB swap=3676.31M
+  t+8m srv=41 ceil5xx=2 resident=granite4.1:3b free=0.08GB swap=3644.31M
+  t+9m srv=41 ceil5xx=2 resident=granite4.1:3b free=0.07GB swap=3644.31M
+  t+10m srv=42 ceil5xx=3 resident=granite4.1:3b free=0.11GB swap=3588.31M
+  t+13m srv=42 ceil5xx=3 resident=granite4.1:3b free=0.23GB swap=3452.31M
+  t+14m srv=42 ceil5xx=3 resident=granite4.1:3b free=0.16GB swap=3124.56M
+  t+15m srv=42 ceil5xx=3 resident=granite4.1:3b free=0.11GB swap=3124.56M
+  t+16m srv=43 ceil5xx=4 resident=granite4.1:3b free=0.14GB swap=3116.56M
+  t+17m srv=43 ceil5xx=4 resident=granite4.1:3b free=0.13GB swap=3116.56M
+  t+18m srv=43 ceil5xx=4 resident=granite4.1:3b free=0.11GB swap=3116.56M
+  t+19m srv=43 ceil5xx=4 resident=granite4.1:3b free=0.10GB swap=3116.56M
+  t+20m srv=43 ceil5xx=4 resident=granite4.1:3b free=0.09GB swap=3100.56M
+  t+21m srv=43 ceil5xx=4 resident=granite4.1:3b free=3.55GB swap=3020.56M
+  t+22m srv=44 ceil5xx=5 resident=granite4.1:3b free=3.59GB swap=3020.56M
+  t+23m srv=44 ceil5xx=5 resident=granite4.1:3b free=3.46GB swap=3020.56M
+  t+24m srv=44 ceil5xx=5 resident=granite4.1:3b free=3.17GB swap=3012.56M
+  t+25m srv=44 ceil5xx=5 resident=granite4.1:3b free=3.08GB swap=3012.56M
+  t+26m srv=44 ceil5xx=5 resident=granite4.1:3b free=3.23GB swap=3012.56M
+  t+27m srv=44 ceil5xx=5 resident=granite4.1:3b free=3.19GB swap=3012.56M
+  t+28m srv=45 ceil5xx=6 resident=granite4.1:3b free=3.17GB swap=3012.56M
+  t+29m srv=45 ceil5xx=6 resident=granite4.1:3b free=3.14GB swap=3012.56M
+  t+30m srv=45 ceil5xx=6 resident=granite4.1:3b free=3.01GB swap=3012.56M
+  t+31m srv=45 ceil5xx=6 resident=granite4.1:3b free=2.99GB swap=3012.56M
+  t+32m srv=45 ceil5xx=6 resident=granite4.1:3b free=3.00GB swap=3012.56M
+  t+33m srv=45 ceil5xx=6 resident=granite4.1:3b free=2.96GB swap=3004.56M
+  t+34m srv=45 ceil5xx=6 resident=granite4.1:3b free=2.83GB swap=3004.56M
+  t+35m srv=45 ceil5xx=6 resident=granite4.1:3b free=2.86GB swap=3004.56M
+  t+36m srv=46 ceil5xx=7 resident=granite4.1:3b free=2.83GB swap=3004.56M
+  t+37m srv=46 ceil5xx=7 resident=granite4.1:3b free=2.96GB swap=3004.56M
+  t+38m srv=47 ceil5xx=8 resident=granite4.1:3b free=2.93GB swap=3004.56M
+  t+39m srv=47 ceil5xx=8 resident=granite4.1:3b free=2.93GB swap=3004.56M
+  t+40m srv=48 ceil5xx=9 resident=granite4.1:3b free=2.91GB swap=3004.56M
+  t+41m srv=48 ceil5xx=9 resident=granite4.1:3b free=2.08GB swap=3004.56M
+  t+42m srv=48 ceil5xx=9 resident=granite4.1:3b free=1.40GB swap=2996.56M
+  t+43m srv=48 ceil5xx=9 resident=granite4.1:3b free=0.06GB swap=2996.56M
+  t+44m srv=48 ceil5xx=9 resident=granite4.1:3b free=0.23GB swap=2996.56M
+  t+45m srv=48 ceil5xx=9 resident=granite4.1:3b free=0.27GB swap=2996.56M
+# Retained generation after arm B's client was killed, observed 2026-10-20T08:36:07-04:00
+# probe killed 08:34:38; this reading minutes later:
+63714       46:54 125.3 2767616 /opt/homebrew/Cellar/ollama/0.35.1_1/libexec/lib/ollama/llama-server
+{"models":[{"name":"granite4.1:3b","model":"granite4.1:3b","size":2893440613,"digest":"6fd349357287c7ffc9e38189a93b48ea175d24fc566b38f09cfc564fb7f303eb","details":{"parent_model":"","format":"gguf","family":"granite","families":["granite"],"parameter_size":"3.4B","quantization_level":"Q4_K_M"},"expires_at":"2026-10-20T08:33:01.066611-04:00","size_vram":2893440613,"context_length":16384}]}

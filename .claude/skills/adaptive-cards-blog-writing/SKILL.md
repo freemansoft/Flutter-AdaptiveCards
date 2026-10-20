@@ -418,6 +418,11 @@ Section order and article shape)
 - [ ] Title survives the paraphrase test; README status row matches it.
 - [ ] Prose near 1,500 words, with any excess past 2,000 justified in the
       README, and the on-page count under about 3,500.
+- [ ] Altitude: highlights, decision points and controls stay; call indices,
+      per-event seconds, status codes and raw counts move behind a
+      `ModelBehavior.md` link, and every such cut names the link that absorbs
+      it. Scope a result to its memory or architecture in the sentence that
+      states it.
 - [ ] Each term defined once; every cross-reference resolves.
 - [ ] Terms table folded in `<details>` with the heading outside the fold.
 
