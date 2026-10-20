@@ -52,7 +52,7 @@ The table groups them by when they apply. The third column says what goes
 wrong when a check is skipped, and the last column names the section that
 holds the measurement. The figures span Ollama 0.32.14 through 0.35.1 and two
 Apple silicon hosts, and every figure traces to
-[`ModelBehavior.md`](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md),
+[`ModelBehavior.md`](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/1f50ceef/adaptive_chat_server_dart/ModelBehavior.md),
 the lab notebook in the repository.
 
 | When                              | Rule                                                                                                 | What goes wrong without it                                            | Evidence below                                                                            |
@@ -90,7 +90,7 @@ The gap between the columns measures what the busy machine cost.
 
 The idle-machine run reproduced the 17/25 and 3/3 the model had scored before
 the incident. The notebook's
-[sweep section](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md#the-sweep-and-why-the-unload-step-matters)
+[sweep section](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/1f50ceef/adaptive_chat_server_dart/ModelBehavior.md#the-sweep-and-why-the-unload-step-matters)
 has the full account.
 
 A probe started during the eviction window ran 2.4x slower per call than on the
@@ -98,7 +98,7 @@ idle machine above. A finished model that just sits in memory cost nothing measu
 and it makes the rule cheap. A 16 GB host inverts it: Ollama evicts the
 finished model rather than hold two. A memory-pressure control on the M5, under 0.35.1, pushed swap to 3.7 GB.
 One runaway then became a 20-stall block, the queue cascade the next section
-explains; the notebook's [cascade section](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md#stalls-are-a-queueing-cascade-not-a-runtime-difference) holds that run. The teardown is the expensive state, not the
+explains; the notebook's [cascade section](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/1f50ceef/adaptive_chat_server_dart/ModelBehavior.md#stalls-are-a-queueing-cascade-not-a-runtime-difference) holds that run. The teardown is the expensive state, not the
 residency, so the sweep only waits for
 eviction to finish.
 
@@ -182,7 +182,7 @@ call.
 
 None of these runs produced the slow-model pattern. `granite4.1:3b`'s 52 stalls
 resolve to two runaway generations, one timed at 70 minutes in the server log.
-The notebook's [cascade section](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md#stalls-are-a-queueing-cascade-not-a-runtime-difference) holds the block-by-block record for this section and the next two.
+The notebook's [cascade section](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/1f50ceef/adaptive_chat_server_dart/ModelBehavior.md#stalls-are-a-queueing-cascade-not-a-runtime-difference) holds the block-by-block record for this section and the next two.
 
 A later sweep shows what becomes of an abandoned request: the 2026-10-03 M5 sweep, whose log survives. It is half of a matched pair with the M1 Max under Ollama 0.35.1. Ollama records a
 duration per request. Divide a model's summed durations by the wall clock of its stretch of the sweep
@@ -298,7 +298,7 @@ here used 120 s for the shape and follow-up-edit probes. The notebook treats a r
 120 s is already twice that. Eight models are small enough to run on both hosts. The slowest of them in the
 matched 0.35.1 re-sweep medians 4.68 s on the M1 Max and 6.51 s on the M5.
 
-A one-off re-run of `llama3.2:latest` with `--timeout 7200`, on the 0.33.2 M1 Max sweep, resolved **31** recorded stalls into **2** slow calls. Both were the same case, each over an hour, and both ended in invalid JSON. The unaided shape run's 19 stalls resolved to zero; the notebook's [cascade section](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md#stalls-are-a-queueing-cascade-not-a-runtime-difference) holds the diagnostic.
+A one-off re-run of `llama3.2:latest` with `--timeout 7200`, on the 0.33.2 M1 Max sweep, resolved **31** recorded stalls into **2** slow calls. Both were the same case, each over an hour, and both ended in invalid JSON. The unaided shape run's 19 stalls resolved to zero; the notebook's [cascade section](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/1f50ceef/adaptive_chat_server_dart/ModelBehavior.md#stalls-are-a-queueing-cascade-not-a-runtime-difference) holds the diagnostic.
 
 The run stays a diagnostic, and a long ceiling for every sweep would not help.
 The longer wait recovered no card; it would only turn each fast failure into a
@@ -313,7 +313,7 @@ Every row of a serial sweep is measured at a different point in it. Position
 here means how much serial work the machine has already done when the run
 starts, not the order of cases inside a probe. A series on the M5 under Ollama 0.35.1 ran one model's shape probe three times
 back to back, with no idle gap. Position was the only deliberate change. Free
-memory was read at each start; the notebook's [performance section](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md#performance-by-host-and-runtime) holds every control.
+memory was read at each start; the notebook's [performance section](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/1f50ceef/adaptive_chat_server_dart/ModelBehavior.md#performance-by-host-and-runtime) holds every control.
 
 | `granite4.1:8b`, three runs | Free at start | Median  | Cold start | With history |
 | --------------------------- | ------------- | ------- | ---------- | ------------ |
@@ -364,7 +364,7 @@ history behaves differently: a message that does not fit is dropped whole.
 Both show up only in `prompt_eval_count`.
 
 The chat server now warns at request time. The warning estimates tokens as
-characters divided by four, and checks the requested window rather than the larger one Ollama may allocate. It would not have fired on the whole-message history drops the [notebook records](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md#a-filled-context-an-oversized-history-message-is-dropped-whole-and-a-real-one-costs-some-models-a-third-of-their-shapes).
+characters divided by four, and checks the requested window rather than the larger one Ollama may allocate. It would not have fired on the whole-message history drops the [notebook records](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/1f50ceef/adaptive_chat_server_dart/ModelBehavior.md#a-filled-context-an-oversized-history-message-is-dropped-whole-and-a-real-one-costs-some-models-a-third-of-their-shapes).
 
 ### A pass certifies only what the detector checks
 
@@ -407,4 +407,4 @@ than it looks. A model could invent a type inside its case's wanted set and stil
 The repository is
 [https://github.com/freemansoft/Flutter-AdaptiveCards](https://github.com/freemansoft/Flutter-AdaptiveCards),
 and the lab notebook every figure above comes from is at
-[https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md).
+[https://github.com/freemansoft/Flutter-AdaptiveCards/blob/1f50ceef/adaptive_chat_server_dart/ModelBehavior.md](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/1f50ceef/adaptive_chat_server_dart/ModelBehavior.md).
