@@ -374,6 +374,15 @@ grep -nE '^(Because|Since|While|Although|When|Given|If|After|Once) ' "$A"
 # One of a pair named bare. Point it at whatever the article has two of.
 grep -nE '\b(the|a|that|this) channel\b' "$A" | grep -vE 'tool channel|prose channel'
 
+# Line-wrapped link destinations. CommonMark does not allow a newline inside
+# a bare URL, so a wrapped link renders as literal text instead of a link.
+# Tools that reflow prose (textwrap, some editors) create these silently;
+# Prettier does not repair them, so the format gate passes with them in. On
+# 2026-10-20 two such links were the absorbers for four sections' notebook
+# detail, and every altitude cut behind them was orphaned until a review
+# noticed. Each hit below is a link whose URL continues on the next line.
+grep -nE '\]\(https?://[^)]*$' "$A"
+
 # Markdown format gate. adaptive_chat_server_dart/** is covered by check:md:chat,
 # not by check:md. Fix with npm run format:md:chat.
 npm run check:md:chat
