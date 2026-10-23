@@ -1,0 +1,13 @@
+$ curl -s http://127.0.0.1:11434/api/version
+{"version":"0.35.1"}
+$ python3 -I m1max_ollama0351_overflow_roles_2026_10_22.py llama3.2:latest
+check4: tiny prompt                    num_ctx   2048  prompt_eval_count 28  ps [('llama3.2:latest', 2048)]
+check4: tiny prompt                    num_ctx   8192  prompt_eval_count 28  ps [('llama3.2:latest', 8192)]
+check4: tiny prompt, num_ctx omitted   ps [('llama3.2:latest', 131072)]
+fits: big as user                      num_ctx  65536  prompt_eval_count 12632  ps [('llama3.2:latest', 65536)]
+A big system prompt                    num_ctx   8192  prompt_eval_count 4098  ps [('llama3.2:latest', 8192)]
+B big single user message              num_ctx   8192  prompt_eval_count 4098  ps [('llama3.2:latest', 8192)]
+C big history msg + Understood + q     num_ctx   8192  prompt_eval_count 40  ps [('llama3.2:latest', 8192)]
+A big system prompt                    num_ctx  16384  prompt_eval_count 12628  ps [('llama3.2:latest', 16384)]
+B big single user message              num_ctx  16384  prompt_eval_count 12632  ps [('llama3.2:latest', 16384)]
+C big history msg + Understood + q     num_ctx  16384  prompt_eval_count 12645  ps [('llama3.2:latest', 16384)]

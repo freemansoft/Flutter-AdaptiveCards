@@ -1,0 +1,42 @@
+# KV cache type vs memory, 14 models, Apple M1 Max / 64 GB, Ollama 0.35.1 (Homebrew 0.35.1_1), 2026-10-22
+# Two arms, each one `ollama serve` with OLLAMA_CONTEXT_LENGTH=32768 and OLLAMA_FLASH_ATTENTION unset
+# (llama-server launched with --flash-attn auto in both), differing only in OLLAMA_KV_CACHE_TYPE (f16 / q8_0).
+# Each model loaded with one /api/generate {"num_ctx":35851,"num_predict":1}, then /api/ps read, then `ollama stop`.
+# Breakdown is llama-server common_memory_breakdown_print, MiB: self = weights + context (KV cache, plus recurrent
+# state on hybrid models) + compute; the first breakdown printed per load. The two nvfp4 builds load on the
+# MLX runner, which prints none. Script: run_0351_kv_study.sh step 1; logs kvstudy-serve-{f16,q8_0}.log.
+
+## f16
+model                           ctx    size_vram  self = weights + context + compute (MiB)
+llama3.2:latest               35851   6550863216  6247 = 1918 + 3948 + 381
+nemotron-3-nano:4b            35851   3750861208  3577 = 2428 + 645 + 503
+llama3-groq-tool-use:8b        8192   5953667726  5396 = 4156 + 1024 + 216
+llama3-chatqa:8b               8192   5658126581  5396 = 4155 + 1024 + 216
+granite4.1:8b                 35851  11787892162  11021 = 4876 + 5640 + 505
+granite4.1:3b                 35851   5444080762  5191 = 1998 + 2820 + 373
+qwen2.5-coder:7b              32768   6578881166  6274 = 4168 + 1792 + 314
+qwen3.5:9b                    35851   7021548010  6420 = 4717 + 1178 + 525
+gpt-oss:20b                   35851  13189502729  13424 = 12036 + 900 + 487
+qwen3.8:27b-nvfp4             35851  18487194736  (MLX runner, no breakdown)
+qwen3.6:27b-coding-nvfp4      35851  20069965300  (MLX runner, no breakdown)
+qwen3-coder:30b               35851  22398065704  21360 = 17524 + 3384 + 452
+nemotron-3-nano:30b           35851  24599718788  23460 = 22908 + 259 + 292
+nemotron-3.5-lightning:30b    35851  25804448726  24714 = 24014 + 354 + 346
+
+## q8_0
+model                           ctx    size_vram  self = weights + context + compute (MiB)
+llama3.2:latest               35851   4637505616  4422 = 1918 + 2097 + 406
+nemotron-3-nano:4b            35851   3490090843  3328 = 2428 + 380 + 519
+llama3-groq-tool-use:8b        8192   5467212348  4932 = 4156 + 544 + 232
+llama3-chatqa:8b               8192   5171671203  4932 = 4155 + 544 + 232
+granite4.1:8b                 35851   9049357680  8409 = 4876 + 2996 + 537
+granite4.1:3b                 35851   4078992096  3890 = 1998 + 1498 + 393
+qwen2.5-coder:7b              32768   5712841276  5448 = 4168 + 952 + 328
+qwen3.5:9b                    35851   6467386079  5892 = 4717 + 649 + 525
+gpt-oss:20b                   35851  13140219656  12980 = 12036 + 478 + 466
+qwen3.8:27b-nvfp4             35851  18487194736  (MLX runner, no breakdown)
+qwen3.6:27b-coding-nvfp4      35851  20069965300  (MLX runner, no breakdown)
+qwen3-coder:30b               35851  20764206038  19802 = 17524 + 1797 + 480
+nemotron-3-nano:30b           35851  24495846849  23361 = 22908 + 159 + 292
+nemotron-3.5-lightning:30b    35851  25804448726  24615 = 24014 + 255 + 346
+
