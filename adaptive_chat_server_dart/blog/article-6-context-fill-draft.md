@@ -1,18 +1,17 @@
-# Ollama silently drops a history message larger than its context window
+# Ollama silently drops a history message larger than its context window on GGUF builds
 
 <div style="background: rgb(192, 0, 0); color: white; font-weight: bold; padding: 12px;">
   This article contains updated prose and later test data than the original.
   Earlier figures and tables on this page were replaced.
 </div>
 
-In [`freemansoft/Flutter-AdaptiveCards`](https://github.com/freemansoft/Flutter-AdaptiveCards) a demonstration Dart chat server hands a question to a local Ollama
-model. It asks for the answer as Adaptive Card JSON, a strict,
-closed-vocabulary schema that a Flutter client renders as interactive UI
-rather than as text. A directory of probes measures which local models manage
-that and how well. Every one of those probes had been tested using a
-nearly empty context window. Each call carried a system prompt, one question,
-and at most a short seed exchange. A real conversation fills the context, and
-this article measures what Ollama does when it is full.
+In [`freemansoft/Flutter-AdaptiveCards`](https://github.com/freemansoft/Flutter-AdaptiveCards)
+a demonstration Dart chat server asks a local Ollama model for Adaptive Card
+JSON, a strict, closed-vocabulary schema that a Flutter client renders as
+interactive UI. A set of probes measures how well local models manage
+that. Every probe ran with a nearly empty context window: a system prompt, one
+question, and at most a short seed exchange. A real conversation fills the
+context, and this article measures what Ollama does when it is full.
 
 The measurements ran on an Apple M1 Max with 64 GB under Ollama 0.35.1, and on
 an Apple M5 with 16 GB under Ollama 0.33.3. They produced three findings:
@@ -22,8 +21,8 @@ an Apple M5 with 16 GB under Ollama 0.33.3. They produced three findings:
   for.
 - **The same text is 4.30 characters per token on one tokenizer and 2.74 on
   another**, so a window sized in characters can overflow.
-- **A history message larger than the allocated window is dropped whole, not
-  trimmed.** Ollama returns no error and no warning.
+- **On GGUF builds, a history message larger than the allocated window is
+  dropped whole, not trimmed.** Ollama returns no error and no warning.
 
 Nothing in the model's reply signals any of these. `ollama ps` shows the
 window Ollama allocated. Ollama's `prompt_eval_count` reports how many tokens
@@ -241,7 +240,7 @@ against 23 empty, a gap of one to three cases. The
 [companion article](https://joe.blog.freemansoft.com/2026/09/a-full-context-breaks-three-local.html)
 measures what a full window does to each model.
 
-Two more MLX builds without `nvfp4` quantization let uss differentiate between the runner and
+Two more MLX builds without `nvfp4` quantization let us differentiate between the runner and
 quantization. The table shows four MLX builds beside a GGUF build, each run
 with the same 35851-token request and 28000-token filler. The **Runner** column
 comes from Ollama's server log for these runs.

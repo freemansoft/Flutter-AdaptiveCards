@@ -57,10 +57,11 @@ the lab notebook in that repository.
 
 Every full-window run reports the token count it delivered in the **Prompt
 tokens, full** column. Tokenizers differ enough that a filler sized in
-characters can overflow a window in some models and be discarded whole, with no error.
+characters can overflow a window in some models and, on GGUF builds, be
+discarded whole, with no error.
 The companion article [Ollama silently drops a history message larger
-than its context
-window](https://joe.blog.freemansoft.com/2026/09/ollama-silently-drops-history-message.html)
+than its context window on GGUF
+builds](https://joe.blog.freemansoft.com/2026/09/ollama-silently-drops-history-message.html)
 covers that defect and its fix.
 
 ## Five of eight models hold on a full window
