@@ -1,4 +1,4 @@
-# Ollama silently drops a history message larger than its context window
+# Ollama silently drops a history message larger than its context window on GGUF builds
 
 <div style="background: rgb(192, 0, 0); color: white; font-weight: bold; padding: 12px;">
   This article contains updated prose and later test data than the original.
@@ -22,8 +22,8 @@ an Apple M5 with 16 GB under Ollama 0.33.3. They produced three findings:
   for.
 - **The same text is 4.30 characters per token on one tokenizer and 2.74 on
   another**, so a window sized in characters can overflow.
-- **A history message larger than the allocated window is dropped whole, not
-  trimmed.** Ollama returns no error and no warning.
+- **On GGUF builds, a history message larger than the allocated window is
+  dropped whole, not trimmed.** Ollama returns no error and no warning.
 
 Nothing in the model's reply signals any of these. `ollama ps` shows the
 window Ollama allocated. Ollama's `prompt_eval_count` reports how many tokens
@@ -241,7 +241,7 @@ against 23 empty, a gap of one to three cases. The
 [companion article](https://joe.blog.freemansoft.com/2026/09/a-full-context-breaks-three-local.html)
 measures what a full window does to each model.
 
-Two more MLX builds without `nvfp4` quantization let uss differentiate between the runner and
+Two more MLX builds without `nvfp4` quantization let us differentiate between the runner and
 quantization. The table shows four MLX builds beside a GGUF build, each run
 with the same 35851-token request and 28000-token filler. The **Runner** column
 comes from Ollama's server log for these runs.
