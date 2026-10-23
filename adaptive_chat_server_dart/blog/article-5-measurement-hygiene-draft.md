@@ -1,5 +1,10 @@
 # Eight measurement rules from a local-model benchmark on Ollama
 
+<div style="background: rgb(192, 0, 0); color: white; font-weight: bold; padding: 12px;">
+  This article contains updated prose and later test data than the original.
+  Earlier figures and tables on this page were replaced.
+</div>
+
 In
 [`freemansoft/Flutter-AdaptiveCards`](https://github.com/freemansoft/Flutter-AdaptiveCards)
 a demonstration Flutter client sends questions to a Dart chat server. The
