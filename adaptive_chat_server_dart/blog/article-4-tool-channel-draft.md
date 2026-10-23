@@ -1,5 +1,10 @@
 # A function that never runs: Ollama's tool channel as structured output for card JSON
 
+<div style="background: rgb(192, 0, 0); color: white; font-weight: bold; padding: 12px;">
+  This article contains updated prose and later test data than the original.
+  Earlier figures and tables on this page were replaced.
+</div>
+
 In
 [`freemansoft/Flutter-AdaptiveCards`](https://github.com/freemansoft/Flutter-AdaptiveCards)
 a demonstration Dart chat server hands a question to a local Ollama model. It

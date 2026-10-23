@@ -1,0 +1,20 @@
+# Ollama 0.35.1 Homebrew service log, M1 Max / 64 GB, 2026-10-22 21:20-21:28
+# Runner lines for the two MLX control builds run through context_fill_probe.dart
+# (--fill-tokens 0 and 28000, --num-ctx 35851, --no-calibrate). Extracted from
+# /opt/homebrew/var/log/ollama.log; no starting llama-server line appears in the window.
+time=2026-10-22T21:20:34.351-04:00 level=INFO source=client.go:441 msg="starting mlx runner subprocess" model=nemotron-3-nano-mlx:4b-bf16 port=55930
+time=2026-10-22T21:20:34.468-04:00 level=INFO source=server.go:46 msg="MLX engine initialized" "MLX version"=0.32.3 device=gpu
+time=2026-10-22T21:20:36.055-04:00 level=INFO source=client.go:109 msg="mlx runner is ready" port=55930
+time=2026-10-22T21:21:27.482-04:00 level=INFO source=client.go:148 msg="stopping mlx runner subprocess" pid=15574
+time=2026-10-22T21:21:38.455-04:00 level=INFO source=client.go:441 msg="starting mlx runner subprocess" model=nemotron-3-nano-mlx:4b-bf16 port=56740
+time=2026-10-22T21:21:38.529-04:00 level=INFO source=server.go:46 msg="MLX engine initialized" "MLX version"=0.32.3 device=gpu
+time=2026-10-22T21:21:39.261-04:00 level=INFO source=client.go:109 msg="mlx runner is ready" port=56740
+time=2026-10-22T21:23:39.911-04:00 level=INFO source=client.go:148 msg="stopping mlx runner subprocess" pid=15913
+time=2026-10-22T21:23:50.886-04:00 level=INFO source=client.go:441 msg="starting mlx runner subprocess" model=mvincig11/semif-qwen3.5-4b-mlx-4bit:latest port=57089
+time=2026-10-22T21:23:50.955-04:00 level=INFO source=server.go:46 msg="MLX engine initialized" "MLX version"=0.32.3 device=gpu
+time=2026-10-22T21:23:51.792-04:00 level=INFO source=client.go:109 msg="mlx runner is ready" port=57089
+time=2026-10-22T21:24:40.071-04:00 level=INFO source=client.go:148 msg="stopping mlx runner subprocess" pid=16313
+time=2026-10-22T21:24:50.940-04:00 level=INFO source=client.go:441 msg="starting mlx runner subprocess" model=mvincig11/semif-qwen3.5-4b-mlx-4bit:latest port=57164
+time=2026-10-22T21:24:50.995-04:00 level=INFO source=server.go:46 msg="MLX engine initialized" "MLX version"=0.32.3 device=gpu
+time=2026-10-22T21:24:51.542-04:00 level=INFO source=client.go:109 msg="mlx runner is ready" port=57164
+time=2026-10-22T21:27:32.503-04:00 level=INFO source=client.go:148 msg="stopping mlx runner subprocess" pid=16543

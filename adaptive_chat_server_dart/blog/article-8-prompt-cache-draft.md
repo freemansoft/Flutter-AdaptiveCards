@@ -1,5 +1,10 @@
 # On Ollama, a model's memory type and its runner decide how much of the cached prompt a new conversation reuses
 
+<div style="background: rgb(192, 0, 0); color: white; font-weight: bold; padding: 12px;">
+  This article contains updated prose and later test data than the original.
+  Earlier figures and tables on this page were replaced.
+</div>
+
 In
 [`freemansoft/Flutter-AdaptiveCards`](https://github.com/freemansoft/Flutter-AdaptiveCards)
 a demonstration Dart chat server asks a local Ollama model for an answer as

@@ -1,5 +1,10 @@
 # A full context breaks three local models, each in a different way
 
+<div style="background: rgb(192, 0, 0); color: white; font-weight: bold; padding: 12px;">
+  This article contains updated prose and later test data than the original.
+  Earlier figures and tables on this page were replaced.
+</div>
+
 In
 [`freemansoft/Flutter-AdaptiveCards`](https://github.com/freemansoft/Flutter-AdaptiveCards)
 a demonstration Dart chat server hands a question to a local Ollama model. It
@@ -22,7 +27,8 @@ The host was an Apple M1 Max with 64 GB, under Ollama 0.33.3, with two
 empty-window cells from a later 0.34.0 run. Five models move by three cases or
 fewer out of 25, in both directions. Three lose 5, 5 and 7 cases. Each of those
 three fails a different way, so no single validation check catches them. Two
-models also swap places between the two conditions.
+models also swap places between the two conditions. A re-run under Ollama
+0.35.1 finds that a q8_0 KV cache moves two of the eight full-window scores.
 
 Every figure is transcribed from
 [`ModelBehavior.md`](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md),
@@ -36,7 +42,7 @@ the lab notebook in that repository.
 | Term                    | What it means here                                                                                                                                                                                                                                                                                                                                                                                          |
 | ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Window**              | The context window: the number of tokens Ollama allocates to one request, which holds the system prompt, the history and the question.                                                                                                                                                                                                                                                                      |
-| **Trained window**      | The largest context window a model was built for. Ollama allocates `min(requested, trained window)`, so a request cannot exceed it.                                                                                                                                                                                                                                                                         |
+| **Trained window**      | The largest context window a model was built for. Every window Ollama allocated in these runs was `min(requested, trained window)`, so no allocation exceeded it.                                                                                                                                                                                                                                           |
 | **Empty window**        | The same 25 cases with no history: the card system prompt and the question, about 4,000 tokens depending on the tokenizer. It is the comparison column throughout.                                                                                                                                                                                                                                          |
 | **Full window**         | The same 25 cases with a filler history sized so the prompt fills about three quarters of the window Ollama allocates: roughly 48,500 of 65,536 tokens, or 24,721 of 32,768 for `qwen2.5-coder:7b`. A **near-empty** window, used once in the caveats, is a third condition at about an eighth.                                                                                                             |
 | **Arm**                 | One of the two conditions a model is measured under, empty window or full window.                                                                                                                                                                                                                                                                                                                           |
@@ -44,6 +50,7 @@ the lab notebook in that repository.
 | **Shape score**, `n/25` | 25 test cases, one question each, paired with the Adaptive Card element types that would answer it. Scored on one thing: did the reply use one of them? What it measures is **shape coverage**, not accuracy, and the article reports a change in it as cases gained or lost out of 25. A model can be correct in prose and score low. One of the 25 asks for prose, so a card is the failure on that case. |
 | **The judge**           | `judgeShape`, the function that assigns each reply one verdict. The repository's other card-shape probes score with the same function, so these verdicts are comparable with theirs.                                                                                                                                                                                                                        |
 | **`--samples 1`**       | Each case runs once and is scored on that one reply. Most figures in the notebook are `--samples 2`, where a case passes only if both runs pass, A one-case difference between two runs is therefore noise, where `--samples 2` figures carry a tighter floor.                                                                                                                                              |
+| **KV cache**            | The memory where the runtime keeps attention keys and values for every token in the window. Ollama stores it at 16 bits per value (`f16`) unless `OLLAMA_KV_CACHE_TYPE` asks for `q8_0`, about 8.5 bits per value.                                                                                                                                                                                          |
 | **`prompt_eval_count`** | The token count Ollama reports for the prompt it evaluated. The **Prompt tokens, full** column holds it, and it is how each run proves it delivered the history it meant to.                                                                                                                                                                                                                                |
 
 </details>
@@ -276,17 +283,53 @@ established, and settling it needs `--samples 2` and more models. No
 30-billion-parameter Nemotron build fits a 16 GB host. How the loss scales with
 fill is therefore untested on the two models that lose the most.
 
+## A q8_0 KV cache moves two of the eight full-window scores, in opposite directions
+
+Every figure above ran with an f16 KV cache. The Homebrew service on the M1 Max
+sets `OLLAMA_KV_CACHE_TYPE=q8_0`. To measure what that costs, the calibrated fit
+control ran again under Ollama 0.35.1, once with each cache type, at `--samples
+2`. Flash attention stayed at its default in both arms. The memory column comes
+from a separate load-only control at a 35,851-token window, smaller than the
+65,536 used here.
+
+| Model                        | f16, sample 1 / 2 | q8_0, sample 1 / 2 | Memory q8_0 saves |
+| ---------------------------- | ----------------- | ------------------ | ----------------- |
+| `nemotron-3-nano:30b`        | 11 / 11           | 8 / 8              | 0.10 GB           |
+| `nemotron-3.5-lightning:30b` | 13 / 13           | 15 / 15            | 0                 |
+| `nemotron-3-nano:4b`         | 6 / 6             | 6 / 6              | 0.26 GB           |
+| `qwen2.5-coder:7b`           | 19 / 19           | 19 / 19            | 0.87 GB           |
+| `qwen3.5:9b`                 | 16 / 17           | 16 / 17            | 0.55 GB           |
+| `qwen3-coder:30b`            | 19 / 20           | 19 / 21            | 1.63 GB           |
+| `qwen3.8:27b-nvfp4`          | 16 / 19           | 16 / 18            | 0                 |
+| `qwen3.6:27b-coding-nvfp4`   | 21 / 22           | 21 / 22            | 0                 |
+
+Prompt token counts match between the arms on every row. The first four models
+return the same score on both samples of each arm. A difference between their
+arms therefore comes from the cache type, not from sampling.
+`nemotron-3-nano:30b` loses three cases to q8_0, and its `broken` count goes
+from 3 to 6. `nemotron-3.5-lightning:30b` gains two. The other six move by one
+case at most, inside the spread between their own two samples.
+
+The two `nvfp4` builds run on Ollama's MLX runner, which ignores the setting.
+Their memory and scores match under both cache types. On the other six, q8_0
+shrinks only the KV cache, so what it saves depends on how large the cache is
+against the weights. It frees 1.63 GB on `qwen3-coder:30b` and 0.10 GB on
+`nemotron-3-nano:30b`, the model it costs three cases. The notebook's [KV
+cache
+section](https://github.com/freemansoft/Flutter-AdaptiveCards/blob/main/adaptive_chat_server_dart/ModelBehavior.md#a-q8_0-kv-cache-roughly-halves-the-kv-cache-and-moves-two-of-eight-full-window-scores)
+holds the fourteen-model memory table.
+
 ## Four checks for a chat application that fills its window
 
 Two of these change how you measure a model, and two change what your
 application does with a reply.
 
-| Check                                                                    | Why                                                                                                                           |
-| ------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------- |
-| Measure at the context length you will run at                            | Three of eight models here lose 5 to 7 of 25 cases on a full window, and the empty-window score does not predict which three. |
-| Validate the reply against the request, not just the schema              | A well-formed card with a `TextBlock` where an input belongs passes every structural check and fails the user.                |
-| Give a card request a timeout of its own                                 | Four of the seven cases `qwen3.8:27b-nvfp4` loses never returned inside 180 seconds.                                          |
-| Rank models based on the expected context window, not on short questions | `qwen3.5:9b` scores 2 cases below `nemotron-3.5-lightning:30b` on an empty window and 3 above it on a full one.               |
+| Check                                                                    | Why                                                                                                                                                                                      |
+| ------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Measure at the context length and KV cache type you will run at          | Three of eight models here lose 5 to 7 of 25 cases on a full window, and the empty-window score does not predict which three. A q8_0 cache moves two of the eight by two or three cases. |
+| Validate the reply against the request, not just the schema              | A well-formed card with a `TextBlock` where an input belongs passes every structural check and fails the user.                                                                           |
+| Give a card request a timeout of its own                                 | Four of the seven cases `qwen3.8:27b-nvfp4` loses never returned inside 180 seconds.                                                                                                     |
+| Rank models based on the expected context window, not on short questions | `qwen3.5:9b` scores 2 cases below `nemotron-3.5-lightning:30b` on an empty window and 3 above it on a full one.                                                                          |
 
 The repository is
 [https://github.com/freemansoft/Flutter-AdaptiveCards](https://github.com/freemansoft/Flutter-AdaptiveCards),

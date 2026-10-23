@@ -1,0 +1,48 @@
+# granite4.1:8b at num_ctx 35851, Apple M1 Max / 64 GB, Ollama 0.35.1 (Homebrew 0.35.1_1), 2026-10-22
+# KV-cache / flash-attention arms separating the 0.34.0 -> 0.35.1 memory change from the server configuration change.
+# Each arm: brew service stopped, `ollama serve` started with the listed env plus OLLAMA_CONTEXT_LENGTH=32768,
+# model loaded with one /api/generate (num_ctx 35851, num_predict 1), then /api/ps read. Breakdown columns, MiB:
+# self = model weights + context (KV cache) + compute buffer. Brew service restored after.
+
+## Reference: 0.34.0 fill28000 run, 2026-09-18, Ollama app server (~/.ollama/logs/server-2.log)
+# server config: OLLAMA_FLASH_ATTENTION:false OLLAMA_KV_CACHE_TYPE:(empty)  -> launched llama-server with --flash-attn auto (170 of 170 launches in that log)
+common_memory_breakdown_print: |   - MTL0 (Apple M1 Max) | 53084 = 53083 + (11021 =  4876 +    5640 +     505) +      -11020 |
+# probe JSON runnerSizeVram (context_fill_results/m1max-64gb-ollama0340-fill28000/granite4.1_8b): 11787892162
+
+## Reference: 0.35.1 fill28000 run, 2026-10-22, Homebrew service (OLLAMA_FLASH_ATTENTION=1 OLLAMA_KV_CACHE_TYPE=q8_0)
+common_memory_breakdown_print: |   - MTL0 (Apple M1 Max) | 53084 = 53083 + (8409 =  4876 +    2996 +     537) +       -8409 |
+# probe JSON runnerSizeVram (context_fill_results/m1max-64gb-ollama0351-fill28000/granite4.1_8b): 9049357680
+
+## Arm: OLLAMA_FLASH_ATTENTION=0 OLLAMA_KV_CACHE_TYPE=f16 (explicit off; not what the 0.34.0 app did)
+OLLAMA_FLASH_ATTENTION:false
+OLLAMA_KV_CACHE_TYPE:f16
+--cache-type-k f16
+--flash-attn off
+common_memory_breakdown_print: |   - MTL0 (Apple M1 Max) | 53084 = 53083 + (19902 =  4876 +    5640 +    9386) +      -19901 |
+/api/ps size_vram: 21100274646
+
+## Arm: fa-unset-f16
+{"models":[{"name":"granite4.1:8b","model":"granite4.1:8b","size":11787892162,"digest":"444af1c4b2fedd6b54041aca558e7300b0b3d5c0468c44619126240323ba2852","details":{"parent_model":"","format":"gguf","family":"granite","families":["granite"],"parameter_size":"8.8B","quantization_level":"Q4_K_M"},"expires_at":"2026-10-22T10:49:39.321893-04:00","size_vram":11787892162,"context_length":35851}]}
+OLLAMA_FLASH_ATTENTION:false
+OLLAMA_KV_CACHE_TYPE:f16
+--cache-type-k f16
+--cache-type-v f16
+--flash-attn auto
+common_memory_breakdown_print: |   - MTL0 (Apple M1 Max) | 53084 = 53083 + (11021 =  4876 +    5640 +     505) +      -11020 |
+## Arm: fa-on-f16
+{"models":[{"name":"granite4.1:8b","model":"granite4.1:8b","size":11787892162,"digest":"444af1c4b2fedd6b54041aca558e7300b0b3d5c0468c44619126240323ba2852","details":{"parent_model":"","format":"gguf","family":"granite","families":["granite"],"parameter_size":"8.8B","quantization_level":"Q4_K_M"},"expires_at":"2026-10-22T10:49:45.887352-04:00","size_vram":11787892162,"context_length":35851}]}
+OLLAMA_FLASH_ATTENTION:true
+OLLAMA_KV_CACHE_TYPE:f16
+--cache-type-k f16
+--cache-type-v f16
+--flash-attn on
+common_memory_breakdown_print: |   - MTL0 (Apple M1 Max) | 53084 = 53083 + (11021 =  4876 +    5640 +     505) +      -11020 |
+## Arm: fa-unset-q8
+{"models":[{"name":"granite4.1:8b","model":"granite4.1:8b","size":9049357680,"digest":"444af1c4b2fedd6b54041aca558e7300b0b3d5c0468c44619126240323ba2852","details":{"parent_model":"","format":"gguf","family":"granite","families":["granite"],"parameter_size":"8.8B","quantization_level":"Q4_K_M"},"expires_at":"2026-10-22T10:49:52.206835-04:00","size_vram":9049357680,"context_length":35851}]}
+OLLAMA_FLASH_ATTENTION:false
+OLLAMA_KV_CACHE_TYPE:q8_0
+--cache-type-k q8_0
+--cache-type-v q8_0
+--flash-attn auto
+common_memory_breakdown_print: |   - MTL0 (Apple M1 Max) | 53084 = 53083 + (8409 =  4876 +    2996 +     537) +       -8409 |
+##### KVARMS DONE 2026-10-22 10:44:55

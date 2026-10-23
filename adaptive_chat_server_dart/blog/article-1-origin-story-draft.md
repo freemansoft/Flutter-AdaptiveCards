@@ -1,5 +1,10 @@
 # An SDUI demo that turned into a local-model benchmark
 
+<div style="background: rgb(192, 0, 0); color: white; font-weight: bold; padding: 12px;">
+  This article contains updated prose and later test data than the original.
+  Earlier figures and tables on this page were replaced.
+</div>
+
 [`freemansoft/Flutter-AdaptiveCards`](https://github.com/freemansoft/Flutter-AdaptiveCards)
 is a Flutter renderer for Adaptive Cards. The project includes a demonstration Flutter chat client and Dart chat server.
 Enter a question in the client. It goes to the Dart server, which asks a local model running on Ollama
