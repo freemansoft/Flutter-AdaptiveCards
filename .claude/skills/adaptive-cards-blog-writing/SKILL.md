@@ -367,9 +367,13 @@ EOF
 # The reversal tic ("It was not.", "They are not."). Count before fixing one.
 grep -nE '\b(It|They|That|This|The [a-z]+) (is|are|was|were) not\.' "$A"
 
-# Paragraphs opening on a subordinate clause. Each one demotes its actor to a
-# pronoun in the clause that follows; lead with the subject instead.
-grep -nE '^(Because|Since|While|Although|When|Given|If|After|Once) ' "$A"
+# Paragraphs opening on a clause before the subject: a subordinate clause, a
+# purpose infinitive ("To check ..."), or a noun clause as subject ("Where X
+# sits decides ..."). Each one demotes its actor; lead with the subject. The
+# grep cannot see a gerund naming the author's procedure ("Measuring whether
+# ... needs a baseline"), so read each paragraph opening on an -ing word too.
+grep -nE '^(Because|Since|While|Although|When|Given|If|After|Once|To|Where|Whether|What|How) ' "$A"
+grep -nE '^[A-Z][a-z]+ing ' "$A" | grep -vE '^[0-9]+:(Nothing|Everything|Something|Anything) '
 
 # One of a pair named bare. Point it at whatever the article has two of.
 grep -nE '\b(the|a|that|this) channel\b' "$A" | grep -vE 'tool channel|prose channel'
@@ -431,15 +435,18 @@ Section order and article shape)
       per-event seconds, status codes and raw counts move behind a
       `ModelBehavior.md` link, and every such cut names the link that absorbs
       it. Scope a result to its memory or architecture in the sentence that
-      states it.
+      states it. Quote the newest run of each probe and leave older runtimes
+      to the notebook.
 - [ ] Each term defined once; every cross-reference resolves.
 - [ ] Terms table folded in `<details>` with the heading outside the fold.
 
 **Register** (Register)
 
 - [ ] No em dashes, first-person singular, amplifiers, or closing flourish.
-- [ ] Active voice, no paragraph opening on a subordinate clause, and no "X is
-      where / why / what" copula sentence standing in for an actor and a verb.
+- [ ] Active voice, no paragraph opening on a clause before its subject
+      (subordinate, purpose infinitive, noun clause, procedural gerund), and
+      no "X is where / why / what" copula sentence standing in for an actor
+      and a verb.
 - [ ] Sentence mean near 14 words, and nothing past 25 that does not earn it.
 
 **Visuals, tables, sources** (Diagrams and images; Presentation; Attribution;

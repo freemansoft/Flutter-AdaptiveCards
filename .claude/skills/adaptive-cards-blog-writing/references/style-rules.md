@@ -362,6 +362,30 @@ branch costs a second call. A reply that parses first time never reaches the
 retry" names them, and splits one long sentence into two short ones. The same
 applies mid-paragraph when the leading clause runs past about eight words.
 
+The rule covers every clause that stands in front of the subject, not only the
+conjunctions above. Article 6's 2026-10-22 pass found four that the original
+grep missed:
+
+- **A purpose infinitive.** "To check that Ollama drops a message only when it
+  does not fit, the probe ran again" became "The probe ran again with a filler
+  sized correctly for each model, to confirm that Ollama drops a message only
+  when it does not fit." The purpose moves behind the actor. Do not fix it with
+  a passive ("The probe was rerun ... to validate"), which trades one demoted
+  actor for another.
+- **A conditional.** "If Ollama trimmed the filler to fit, the prompt count
+  would sit near the allocated window" became "A trimmed filler would leave the
+  prompt count near the allocated window."
+- **A noun clause as the subject.** "Where the oversized message sits decides
+  what Ollama does with it" became "The position of the oversized message
+  decides what Ollama does with it."
+- **The author's own procedure as a gerund subject.** "Measuring whether those
+  extra tokens cost the two builds anything needs a baseline" became "Neither
+  build had an empty-window score to show whether those extra tokens cost it
+  anything." A gerund that names the system's behavior is fine as a subject:
+  "Offering a tool does not oblige a model to use one" leads with the thing
+  under test. One that names what the author had to do is procedure, and the
+  measured thing belongs in the subject instead.
+
 **Put the actor in the subject, not an abstract noun in front of a copula.**
 "Generation is where the two hosts separate", "Stalls are why the full-sweep
 column is not a second median" and "X is what carries the pick" are passives
@@ -676,6 +700,19 @@ Stated by the author on 2026-10-20, during article 5's revision.
   a reply passes and what each layer cannot see, and stays at full depth: a
   reader deciding whether to trust the scores needs the checks' nature more
   than any single figure.
+- **Quote the newest run; the notebook keeps the older ones.** When a probe
+  has been re-run on a newer runtime, the article quotes the newest run and
+  leaves the earlier ones out. Run counts per version ("thirty-nine runs
+  under 0.33.3, twenty-six under 0.34.0"), "reproduced under version X"
+  sentences, and the history of which run came first are forensics. Name the
+  runtime once per host, and again only where a finding exists on one version
+  or differs between versions (see Headings and titles on naming the runtime version).
+  An older run stays in the article only when no newer run covers it, such as
+  a host that has not been re-measured. Stated by the author on 2026-10-22,
+  during article 6's revision. The 0.33.3 and 0.34.0 chatter cut from that
+  article went behind a link to the notebook's context-fill section. Where
+  host memory size did or did not change a result, the sentence stays: that
+  is the memory-scope rule above, not version history.
 - **Every detail cut this way needs the link that absorbs it.** A cut without
   a link orphans the claim; the referent pass treats "the notebook has the
   full record" with no anchor as a defect.
