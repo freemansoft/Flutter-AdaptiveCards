@@ -9,7 +9,7 @@ In [`freemansoft/Flutter-AdaptiveCards`](https://github.com/freemansoft/Flutter-
 model. It asks for the answer as Adaptive Card JSON, a strict,
 closed-vocabulary schema that a Flutter client renders as interactive UI
 rather than as text. A directory of probes measures which local models manage
-that and how well. Every one of those probes had tested using a
+that and how well. Every one of those probes had been tested using a
 nearly empty context window. Each call carried a system prompt, one question,
 and at most a short seed exchange. A real conversation fills the context, and
 this article measures what Ollama does when it is full.
@@ -108,7 +108,7 @@ returned the same allocations for the eight models both ran, the three clamped
 rows included.
 The M5 also granted `qwen3.5:9b` a full **65536**-token window on request.
 
-## Sizing a window in characters under-counts tokens by up to a third
+## Sizing a window in characters undercounts tokens by up to a third
 
 The probe sized its filler in characters, assuming 4.0 characters per token.
 That turned the 28000-token target into 112,005 characters. With the card
@@ -180,15 +180,15 @@ models, `qwen3-coder:30b`, `nemotron-3-nano:30b` and
 The probe ran again with a filler sized correctly for each model, to confirm
 that Ollama drops a message only when it does not fit. It first measured each
 model's own characters per token on a short sample. It then sized the filler to
-fill most of the window that model is allocated. Ollama kept the filler every
+fill most of the model window. Ollama kept the filler every
 time. The rerun covered every model whose filler had been dropped, including
 the two 8192-window models with a small 2500-token filler, plus the two `nvfp4`
 builds. Across ten models, Ollama never dropped a message that fit.
 
-Ollama returns no error and no warning. The reply reads as an ordinary answer
-to a question asked with no history, and the model did receive no history. In
-this probe the history was one oversized message, so Ollama dropped all of it.
-These runs did not measure which turns Ollama drops from a long conversation of
+Ollama returns no errors or warnings. The reply reads as an ordinary answer
+to a question with no history, even though the model received conversation history. In
+this probe, the history was one oversized message, so Ollama dropped everything.
+We did not measure which turns Ollama would drop from a long conversation of
 many small messages.
 
 The position of the oversized message decides what Ollama does with it. A check
@@ -207,8 +207,8 @@ host. The
 [measurement-hygiene article](https://joe.blog.freemansoft.com/2026/09/eight-measurement-rules-from-local.html)
 records the same cut at four window sizes.
 
-Ollama reports `prompt_eval_count` on every reply, so the check costs nothing.
-A count far below the size of the prompt means Ollama dropped something. Here
+Ollama reports `prompt_eval_count` on every reply.
+A count far below the size of the prompt means Ollama dropped something. Here,
 `nemotron-3-nano:4b` reported 4374 tokens for a prompt it counts at 46287 when
 the prompt fits. A count that stays flat while a conversation grows means the
 same.
@@ -230,8 +230,8 @@ run in the allocation table did. The **Full, inside 65536** run sent about
 | `qwen3.8:27b-nvfp4`        | 3972 tokens → 21/25 | 42542 tokens → 16/25 | 48539 tokens → 14/25 |
 | `qwen3.6:27b-coding-nvfp4` | 3968 tokens → 23/25 | 42538 tokens → 20/25 | 48535 tokens → 20/25 |
 
-The table shows the same three conditions run once on each of the two builds.
-Both filled runs score below the empty window. Running past the allocation added no cost of its own: each
+The table shows the same three conditions run once on each of the two models.
+Both filled runs score below the empty window. Running past the allocation added no cost: each
 build's overrunning score falls inside the range its full-window runs produced.
 
 That range is wide. Six full-window readings of `qwen3.8:27b-nvfp4` scored from
@@ -241,8 +241,8 @@ against 23 empty, a gap of one to three cases. The
 [companion article](https://joe.blog.freemansoft.com/2026/09/a-full-context-breaks-three-local.html)
 measures what a full window does to each model.
 
-Two more MLX builds without `nvfp4` quantization separate the runner from the
-quantization. The table sets all four MLX builds beside a GGUF build, each run
+Two more MLX builds without `nvfp4` quantization let uss differentiate between the runner and
+quantization. The table shows four MLX builds beside a GGUF build, each run
 with the same 35851-token request and 28000-token filler. The **Runner** column
 comes from Ollama's server log for these runs.
 
@@ -257,7 +257,7 @@ comes from Ollama's server log for these runs.
 All four MLX builds evaluated the whole filler. The GGUF build of the same
 Nemotron model ran on `llama-server` and dropped it. The overrun follows the
 runner, not the `nvfp4` quantization. On the MLX runner, the allocation
-`/api/ps` reports does not limit what Ollama evaluates. These runs do not show
+`/api/ps` reports do not limit what Ollama evaluates. These runs do not show
 where in the runner that limit is lost.
 
 ## Four checks for running a model with a full window
