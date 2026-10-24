@@ -8,8 +8,8 @@
 A long conversation in the context window lowers structured-output scores on
 five of eight local models. Two Nemotron 30B models lose 8 of 25 cases each,
 and a parse check catches only one of their two failure types. Rank models at
-the context length you will run at, and check each reply against what was
-asked.
+the context length you will run at, and check each reply against the specific
+question asked.
 
 In
 [`freemansoft/Flutter-AdaptiveCards`](https://github.com/freemansoft/Flutter-AdaptiveCards)
