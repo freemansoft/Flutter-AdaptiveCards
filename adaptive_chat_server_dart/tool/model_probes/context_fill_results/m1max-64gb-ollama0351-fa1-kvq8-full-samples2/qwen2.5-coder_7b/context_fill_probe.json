@@ -1,0 +1,379 @@
+{
+  "probe": "context_fill_probe",
+  "model": "qwen2.5-coder:7b",
+  "measuredAt": "2026-10-24",
+  "machine": "Apple M1 Max / 64 GB",
+  "ollama": "0.35.1",
+  "samples": 2,
+  "assets": {
+    "card_system_prompt.txt": "8cbfde243266",
+    "seed_card.json": "4ac746114475"
+  },
+  "summary": {
+    "pass": 38,
+    "total": 50,
+    "fillTokensTarget": 20000,
+    "systemPromptTokensEstimate": 4883,
+    "charsPerTokenUsed": 3.0762373193974795,
+    "charsPerTokenMeasured": true,
+    "numCtx": 32768,
+    "runnerContextLength": 32768,
+    "runnerContextClamped": false,
+    "runnerSizeVram": 5712841276,
+    "promptEvalCountMin": 24721,
+    "promptEvalCountMax": 24736
+  },
+  "notes": "Filler sized via fillerCharsPerToken=4.0; see each call's tokens=… for the actual prompt_eval_count. runnerContextLength is what /api/ps reported the runner allocated, against numCtx as requested.",
+  "calls": [
+    {
+      "case": "date",
+      "sample": 0,
+      "pass": true,
+      "label": "Input.Date tokens=24726",
+      "ms": 117098
+    },
+    {
+      "case": "date",
+      "sample": 1,
+      "pass": true,
+      "label": "Input.Date tokens=24726",
+      "ms": 1536
+    },
+    {
+      "case": "time",
+      "sample": 0,
+      "pass": true,
+      "label": "Input.Time tokens=24725",
+      "ms": 1547
+    },
+    {
+      "case": "time",
+      "sample": 1,
+      "pass": true,
+      "label": "Input.Time tokens=24725",
+      "ms": 1292
+    },
+    {
+      "case": "toggle",
+      "sample": 0,
+      "pass": true,
+      "label": "Input.Toggle tokens=24723",
+      "ms": 1837
+    },
+    {
+      "case": "toggle",
+      "sample": 1,
+      "pass": true,
+      "label": "Input.Toggle tokens=24723",
+      "ms": 1597
+    },
+    {
+      "case": "text",
+      "sample": 0,
+      "pass": false,
+      "label": "no-input: got {TextBlock} want {Input.Text} tokens=24726",
+      "ms": 1840
+    },
+    {
+      "case": "text",
+      "sample": 1,
+      "pass": false,
+      "label": "prose tokens=24726",
+      "ms": 484
+    },
+    {
+      "case": "number",
+      "sample": 0,
+      "pass": true,
+      "label": "Input.Number tokens=24725",
+      "ms": 1919
+    },
+    {
+      "case": "number",
+      "sample": 1,
+      "pass": true,
+      "label": "Input.Number tokens=24725",
+      "ms": 1725
+    },
+    {
+      "case": "choice1",
+      "sample": 0,
+      "pass": true,
+      "label": "Input.ChoiceSet, TextBlock tokens=24722",
+      "ms": 6226
+    },
+    {
+      "case": "choice1",
+      "sample": 1,
+      "pass": true,
+      "label": "Input.ChoiceSet, TextBlock tokens=24722",
+      "ms": 6121
+    },
+    {
+      "case": "choice2",
+      "sample": 0,
+      "pass": false,
+      "label": "no-input: got {TextBlock} want {Input.ChoiceSet} tokens=24722",
+      "ms": 7596
+    },
+    {
+      "case": "choice2",
+      "sample": 1,
+      "pass": false,
+      "label": "no-input: got {TextBlock} want {Input.ChoiceSet} tokens=24722",
+      "ms": 7240
+    },
+    {
+      "case": "choice3",
+      "sample": 0,
+      "pass": true,
+      "label": "Input.ChoiceSet, TextBlock tokens=24722",
+      "ms": 6365
+    },
+    {
+      "case": "choice3",
+      "sample": 1,
+      "pass": true,
+      "label": "Input.ChoiceSet, TextBlock tokens=24722",
+      "ms": 6025
+    },
+    {
+      "case": "choice4",
+      "sample": 0,
+      "pass": true,
+      "label": "Input.ChoiceSet, TextBlock tokens=24722",
+      "ms": 8084
+    },
+    {
+      "case": "choice4",
+      "sample": 1,
+      "pass": true,
+      "label": "Input.ChoiceSet, TextBlock tokens=24722",
+      "ms": 7817
+    },
+    {
+      "case": "choice5",
+      "sample": 0,
+      "pass": false,
+      "label": "prose tokens=24721",
+      "ms": 32376
+    },
+    {
+      "case": "choice5",
+      "sample": 1,
+      "pass": false,
+      "label": "prose tokens=24721",
+      "ms": 32197
+    },
+    {
+      "case": "choice6",
+      "sample": 0,
+      "pass": true,
+      "label": "Input.ChoiceSet tokens=24723",
+      "ms": 2653
+    },
+    {
+      "case": "choice6",
+      "sample": 1,
+      "pass": true,
+      "label": "Input.ChoiceSet tokens=24723",
+      "ms": 2445
+    },
+    {
+      "case": "pie",
+      "sample": 0,
+      "pass": true,
+      "label": "Chart.Pie tokens=24732",
+      "ms": 5744
+    },
+    {
+      "case": "pie",
+      "sample": 1,
+      "pass": true,
+      "label": "Chart.Pie tokens=24732",
+      "ms": 5673
+    },
+    {
+      "case": "bar",
+      "sample": 0,
+      "pass": true,
+      "label": "Chart.VerticalBar, TextBlock tokens=24727",
+      "ms": 8004
+    },
+    {
+      "case": "bar",
+      "sample": 1,
+      "pass": true,
+      "label": "Chart.VerticalBar, TextBlock tokens=24727",
+      "ms": 7829
+    },
+    {
+      "case": "line",
+      "sample": 0,
+      "pass": true,
+      "label": "Chart.Line tokens=24726",
+      "ms": 7215
+    },
+    {
+      "case": "line",
+      "sample": 1,
+      "pass": true,
+      "label": "Chart.Line tokens=24726",
+      "ms": 6972
+    },
+    {
+      "case": "gauge",
+      "sample": 0,
+      "pass": false,
+      "label": "wrong-shape: got {Rating} want {Chart.Gauge} tokens=24733",
+      "ms": 5444
+    },
+    {
+      "case": "gauge",
+      "sample": 1,
+      "pass": false,
+      "label": "wrong-shape: got {Rating} want {Chart.Gauge} tokens=24733",
+      "ms": 5629
+    },
+    {
+      "case": "rating_show",
+      "sample": 0,
+      "pass": true,
+      "label": "Rating tokens=24734",
+      "ms": 937
+    },
+    {
+      "case": "rating_show",
+      "sample": 1,
+      "pass": true,
+      "label": "Rating tokens=24734",
+      "ms": 744
+    },
+    {
+      "case": "rating_ask",
+      "sample": 0,
+      "pass": true,
+      "label": "Input.Rating tokens=24729",
+      "ms": 1194
+    },
+    {
+      "case": "rating_ask",
+      "sample": 1,
+      "pass": true,
+      "label": "Input.Rating tokens=24729",
+      "ms": 873
+    },
+    {
+      "case": "carousel",
+      "sample": 0,
+      "pass": false,
+      "label": "prose tokens=24733",
+      "ms": 27112
+    },
+    {
+      "case": "carousel",
+      "sample": 1,
+      "pass": false,
+      "label": "prose tokens=24733",
+      "ms": 58501
+    },
+    {
+      "case": "table",
+      "sample": 0,
+      "pass": true,
+      "label": "Table, TableCell, TableRow, TextBlock tokens=24727",
+      "ms": 31369
+    },
+    {
+      "case": "table",
+      "sample": 1,
+      "pass": true,
+      "label": "Table, TableCell, TableRow, TextBlock tokens=24727",
+      "ms": 31639
+    },
+    {
+      "case": "facts",
+      "sample": 0,
+      "pass": false,
+      "label": "wrong-shape: got {} want {FactSet, Table} tokens=24729",
+      "ms": 12979
+    },
+    {
+      "case": "facts",
+      "sample": 1,
+      "pass": false,
+      "label": "wrong-shape: got {} want {FactSet, Table} tokens=24729",
+      "ms": 12155
+    },
+    {
+      "case": "columnset",
+      "sample": 0,
+      "pass": true,
+      "label": "Column, ColumnSet, TextBlock tokens=24724",
+      "ms": 7221
+    },
+    {
+      "case": "columnset",
+      "sample": 1,
+      "pass": true,
+      "label": "Column, ColumnSet, TextBlock tokens=24724",
+      "ms": 6829
+    },
+    {
+      "case": "codeblock",
+      "sample": 0,
+      "pass": true,
+      "label": "CodeBlock, TextBlock tokens=24736",
+      "ms": 9783
+    },
+    {
+      "case": "codeblock",
+      "sample": 1,
+      "pass": true,
+      "label": "CodeBlock, TextBlock tokens=24736",
+      "ms": 9960
+    },
+    {
+      "case": "progress",
+      "sample": 0,
+      "pass": true,
+      "label": "ProgressBar, TextBlock tokens=24726",
+      "ms": 5027
+    },
+    {
+      "case": "progress",
+      "sample": 1,
+      "pass": true,
+      "label": "ProgressBar, TextBlock tokens=24726",
+      "ms": 4648
+    },
+    {
+      "case": "badge",
+      "sample": 0,
+      "pass": true,
+      "label": "Badge tokens=24726",
+      "ms": 2109
+    },
+    {
+      "case": "badge",
+      "sample": 1,
+      "pass": true,
+      "label": "Badge tokens=24726",
+      "ms": 1806
+    },
+    {
+      "case": "prose",
+      "sample": 0,
+      "pass": true,
+      "label": "prose-ok tokens=24725",
+      "ms": 2937
+    },
+    {
+      "case": "prose",
+      "sample": 1,
+      "pass": true,
+      "label": "prose-ok tokens=24725",
+      "ms": 2652
+    }
+  ]
+}
