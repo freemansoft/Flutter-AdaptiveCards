@@ -52,23 +52,23 @@ the lab notebook in that repository.
 <details>
 <summary>Show the terms</summary>
 
-| Term                    | What it means here                                                                                                                                                                                                                                        |
-| ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Window**              | The context window: the number of tokens Ollama allocates to one request. It holds the system prompt, the history and the question.                                                                                                                       |
-| **Empty window**        | The 25 cases with no history: the card system prompt and the question, about 4,000 tokens depending on the tokenizer.                                                                                                                                     |
-| **Full window**         | The same 25 cases with a filler history sized so the prompt fills about three quarters of the window: roughly 48,500 of 65,536 tokens, or 24,721 of 32,768 for `qwen2.5-coder:7b`, whose trained window is 32,768.                                        |
-| **Filler**              | A block of deterministic nonsense the probe prepends as conversation history, sized to a token target from a calibration sample of each model's own tokenizer.                                                                                            |
-| **Shape score**, `n/25` | 25 test cases, one question each, paired with the Adaptive Card element types that would answer it. A reply passes if it used one of them. It measures shape coverage, not accuracy. One of the 25 asks for prose, so a card is the failure on that case. |
-| **The judge**           | `judgeShape`, the function that assigns each reply one verdict. The repository's other card-shape probes score with the same function.                                                                                                                    |
-| **`--samples 2`**       | Each case runs twice. The score tables show one score where the two samples agree and `sample 1, sample 2` where they differ. At temperature 0 most models return the same score on both.                                                                 |
-| **KV cache**            | The memory where the runtime keeps attention keys and values for every token in the window. Ollama stores it at 16 bits per value (`f16`) unless `OLLAMA_KV_CACHE_TYPE` asks for `q8_0`, about 8.5 bits per value.                                        |
-| **Flash attention**     | An attention implementation that `llama-server` can use, set by `OLLAMA_FLASH_ATTENTION`. Both cache types in this article ran with it on.                                                                                                                |
-| **`llama-server`, MLX** | The two runners Ollama starts for a model. Models in GGUF format load on `llama-server`. The two `nvfp4` models here load on the MLX runner, which the KV cache setting does not reach.                                                                   |
-| **`prompt_eval_count`** | The token count Ollama reports for the prompt it evaluated. The **Prompt tokens, full** column holds it, and it is how each run proves it delivered the history it meant to.                                                                              |
+| Term                    | What it means here                                                                                                                                                                                                                                                                                                 |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Window**              | The context window: the number of tokens Ollama allocates to one request. It holds the system prompt, the history and the question.                                                                                                                                                                                |
+| **Empty window**        | The 25 cases with no history: the card system prompt and the question, about 4,000 tokens depending on the tokenizer.                                                                                                                                                                                              |
+| **Full window**         | The same 25 cases with a filler history sized so the prompt fills about three quarters of the window: roughly 48,500 of 65,536 tokens, or 24,721 of 32,768 for `qwen2.5-coder:7b`, whose trained window is 32,768. The 65,536 request was the same for every model, not a fraction of each model's trained window. |
+| **Filler**              | A block of deterministic nonsense the probe prepends as conversation history, sized to a token target from a calibration sample of each model's own tokenizer.                                                                                                                                                     |
+| **Shape score**, `n/25` | 25 test cases, one question each, paired with the Adaptive Card element types that would answer it. A reply passes if it used one of them. It measures shape coverage, not accuracy. One of the 25 asks for prose, so a card is the failure on that case.                                                          |
+| **The judge**           | `judgeShape`, the function that assigns each reply one verdict. The repository's other card-shape probes score with the same function.                                                                                                                                                                             |
+| **`--samples 2`**       | Each case runs twice. The score tables show one score where the two samples agree and `sample 1, sample 2` where they differ. At temperature 0 most models return the same score on both.                                                                                                                          |
+| **KV cache**            | The memory where the runtime keeps attention keys and values for every token in the window. Ollama stores it at 16 bits per value (`f16`) unless `OLLAMA_KV_CACHE_TYPE` asks for `q8_0`, about 8.5 bits per value.                                                                                                 |
+| **Flash attention**     | An attention implementation that `llama-server` can use, set by `OLLAMA_FLASH_ATTENTION`. Both cache types in this article ran with it on.                                                                                                                                                                         |
+| **`llama-server`, MLX** | The two runners Ollama starts for a model. Models in GGUF format load on `llama-server`. The two `nvfp4` models here load on the MLX runner, which the KV cache setting does not reach.                                                                                                                            |
+| **`prompt_eval_count`** | The token count Ollama reports for the prompt it evaluated. The **Prompt tokens, full** column holds it, and it is how each run proves it delivered the history it meant to.                                                                                                                                       |
 
 </details>
 
-## Each model answers the same 25 questions with and without a long conversation before them
+## Each model gets the same 25 questions in empty and full context windows
 
 The test probe gives each model a filler calibrated to its own tokenizer, sized to
 fit the window Ollama allocates to it. Tokenizers differ enough that a filler
@@ -119,16 +119,21 @@ xychart-beta horizontal
     bar [-8, -8, -3, -3, -3, 0, 0, 2]
 ```
 
-Three of the smaller bars need a qualifier:
+Four of the smaller bars need a qualifier:
 
-- `qwen2.5-coder:7b` carries half the token load. Its trained window caps it at
-  32,768, so it runs three quarters full on 24,721 tokens rather than about
+- `qwen2.5-coder:7b`: Carries half the token load. Its trained window caps it at
+  32,768, so it runs three-quarters full on 24,721 tokens rather than about
   48,500. It loses 3 cases anyway, on both samples.
-- `nemotron-3-nano:4b` scores lowest in both columns. It answers 14 of 25
+- `nemotron-3-nano:4b`: Scores lowest in both columns. It answers 14 of 25
   cases in prose on an empty window already.
-- `qwen3.8:27b-nvfp4` loses 3 cases on the first sample and 1 on the second.
+- `qwen3.8:27b-nvfp4`: Loses 3 cases on the first sample and 1 on the second.
   Its full-window samples disagree on 5 cases: 4 pass only on the second
   sample and 1 only on the first.
+- `qwen3-coder:30b`: Gains 2 cases, on both samples, mostly from replies that
+  parse. On an empty window, three of its replies write the card's elements as
+  separate JSON objects that don't parse. On a full window, all three parse,
+  and one of them passes. Its other gain is a `TextBlock` replaced by the
+  `Input.ChoiceSet` the case asked for.
 
 All three Nemotron models lose cases, by 8, 8 and 3. The five Qwen models range
 from a loss of 3 to a gain of 2. Three models against five are too few to
