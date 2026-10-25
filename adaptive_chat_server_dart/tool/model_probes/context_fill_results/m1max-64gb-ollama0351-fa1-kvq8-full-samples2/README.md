@@ -1,6 +1,6 @@
 # Full window, calibrated filler, `--samples 2`, flash attention on, q8_0 KV cache, Ollama 0.35.1
 
-Apple M1 Max / 64 GB, Ollama 0.35.1 (Homebrew 0.35.1_1), measured 2026-10-24.
+Apple M1 Max / 64 GB, Ollama 0.35.1 (Homebrew 0.35.1_1), measured 2026-10-24; the two MLX control rows 2026-10-25.
 
 This directory is one cell of a four-way matrix: {empty, full} window by {f16, q8_0} KV cache, eight models, `context_fill_probe.dart --samples 2 --timeout 1800`, one model resident at a time. Each run is the calibrated fit control's per-model `--num-ctx` and `--fill-tokens` (65536 and 42000, or 32768 and 20000 for `qwen2.5-coder:7b`), a filler sized to this model's own measured characters per token. The card system prompt hash is `8cbfde243266`. The server was the Homebrew service (`~/Library/LaunchAgents/sh.brew.ollama.plist`: `OLLAMA_FLASH_ATTENTION=1`, `OLLAMA_KV_CACHE_TYPE=q8_0`; `llama-server` launched with `--flash-attn on --cache-type-k q8_0 --cache-type-v q8_0`). Flash attention is the same in all four cells, so the KV cache type is the only server setting that differs between [`m1max-64gb-ollama0351-fa1-kvf16-full-samples2/`](../m1max-64gb-ollama0351-fa1-kvf16-full-samples2) and this directory. Its window sibling is [`m1max-64gb-ollama0351-fa1-kvq8-fill0-samples2/`](../m1max-64gb-ollama0351-fa1-kvq8-fill0-samples2).
 
@@ -8,15 +8,19 @@ The 1800 s ceiling replaces the 180 s one earlier context-fill runs used. With o
 
 The two `nvfp4` builds load on Ollama's MLX runner rather than `llama-server`; the KV cache setting does not reach it. Driver and server-log excerpt: [`raw-captures/m1max_ollama0351_fa1_kv_matrix_2026_10_24.sh`](../../raw-captures/m1max_ollama0351_fa1_kv_matrix_2026_10_24.sh), [`raw-captures/m1max-64gb-ollama0351-fa1-kv-matrix-serverlog-2026-10-24.txt`](../../raw-captures/m1max-64gb-ollama0351-fa1-kv-matrix-serverlog-2026-10-24.txt).
 
+Two MLX builds that are not `nvfp4` were added on 2026-10-25 as runner controls, same host, runtime and per-model inputs (65536 and 42000): `nemotron-3-nano-mlx:4b-bf16` (`bfloat16`, the same weights as `nemotron-3-nano:4b`) and `mvincig11/semif-qwen3.5-4b-mlx-4bit:latest` (`int4`). Both load on the MLX runner. Driver and server-log excerpt: [`raw-captures/m1max_ollama0351_fa1_kv_matrix_mlx_controls_2026_10_25.sh`](../../raw-captures/m1max_ollama0351_fa1_kv_matrix_mlx_controls_2026_10_25.sh), [`raw-captures/m1max-64gb-ollama0351-fa1-kv-matrix-mlx-controls-serverlog-2026-10-25.txt`](../../raw-captures/m1max-64gb-ollama0351-fa1-kv-matrix-mlx-controls-serverlog-2026-10-25.txt).
+
 The notebook reads these figures in [the matched matrix section](../../../../ModelBehavior.md#with-flash-attention-and-the-window-held-constant-a-full-window-costs-two-nemotron-30b-builds-6-to-9-cases-and-no-call-stalls).
 
-| Model                        | `--num-ctx` | Allocated | Prompt tokens | Pass per sample | Longest call | `size_vram` |
-| ---------------------------- | ----------- | --------- | ------------- | --------------- | ------------ | ----------- |
-| `nemotron-3-nano:30b`        | 65536       | 65536     | 48611–48626   | 8 / 8           | 119 s        | 24.47 GB    |
-| `nemotron-3-nano:4b`         | 65536       | 65536     | 48559–48575   | 6 / 6           | 134 s        | 3.96 GB     |
-| `nemotron-3.5-lightning:30b` | 65536       | 65536     | 48600–48615   | 15 / 15         | 126 s        | 25.58 GB    |
-| `qwen2.5-coder:7b`           | 32768       | 32768     | 24721–24736   | 19 / 19         | 117 s        | 5.71 GB     |
-| `qwen3-coder:30b`            | 65536       | 65536     | 48459–48474   | 20 / 21         | 324 s        | 22.04 GB    |
-| `qwen3.5:9b`                 | 65536       | 65536     | 48537–48552   | 17 / 17         | 235 s        | 7.19 GB     |
-| `qwen3.6:27b-coding-nvfp4`   | 65536       | 65536     | 48535–48550   | 23 / 23         | 659 s        | 24.01 GB    |
-| `qwen3.8:27b-nvfp4`          | 65536       | 65536     | 48539–48554   | 18 / 19         | 712 s        | 22.64 GB    |
+| Model                                        | `--num-ctx` | Allocated | Prompt tokens | Pass per sample | Longest call | `size_vram` |
+| -------------------------------------------- | ----------- | --------- | ------------- | --------------- | ------------ | ----------- |
+| `nemotron-3-nano:30b`                        | 65536       | 65536     | 48611–48626   | 8 / 8           | 119 s        | 24.47 GB    |
+| `nemotron-3-nano:4b`                         | 65536       | 65536     | 48559–48575   | 6 / 6           | 134 s        | 3.96 GB     |
+| `nemotron-3.5-lightning:30b`                 | 65536       | 65536     | 48600–48615   | 15 / 15         | 126 s        | 25.58 GB    |
+| `qwen2.5-coder:7b`                           | 32768       | 32768     | 24721–24736   | 19 / 19         | 117 s        | 5.71 GB     |
+| `qwen3-coder:30b`                            | 65536       | 65536     | 48459–48474   | 20 / 21         | 324 s        | 22.04 GB    |
+| `qwen3.5:9b`                                 | 65536       | 65536     | 48537–48552   | 17 / 17         | 235 s        | 7.19 GB     |
+| `qwen3.6:27b-coding-nvfp4`                   | 65536       | 65536     | 48535–48550   | 23 / 23         | 659 s        | 24.01 GB    |
+| `qwen3.8:27b-nvfp4`                          | 65536       | 65536     | 48539–48554   | 18 / 19         | 712 s        | 22.64 GB    |
+| `nemotron-3-nano-mlx:4b-bf16`                | 65536       | 65536     | 48610–48625   | 6 / 6           | 95 s         | 9.34 GB     |
+| `mvincig11/semif-qwen3.5-4b-mlx-4bit:latest` | 65536       | 65536     | 48536–48551   | 19 / 19         | 109 s        | 4.32 GB     |
