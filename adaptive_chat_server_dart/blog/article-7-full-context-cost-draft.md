@@ -228,10 +228,16 @@ It does not say which way a model moves when the window fills.
 The probe loads each model fresh before its run. The first call then evaluates
 the whole history, and most later calls take seconds:
 
-| Runner         | Models             | First call, empty window | First call, full window | Median later call, full window |
-| -------------- | ------------------ | ------------------------ | ----------------------- | ------------------------------ |
-| `llama-server` | Six GGUF models    | 10 to 28 s               | 101 to 324 s            | 2 to 14 s                      |
-| MLX            | Two `nvfp4` models | 46 to 56 s               | 637 to 711 s            | 7 to 8 s                       |
+| Models                 | Runner         | First call, empty window | First call, full window | Median later call, full window |
+| ---------------------- | -------------- | ------------------------ | ----------------------- | ------------------------------ |
+| Six GGUF models        | `llama-server` | 10 to 28 s               | 101 to 324 s            | 2 to 14 s                      |
+| Two `nvfp4` 27B models | MLX            | 46 to 56 s               | 637 to 711 s            | 7 to 8 s                       |
+
+The runner does not explain the slow MLX row. Two 4B MLX builds without
+`nvfp4`, run as controls, take 89 to 109 s on the same first call. The
+Nemotron 4B weights take 89 to 94 s on MLX and 118 to 133 s on
+`llama-server`. The two `nvfp4` models are also the only dense 27B models
+here, and the controls do not separate size from quantization.
 
 An earlier version of this article reported four of `qwen3.8:27b-nvfp4`'s
 full-window losses as replies that never finished. That run gave each call 180
@@ -268,7 +274,8 @@ a full one, where its `broken` count goes from 3 to 6.
 `nemotron-3.5-lightning:30b` gains two on a full window. The other six match within their own sample spread.
 
 The setting does not reach the MLX runner, so the two `nvfp4` models measure
-one condition twice. On the six `llama-server` models, q8_0 shrinks only the KV
+one condition twice. The two 4B MLX controls also report the same memory under
+both cache types. On the six `llama-server` models, q8_0 shrinks only the KV
 cache, so what it saves depends on how large the cache is relative to the weights.
 It frees 1.63 GB on `qwen3-coder:30b` and 0.10 GB on `nemotron-3-nano:30b`, the
 model it costs three cases. On `nemotron-3.5-lightning:30b` the cache shrinks

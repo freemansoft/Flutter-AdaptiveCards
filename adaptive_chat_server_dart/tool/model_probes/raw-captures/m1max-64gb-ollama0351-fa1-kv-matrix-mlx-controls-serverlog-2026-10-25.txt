@@ -1,0 +1,44 @@
+# Server-log excerpt, MLX runner controls added to the 2026-10-24 fa1 KV matrix, 2026-10-25.
+# Driver: m1max_ollama0351_fa1_kv_matrix_mlx_controls_2026_10_25.sh. Lines kept: server config, runner start/ready.
+# Each full-window run starts the runner twice: once for the calibration sample, once after the probe evicts it.
+
+## q8_0 half (Homebrew service: OLLAMA_FLASH_ATTENTION=1, OLLAMA_KV_CACHE_TYPE=q8_0)
+time=2026-10-25T09:47:17.506-04:00 level=INFO source=client.go:441 msg="starting mlx runner subprocess" model=nemotron-3-nano-mlx:4b-bf16 port=62650
+time=2026-10-25T09:47:19.211-04:00 level=INFO source=client.go:109 msg="mlx runner is ready" port=62650
+time=2026-10-25T09:48:46.782-04:00 level=INFO source=client.go:148 msg="stopping mlx runner subprocess" pid=42058
+time=2026-10-25T09:48:47.857-04:00 level=INFO source=client.go:441 msg="starting mlx runner subprocess" model=mvincig11/semif-qwen3.5-4b-mlx-4bit:latest port=62758
+time=2026-10-25T09:48:48.863-04:00 level=INFO source=client.go:109 msg="mlx runner is ready" port=62758
+time=2026-10-25T09:50:15.223-04:00 level=INFO source=client.go:148 msg="stopping mlx runner subprocess" pid=42362
+time=2026-10-25T09:50:16.219-04:00 level=INFO source=client.go:441 msg="starting mlx runner subprocess" model=nemotron-3-nano-mlx:4b-bf16 port=62893
+time=2026-10-25T09:50:17.124-04:00 level=INFO source=client.go:109 msg="mlx runner is ready" port=62893
+time=2026-10-25T09:50:21.483-04:00 level=INFO source=client.go:148 msg="stopping mlx runner subprocess" pid=42634
+time=2026-10-25T09:50:21.562-04:00 level=INFO source=client.go:441 msg="starting mlx runner subprocess" model=nemotron-3-nano-mlx:4b-bf16 port=62912
+time=2026-10-25T09:50:22.366-04:00 level=INFO source=client.go:109 msg="mlx runner is ready" port=62912
+time=2026-10-25T09:53:31.733-04:00 level=INFO source=client.go:148 msg="stopping mlx runner subprocess" pid=42649
+time=2026-10-25T09:53:32.810-04:00 level=INFO source=client.go:441 msg="starting mlx runner subprocess" model=mvincig11/semif-qwen3.5-4b-mlx-4bit:latest port=63320
+time=2026-10-25T09:53:33.814-04:00 level=INFO source=client.go:109 msg="mlx runner is ready" port=63320
+time=2026-10-25T09:53:39.209-04:00 level=INFO source=client.go:148 msg="stopping mlx runner subprocess" pid=43181
+time=2026-10-25T09:53:39.227-04:00 level=INFO source=client.go:441 msg="starting mlx runner subprocess" model=mvincig11/semif-qwen3.5-4b-mlx-4bit:latest port=63349
+time=2026-10-25T09:53:39.831-04:00 level=INFO source=client.go:109 msg="mlx runner is ready" port=63349
+time=2026-10-25T09:58:05.501-04:00 level=INFO source=client.go:148 msg="stopping mlx runner subprocess" pid=43202
+
+## f16 half (hand-started ollama serve: OLLAMA_FLASH_ATTENTION=1, OLLAMA_KV_CACHE_TYPE=f16)
+time=2026-10-25T09:58:12.389-04:00 level=INFO source=routes.go:2117 msg="server config" env="map[HTTPS_PROXY: HTTP_PROXY: LLAMA_ARG_FIT: LLAMA_ARG_FIT_TARGET: NO_PROXY: OLLAMA_CONTEXT_LENGTH:0 OLLAMA_CREATE_REMOTE:false OLLAMA_DEBUG:INFO OLLAMA_DEBUG_LOG_REQUESTS:false OLLAMA_EDITOR: OLLAMA_FLASH_ATTENTION:true OLLAMA_GO_TEMPLATE:true OLLAMA_GPU_OVERHEAD:0 OLLAMA_HOST:http://127.0.0.1:11434 OLLAMA_IGPU_ENABLE: OLLAMA_KEEP_ALIVE:5m0s OLLAMA_KV_CACHE_TYPE:f16 OLLAMA_LLM_LIBRARY: OLLAMA_LOAD_TIMEOUT:5m0s OLLAMA_MAX_LOADED_MODELS:0 OLLAMA_MAX_QUEUE:512 OLLAMA_MAX_TRANSFER_STREAMS:4 OLLAMA_MODELS:/Users/joefreeman/.ollama/models OLLAMA_NOHISTORY:false OLLAMA_NOPRUNE:false OLLAMA_NO_CLOUD:false OLLAMA_NUM_PARALLEL:1 OLLAMA_ORIGINS:[http://localhost https://localhost http://localhost:* https://localhost:* http://127.0.0.1 https://127.0.0.1 http://127.0.0.1:* https://127.0.0.1:* http://0.0.0.0 https://0.0.0.0 http://0.0.0.0:* https://0.0.0.0:* app://* file://* tauri://* vscode-webview://* vscode-file://*] OLLAMA_REMOTES:[ollama.com] OLLAMA_SCHED_SPREAD:false http_proxy: https_proxy: no_proxy:]"
+time=2026-10-25T09:58:14.280-04:00 level=INFO source=client.go:441 msg="starting mlx runner subprocess" model=nemotron-3-nano-mlx:4b-bf16 port=63773
+time=2026-10-25T09:58:15.184-04:00 level=INFO source=client.go:109 msg="mlx runner is ready" port=63773
+time=2026-10-25T09:59:40.418-04:00 level=INFO source=client.go:148 msg="stopping mlx runner subprocess" pid=44099
+time=2026-10-25T09:59:41.352-04:00 level=INFO source=client.go:441 msg="starting mlx runner subprocess" model=mvincig11/semif-qwen3.5-4b-mlx-4bit:latest port=63841
+time=2026-10-25T09:59:42.156-04:00 level=INFO source=client.go:109 msg="mlx runner is ready" port=63841
+time=2026-10-25T10:01:02.302-04:00 level=INFO source=client.go:148 msg="stopping mlx runner subprocess" pid=44364
+time=2026-10-25T10:01:03.160-04:00 level=INFO source=client.go:441 msg="starting mlx runner subprocess" model=nemotron-3-nano-mlx:4b-bf16 port=63909
+time=2026-10-25T10:01:03.963-04:00 level=INFO source=client.go:109 msg="mlx runner is ready" port=63909
+time=2026-10-25T10:01:08.146-04:00 level=INFO source=client.go:148 msg="stopping mlx runner subprocess" pid=44619
+time=2026-10-25T10:01:08.211-04:00 level=INFO source=client.go:441 msg="starting mlx runner subprocess" model=nemotron-3-nano-mlx:4b-bf16 port=63928
+time=2026-10-25T10:01:09.014-04:00 level=INFO source=client.go:109 msg="mlx runner is ready" port=63928
+time=2026-10-25T10:04:10.150-04:00 level=INFO source=client.go:148 msg="stopping mlx runner subprocess" pid=44643
+time=2026-10-25T10:04:11.212-04:00 level=INFO source=client.go:441 msg="starting mlx runner subprocess" model=mvincig11/semif-qwen3.5-4b-mlx-4bit:latest port=64075
+time=2026-10-25T10:04:12.116-04:00 level=INFO source=client.go:109 msg="mlx runner is ready" port=64075
+time=2026-10-25T10:04:17.253-04:00 level=INFO source=client.go:148 msg="stopping mlx runner subprocess" pid=45160
+time=2026-10-25T10:04:17.270-04:00 level=INFO source=client.go:441 msg="starting mlx runner subprocess" model=mvincig11/semif-qwen3.5-4b-mlx-4bit:latest port=64090
+time=2026-10-25T10:04:17.875-04:00 level=INFO source=client.go:109 msg="mlx runner is ready" port=64090
+time=2026-10-25T10:08:35.777-04:00 level=INFO source=client.go:148 msg="stopping mlx runner subprocess" pid=45181
