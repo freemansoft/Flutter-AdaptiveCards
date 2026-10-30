@@ -1,0 +1,700 @@
+{
+  "probe": "prefill_cache_probe",
+  "model": "qwen3.5:9b",
+  "variant": "cardprompt",
+  "measuredAt": "2026-10-27",
+  "machine": "Apple M1 Max / 64 GB",
+  "ollama": "0.35.1",
+  "samples": 1,
+  "temperature": 0.0,
+  "assets": {},
+  "summary": {
+    "glossaryEntries": 300,
+    "systemSource": "system-file",
+    "numCtx": 8192,
+    "numPredict": 60,
+    "environment": {
+      "OLLAMA_NUM_PARALLEL": "unset",
+      "OLLAMA_KV_CACHE_TYPE": "unset",
+      "OLLAMA_MAX_LOADED_MODELS": "unset",
+      "OLLAMA_CONTEXT_LENGTH": "unset"
+    },
+    "identical-repeat": [
+      {
+        "label": "cold",
+        "prompt": 3962,
+        "cached": 0,
+        "prefillMs": 9714,
+        "totalMs": 11941,
+        "replyDigest": "c60dd9e9ee4d",
+        "replyChars": 234
+      },
+      {
+        "label": "identical",
+        "prompt": 3962,
+        "cached": 3958,
+        "prefillMs": 72,
+        "totalMs": 2276,
+        "replyDigest": "c60dd9e9ee4d",
+        "replyChars": 234
+      }
+    ],
+    "new-question": [
+      {
+        "label": "new-question",
+        "prompt": 3963,
+        "cached": 2938,
+        "prefillMs": 3173,
+        "totalMs": 4954,
+        "replyDigest": "0927ba65a0c6",
+        "replyChars": 216
+      }
+    ],
+    "growing-conversation": [
+      {
+        "label": "turn-1",
+        "prompt": 3963,
+        "cached": 2939,
+        "prefillMs": 3092,
+        "totalMs": 5286,
+        "replyDigest": "bfef1417c798",
+        "replyChars": 241
+      },
+      {
+        "label": "turn-2",
+        "prompt": 4040,
+        "cached": 3959,
+        "prefillMs": 356,
+        "totalMs": 2578,
+        "replyDigest": "451818161ab1",
+        "replyChars": 241
+      },
+      {
+        "label": "turn-3",
+        "prompt": 4116,
+        "cached": 4036,
+        "prefillMs": 392,
+        "totalMs": 2640,
+        "replyDigest": "fdd647a80052",
+        "replyChars": 241
+      }
+    ],
+    "interleaved": [
+      {
+        "label": "other",
+        "prompt": 3962,
+        "cached": 0,
+        "prefillMs": 11605,
+        "totalMs": 13852,
+        "replyDigest": "f8be0c5fec57",
+        "replyChars": 244
+      },
+      {
+        "label": "back-to-a",
+        "prompt": 3962,
+        "cached": 2939,
+        "prefillMs": 3180,
+        "totalMs": 5418,
+        "replyDigest": "c60dd9e9ee4d",
+        "replyChars": 234
+      }
+    ],
+    "retry-after-abort": [
+      {
+        "label": "aborted"
+      },
+      {
+        "label": "retry",
+        "prompt": 3964,
+        "cached": 3960,
+        "prefillMs": 75,
+        "totalMs": 10867,
+        "replyDigest": "36fd7e8544f9",
+        "replyChars": 258
+      }
+    ],
+    "ordering": [
+      {
+        "label": "seed",
+        "prompt": 3963,
+        "cached": 2939,
+        "prefillMs": 3186,
+        "totalMs": 5432,
+        "replyDigest": "a5436f7a8652",
+        "replyChars": 245
+      },
+      {
+        "label": "exact",
+        "prompt": 3963,
+        "cached": 3959,
+        "prefillMs": 72,
+        "totalMs": 2333,
+        "replyDigest": "a5436f7a8652",
+        "replyChars": 245
+      },
+      {
+        "label": "after-exact",
+        "prompt": 3963,
+        "cached": 2939,
+        "prefillMs": 3243,
+        "totalMs": 5475,
+        "replyDigest": "82d3de502f44",
+        "replyChars": 238
+      },
+      {
+        "label": "after-question",
+        "prompt": 3963,
+        "cached": 2939,
+        "prefillMs": 3222,
+        "totalMs": 5179,
+        "replyDigest": "064ac3934dc3",
+        "replyChars": 250
+      },
+      {
+        "label": "after-question-2",
+        "prompt": 3963,
+        "cached": 2939,
+        "prefillMs": 3226,
+        "totalMs": 5299,
+        "replyDigest": "bfbb83a4af6d",
+        "replyChars": 271
+      },
+      {
+        "label": "exact-2",
+        "prompt": 3963,
+        "cached": 3959,
+        "prefillMs": 67,
+        "totalMs": 2194,
+        "replyDigest": "bfbb83a4af6d",
+        "replyChars": 271
+      },
+      {
+        "label": "after-exact-2",
+        "prompt": 3963,
+        "cached": 2939,
+        "prefillMs": 3246,
+        "totalMs": 4415,
+        "replyDigest": "7b9688ca5cbe",
+        "replyChars": 132
+      },
+      {
+        "label": "extend-base",
+        "prompt": 3963,
+        "cached": 2939,
+        "prefillMs": 3200,
+        "totalMs": 4367,
+        "replyDigest": "8ab6fa4d25f6",
+        "replyChars": 140
+      },
+      {
+        "label": "extend",
+        "prompt": 4011,
+        "cached": 3959,
+        "prefillMs": 274,
+        "totalMs": 2083,
+        "replyDigest": "1524894f288c",
+        "replyChars": 202
+      },
+      {
+        "label": "after-extend",
+        "prompt": 3963,
+        "cached": 2939,
+        "prefillMs": 3253,
+        "totalMs": 5503,
+        "replyDigest": "cc9a1fbecd38",
+        "replyChars": 243
+      }
+    ],
+    "first-divergence": [
+      {
+        "label": "delta-cold",
+        "prompt": 3962,
+        "cached": 0,
+        "prefillMs": 11815,
+        "totalMs": 14046,
+        "replyDigest": "ce6b73ca1394",
+        "replyChars": 230
+      },
+      {
+        "label": "delta-fresh-1",
+        "prompt": 3962,
+        "cached": 2938,
+        "prefillMs": 3218,
+        "totalMs": 5439,
+        "replyDigest": "6cf6a848e2a3",
+        "replyChars": 241
+      },
+      {
+        "label": "delta-fresh-2",
+        "prompt": 3962,
+        "cached": 2938,
+        "prefillMs": 3221,
+        "totalMs": 5457,
+        "replyDigest": "6aea2fbf680b",
+        "replyChars": 245
+      },
+      {
+        "label": "delta-fresh-3",
+        "prompt": 3963,
+        "cached": 2938,
+        "prefillMs": 3224,
+        "totalMs": 5453,
+        "replyDigest": "5c191d2c1a6f",
+        "replyChars": 209
+      },
+      {
+        "label": "echo-cold",
+        "prompt": 3962,
+        "cached": 0,
+        "prefillMs": 11790,
+        "totalMs": 14027,
+        "replyDigest": "212151078405",
+        "replyChars": 218
+      },
+      {
+        "label": "echo-exact",
+        "prompt": 3962,
+        "cached": 3958,
+        "prefillMs": 69,
+        "totalMs": 2338,
+        "replyDigest": "212151078405",
+        "replyChars": 218
+      },
+      {
+        "label": "echo-fresh-1",
+        "prompt": 3962,
+        "cached": 2938,
+        "prefillMs": 3219,
+        "totalMs": 5438,
+        "replyDigest": "0a5f45096ad9",
+        "replyChars": 285
+      },
+      {
+        "label": "echo-fresh-2",
+        "prompt": 3962,
+        "cached": 2938,
+        "prefillMs": 3207,
+        "totalMs": 5434,
+        "replyDigest": "5ad9fec040e3",
+        "replyChars": 239
+      },
+      {
+        "label": "echo-fresh-3",
+        "prompt": 3963,
+        "cached": 2938,
+        "prefillMs": 3260,
+        "totalMs": 5492,
+        "replyDigest": "e0e0b0b784f9",
+        "replyChars": 234
+      }
+    ],
+    "interleaved-conversations": [
+      {
+        "label": "a-turn-1",
+        "prompt": 3963,
+        "cached": 2939,
+        "prefillMs": 3202,
+        "totalMs": 5455,
+        "replyDigest": "c98f606df58e",
+        "replyChars": 243
+      },
+      {
+        "label": "b-turn-1",
+        "prompt": 3963,
+        "cached": 2939,
+        "prefillMs": 3205,
+        "totalMs": 5434,
+        "replyDigest": "05f0f3a5cc81",
+        "replyChars": 297
+      },
+      {
+        "label": "a-turn-2",
+        "prompt": 4041,
+        "cached": 2939,
+        "prefillMs": 3472,
+        "totalMs": 5701,
+        "replyDigest": "fcab3ae545cf",
+        "replyChars": 242
+      },
+      {
+        "label": "b-turn-2",
+        "prompt": 4041,
+        "cached": 3017,
+        "prefillMs": 3193,
+        "totalMs": 5413,
+        "replyDigest": "6a19cd455eef",
+        "replyChars": 290
+      },
+      {
+        "label": "a-turn-3",
+        "prompt": 4119,
+        "cached": 3017,
+        "prefillMs": 3482,
+        "totalMs": 5706,
+        "replyDigest": "d83b23e9bf52",
+        "replyChars": 242
+      },
+      {
+        "label": "b-turn-3",
+        "prompt": 4119,
+        "cached": 3095,
+        "prefillMs": 3213,
+        "totalMs": 5448,
+        "replyDigest": "cf494edebb4e",
+        "replyChars": 290
+      }
+    ],
+    "second-branch": [
+      {
+        "label": "branch-1",
+        "prompt": 3963,
+        "cached": 3095,
+        "prefillMs": 2703,
+        "totalMs": 4921,
+        "replyDigest": "2f4b49118f6f",
+        "replyChars": 246
+      },
+      {
+        "label": "branch-2",
+        "prompt": 3963,
+        "cached": 3095,
+        "prefillMs": 2736,
+        "totalMs": 4945,
+        "replyDigest": "140efdf3d393",
+        "replyChars": 246
+      },
+      {
+        "label": "branch-1-again",
+        "prompt": 3963,
+        "cached": 3095,
+        "prefillMs": 2704,
+        "totalMs": 4907,
+        "replyDigest": "2f4b49118f6f",
+        "replyChars": 246
+      },
+      {
+        "label": "branch-3",
+        "prompt": 3963,
+        "cached": 3095,
+        "prefillMs": 2712,
+        "totalMs": 4928,
+        "replyDigest": "7b8d7098789f",
+        "replyChars": 250
+      }
+    ]
+  },
+  "notes": "Standalone cache/prefill diagnostic, not one of the seven sweep probes -- sweep.sh does not run it and it is not in expectedProbes. pass records only whether a call completed; it is not a judgement about cache reuse -- this probe asserts no cache expectation. The 'aborted' call in retry-after-abort is recorded pass:false by design, since it is deliberately abandoned mid-prefill. summary carries prompt/cached/prefillMs/ totalMs per call, keyed by phase, so a reader can compute cache hit ratios and prefill cost without parsing label. See ModelBehavior.md, 'Prompt-cache reuse and retry cost', for how these figures were read on this host and model.",
+  "calls": [
+    {
+      "case": "identical-repeat",
+      "sample": 0,
+      "pass": true,
+      "label": "cold: prompt=3962 cached=0 prefill=9714ms total=11941ms",
+      "condition": "cold",
+      "ms": 11941
+    },
+    {
+      "case": "identical-repeat",
+      "sample": 1,
+      "pass": true,
+      "label": "identical: prompt=3962 cached=3958 prefill=72ms total=2276ms",
+      "condition": "identical",
+      "ms": 2276
+    },
+    {
+      "case": "new-question",
+      "sample": 0,
+      "pass": true,
+      "label": "new-question: prompt=3963 cached=2938 prefill=3173ms total=4954ms",
+      "condition": "new-question",
+      "ms": 4954
+    },
+    {
+      "case": "growing-conversation",
+      "sample": 0,
+      "pass": true,
+      "label": "turn-1: prompt=3963 cached=2939 prefill=3092ms total=5286ms",
+      "condition": "turn-1",
+      "ms": 5286
+    },
+    {
+      "case": "growing-conversation",
+      "sample": 1,
+      "pass": true,
+      "label": "turn-2: prompt=4040 cached=3959 prefill=356ms total=2578ms",
+      "condition": "turn-2",
+      "ms": 2578
+    },
+    {
+      "case": "growing-conversation",
+      "sample": 2,
+      "pass": true,
+      "label": "turn-3: prompt=4116 cached=4036 prefill=392ms total=2640ms",
+      "condition": "turn-3",
+      "ms": 2640
+    },
+    {
+      "case": "interleaved",
+      "sample": 0,
+      "pass": true,
+      "label": "other: prompt=3962 cached=0 prefill=11605ms total=13852ms",
+      "condition": "other",
+      "ms": 13852
+    },
+    {
+      "case": "interleaved",
+      "sample": 1,
+      "pass": true,
+      "label": "back-to-a: prompt=3962 cached=2939 prefill=3180ms total=5418ms",
+      "condition": "back-to-a",
+      "ms": 5418
+    },
+    {
+      "case": "retry-after-abort",
+      "sample": 0,
+      "pass": false,
+      "label": "aborted: prompt=null cached=null prefill=nullms total=nullms",
+      "condition": "aborted"
+    },
+    {
+      "case": "retry-after-abort",
+      "sample": 1,
+      "pass": true,
+      "label": "retry: prompt=3964 cached=3960 prefill=75ms total=10867ms",
+      "condition": "retry",
+      "ms": 10867
+    },
+    {
+      "case": "ordering",
+      "sample": 0,
+      "pass": true,
+      "label": "seed: prompt=3963 cached=2939 prefill=3186ms total=5432ms",
+      "condition": "seed",
+      "ms": 5432
+    },
+    {
+      "case": "ordering",
+      "sample": 1,
+      "pass": true,
+      "label": "exact: prompt=3963 cached=3959 prefill=72ms total=2333ms",
+      "condition": "exact",
+      "ms": 2333
+    },
+    {
+      "case": "ordering",
+      "sample": 2,
+      "pass": true,
+      "label": "after-exact: prompt=3963 cached=2939 prefill=3243ms total=5475ms",
+      "condition": "after-exact",
+      "ms": 5475
+    },
+    {
+      "case": "ordering",
+      "sample": 3,
+      "pass": true,
+      "label": "after-question: prompt=3963 cached=2939 prefill=3222ms total=5179ms",
+      "condition": "after-question",
+      "ms": 5179
+    },
+    {
+      "case": "ordering",
+      "sample": 4,
+      "pass": true,
+      "label": "after-question-2: prompt=3963 cached=2939 prefill=3226ms total=5299ms",
+      "condition": "after-question-2",
+      "ms": 5299
+    },
+    {
+      "case": "ordering",
+      "sample": 5,
+      "pass": true,
+      "label": "exact-2: prompt=3963 cached=3959 prefill=67ms total=2194ms",
+      "condition": "exact-2",
+      "ms": 2194
+    },
+    {
+      "case": "ordering",
+      "sample": 6,
+      "pass": true,
+      "label": "after-exact-2: prompt=3963 cached=2939 prefill=3246ms total=4415ms",
+      "condition": "after-exact-2",
+      "ms": 4415
+    },
+    {
+      "case": "ordering",
+      "sample": 7,
+      "pass": true,
+      "label": "extend-base: prompt=3963 cached=2939 prefill=3200ms total=4367ms",
+      "condition": "extend-base",
+      "ms": 4367
+    },
+    {
+      "case": "ordering",
+      "sample": 8,
+      "pass": true,
+      "label": "extend: prompt=4011 cached=3959 prefill=274ms total=2083ms",
+      "condition": "extend",
+      "ms": 2083
+    },
+    {
+      "case": "ordering",
+      "sample": 9,
+      "pass": true,
+      "label": "after-extend: prompt=3963 cached=2939 prefill=3253ms total=5503ms",
+      "condition": "after-extend",
+      "ms": 5503
+    },
+    {
+      "case": "first-divergence",
+      "sample": 0,
+      "pass": true,
+      "label": "delta-cold: prompt=3962 cached=0 prefill=11815ms total=14046ms",
+      "condition": "delta-cold",
+      "ms": 14046
+    },
+    {
+      "case": "first-divergence",
+      "sample": 1,
+      "pass": true,
+      "label": "delta-fresh-1: prompt=3962 cached=2938 prefill=3218ms total=5439ms",
+      "condition": "delta-fresh-1",
+      "ms": 5439
+    },
+    {
+      "case": "first-divergence",
+      "sample": 2,
+      "pass": true,
+      "label": "delta-fresh-2: prompt=3962 cached=2938 prefill=3221ms total=5457ms",
+      "condition": "delta-fresh-2",
+      "ms": 5457
+    },
+    {
+      "case": "first-divergence",
+      "sample": 3,
+      "pass": true,
+      "label": "delta-fresh-3: prompt=3963 cached=2938 prefill=3224ms total=5453ms",
+      "condition": "delta-fresh-3",
+      "ms": 5453
+    },
+    {
+      "case": "first-divergence",
+      "sample": 4,
+      "pass": true,
+      "label": "echo-cold: prompt=3962 cached=0 prefill=11790ms total=14027ms",
+      "condition": "echo-cold",
+      "ms": 14027
+    },
+    {
+      "case": "first-divergence",
+      "sample": 5,
+      "pass": true,
+      "label": "echo-exact: prompt=3962 cached=3958 prefill=69ms total=2338ms",
+      "condition": "echo-exact",
+      "ms": 2338
+    },
+    {
+      "case": "first-divergence",
+      "sample": 6,
+      "pass": true,
+      "label": "echo-fresh-1: prompt=3962 cached=2938 prefill=3219ms total=5438ms",
+      "condition": "echo-fresh-1",
+      "ms": 5438
+    },
+    {
+      "case": "first-divergence",
+      "sample": 7,
+      "pass": true,
+      "label": "echo-fresh-2: prompt=3962 cached=2938 prefill=3207ms total=5434ms",
+      "condition": "echo-fresh-2",
+      "ms": 5434
+    },
+    {
+      "case": "first-divergence",
+      "sample": 8,
+      "pass": true,
+      "label": "echo-fresh-3: prompt=3963 cached=2938 prefill=3260ms total=5492ms",
+      "condition": "echo-fresh-3",
+      "ms": 5492
+    },
+    {
+      "case": "interleaved-conversations",
+      "sample": 0,
+      "pass": true,
+      "label": "a-turn-1: prompt=3963 cached=2939 prefill=3202ms total=5455ms",
+      "condition": "a-turn-1",
+      "ms": 5455
+    },
+    {
+      "case": "interleaved-conversations",
+      "sample": 1,
+      "pass": true,
+      "label": "b-turn-1: prompt=3963 cached=2939 prefill=3205ms total=5434ms",
+      "condition": "b-turn-1",
+      "ms": 5434
+    },
+    {
+      "case": "interleaved-conversations",
+      "sample": 2,
+      "pass": true,
+      "label": "a-turn-2: prompt=4041 cached=2939 prefill=3472ms total=5701ms",
+      "condition": "a-turn-2",
+      "ms": 5701
+    },
+    {
+      "case": "interleaved-conversations",
+      "sample": 3,
+      "pass": true,
+      "label": "b-turn-2: prompt=4041 cached=3017 prefill=3193ms total=5413ms",
+      "condition": "b-turn-2",
+      "ms": 5413
+    },
+    {
+      "case": "interleaved-conversations",
+      "sample": 4,
+      "pass": true,
+      "label": "a-turn-3: prompt=4119 cached=3017 prefill=3482ms total=5706ms",
+      "condition": "a-turn-3",
+      "ms": 5706
+    },
+    {
+      "case": "interleaved-conversations",
+      "sample": 5,
+      "pass": true,
+      "label": "b-turn-3: prompt=4119 cached=3095 prefill=3213ms total=5448ms",
+      "condition": "b-turn-3",
+      "ms": 5448
+    },
+    {
+      "case": "second-branch",
+      "sample": 0,
+      "pass": true,
+      "label": "branch-1: prompt=3963 cached=3095 prefill=2703ms total=4921ms",
+      "condition": "branch-1",
+      "ms": 4921
+    },
+    {
+      "case": "second-branch",
+      "sample": 1,
+      "pass": true,
+      "label": "branch-2: prompt=3963 cached=3095 prefill=2736ms total=4945ms",
+      "condition": "branch-2",
+      "ms": 4945
+    },
+    {
+      "case": "second-branch",
+      "sample": 2,
+      "pass": true,
+      "label": "branch-1-again: prompt=3963 cached=3095 prefill=2704ms total=4907ms",
+      "condition": "branch-1-again",
+      "ms": 4907
+    },
+    {
+      "case": "second-branch",
+      "sample": 3,
+      "pass": true,
+      "label": "branch-3: prompt=3963 cached=3095 prefill=2712ms total=4928ms",
+      "condition": "branch-3",
+      "ms": 4928
+    }
+  ]
+}
