@@ -317,6 +317,22 @@ stop` did run, the runner never finished evicting, and the "7 minutes
   `results-m5-16gb-ollama0351/`; `results-m1max-64gb-ollama0340/` is now a
   closed archive with a `HISTORICAL.md` marker.
 
+- Notebook: **the prompt-cache matrix re-run on Ollama 0.35.1 reproduces
+  every 0.34.0 shape except the unsloth Nemotron build, which now stays
+  warm.** `prefill_cache_probe.dart` ran all seventeen builds on the M1 Max on
+  2026-10-27, 31 runs with a filtered server-log extract beside each, under
+  the Homebrew service's q8_0 KV cache and flash attention. Token counts
+  match 0.34.0 call for call on the attention-only, MLX and four recurrent
+  `llama-server` builds. The unsloth build restores its near-end checkpoint
+  on all fifteen new conversations, where 0.34.0 rolled back a batch on five;
+  the bundled llama.cpp moved from b10760 to b11232, which includes the
+  checkpoint-eviction change in llama.cpp PR #28302, and the
+  `erasing context checkpoint too close` lines are gone from the log. One
+  `nemotron-3-nano:30b` run that Ollama launched at `-b 512` rolled back 512
+  tokens, kept as `-batch512`. Article 8 rebuilt on the 0.35.1 figures, with
+  its MLX source links moved to the v0.35.1 paths, and cut to about 1,970
+  prose words. Archive: `results-m1max-64gb-ollama0351/`.
+
 ## [0.17.0]
 
 - chore: require Dart SDK ^3.13.0 and Flutter 3.47.4 (FVM pin, CI pins, `very_good_analysis` ^11.0.0). Constructors use the Dart 3.13 abbreviated in-body syntax (`new(...)`, `factory(...)`) and the new formatter output, as required by the lints `very_good_analysis` 11 enables.

@@ -41,3 +41,24 @@ and the other six.
 
 The prompt is `assets/card_system_prompt.txt`, at digest `8cbfde243266`
 (first 12 hex of its SHA-256; the run files record it).
+
+## Additional models for the 2026-10-27 prompt-cache runs
+
+`prefill_cache_probe.dart` ran the eight models above and nine more, read
+from `ollama list` and `ollama show` on 2026-10-27. Each GGUF build's weight
+blob in the 0.35.1 server log matches the one in its 0.34.0 log
+(`results-m1max-64gb-ollama0340/*/server-log-*.txt`), so the weights did not
+change between the two prompt-cache matrices. The four safetensors builds
+are served by the MLX runner.
+
+```
+qwen3-coder:30b                                    06c1097efce0  qwen3moe        Q4_K_M    30.5B
+gpt-oss:20b                                        17052f91a42e  gptoss          MXFP4     20.9B
+nemotron-3-nano:30b                                b725f1117407  nemotron_h_moe  Q4_K_M    31.6B
+nemotron-3.5-lightning:30b                         e7a64ff15fb1  nemotron_h_moe  Q4_K_M    32.9B
+hf.co/unsloth/Nemotron-3-Nano-30B-A3B-GGUF:latest  a963e5a505e0  nemotron_h_moe  Q4_K_M    31.6B
+qwen3.8:27b-nvfp4                                  5642e97495e1  qwen3_5         nvfp4     27.8B
+qwen3.6:27b-coding-nvfp4                           42a2d9de99b0  qwen3_5         nvfp4     27.4B
+mvincig11/semif-qwen3.5-4b-mlx-4bit                f9b520d56c1e  qwen3_5         int4      4.2B
+nemotron-3-nano-mlx:4b-bf16                        e1d6029081fd  nemotron_h      bfloat16  4.0B
+```

@@ -1,0 +1,44 @@
+time=2026-10-27T23:02:03.450-04:00 level=INFO source=sched.go:618 msg="system memory" total="64.0 GiB" free="37.9 GiB" free_swap="0 B"
+time=2026-10-27T23:02:03.450-04:00 level=INFO source=client.go:441 msg="starting mlx runner subprocess" model=qwen3.8:27b-nvfp4 port=54121
+time=2026-10-27T23:02:08.254-04:00 level=INFO source=client.go:109 msg="mlx runner is ready" port=54121
+time=2026-10-27T23:02:08.254-04:00 level=INFO source=prefix_cache.go:141 msg="cache miss" total=24 matched=0 cached=0 left=24
+time=2026-10-27T23:02:08.938-04:00 level=INFO source=prefix_cache.go:141 msg="cache miss" total=3178 matched=4 cached=0 left=3178
+time=2026-10-27T23:02:44.671-04:00 level=INFO source=prefix_cache.go:141 msg="cache hit" total=3178 matched=3177 cached=3173 left=5
+time=2026-10-27T23:02:45.475-04:00 level=INFO source=prefix_cache.go:141 msg="cache hit" total=3179 matched=3166 cached=4 left=3175
+time=2026-10-27T23:03:23.295-04:00 level=INFO source=prefix_cache.go:141 msg="cache hit" total=3179 matched=3166 cached=3166 left=13
+time=2026-10-27T23:03:24.350-04:00 level=INFO source=prefix_cache.go:141 msg="cache hit" total=3209 matched=3188 cached=3188 left=21
+time=2026-10-27T23:03:25.435-04:00 level=INFO source=prefix_cache.go:141 msg="cache hit" total=3239 matched=3219 cached=3219 left=20
+time=2026-10-27T23:03:26.440-04:00 level=INFO source=prefix_cache.go:141 msg="cache hit" total=3178 matched=15 cached=4 left=3174
+time=2026-10-27T23:04:04.388-04:00 level=INFO source=prefix_cache.go:141 msg="cache hit" total=3178 matched=3177 cached=3173 left=5
+time=2026-10-27T23:04:05.176-04:00 level=INFO source=prefix_cache.go:141 msg="cache hit" total=3479 matched=15 cached=15 left=3464
+time=2026-10-27T23:04:28.779-04:00 level=INFO source=runner.go:295 msg="Request terminated" error="context canceled"
+time=2026-10-27T23:04:28.779-04:00 level=INFO source=prefix_cache.go:141 msg="cache hit" total=3479 matched=2063 cached=2063 left=1416
+time=2026-10-27T23:04:46.491-04:00 level=INFO source=prefix_cache.go:141 msg="cache hit" total=3179 matched=3166 cached=3166 left=13
+time=2026-10-27T23:04:47.524-04:00 level=INFO source=prefix_cache.go:141 msg="cache hit" total=3179 matched=3178 cached=3174 left=5
+time=2026-10-27T23:04:48.436-04:00 level=INFO source=prefix_cache.go:141 msg="cache hit" total=3179 matched=3167 cached=3166 left=13
+time=2026-10-27T23:04:49.417-04:00 level=INFO source=prefix_cache.go:141 msg="cache hit" total=3179 matched=3167 cached=3167 left=12
+time=2026-10-27T23:04:50.435-04:00 level=INFO source=prefix_cache.go:141 msg="cache hit" total=3179 matched=3167 cached=3167 left=12
+time=2026-10-27T23:04:51.424-04:00 level=INFO source=prefix_cache.go:141 msg="cache hit" total=3179 matched=3178 cached=3174 left=5
+time=2026-10-27T23:04:52.243-04:00 level=INFO source=prefix_cache.go:141 msg="cache hit" total=3179 matched=3167 cached=3167 left=12
+time=2026-10-27T23:04:53.239-04:00 level=INFO source=prefix_cache.go:141 msg="cache hit" total=3179 matched=3167 cached=3167 left=12
+time=2026-10-27T23:04:54.200-04:00 level=INFO source=prefix_cache.go:141 msg="cache hit" total=3210 matched=3189 cached=3189 left=21
+time=2026-10-27T23:04:55.193-04:00 level=INFO source=prefix_cache.go:141 msg="cache hit" total=3179 matched=3167 cached=3167 left=12
+time=2026-10-27T23:04:56.175-04:00 level=INFO source=prefix_cache.go:141 msg="cache hit" total=3178 matched=15 cached=15 left=3163
+time=2026-10-27T23:05:34.770-04:00 level=INFO source=prefix_cache.go:141 msg="cache hit" total=3178 matched=3166 cached=15 left=3163
+time=2026-10-27T23:06:13.077-04:00 level=INFO source=prefix_cache.go:141 msg="cache hit" total=3178 matched=3166 cached=3166 left=12
+time=2026-10-27T23:06:14.042-04:00 level=INFO source=prefix_cache.go:141 msg="cache hit" total=3179 matched=3166 cached=3166 left=13
+time=2026-10-27T23:06:15.012-04:00 level=INFO source=prefix_cache.go:141 msg="cache hit" total=3178 matched=15 cached=15 left=3163
+time=2026-10-27T23:06:53.079-04:00 level=INFO source=prefix_cache.go:141 msg="cache hit" total=3178 matched=3177 cached=3173 left=5
+time=2026-10-27T23:06:53.898-04:00 level=INFO source=prefix_cache.go:141 msg="cache hit" total=3178 matched=3166 cached=15 left=3163
+time=2026-10-27T23:07:31.556-04:00 level=INFO source=prefix_cache.go:141 msg="cache hit" total=3178 matched=3166 cached=3166 left=12
+time=2026-10-27T23:07:32.525-04:00 level=INFO source=prefix_cache.go:141 msg="cache hit" total=3179 matched=3166 cached=3166 left=13
+time=2026-10-27T23:07:33.491-04:00 level=INFO source=prefix_cache.go:141 msg="cache hit" total=3179 matched=3166 cached=3166 left=13
+time=2026-10-27T23:07:34.456-04:00 level=INFO source=prefix_cache.go:141 msg="cache hit" total=3179 matched=3166 cached=3166 left=13
+time=2026-10-27T23:07:35.423-04:00 level=INFO source=prefix_cache.go:141 msg="cache hit" total=3211 matched=3189 cached=3189 left=22
+time=2026-10-27T23:07:38.786-04:00 level=INFO source=prefix_cache.go:141 msg="cache hit" total=3211 matched=3189 cached=3189 left=22
+time=2026-10-27T23:07:43.017-04:00 level=INFO source=prefix_cache.go:141 msg="cache hit" total=3281 matched=3259 cached=3259 left=22
+time=2026-10-27T23:07:44.370-04:00 level=INFO source=prefix_cache.go:141 msg="cache hit" total=3285 matched=3263 cached=3263 left=22
+time=2026-10-27T23:07:47.056-04:00 level=INFO source=prefix_cache.go:141 msg="cache hit" total=3179 matched=3166 cached=3166 left=13
+time=2026-10-27T23:07:48.075-04:00 level=INFO source=prefix_cache.go:141 msg="cache hit" total=3179 matched=3166 cached=3166 left=13
+time=2026-10-27T23:07:49.315-04:00 level=INFO source=prefix_cache.go:141 msg="cache hit" total=3179 matched=3178 cached=3174 left=5
+time=2026-10-27T23:07:50.127-04:00 level=INFO source=prefix_cache.go:141 msg="cache hit" total=3179 matched=3166 cached=3166 left=13

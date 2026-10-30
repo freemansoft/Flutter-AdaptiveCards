@@ -1,0 +1,7 @@
+time=2026-10-27T22:42:31.778-04:00 level=INFO source=server.go:100 msg="using llama-server for model" model=/Users/joefreeman/.ollama/models/blobs/sha256-60e05f2100071479f596b964f89f510f057ce397ea22f2833a0cfe029bfc2463
+time=2026-10-27T22:42:31.779-04:00 level=INFO source=llama_server.go:436 msg="starting llama-server" ... -b 1024 -ub 1024 ... --cache-type-k q8_0 --cache-type-v q8_0 --flash-attn on ...
+time=2026-10-27T22:42:31.781-04:00 level=INFO source=sched.go:618 msg="system memory" total="64.0 GiB" free="27.8 GiB" free_swap="0 B"
+print_info: n_swa                 = 0
+llama_context: n_batch               = 1024
+llama_context: n_ubatch              = 1024
+srv    load_model: context checkpoints enabled, max = 32, min spacing = 8192
