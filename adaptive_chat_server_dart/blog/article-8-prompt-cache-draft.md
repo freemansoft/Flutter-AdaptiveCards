@@ -5,11 +5,12 @@
   this page were replaced.
 </div>
 
-Ollama's prompt cache let nine of seventeen local builds start nearly every
-new conversation without re-evaluating the shared system prompt. Four others
-re-evaluated a 1,024-token batch of it each time. Four more re-evaluated all of
-it once per system prompt, up to 37 seconds on the largest. **The model's memory
-type and runner set the group, not the prompt.**
+Each Ollama runner keeps a prefix cache that can skip re-evaluating a shared
+system prompt. Nine of seventeen local builds reused the cached system prompt on
+nearly every new conversation. Four others re-evaluated a 1,024-token batch of
+it each time. Four more re-evaluated all of it once per system prompt, up to 37
+seconds on the largest. **The model's memory type and runner set the group, not
+the prompt.**
 
 In
 [`freemansoft/Flutter-AdaptiveCards`](https://github.com/freemansoft/Flutter-AdaptiveCards)
