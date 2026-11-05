@@ -12,15 +12,15 @@ Cursor, Antigravity, and Copilot were supported until August 2026. The `.agents`
 
 AI instructions are organized in two layers:
 
-| Layer           | Location                                | Purpose                                                                                                                                                                             |
-| --------------- | --------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Always-on rules | [`CLAUDE.md`](../CLAUDE.md)             | Project guardrails: FVM, monorepo hygiene, Riverpod patterns, linting, documentation. Claude Code loads it every session.                                                           |
-| Task playbooks  | [`.claude/skills/`](../.claude/skills/) | Project-authored skills loaded when a task matches (spec compliance, HostConfig theming, element registry, testing, release engineering, …). Claude Code reads this directly.       |
-| Task playbooks  | Claude Code plugins                     | Dart/Flutter team skills, Superpowers, and skill-creator. Installed from marketplaces declared in [`.claude/settings.json`](../.claude/settings.json) — not checked into this repo. |
+| Layer           | Location                                | Purpose                                                                                                                                                                                                   |
+| --------------- | --------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Always-on rules | [`CLAUDE.md`](../CLAUDE.md)             | Project guardrails: FVM, monorepo hygiene, Riverpod patterns, linting, documentation. Claude Code loads it every session.                                                                                 |
+| Task playbooks  | [`.claude/skills/`](../.claude/skills/) | Project-authored skills loaded when a task matches (spec compliance, HostConfig theming, element registry, testing, release engineering, …). Claude Code reads this directly.                             |
+| Task playbooks  | Claude Code plugins                     | Dart/Flutter team skills, Superpowers, skill-creator, and claude-md-management. Installed from marketplaces declared in [`.claude/settings.json`](../.claude/settings.json) — not checked into this repo. |
 
 Supporting files:
 
-- [`.claude/settings.json`](../.claude/settings.json) — declares the plugin marketplaces and enabled plugins at project scope, plus the `SessionStart` hooks that install them
+- [`.claude/settings.json`](../.claude/settings.json) — declares the plugin marketplaces and enabled plugins at project scope; Claude Code offers to install them when you trust the folder
 - [`.claude/rules/README.md`](../.claude/rules/README.md) — pointer to `CLAUDE.md` and `.claude/skills/`
 
 `CLAUDE.md` is derived from the [Flutter team AI rules](https://docs.flutter.dev/ai/ai-rules) and customized for this repo (Very Good Analysis, Adaptive Cards architecture, semantic labels, localization, FVM).
@@ -94,7 +94,7 @@ The marketplace and plugin are both named `dart-flutter`, published from [`flutt
 }
 ```
 
-A `SessionStart` hook in the same file runs `claude plugin marketplace add` and `claude plugin install` so a fresh clone picks it up.
+Claude Code offers to install it the first time a collaborator trusts the repository folder, the same way it handles [Superpowers](#superpowers--claude-code-plugin-not-vendored).
 
 ### What changed
 

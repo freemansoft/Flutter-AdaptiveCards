@@ -11,12 +11,12 @@ Run everything below from the **repository root**.
 
 ## What installs itself
 
-Nothing needs a manual step on a fresh clone. Two mechanisms cover it:
+A fresh clone needs one confirmation and no commands. Two mechanisms cover it:
 
 - **Project-authored skills** (`adaptive-cards-*`) are committed under `.claude/skills/`, which Claude Code reads directly. Nothing generates or links them.
-- **Claude Code plugins** are declared at project scope in [`.claude/settings.json`](../.claude/settings.json), and `SessionStart` hooks in that same file run the marketplace-add and install commands each session. Claude Code prompts you to trust the repository folder the first time; plugins can execute arbitrary code, so the install is never silent.
+- **Claude Code plugins** are declared at project scope in [`.claude/settings.json`](../.claude/settings.json). When you trust the repository folder the first time, Claude Code offers to add the marketplaces and install the plugins. Plugins can execute arbitrary code, so the install is never silent.
 
-The manual equivalents are below, for when a hook fails or you want to install outside this repo.
+The manual equivalents are below, for when you declined that prompt or want to install outside this repo.
 
 ## Claude Code plugins
 
@@ -44,6 +44,7 @@ Both come from the official Anthropic marketplace:
 ```bash
 claude plugin install superpowers@claude-plugins-official --scope project
 claude plugin install skill-creator@claude-plugins-official --scope project
+claude plugin install claude-md-management@claude-plugins-official --scope project
 ```
 
 Then `/reload-plugins` (or restart). Verify with `/plugin` → **Installed**. Skills from plugins are
