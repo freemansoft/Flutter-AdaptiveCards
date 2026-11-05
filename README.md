@@ -281,13 +281,14 @@ Modular skills loaded when a task matches. This directory holds the 18 project-a
 
 #### Plugins
 
-Claude Code plugins are declared at project scope in [`.claude/settings.json`](.claude/settings.json) and installed by a `SessionStart` hook, so a fresh clone picks them up on first trusted open.
+Claude Code plugins are declared at project scope in [`.claude/settings.json`](.claude/settings.json). Claude Code offers to install them the first time you trust the repository folder.
 
-| Plugin          | Marketplace                          | Provides                                                |
-| --------------- | ------------------------------------ | ------------------------------------------------------- |
-| `dart-flutter`  | `flutter/agent-plugins`              | 12 `dart-*` + 10 `flutter-*` skills, Dart MCP server    |
-| `superpowers`   | `anthropics/claude-plugins-official` | Brainstorming, plans, TDD, systematic debugging, review |
-| `skill-creator` | `anthropics/claude-plugins-official` | Authoring and evaluating skills                         |
+| Plugin                 | Marketplace                          | Provides                                                |
+| ---------------------- | ------------------------------------ | ------------------------------------------------------- |
+| `dart-flutter`         | `flutter/agent-plugins`              | 12 `dart-*` + 10 `flutter-*` skills, Dart MCP server    |
+| `superpowers`          | `anthropics/claude-plugins-official` | Brainstorming, plans, TDD, systematic debugging, review |
+| `skill-creator`        | `anthropics/claude-plugins-official` | Authoring and evaluating skills                         |
+| `claude-md-management` | `anthropics/claude-plugins-official` | Auditing and maintaining `CLAUDE.md` files              |
 
 Plugin skills are namespaced where the plugin declares it — invoke `superpowers:brainstorming`, not `brainstorming`.
 
@@ -295,7 +296,7 @@ To use any of these skills in a different tool, or in Claude Code across all you
 
 ### Quick install (from repo root)
 
-Only needed if the `SessionStart` hook did not run:
+Only needed if you declined the install prompt or it did not appear:
 
 ```bash
 claude plugin marketplace add flutter/agent-plugins
